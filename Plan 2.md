@@ -14,10 +14,12 @@ Reproduce (as closely as feasible) the methodology of **“Can Large Language Mo
    - applies **LLM-based refinement** to the 30-step forecast path,
    - evaluates at horizons **1, 5, 20, 30** days ahead,
    - runs ablations and robustness checks.
-2. A **concise “scientific paper”** generated incrementally by the pipeline:
-   - documents data, preprocessing, models, prompts, experiments,
-   - includes key tables/figures,
-   - compares results against the original paper’s reported patterns (directionally and structurally).
+2. A **Jupyter Notebook "paper"** (`paper.ipynb`) that:
+   - presents the research as an interactive document with embedded visualizations,
+   - documents data sources, preprocessing steps, and methodology,
+   - displays key results tables and figures inline with executable code,
+   - includes model comparisons and statistical significance tests,
+   - can be opened and run in VS Code or Jupyter Lab for full interactivity.
 
 ---
 
@@ -359,14 +361,14 @@ Add interpretability and tail behavior analysis.
 
 ---
 
-## 4) Auto-generated paper (incremental “scientific paper”)
+## 4) Auto-generated paper (Jupyter Notebook format)
 
 ### Paper build system
-Implement a simple generator that writes:
-- `paper/manuscript.md` (main)
-- `paper/figures/*.png`
-- `paper/tables/*.md` (or embedded tables)
-- optional export to PDF via pandoc/latex (if available)
+Generate a Jupyter Notebook (`paper.ipynb`) that presents the research interactively:
+- Executable code cells that load and visualize data
+- Markdown cells with methodology and interpretation
+- Inline tables and figures with full interactivity
+- Can be opened directly in VS Code or Jupyter Lab
 
 **Implement**
 - `src/paper/paper_writer.py`

@@ -1,0 +1,152 @@
+# EU ETS Futures Forecasting Configuration
+# =========================================
+
+project:
+  name: "EU_ETS_Forecasting"
+  version: "0.1.0"
+
+# Target Configuration
+target:
+  # Primary target: EUA futures (or ICAP secondary market as proxy)
+  instrument: "ICAP_SECONDARY"  # Options: EUA_FUTURES, ICAP_SECONDARY, KEUA_INDEX
+  column: "close_eur"
+  source: "icap"  # icap, eua_futures, indices
+
+# Time Series Configuration
+time_series:
+  freq: "D"  # Daily frequency
+  horizons: [1, 5, 20, 30]  # Evaluation horizons
+  pred_len: 30  # Mandatory: 30-step forecast
+  seq_len: 120  # Input sequence length (trading days)
+  label_len: 30  # Label context length
+
+# Data Split Configuration (rolling origin)
+split:
+  train_end: "2022-12-31"
+  val_end: "2023-12-31"
+  test_end: "2025-11-27"
+  # Alternatively, use ratios:
+  # train_ratio: 0.7
+  # val_ratio: 0.15
+  # test_ratio: 0.15
+
+# Missing Data Handling
+missing:
+  max_ffill_days: 5  # Maximum forward-fill days
+  min_coverage_pct: 0.80  # Minimum data coverage required
+
+# Feature Engineering
+features:
+  # Energy benchmarks
+  include_brent: true
+  include_coal: true
+  
+  # Carbon indices
+  include_indices: true
+  indices_list: ["KEUA", "KRBN", "GRN", "KCCA", "KSET"]
+  
+  # Auction data
+  include_auctions: true
+  auction_features: ["price", "volume", "is_auction_day"]
+  auction_lags: [1, 5, 20]
+  
+  # Volatility proxy
+  include_vstoxx: true
+  
+  # Technical features
+  returns: true
+  rolling_vol_window: 20
+  rolling_mean_windows: [5, 20, 60]
+
+# Model Configuration
+model:
+  # TSM Model Selection
+  tsm_type: "autoformer"  # Options: autoformer, informer, transformer, dlinear
+  
+  # Training parameters
+  batch_size: 32
+  learning_rate: 0.0001
+  max_epochs: 100
+  early_stopping_patience: 10
+  
+  # Architecture (Autoformer defaults)
+  d_model: 512
+  n_heads: 8
+  e_layers: 2
+  d_layers: 1
+  d_ff: 2048
+  dropout: 0.05
+  
+  # Feature handling
+  enc_in: 10  # Will be updated based on actual features
+  dec_in: 10
+  c_out: 1  # Univariate target
+
+# LLM Configuration
+llm:
+  provider: "openai"  # openai, anthropic
+  model: "gpt-4-turbo-preview"  # gpt-4-turbo-preview, gpt-4, claude-3-opus
+  temperature: 0.1  # Low temperature for determinism
+  max_tokens: 1000
+  
+  # Prompt methods to run
+  methods: ["DP", "CoT", "CoT-RF", "TSM+LLM"]
+  
+  # Context compression
+  history_points: 120  # Points to include in prompt
+  include_summary_stats: true
+  
+  # Cost control
+  max_retries: 3
+  cache_enabled: true
+
+# Evaluation Configuration
+evaluation:
+  # Metrics
+  primary_metric: "mse"
+  additional_metrics: ["mae", "rmse", "mape"]
+  
+  # Trend classification
+  trend_threshold_method: "volatility"  # volatility, fixed
+  trend_threshold_multiplier: 0.25  # threshold = multiplier * rolling_std
+  trend_classes: ["down", "flat", "up"]
+  
+  # Significance tests
+  significance_level: 0.05
+  tests: ["t_test", "wilcoxon"]
+
+# Robustness Configuration
+robustness:
+  noise_levels: [0.05, 0.10, 0.20, 0.30]
+  subperiods:
+    - name: "2017-2019"
+      start: "2017-01-01"
+      end: "2019-12-31"
+    - name: "2020-2021"
+      start: "2020-01-01"
+      end: "2021-12-31"
+    - name: "2022-2025"
+      start: "2022-01-01"
+      end: "2025-11-27"
+
+# Output Configuration
+output:
+  runs_dir: "runs"
+  paper_dir: "paper"
+  save_predictions: true
+  save_model_checkpoints: true
+  generate_plots: true
+  generate_paper: true
+
+# Reproducibility
+reproducibility:
+  seed: 42
+  deterministic: true
+  log_git_hash: true
+  save_config: true
+
+# Computation
+compute:
+  device: "auto"  # auto, cpu, cuda, mps
+  num_workers: 4
+  pin_memory: true
