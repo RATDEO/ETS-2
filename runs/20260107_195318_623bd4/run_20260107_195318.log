@@ -1,0 +1,377 @@
+2026-01-07 19:53:18 | INFO     | __main__ | Run ID: 20260107_195318_623bd4
+2026-01-07 19:53:18 | INFO     | __main__ | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4
+2026-01-07 19:53:18 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:53:18 | INFO     | __main__ | STEP 2: Building data panel
+2026-01-07 19:53:18 | INFO     | __main__ | ======================================================================
+2026-01-07 19:53:18 | INFO     | data.panel | ============================================================
+2026-01-07 19:53:18 | INFO     | data.panel | Building panel dataset
+2026-01-07 19:53:18 | INFO     | data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-01-07 19:53:18 | INFO     | data.panel | ============================================================
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-01-07 19:53:18 | INFO     | data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data UK-2.csv
+2026-01-07 19:53:18 | INFO     | data.load_eua_futures | Loaded EUA futures: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_eua_futures | Combined EUA futures data: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_eua_futures | EUA futures target series: 4311 records, price range: 2.75 - 100.29 EUR
+2026-01-07 19:53:18 | INFO     | data.panel | EUA Futures loaded: 4311 records
+2026-01-07 19:53:18 | INFO     | data.panel | Master calendar: 4311 days from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-07 19:53:18 | INFO     | data.panel | Target coverage: 4311 / 4311 days
+2026-01-07 19:53:18 | INFO     | data.panel | Adding EUA futures OHLC and volume features...
+2026-01-07 19:53:18 | INFO     | data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-01-07 19:53:18 | INFO     | data.panel | Adding ICAP secondary market as exogenous feature...
+2026-01-07 19:53:18 | INFO     | data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_icap | Loaded ICAP file: 1503 records from 2019-01-07 00:00:00 to 2025-09-30 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_icap | Combined ICAP data: 4984 records from 2005-03-09 00:00:00 to 2025-09-30 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_icap | ICAP target series: 2866 daily prices
+2026-01-07 19:53:18 | INFO     | data.panel | Added ICAP secondary market feature
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-01-07 19:53:18 | INFO     | data.fx | Loaded EUR/USD FX rates: 6910 observations from 1999-01-04 00:00:00 to 2025-12-24 00:00:00
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-01-07 19:53:18 | WARNING  | data.load_energy | Brent: Dropped 2 rows with invalid dates
+2026-01-07 19:53:18 | INFO     | data.load_energy | Loaded Brent crude: 9774 records from 1987-05-20 00:00:00 to 2025-11-24 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_energy | Loaded Rotterdam coal: 4967 records from 2006-07-18 00:00:00 to 2025-11-27 00:00:00
+2026-01-07 19:53:18 | WARNING  | data.fx | FX conversion: 30.2% of rows still missing FX rate after forward-fill
+2026-01-07 19:53:18 | INFO     | data.fx | Converted 6823 prices from USD to EUR
+2026-01-07 19:53:18 | INFO     | data.fx | Converted 4967 prices from USD to EUR
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-01-07 19:53:18 | INFO     | data.load_indices | Loaded KEUA: 1042 records from 2021-10-05 00:00:00 to 2025-11-26 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_indices | Loaded KRBN: 1339 records from 2020-07-31 00:00:00 to 2025-11-26 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_indices | Loaded GRN: 1558 records from 2019-09-18 00:00:00 to 2025-11-26 00:00:00
+2026-01-07 19:53:18 | INFO     | data.load_indices | Loaded 3 carbon market indices
+2026-01-07 19:53:18 | INFO     | data.fx | Converted 1042 prices from USD to EUR
+2026-01-07 19:53:18 | INFO     | data.fx | Converted 1339 prices from USD to EUR
+2026-01-07 19:53:18 | INFO     | data.fx | Converted 1558 prices from USD to EUR
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-01-07 19:53:18 | INFO     | data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-01-07 19:53:18 | INFO     | data.load_vstoxx | Loaded VSTOXX: 6851 records from 1999-01-04 00:00:00 to 2025-11-26 00:00:00
+2026-01-07 19:53:18 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-01-07 19:53:18 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4/data
+2026-01-07 19:53:18 | INFO     | data.panel | ============================================================
+2026-01-07 19:53:18 | INFO     | data.panel | Panel built: 4311 rows, 40 columns
+2026-01-07 19:53:18 | INFO     | data.panel | Target coverage: 100.0%
+2026-01-07 19:53:18 | INFO     | data.panel | ============================================================
+2026-01-07 19:53:19 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4/paper_snapshot/fig_data_coverage.png
+2026-01-07 19:53:19 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:53:19 | INFO     | __main__ | STEP 3: Creating windows and splitting data
+2026-01-07 19:53:19 | INFO     | __main__ | ======================================================================
+2026-01-07 19:53:19 | INFO     | data.windows | Creating windows with 11 features, mode=MS
+2026-01-07 19:53:19 | INFO     | data.windows | Creating 4222 windows
+2026-01-07 19:53:20 | INFO     | data.windows | Window shapes: X_enc=(4222, 60, 11), X_dec=(4222, 45, 11), y=(4222, 30)
+2026-01-07 19:53:20 | INFO     | data.windows | train: 3608 windows
+2026-01-07 19:53:20 | INFO     | data.windows | val: 255 windows
+2026-01-07 19:53:20 | INFO     | data.windows | test: 359 windows
+2026-01-07 19:53:20 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4/data/datasets
+2026-01-07 19:53:20 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:53:20 | INFO     | __main__ | STEP 4: Training and evaluating baselines
+2026-01-07 19:53:20 | INFO     | __main__ | ======================================================================
+2026-01-07 19:53:21 | INFO     | __main__ | LASSO selected horizon-specific features for 4 horizons
+2026-01-07 19:53:21 | INFO     | models.baselines | Fitted 30 linear models
+2026-01-07 19:53:21 | INFO     | models.baselines | Fitted 30 linear models
+2026-01-07 19:53:21 | INFO     | __main__ | 
+Baseline Results (MSE by horizon):
+2026-01-07 19:53:21 | INFO     | __main__ | 
+naive_persistence:
+2026-01-07 19:53:21 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.416031  1.189971  0.963454  1.360579
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938980  5.093032  3.972535  5.521094
+30       37.794167  6.147696  4.985906  6.844857
+2026-01-07 19:53:21 | INFO     | __main__ | 
+seasonal_naive:
+2026-01-07 19:53:21 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         6.642022  2.577212  2.067103  2.932119
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938978  5.093032  3.972535  5.521094
+30       37.794169  6.147696  4.985906  6.844857
+2026-01-07 19:53:21 | INFO     | __main__ | 
+linear_ridge:
+2026-01-07 19:53:21 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.430786  1.196155  0.969301  1.368408
+5         6.776788  2.603226  2.073692  2.945110
+20       26.949851  5.191325  3.963449  5.617849
+30       35.867324  5.988933  4.759430  6.638536
+2026-01-07 19:53:22 | INFO     | __main__ | 
+linear_lasso:
+2026-01-07 19:53:22 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         5.249424  2.291162  1.996119  2.772775
+5        10.064285  3.172426  2.635072  3.653516
+20       28.228351  5.313036  4.423775  6.080842
+30       37.740303  6.143314  5.100215  6.969766
+2026-01-07 19:53:22 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:53:22 | INFO     | __main__ | STEP 4B: Quantile LASSO (feature selection + quantiles)
+2026-01-07 19:53:22 | INFO     | __main__ | ======================================================================
+2026-01-07 19:53:48 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:53:48 | INFO     | __main__ | STEP 5: TSM model training
+2026-01-07 19:53:48 | INFO     | __main__ | ======================================================================
+2026-01-07 19:53:48 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-07 19:53:48 | INFO     | models.tsm | Built Autoformer model with 68033 parameters
+2026-01-07 19:53:50 | INFO     | models.tsm | Epoch 1/50 - Train: 0.169562, Val: 0.057798
+2026-01-07 19:53:50 | INFO     | models.tsm | Epoch 2/50 - Train: 0.106845, Val: 0.056406
+2026-01-07 19:53:51 | INFO     | models.tsm | Epoch 3/50 - Train: 0.103852, Val: 0.056513
+2026-01-07 19:53:52 | INFO     | models.tsm | Epoch 4/50 - Train: 0.103726, Val: 0.056747
+2026-01-07 19:53:53 | INFO     | models.tsm | Epoch 5/50 - Train: 0.101690, Val: 0.056463
+2026-01-07 19:53:53 | INFO     | models.tsm | Epoch 6/50 - Train: 0.101701, Val: 0.057156
+2026-01-07 19:53:54 | INFO     | models.tsm | Epoch 7/50 - Train: 0.100062, Val: 0.056876
+2026-01-07 19:53:55 | INFO     | models.tsm | Epoch 8/50 - Train: 0.099857, Val: 0.056589
+2026-01-07 19:53:56 | INFO     | models.tsm | Epoch 9/50 - Train: 0.099514, Val: 0.056828
+2026-01-07 19:53:56 | INFO     | models.tsm | Epoch 10/50 - Train: 0.098981, Val: 0.057147
+2026-01-07 19:53:57 | INFO     | models.tsm | Epoch 11/50 - Train: 0.099054, Val: 0.057244
+2026-01-07 19:53:58 | INFO     | models.tsm | Epoch 12/50 - Train: 0.098685, Val: 0.057190
+2026-01-07 19:53:58 | INFO     | models.tsm | Epoch 13/50 - Train: 0.098352, Val: 0.058727
+2026-01-07 19:53:59 | INFO     | models.tsm | Epoch 14/50 - Train: 0.097953, Val: 0.057467
+2026-01-07 19:54:00 | INFO     | models.tsm | Epoch 15/50 - Train: 0.098037, Val: 0.057067
+2026-01-07 19:54:01 | INFO     | models.tsm | Epoch 16/50 - Train: 0.097594, Val: 0.056601
+2026-01-07 19:54:01 | INFO     | models.tsm | Epoch 17/50 - Train: 0.097979, Val: 0.056923
+2026-01-07 19:54:01 | INFO     | models.tsm | Early stopping at epoch 17
+2026-01-07 19:54:01 | INFO     | __main__ | 
+TSM Results:
+2026-01-07 19:54:01 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         0.097459  0.312184  0.243567  0.341986
+5         1.890105  1.374811  1.048756  1.471557
+20       19.232149  4.385448  3.385018  4.726893
+30       40.764973  6.384745  5.022877  6.993155
+2026-01-07 19:54:01 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-07 19:54:01 | INFO     | models.tsm | Built Autoformer model with 67777 parameters
+2026-01-07 19:54:02 | INFO     | models.tsm | Epoch 1/50 - Train: 0.149276, Val: 0.055859
+2026-01-07 19:54:03 | INFO     | models.tsm | Epoch 2/50 - Train: 0.106752, Val: 0.057421
+2026-01-07 19:54:04 | INFO     | models.tsm | Epoch 3/50 - Train: 0.105054, Val: 0.057160
+2026-01-07 19:54:04 | INFO     | models.tsm | Epoch 4/50 - Train: 0.103439, Val: 0.059149
+2026-01-07 19:54:05 | INFO     | models.tsm | Epoch 5/50 - Train: 0.103112, Val: 0.057881
+2026-01-07 19:54:06 | INFO     | models.tsm | Epoch 6/50 - Train: 0.102785, Val: 0.057894
+2026-01-07 19:54:06 | INFO     | models.tsm | Epoch 7/50 - Train: 0.102710, Val: 0.057031
+2026-01-07 19:54:07 | INFO     | models.tsm | Epoch 8/50 - Train: 0.102447, Val: 0.056497
+2026-01-07 19:54:08 | INFO     | models.tsm | Epoch 9/50 - Train: 0.102110, Val: 0.057910
+2026-01-07 19:54:08 | INFO     | models.tsm | Epoch 10/50 - Train: 0.102164, Val: 0.058242
+2026-01-07 19:54:09 | INFO     | models.tsm | Epoch 11/50 - Train: 0.101926, Val: 0.056935
+2026-01-07 19:54:10 | INFO     | models.tsm | Epoch 12/50 - Train: 0.101508, Val: 0.057625
+2026-01-07 19:54:10 | INFO     | models.tsm | Epoch 13/50 - Train: 0.101740, Val: 0.056535
+2026-01-07 19:54:11 | INFO     | models.tsm | Epoch 14/50 - Train: 0.101524, Val: 0.058130
+2026-01-07 19:54:12 | INFO     | models.tsm | Epoch 15/50 - Train: 0.101702, Val: 0.057101
+2026-01-07 19:54:12 | INFO     | models.tsm | Epoch 16/50 - Train: 0.101689, Val: 0.056750
+2026-01-07 19:54:12 | INFO     | models.tsm | Early stopping at epoch 16
+2026-01-07 19:54:12 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-07 19:54:12 | INFO     | models.tsm | Built Autoformer model with 67777 parameters
+2026-01-07 19:54:13 | INFO     | models.tsm | Epoch 1/50 - Train: 0.183761, Val: 0.057483
+2026-01-07 19:54:14 | INFO     | models.tsm | Epoch 2/50 - Train: 0.107941, Val: 0.056907
+2026-01-07 19:54:14 | INFO     | models.tsm | Epoch 3/50 - Train: 0.105339, Val: 0.056664
+2026-01-07 19:54:15 | INFO     | models.tsm | Epoch 4/50 - Train: 0.104934, Val: 0.056994
+2026-01-07 19:54:16 | INFO     | models.tsm | Epoch 5/50 - Train: 0.104009, Val: 0.056579
+2026-01-07 19:54:16 | INFO     | models.tsm | Epoch 6/50 - Train: 0.103173, Val: 0.057354
+2026-01-07 19:54:17 | INFO     | models.tsm | Epoch 7/50 - Train: 0.102858, Val: 0.057226
+2026-01-07 19:54:18 | INFO     | models.tsm | Epoch 8/50 - Train: 0.102717, Val: 0.057552
+2026-01-07 19:54:18 | INFO     | models.tsm | Epoch 9/50 - Train: 0.101901, Val: 0.058030
+2026-01-07 19:54:19 | INFO     | models.tsm | Epoch 10/50 - Train: 0.102367, Val: 0.057914
+2026-01-07 19:54:20 | INFO     | models.tsm | Epoch 11/50 - Train: 0.102316, Val: 0.057919
+2026-01-07 19:54:20 | INFO     | models.tsm | Epoch 12/50 - Train: 0.101518, Val: 0.057336
+2026-01-07 19:54:21 | INFO     | models.tsm | Epoch 13/50 - Train: 0.101828, Val: 0.057567
+2026-01-07 19:54:22 | INFO     | models.tsm | Epoch 14/50 - Train: 0.101601, Val: 0.057351
+2026-01-07 19:54:23 | INFO     | models.tsm | Epoch 15/50 - Train: 0.101557, Val: 0.056993
+2026-01-07 19:54:23 | INFO     | models.tsm | Epoch 16/50 - Train: 0.101805, Val: 0.057127
+2026-01-07 19:54:24 | INFO     | models.tsm | Epoch 17/50 - Train: 0.101754, Val: 0.057246
+2026-01-07 19:54:25 | INFO     | models.tsm | Epoch 18/50 - Train: 0.101695, Val: 0.057283
+2026-01-07 19:54:25 | INFO     | models.tsm | Epoch 19/50 - Train: 0.101466, Val: 0.057964
+2026-01-07 19:54:26 | INFO     | models.tsm | Epoch 20/50 - Train: 0.101089, Val: 0.057653
+2026-01-07 19:54:26 | INFO     | models.tsm | Early stopping at epoch 20
+2026-01-07 19:54:26 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-07 19:54:26 | INFO     | models.tsm | Built Autoformer model with 67777 parameters
+2026-01-07 19:54:27 | INFO     | models.tsm | Epoch 1/50 - Train: 0.183546, Val: 0.054358
+2026-01-07 19:54:27 | INFO     | models.tsm | Epoch 2/50 - Train: 0.107653, Val: 0.055904
+2026-01-07 19:54:28 | INFO     | models.tsm | Epoch 3/50 - Train: 0.104797, Val: 0.056493
+2026-01-07 19:54:29 | INFO     | models.tsm | Epoch 4/50 - Train: 0.103493, Val: 0.057232
+2026-01-07 19:54:29 | INFO     | models.tsm | Epoch 5/50 - Train: 0.102973, Val: 0.057480
+2026-01-07 19:54:30 | INFO     | models.tsm | Epoch 6/50 - Train: 0.102402, Val: 0.057459
+2026-01-07 19:54:31 | INFO     | models.tsm | Epoch 7/50 - Train: 0.102290, Val: 0.056690
+2026-01-07 19:54:32 | INFO     | models.tsm | Epoch 8/50 - Train: 0.102054, Val: 0.057024
+2026-01-07 19:54:32 | INFO     | models.tsm | Epoch 9/50 - Train: 0.101845, Val: 0.057983
+2026-01-07 19:54:33 | INFO     | models.tsm | Epoch 10/50 - Train: 0.101822, Val: 0.056835
+2026-01-07 19:54:34 | INFO     | models.tsm | Epoch 11/50 - Train: 0.101610, Val: 0.057920
+2026-01-07 19:54:34 | INFO     | models.tsm | Epoch 12/50 - Train: 0.101561, Val: 0.057268
+2026-01-07 19:54:35 | INFO     | models.tsm | Epoch 13/50 - Train: 0.101267, Val: 0.057119
+2026-01-07 19:54:36 | INFO     | models.tsm | Epoch 14/50 - Train: 0.101226, Val: 0.057619
+2026-01-07 19:54:36 | INFO     | models.tsm | Epoch 15/50 - Train: 0.101269, Val: 0.057389
+2026-01-07 19:54:37 | INFO     | models.tsm | Epoch 16/50 - Train: 0.101160, Val: 0.056901
+2026-01-07 19:54:37 | INFO     | models.tsm | Early stopping at epoch 16
+2026-01-07 19:54:37 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-07 19:54:37 | INFO     | models.tsm | Built Autoformer model with 67777 parameters
+2026-01-07 19:54:38 | INFO     | models.tsm | Epoch 1/50 - Train: 0.223394, Val: 0.063461
+2026-01-07 19:54:39 | INFO     | models.tsm | Epoch 2/50 - Train: 0.109798, Val: 0.058871
+2026-01-07 19:54:39 | INFO     | models.tsm | Epoch 3/50 - Train: 0.106190, Val: 0.057086
+2026-01-07 19:54:40 | INFO     | models.tsm | Epoch 4/50 - Train: 0.104514, Val: 0.057490
+2026-01-07 19:54:41 | INFO     | models.tsm | Epoch 5/50 - Train: 0.104065, Val: 0.058551
+2026-01-07 19:54:42 | INFO     | models.tsm | Epoch 6/50 - Train: 0.103154, Val: 0.057444
+2026-01-07 19:54:43 | INFO     | models.tsm | Epoch 7/50 - Train: 0.102802, Val: 0.057128
+2026-01-07 19:54:43 | INFO     | models.tsm | Epoch 8/50 - Train: 0.102753, Val: 0.056760
+2026-01-07 19:54:44 | INFO     | models.tsm | Epoch 9/50 - Train: 0.102455, Val: 0.056753
+2026-01-07 19:54:45 | INFO     | models.tsm | Epoch 10/50 - Train: 0.102066, Val: 0.057573
+2026-01-07 19:54:46 | INFO     | models.tsm | Epoch 11/50 - Train: 0.101670, Val: 0.057432
+2026-01-07 19:54:46 | INFO     | models.tsm | Epoch 12/50 - Train: 0.101498, Val: 0.057656
+2026-01-07 19:54:47 | INFO     | models.tsm | Epoch 13/50 - Train: 0.101538, Val: 0.057501
+2026-01-07 19:54:48 | INFO     | models.tsm | Epoch 14/50 - Train: 0.101576, Val: 0.057113
+2026-01-07 19:54:49 | INFO     | models.tsm | Epoch 15/50 - Train: 0.101433, Val: 0.057690
+2026-01-07 19:54:49 | INFO     | models.tsm | Epoch 16/50 - Train: 0.101609, Val: 0.056535
+2026-01-07 19:54:50 | INFO     | models.tsm | Epoch 17/50 - Train: 0.101264, Val: 0.057680
+2026-01-07 19:54:51 | INFO     | models.tsm | Epoch 18/50 - Train: 0.101579, Val: 0.056875
+2026-01-07 19:54:52 | INFO     | models.tsm | Epoch 19/50 - Train: 0.101378, Val: 0.057327
+2026-01-07 19:54:52 | INFO     | models.tsm | Epoch 20/50 - Train: 0.101491, Val: 0.057069
+2026-01-07 19:54:53 | INFO     | models.tsm | Epoch 21/50 - Train: 0.101411, Val: 0.057978
+2026-01-07 19:54:54 | INFO     | models.tsm | Epoch 22/50 - Train: 0.101099, Val: 0.057167
+2026-01-07 19:54:55 | INFO     | models.tsm | Epoch 23/50 - Train: 0.100955, Val: 0.057314
+2026-01-07 19:54:56 | INFO     | models.tsm | Epoch 24/50 - Train: 0.100829, Val: 0.057111
+2026-01-07 19:54:56 | INFO     | models.tsm | Epoch 25/50 - Train: 0.100648, Val: 0.057565
+2026-01-07 19:54:57 | INFO     | models.tsm | Epoch 26/50 - Train: 0.100966, Val: 0.057180
+2026-01-07 19:54:58 | INFO     | models.tsm | Epoch 27/50 - Train: 0.100705, Val: 0.057202
+2026-01-07 19:54:59 | INFO     | models.tsm | Epoch 28/50 - Train: 0.100578, Val: 0.057303
+2026-01-07 19:55:00 | INFO     | models.tsm | Epoch 29/50 - Train: 0.100750, Val: 0.056810
+2026-01-07 19:55:01 | INFO     | models.tsm | Epoch 30/50 - Train: 0.100743, Val: 0.056752
+2026-01-07 19:55:02 | INFO     | models.tsm | Epoch 31/50 - Train: 0.100856, Val: 0.057084
+2026-01-07 19:55:02 | INFO     | models.tsm | Early stopping at epoch 31
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | STEP 6: LLM refinement
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | WARNING  | __main__ | OPENAI_API_KEY not set - skipping LLM refinement
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | STEP 7: Statistical significance tests
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | 
+Significance test results saved
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | STEP 8: Robustness suite
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | Robustness noise injection results saved
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | STEP 9: Trend classification accuracy
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | 
+naive_persistence Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.142061
+20       0.091922
+30       0.058496
+2026-01-07 19:55:02 | INFO     | __main__ | 
+seasonal_naive Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.345404
+5        0.142061
+20       0.091922
+30       0.058496
+2026-01-07 19:55:02 | INFO     | __main__ | 
+linear_ridge Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.256267
+20       0.526462
+30       0.571031
+2026-01-07 19:55:02 | INFO     | __main__ | 
+linear_lasso Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.359331
+5        0.409471
+20       0.289694
+30       0.367688
+2026-01-07 19:55:02 | INFO     | __main__ | 
+tsm Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.832869
+5        0.752089
+20       0.579387
+30       0.515320
+2026-01-07 19:55:02 | INFO     | __main__ | 
+tsm_lasso_h1 Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.844011
+5        0.740947
+20       0.576602
+30       0.515320
+2026-01-07 19:55:02 | INFO     | __main__ | 
+tsm_lasso_h5 Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.835655
+5        0.752089
+20       0.571031
+30       0.518106
+2026-01-07 19:55:02 | INFO     | __main__ | 
+tsm_lasso_h20 Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.841226
+5        0.746518
+20       0.576602
+30       0.512535
+2026-01-07 19:55:02 | INFO     | __main__ | 
+tsm_lasso_h30 Trend Accuracy:
+2026-01-07 19:55:02 | INFO     | __main__ |          accuracy
+horizon          
+1        0.841226
+5        0.746518
+20       0.571031
+30       0.523677
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | STEP 10: Generating paper
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: abstract
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: introduction
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: data
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: methods
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: results
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: robustness
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: discussion
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: conclusion
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: appendix
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Saved paper to /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4/paper_snapshot/manuscript.md
+2026-01-07 19:55:02 | INFO     | __main__ | Paper snapshot saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4/paper_snapshot/manuscript.md
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: abstract
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: introduction
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: data
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: methods
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: results
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: robustness
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: discussion
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: conclusion
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Wrote section: appendix
+2026-01-07 19:55:02 | INFO     | paper.paper_writer | Saved paper to /Users/davidwilkinson/Desktop/ETS 2/paper/manuscript.md
+2026-01-07 19:55:02 | INFO     | __main__ | Paper saved to: /Users/davidwilkinson/Desktop/ETS 2/paper/manuscript.md
+2026-01-07 19:55:02 | INFO     | __main__ | 
+======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | EXPERIMENT COMPLETE
+2026-01-07 19:55:02 | INFO     | __main__ | ======================================================================
+2026-01-07 19:55:02 | INFO     | __main__ | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260107_195318_623bd4

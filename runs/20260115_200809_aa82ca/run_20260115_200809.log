@@ -1,0 +1,817 @@
+2026-01-15 20:08:09 | INFO     | __main__ | Run ID: 20260115_200809_aa82ca
+2026-01-15 20:08:09 | INFO     | __main__ | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260115_200809_aa82ca
+2026-01-15 20:08:09 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:08:09 | INFO     | __main__ | STEP 2: Building data panel
+2026-01-15 20:08:09 | INFO     | __main__ | ======================================================================
+2026-01-15 20:08:09 | INFO     | data.panel | ============================================================
+2026-01-15 20:08:09 | INFO     | data.panel | Building panel dataset
+2026-01-15 20:08:09 | INFO     | data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-01-15 20:08:09 | INFO     | data.panel | ============================================================
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-01-15 20:08:09 | INFO     | data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data UK-2.csv
+2026-01-15 20:08:09 | INFO     | data.load_eua_futures | Loaded EUA futures: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_eua_futures | Combined EUA futures data: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_eua_futures | EUA futures target series: 4311 records, price range: 2.75 - 100.29 EUR
+2026-01-15 20:08:09 | INFO     | data.panel | EUA Futures loaded: 4311 records
+2026-01-15 20:08:09 | INFO     | data.panel | Master calendar: 4311 days from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-01-15 20:08:09 | INFO     | data.panel | Target coverage: 4311 / 4311 days
+2026-01-15 20:08:09 | INFO     | data.panel | Adding EUA futures OHLC and volume features...
+2026-01-15 20:08:09 | INFO     | data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-01-15 20:08:09 | INFO     | data.panel | Adding ICAP secondary market as exogenous feature...
+2026-01-15 20:08:09 | INFO     | data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_icap | Loaded ICAP file: 1503 records from 2019-01-07 00:00:00 to 2025-09-30 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_icap | Combined ICAP data: 4984 records from 2005-03-09 00:00:00 to 2025-09-30 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_icap | ICAP target series: 2866 daily prices
+2026-01-15 20:08:09 | INFO     | data.panel | Added ICAP secondary market feature
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-01-15 20:08:09 | INFO     | data.fx | Loaded EUR/USD FX rates: 6910 observations from 1999-01-04 00:00:00 to 2025-12-24 00:00:00
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-01-15 20:08:09 | WARNING  | data.load_energy | Brent: Dropped 2 rows with invalid dates
+2026-01-15 20:08:09 | INFO     | data.load_energy | Loaded Brent crude: 9774 records from 1987-05-20 00:00:00 to 2025-11-24 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_energy | Loaded Rotterdam coal: 4967 records from 2006-07-18 00:00:00 to 2025-11-27 00:00:00
+2026-01-15 20:08:09 | WARNING  | data.fx | FX conversion: 30.2% of rows still missing FX rate after forward-fill
+2026-01-15 20:08:09 | INFO     | data.fx | Converted 6823 prices from USD to EUR
+2026-01-15 20:08:09 | INFO     | data.fx | Converted 4967 prices from USD to EUR
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-01-15 20:08:09 | INFO     | data.load_indices | Loaded KEUA: 1042 records from 2021-10-05 00:00:00 to 2025-11-26 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_indices | Loaded KRBN: 1339 records from 2020-07-31 00:00:00 to 2025-11-26 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_indices | Loaded GRN: 1558 records from 2019-09-18 00:00:00 to 2025-11-26 00:00:00
+2026-01-15 20:08:09 | INFO     | data.load_indices | Loaded 3 carbon market indices
+2026-01-15 20:08:09 | INFO     | data.fx | Converted 1042 prices from USD to EUR
+2026-01-15 20:08:09 | INFO     | data.fx | Converted 1339 prices from USD to EUR
+2026-01-15 20:08:09 | INFO     | data.fx | Converted 1558 prices from USD to EUR
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-01-15 20:08:09 | INFO     | data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-01-15 20:08:09 | INFO     | data.load_vstoxx | Loaded VSTOXX: 6851 records from 1999-01-04 00:00:00 to 2025-11-26 00:00:00
+2026-01-15 20:08:09 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-01-15 20:08:09 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260115_200809_aa82ca/data
+2026-01-15 20:08:09 | INFO     | data.panel | ============================================================
+2026-01-15 20:08:09 | INFO     | data.panel | Panel built: 4311 rows, 40 columns
+2026-01-15 20:08:09 | INFO     | data.panel | Target coverage: 100.0%
+2026-01-15 20:08:09 | INFO     | data.panel | ============================================================
+2026-01-15 20:08:10 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260115_200809_aa82ca/paper_snapshot/fig_data_coverage.png
+2026-01-15 20:08:10 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:08:10 | INFO     | __main__ | STEP 3: Creating windows and splitting data
+2026-01-15 20:08:10 | INFO     | __main__ | ======================================================================
+2026-01-15 20:08:10 | INFO     | data.windows | Creating windows with 11 features, mode=MS
+2026-01-15 20:08:10 | INFO     | data.windows | Creating 4222 windows
+2026-01-15 20:08:10 | INFO     | data.windows | Window shapes: X_enc=(4222, 60, 11), X_dec=(4222, 45, 11), y=(4222, 30)
+2026-01-15 20:08:10 | INFO     | data.windows | train: 3608 windows
+2026-01-15 20:08:10 | INFO     | data.windows | val: 255 windows
+2026-01-15 20:08:10 | INFO     | data.windows | test: 359 windows
+2026-01-15 20:08:10 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260115_200809_aa82ca/data/datasets
+2026-01-15 20:08:10 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:08:10 | INFO     | __main__ | STEP 4: Training and evaluating baselines
+2026-01-15 20:08:10 | INFO     | __main__ | ======================================================================
+2026-01-15 20:08:10 | INFO     | models.baselines | Fitted 30 linear models
+2026-01-15 20:08:11 | INFO     | models.baselines | Fitted 30 linear models
+2026-01-15 20:08:11 | INFO     | __main__ | 
+Baseline Results (MSE by horizon):
+2026-01-15 20:08:11 | INFO     | __main__ | 
+naive_persistence:
+2026-01-15 20:08:11 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.416031  1.189971  0.963454  1.360579
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938980  5.093032  3.972535  5.521094
+30       37.794167  6.147696  4.985906  6.844857
+2026-01-15 20:08:11 | INFO     | __main__ | 
+seasonal_naive:
+2026-01-15 20:08:11 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         6.642022  2.577212  2.067103  2.932119
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938978  5.093032  3.972535  5.521094
+30       37.794169  6.147696  4.985906  6.844857
+2026-01-15 20:08:11 | INFO     | __main__ | 
+linear_ridge:
+2026-01-15 20:08:11 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.430786  1.196155  0.969301  1.368408
+5         6.776788  2.603226  2.073692  2.945110
+20       26.949851  5.191325  3.963449  5.617849
+30       35.867324  5.988933  4.759430  6.638536
+2026-01-15 20:08:11 | INFO     | __main__ | 
+linear_lasso:
+2026-01-15 20:08:11 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         5.249424  2.291162  1.996119  2.772775
+5        10.064285  3.172426  2.635072  3.653516
+20       28.228351  5.313036  4.423775  6.080842
+30       37.740303  6.143314  5.100215  6.969766
+2026-01-15 20:08:11 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:08:11 | INFO     | __main__ | STEP 5: TSM model training
+2026-01-15 20:08:11 | INFO     | __main__ | ======================================================================
+2026-01-15 20:08:11 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-01-15 20:08:11 | INFO     | models.tsm | Built Autoformer model with 68033 parameters
+2026-01-15 20:08:12 | INFO     | models.tsm | Epoch 1/50 - Train: 0.169562, Val: 0.057798
+2026-01-15 20:08:14 | INFO     | models.tsm | Epoch 2/50 - Train: 0.106845, Val: 0.056406
+2026-01-15 20:08:14 | INFO     | models.tsm | Epoch 3/50 - Train: 0.103852, Val: 0.056513
+2026-01-15 20:08:15 | INFO     | models.tsm | Epoch 4/50 - Train: 0.103726, Val: 0.056747
+2026-01-15 20:08:16 | INFO     | models.tsm | Epoch 5/50 - Train: 0.101690, Val: 0.056463
+2026-01-15 20:08:17 | INFO     | models.tsm | Epoch 6/50 - Train: 0.101701, Val: 0.057156
+2026-01-15 20:08:18 | INFO     | models.tsm | Epoch 7/50 - Train: 0.100062, Val: 0.056876
+2026-01-15 20:08:19 | INFO     | models.tsm | Epoch 8/50 - Train: 0.099857, Val: 0.056589
+2026-01-15 20:08:19 | INFO     | models.tsm | Epoch 9/50 - Train: 0.099514, Val: 0.056828
+2026-01-15 20:08:20 | INFO     | models.tsm | Epoch 10/50 - Train: 0.098981, Val: 0.057147
+2026-01-15 20:08:21 | INFO     | models.tsm | Epoch 11/50 - Train: 0.099054, Val: 0.057244
+2026-01-15 20:08:22 | INFO     | models.tsm | Epoch 12/50 - Train: 0.098685, Val: 0.057190
+2026-01-15 20:08:23 | INFO     | models.tsm | Epoch 13/50 - Train: 0.098352, Val: 0.058727
+2026-01-15 20:08:24 | INFO     | models.tsm | Epoch 14/50 - Train: 0.097953, Val: 0.057467
+2026-01-15 20:08:24 | INFO     | models.tsm | Epoch 15/50 - Train: 0.098037, Val: 0.057067
+2026-01-15 20:08:25 | INFO     | models.tsm | Epoch 16/50 - Train: 0.097594, Val: 0.056601
+2026-01-15 20:08:26 | INFO     | models.tsm | Epoch 17/50 - Train: 0.097979, Val: 0.056923
+2026-01-15 20:08:26 | INFO     | models.tsm | Early stopping at epoch 17
+2026-01-15 20:08:26 | INFO     | __main__ | 
+TSM Results:
+2026-01-15 20:08:26 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         0.097459  0.312184  0.243567  0.341986
+5         1.890105  1.374811  1.048756  1.471557
+20       19.232149  4.385448  3.385018  4.726893
+30       40.764973  6.384745  5.022877  6.993155
+2026-01-15 20:08:26 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:08:26 | INFO     | __main__ | STEP 6: LLM refinement
+2026-01-15 20:08:26 | INFO     | __main__ | ======================================================================
+2026-01-15 20:08:26 | INFO     | __main__ | LLM gating enabled: 144/359 samples above volatility threshold 0.017489
+2026-01-15 20:08:26 | INFO     | __main__ | Running method: TSM+LLM-COT-RF
+2026-01-15 20:08:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:34 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    66.53,
+    67.02,
+    67.80,
+    68.35,
+    68.80,
+    69.35,
+    68.95,
+    67.30,
+    67.85,
+    68.30,
+    68.40,
+    67.70,
+    68.95,
+    68.45,
+    68.60,
+    68.85,
+  ...
+2026-01-15 20:08:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:52 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    68.99,
+    68.62,
+    69.15,
+    70.68,
+    69.71,
+    68.04,
+    68.47,
+    68.70,
+    68.03,
+    68.46,
+    69.99,
+    68.42,
+    68.85,
+    69.18,
+    69.51,
+    70.94,
+  ...
+2026-01-15 20:08:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:08:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:17 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    63.54,
+    63.88,
+    64.03,
+    63.85,
+    65.27,
+    64.79,
+    65.14,
+    65.28,
+    65.66,
+    66.36,
+    66.63,
+    66.08,
+    65.70,
+    65.51,
+    65.34,
+    65.91,
+  ...
+2026-01-15 20:09:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:21 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    68.88,
+    69.02,
+    69.27,
+    68.98,
+    70.31,
+    69.93,
+    70.18,
+    70.33,
+    70.72,
+    71.42,
+    71.80,
+    71.23,
+    70.85,
+    70.56,
+    70.37,
+    70.18,
+  ...
+2026-01-15 20:09:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:26 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    68.33,
+    68.62,
+    69.13,
+    68.33,
+    70.62,
+    69.43,
+    70.04,
+    70.24,
+    70.73,
+    71.43,
+    71.70,
+    71.05,
+    70.67,
+    70.19,
+    70.56,
+    70.84,
+  ...
+2026-01-15 20:09:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:33 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    66.37,
+    65.83,
+    64.42,
+    65.88,
+    64.92,
+    64.47,
+    64.83,
+    65.73,
+    66.63,
+    67.56,
+    67.21,
+    66.76,
+    66.21,
+    66.66,
+    67.59,
+    67.34,
+  ...
+2026-01-15 20:09:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:37 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    67.42,
+    66.83,
+    65.87,
+    67.33,
+    66.81,
+    67.22,
+    67.62,
+    68.42,
+    69.22,
+    69.57,
+    69.12,
+    68.77,
+    68.33,
+    68.83,
+    69.63,
+    69.33,
+  ...
+2026-01-15 20:09:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:43 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    67.70,
+    67.30,
+    66.20,
+    67.80,
+    67.50,
+    67.20,
+    67.90,
+    68.10,
+    68.80,
+    69.20,
+    69.00,
+    68.70,
+    68.40,
+    69.10,
+    69.30,
+    69.00,
+  ...
+2026-01-15 20:09:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:09:57 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.52,
+    72.88,
+    71.38,
+    72.65,
+    72.91,
+    73.27,
+    73.83,
+    74.12,
+    73.53,
+    72.94,
+    72.35,
+    72.73,
+    73.31,
+    73.68,
+    73.95,
+    73.34,
+  ...
+2026-01-15 20:09:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:09 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.24,
+    68.48,
+    69.72,
+    70.04,
+    70.44,
+    71.04,
+    71.64,
+    71.24,
+    70.84,
+    70.44,
+    70.04,
+    69.64,
+    70.24,
+    70.84,
+    71.44,
+    71.04,
+  ...
+2026-01-15 20:10:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:14 | INFO     | llm.refine | Processed 10/30 samples
+2026-01-15 20:10:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:20 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.23,
+    70.63,
+    70.85,
+    71.22,
+    71.60,
+    71.95,
+    71.36,
+    70.94,
+    70.80,
+    70.50,
+    71.78,
+    71.33,
+    72.23,
+    71.88,
+    72.72,
+    71.35,
+  ...
+2026-01-15 20:10:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:25 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.23,
+    70.62,
+    70.85,
+    71.32,
+    72.03,
+    72.40,
+    71.81,
+    71.33,
+    71.27,
+    70.92,
+    72.21,
+    71.85,
+    72.74,
+    72.48,
+    73.03,
+    71.38,
+  ...
+2026-01-15 20:10:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:37 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    73.33,
+    73.88,
+    74.44,
+    75.21,
+    75.62,
+    75.07,
+    74.63,
+    74.29,
+    74.96,
+    75.37,
+    74.82,
+    75.59,
+    75.24,
+    76.01,
+    75.46,
+    75.11,
+  ...
+2026-01-15 20:10:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:41 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    72.50,
+    73.10,
+    73.80,
+    74.50,
+    75.20,
+    74.80,
+    74.40,
+    74.00,
+    74.60,
+    75.30,
+    74.90,
+    74.50,
+    74.10,
+    73.70,
+    73.30,
+    72.90,
+  ...
+2026-01-15 20:10:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:46 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.93,
+    71.43,
+    72.12,
+    72.98,
+    73.83,
+    73.36,
+    72.98,
+    72.72,
+    73.31,
+    73.88,
+    73.42,
+    74.20,
+    74.03,
+    74.62,
+    73.38,
+    72.72,
+  ...
+2026-01-15 20:10:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:52 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    71.87,
+    71.32,
+    70.87,
+    70.42,
+    69.97,
+    69.52,
+    69.07,
+    68.62,
+    68.17,
+    67.72,
+    67.27,
+    66.82,
+    66.37,
+    65.92,
+    65.47,
+    65.02,
+  ...
+2026-01-15 20:10:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:10:57 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    70.43,
+    71.23,
+    71.83,
+    72.33,
+    71.63,
+    71.23,
+    70.83,
+    71.43,
+    71.93,
+    72.43,
+    72.93,
+    72.43,
+    72.03,
+    71.63,
+    71.23,
+    70.83,
+  ...
+2026-01-15 20:10:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:02 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    72.30,
+    72.85,
+    73.40,
+    73.75,
+    73.00,
+    72.55,
+    72.10,
+    72.65,
+    73.00,
+    72.35,
+    72.80,
+    73.25,
+    72.60,
+    72.15,
+    71.70,
+    72.25,
+  ...
+2026-01-15 20:11:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:08 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    71.82,
+    72.35,
+    72.71,
+    72.11,
+    71.61,
+    71.32,
+    71.04,
+    71.53,
+    71.27,
+    71.79,
+    71.54,
+    71.26,
+    70.98,
+    70.71,
+    70.44,
+    70.20,
+  ...
+2026-01-15 20:11:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:11:59 | INFO     | llm.refine | Processed 20/30 samples
+2026-01-15 20:12:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:41 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    64.87,
+    64.70,
+    63.92,
+    65.15,
+    63.47,
+    62.75,
+    63.08,
+    62.31,
+    61.54,
+    62.77,
+    63.00,
+    62.23,
+    63.46,
+    62.70,
+    63.03,
+    62.36,
+  ...
+2026-01-15 20:12:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:53 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    64.25,
+    63.02,
+    64.88,
+    63.24,
+    62.49,
+    63.95,
+    63.18,
+    62.35,
+    62.62,
+    63.47,
+    64.70,
+    64.07,
+    63.24,
+    63.51,
+    63.78,
+    64.05,
+  ...
+2026-01-15 20:12:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:12:58 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [64.82, 63.92, 65.11, 63.31, 62.42, 62.73, 63.44, 62.32, 62.51, 63.22, 64.65, 64.03, 63.22, 63.81, 64.32, 63.88, 64.17, 63.47, 63.66, 64.18, 63.45, 63.87, 63.34, 63.81, 64.28, 64.6...
+2026-01-15 20:13:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:16 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    60.33,
+    57.69,
+    56.13,
+    54.76,
+    56.82,
+    54.87,
+    53.15,
+    55.13,
+    56.66,
+    56.01,
+    54.96,
+    53.91,
+    55.06,
+    55.89,
+    57.22,
+    55.34,
+  ...
+2026-01-15 20:13:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:20 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    65.43,
+    63.61,
+    62.72,
+    61.87,
+    63.12,
+    61.38,
+    60.64,
+    62.01,
+    63.45,
+    63.01,
+    62.36,
+    61.71,
+    62.15,
+    62.60,
+    63.05,
+    62.50,
+  ...
+2026-01-15 20:13:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:32 | WARNING  | llm.refine | Failed to parse forecast from response: ```json
+{
+  "yhat": [
+    61.33,
+    60.03,
+    60.42,
+    61.45,
+    60.35,
+    59.56,
+    61.33,
+    63.13,
+    62.63,
+    62.73,
+    61.73,
+    63.53,
+    64.33,
+    65.73,
+    64.73,
+    64.93,
+  ...
+2026-01-15 20:13:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.71:9876/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-15 20:13:37 | INFO     | llm.refine | Processed 30/30 samples
+2026-01-15 20:13:37 | INFO     | __main__ | 
+TSM+LLM-COT-RF Results:
+2026-01-15 20:13:37 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         3.081956  1.755550  1.423851  2.116645
+5         2.758304  1.660814  1.397663  2.044787
+20       19.660865  4.434057  3.705126  5.499648
+30       34.990088  5.915242  5.215160  7.905044
+2026-01-15 20:13:37 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | STEP 7: Statistical significance tests
+2026-01-15 20:13:37 | INFO     | __main__ | ======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | 
+Significance test results saved
+2026-01-15 20:13:37 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | STEP 8: Robustness suite
+2026-01-15 20:13:37 | INFO     | __main__ | ======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | No noise levels configured; skipping robustness suite
+2026-01-15 20:13:37 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | STEP 9: Trend classification accuracy
+2026-01-15 20:13:37 | INFO     | __main__ | ======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | 
+naive_persistence Trend Accuracy:
+2026-01-15 20:13:37 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.142061
+20       0.091922
+30       0.058496
+2026-01-15 20:13:37 | INFO     | __main__ | 
+seasonal_naive Trend Accuracy:
+2026-01-15 20:13:37 | INFO     | __main__ |          accuracy
+horizon          
+1        0.345404
+5        0.142061
+20       0.091922
+30       0.058496
+2026-01-15 20:13:37 | INFO     | __main__ | 
+linear_ridge Trend Accuracy:
+2026-01-15 20:13:37 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.256267
+20       0.526462
+30       0.571031
+2026-01-15 20:13:37 | INFO     | __main__ | 
+linear_lasso Trend Accuracy:
+2026-01-15 20:13:37 | INFO     | __main__ |          accuracy
+horizon          
+1        0.359331
+5        0.409471
+20       0.289694
+30       0.367688
+2026-01-15 20:13:37 | INFO     | __main__ | 
+tsm Trend Accuracy:
+2026-01-15 20:13:37 | INFO     | __main__ |          accuracy
+horizon          
+1        0.832869
+5        0.752089
+20       0.579387
+30       0.515320
+2026-01-15 20:13:37 | INFO     | __main__ | Paper generation disabled by config
+2026-01-15 20:13:37 | INFO     | __main__ | 
+======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | EXPERIMENT COMPLETE
+2026-01-15 20:13:37 | INFO     | __main__ | ======================================================================
+2026-01-15 20:13:37 | INFO     | __main__ | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260115_200809_aa82ca

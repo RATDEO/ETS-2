@@ -7,10 +7,11 @@ project:
 
 # Target Configuration
 target:
-  # Primary target: EUA futures (or ICAP secondary market as proxy)
-  instrument: "ICAP_SECONDARY"  # Options: EUA_FUTURES, ICAP_SECONDARY, KEUA_INDEX
+  # Primary target: EUA futures prices
+  instrument: "EUA_FUTURES"  # Options: EUA_FUTURES, ICAP_SECONDARY, KEUA_INDEX
   column: "close_eur"
-  source: "icap"  # icap, eua_futures, indices
+  source: "eua_futures"  # eua_futures, icap, indices
+  price_column: "close"  # Which price to use: close, open, high, low
 
 # Time Series Configuration
 time_series:
@@ -22,9 +23,9 @@ time_series:
 
 # Data Split Configuration (rolling origin)
 split:
-  train_end: "2022-12-31"
-  val_end: "2023-12-31"
-  test_end: "2025-11-27"
+  train_end: "2023-06-30"
+  val_end: "2024-06-30"
+  test_end: "2026-01-05"
   # Alternatively, use ratios:
   # train_ratio: 0.7
   # val_ratio: 0.15
@@ -49,6 +50,9 @@ features:
   include_auctions: true
   auction_features: ["price", "volume", "is_auction_day"]
   auction_lags: [1, 5, 20]
+  
+  # ICAP secondary market (when using EUA futures as target)
+  include_icap_secondary: true
   
   # Volatility proxy
   include_vstoxx: true
@@ -116,19 +120,47 @@ evaluation:
   significance_level: 0.05
   tests: ["t_test", "wilcoxon"]
 
+# Econometric Track (Quantile + LASSO)
+econometric:
+  quantile_lasso:
+    enabled: false
+    quantiles: [0.1, 0.5, 0.9]
+    alpha: 0.01
+    lags: [1, 5, 10, 20]
+  lasso_feature_selection:
+    enabled: false
+    alpha: 0.01
+    alpha_by_horizon: {}
+    max_iter: 10000
+    min_features: 6
+    max_features: 11
+    coef_threshold: 1.0e-6
+    feature_stats: ["last", "change_5", "change_20", "std_20"]
+    target_horizons: [1, 5, 20, 30]
+    target_aggregation: "mean"
+    mode: "aggregate"
+    target_weights: [0.1, 0.2, 0.3, 0.4]
+    drop_weakest: 0
+
 # Robustness Configuration
 robustness:
   noise_levels: [0.05, 0.10, 0.20, 0.30]
   subperiods:
-    - name: "2017-2019"
-      start: "2017-01-01"
-      end: "2019-12-31"
-    - name: "2020-2021"
-      start: "2020-01-01"
-      end: "2021-12-31"
-    - name: "2022-2025"
-      start: "2022-01-01"
-      end: "2025-11-27"
+    - name: "2009-2012"
+      start: "2009-04-01"
+      end: "2012-12-31"
+    - name: "2013-2017"
+      start: "2013-01-01"
+      end: "2017-12-31"
+    - name: "2018-2020"
+      start: "2018-01-01"
+      end: "2020-12-31"
+    - name: "2021-2023"
+      start: "2021-01-01"
+      end: "2023-12-31"
+    - name: "2024-2026"
+      start: "2024-01-01"
+      end: "2026-01-05"
 
 # Output Configuration
 output:

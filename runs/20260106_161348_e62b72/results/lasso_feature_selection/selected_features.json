@@ -1,0 +1,25 @@
+{
+  "selected_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "icap_secondary",
+    "eurusd",
+    "brent_price"
+  ],
+  "total_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ]
+}

@@ -8,9 +8,10 @@ project:
 
 # Target Configuration
 target:
-  instrument: "ICAP_SECONDARY"
+  instrument: "EUA_FUTURES"
   column: "close_eur"
-  source: "icap"
+  source: "eua_futures"
+  price_column: "close"  # Which price to use: close, open, high, low
   mode: "returns"
 
 # Time Series Configuration - Shortened sequences
@@ -23,9 +24,9 @@ time_series:
 
 # Data Split Configuration
 split:
-  train_end: "2022-12-31"
-  val_end: "2023-12-31"
-  test_end: "2025-11-27"
+  train_end: "2023-06-30"
+  val_end: "2024-06-30"
+  test_end: "2026-01-05"
 
 # Missing Data Handling
 missing:
@@ -41,6 +42,7 @@ features:
   include_auctions: true
   auction_features: ["price", "volume", "is_auction_day"]
   auction_lags: [1, 5]  # Reduced lags
+  include_icap_secondary: true  # ICAP secondary as exogenous feature
   include_vstoxx: true
   returns: true
   rolling_vol_window: 20
@@ -48,7 +50,7 @@ features:
 
 # Model Configuration - DRAMATICALLY REDUCED
 model:
-  tsm_type: "dlinear"
+  tsm_type: "autoformer"
   
   # Reduced training
   batch_size: 16          # Smaller batches for regularization effect
@@ -87,6 +89,16 @@ llm:
   max_retries: 3
   cache_enabled: true
   max_samples: 100
+  max_exogenous_features: 6
+  blend:
+    mode: "horizon_weighted"
+    min_weight: 0.0
+    max_weight: 0.3
+    power: 2.0
+  gating:
+    enabled: true
+    volatility_window: 20
+    volatility_percentile: 0.6
 
 # Evaluation Configuration
 evaluation:
@@ -98,19 +110,51 @@ evaluation:
   significance_level: 0.05
   tests: ["t_test", "wilcoxon"]
 
+# Econometric Track (Quantile + LASSO)
+econometric:
+  quantile_lasso:
+    enabled: true
+    quantiles: [0.1, 0.5, 0.9]
+    alpha: 0.01
+    lags: [1, 5, 10, 20]
+  lasso_feature_selection:
+    enabled: true
+    alpha: 0.0005
+    alpha_by_horizon:
+      1: 0.001
+      5: 0.001
+      20: 0.0005
+      30: 0.0005
+    max_iter: 50000
+    min_features: 6
+    max_features: 8
+    coef_threshold: 1.0e-6
+    feature_stats: ["last", "change_5", "change_20", "std_20"]
+    target_horizons: [1, 5, 20, 30]
+    target_aggregation: "mean"
+    mode: "per_horizon_models"
+    target_weights: [0.1, 0.2, 0.3, 0.4]
+    drop_weakest: 0
+
 # Robustness Configuration
 robustness:
   noise_levels: [0.05, 0.10, 0.20, 0.30]
   subperiods:
-    - name: "2017-2019"
-      start: "2017-01-01"
-      end: "2019-12-31"
-    - name: "2020-2021"
-      start: "2020-01-01"
-      end: "2021-12-31"
-    - name: "2022-2025"
-      start: "2022-01-01"
-      end: "2025-11-27"
+    - name: "2009-2012"
+      start: "2009-04-01"
+      end: "2012-12-31"
+    - name: "2013-2017"
+      start: "2013-01-01"
+      end: "2017-12-31"
+    - name: "2018-2020"
+      start: "2018-01-01"
+      end: "2020-12-31"
+    - name: "2021-2023"
+      start: "2021-01-01"
+      end: "2023-12-31"
+    - name: "2024-2026"
+      start: "2024-01-01"
+      end: "2026-01-05"
 
 # Output Configuration
 output:

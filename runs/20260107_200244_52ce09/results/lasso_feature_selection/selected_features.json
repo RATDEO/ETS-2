@@ -1,0 +1,110 @@
+{
+  "selected_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ],
+  "selected_features_by_horizon": {
+    "1": [
+      "y_return",
+      "icap_return",
+      "icap_secondary",
+      "brent_price",
+      "eurusd",
+      "y",
+      "eua_volume",
+      "eua_range"
+    ],
+    "5": [
+      "y_return",
+      "icap_secondary",
+      "eurusd",
+      "icap_return",
+      "brent_price",
+      "eua_volume",
+      "y",
+      "eua_range"
+    ],
+    "20": [
+      "y_return",
+      "eua_volume",
+      "icap_return",
+      "brent_price",
+      "icap_secondary",
+      "eurusd",
+      "eua_range_pct",
+      "eua_range"
+    ],
+    "30": [
+      "y_return",
+      "eua_range_pct",
+      "eurusd",
+      "brent_price",
+      "eua_volume",
+      "icap_return",
+      "icap_secondary",
+      "eua_range"
+    ]
+  },
+  "total_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ],
+  "config": {
+    "enabled": true,
+    "alpha": 0.0005,
+    "alpha_by_horizon": {
+      "1": 0.001,
+      "5": 0.001,
+      "20": 0.0005,
+      "30": 0.0005
+    },
+    "max_iter": 50000,
+    "selection_method": "stability",
+    "stability_bootstraps": 80,
+    "stability_sample_frac": 0.8,
+    "stability_coef_threshold": 1e-06,
+    "stability_random_state": 42,
+    "min_features": 6,
+    "max_features": 8,
+    "coef_threshold": 1e-06,
+    "feature_stats": [
+      "last",
+      "change_5",
+      "change_20",
+      "std_20"
+    ],
+    "target_horizons": [
+      1,
+      5,
+      20,
+      30
+    ],
+    "target_aggregation": "mean",
+    "mode": "per_horizon_models",
+    "target_weights": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "drop_weakest": 0
+  }
+}

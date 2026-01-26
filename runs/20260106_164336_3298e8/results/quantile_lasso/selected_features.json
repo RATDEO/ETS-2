@@ -1,0 +1,26 @@
+{
+  "0.1": [
+    "y_last",
+    "eua_high_last",
+    "eua_low_last",
+    "eua_volume_last",
+    "icap_secondary_last",
+    "brent_price_last"
+  ],
+  "0.5": [
+    "y_last",
+    "eua_high_last",
+    "eua_low_last",
+    "eua_volume_last",
+    "icap_secondary_last",
+    "brent_price_last"
+  ],
+  "0.9": [
+    "y_last",
+    "eua_high_last",
+    "eua_low_last",
+    "eua_volume_last",
+    "icap_secondary_last",
+    "brent_price_last"
+  ]
+}

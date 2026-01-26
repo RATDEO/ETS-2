@@ -6,6 +6,10 @@ This module creates the master dataset used for modeling by:
 2. Aligning all features to that calendar
 3. Creating technical features (returns, rolling stats)
 4. Handling missing data appropriately
+
+Supports two target sources:
+- EUA_FUTURES: Primary EUA futures prices (preferred)
+- ICAP_SECONDARY: ICAP secondary market prices (legacy)
 """
 
 import pandas as pd
@@ -16,6 +20,7 @@ import logging
 import json
 
 from .load_icap import load_icap_data, get_icap_target_series, create_icap_features
+from .load_eua_futures import load_eua_futures_data, get_eua_futures_target_series, create_eua_futures_features
 from .load_indices import load_carbon_indices, get_indices_combined
 from .load_auctions import load_auction_data, create_auction_features
 from .load_energy import load_energy_benchmarks, create_energy_features
@@ -78,22 +83,45 @@ def build_panel(
     config = config or {}
     
     feature_config = config.get("features", {})
+    target_config = config.get("target", {})
+    
+    # Determine target source
+    target_source = target_config.get("source", "eua_futures")  # Default to EUA futures
+    target_instrument = target_config.get("instrument", "EUA_FUTURES")
     
     logger.info("=" * 60)
     logger.info("Building panel dataset")
+    logger.info(f"Target source: {target_source} ({target_instrument})")
     logger.info("=" * 60)
     
     # =========================================================================
-    # Step 1: Load target series (ICAP secondary market)
+    # Step 1: Load target series based on configuration
     # =========================================================================
-    logger.info("\n[1/7] Loading target series (ICAP)...")
-    icap_df = load_icap_data(data_dir)
-    target_df = get_icap_target_series(icap_df)
+    if target_source == "eua_futures" or target_instrument == "EUA_FUTURES":
+        logger.info("\n[1/7] Loading target series (EUA Futures)...")
+        try:
+            eua_df = load_eua_futures_data(data_dir)
+            price_col = target_config.get("price_column", "close")
+            target_df = get_eua_futures_target_series(eua_df, price_col=price_col)
+            
+            if target_df.empty:
+                raise ValueError("No target data available from EUA Futures")
+            
+            logger.info(f"EUA Futures loaded: {len(target_df)} records")
+        except FileNotFoundError as e:
+            logger.warning(f"EUA Futures data not found: {e}")
+            logger.warning("Falling back to ICAP secondary market...")
+            target_source = "icap"
     
-    if target_df.empty:
-        raise ValueError("No target data available from ICAP")
+    if target_source == "icap" or target_instrument == "ICAP_SECONDARY":
+        logger.info("\n[1/7] Loading target series (ICAP Secondary Market)...")
+        icap_df = load_icap_data(data_dir)
+        target_df = get_icap_target_series(icap_df)
+        
+        if target_df.empty:
+            raise ValueError("No target data available from ICAP")
     
-    # Create master calendar
+    # Create master calendar from target series
     calendar = create_master_calendar(target_df)
     
     # Start panel with target
@@ -101,6 +129,37 @@ def build_panel(
     panel = panel.merge(target_df, on="date", how="left")
     panel = panel.rename(columns={"close_eur": "y"})  # Target variable
     
+    logger.info(f"Target coverage: {(~panel['y'].isna()).sum()} / {len(panel)} days")
+    
+    # Add EUA futures OHLC and volume features if using EUA futures
+    if target_source == "eua_futures" or target_instrument == "EUA_FUTURES":
+        logger.info("Adding EUA futures OHLC and volume features...")
+        try:
+            eua_features = create_eua_futures_features(eua_df, calendar, compute_returns=True, compute_range=True)
+            # Only include volume and range features (target is already added)
+            eua_feature_cols = [c for c in eua_features.columns if c != "date" and c not in ["eua_close", "eua_return"]]
+            if eua_feature_cols:
+                panel = panel.merge(eua_features[["date"] + eua_feature_cols], on="date", how="left")
+                logger.info(f"Added EUA features: {eua_feature_cols}")
+        except Exception as e:
+            logger.warning(f"Failed to add EUA features: {e}")
+        
+        # Also add ICAP secondary market as exogenous feature
+        if feature_config.get("include_icap_secondary", True):
+            logger.info("Adding ICAP secondary market as exogenous feature...")
+            try:
+                icap_df = load_icap_data(data_dir)
+                icap_target = get_icap_target_series(icap_df)
+                if not icap_target.empty:
+                    icap_target = icap_target.rename(columns={"close_eur": "icap_secondary"})
+                    panel = panel.merge(icap_target[["date", "icap_secondary"]], on="date", how="left")
+                    panel["icap_secondary"] = panel["icap_secondary"].ffill(limit=5)
+                    # Compute ICAP return
+                    panel["icap_return"] = np.log(panel["icap_secondary"] / panel["icap_secondary"].shift(1))
+                    logger.info("Added ICAP secondary market feature")
+            except Exception as e:
+                logger.warning(f"Failed to add ICAP secondary feature: {e}")
+
     # =========================================================================
     # Step 2: Load and convert FX rates
     # =========================================================================

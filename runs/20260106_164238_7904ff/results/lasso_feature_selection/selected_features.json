@@ -1,0 +1,53 @@
+{
+  "selected_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "brent_price"
+  ],
+  "total_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ],
+  "config": {
+    "enabled": true,
+    "alpha": 0.0005,
+    "min_features": 6,
+    "max_features": 11,
+    "coef_threshold": 1e-06,
+    "feature_stats": [
+      "last",
+      "change_5",
+      "change_20",
+      "std_20"
+    ],
+    "target_horizons": [
+      1,
+      5,
+      20,
+      30
+    ],
+    "mode": "aggregate",
+    "target_weights": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "drop_weakest": 2
+  }
+}

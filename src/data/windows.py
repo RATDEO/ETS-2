@@ -85,9 +85,8 @@ def make_windows(
     target = panel[config.target_col].values.astype(np.float32)
     dates = panel[config.date_col].values
     
-    # Handle NaN by forward-filling within windows (simple approach)
-    # More sophisticated handling would be per-feature
-    data = pd.DataFrame(data).ffill().bfill().values.astype(np.float32)
+    # Handle NaN by forward-filling globally (avoid backfill leakage)
+    data = pd.DataFrame(data).ffill().values.astype(np.float32)
     
     # Calculate number of valid windows
     total_len = config.seq_len + config.pred_len
@@ -109,12 +108,26 @@ def make_windows(
         # Encoder input: [i, i + seq_len)
         enc_start = i
         enc_end = i + config.seq_len
-        X_enc[i] = data[enc_start:enc_end]
+        enc_window = data[enc_start:enc_end].copy()
+        if np.isnan(enc_window).any():
+            enc_df = pd.DataFrame(enc_window).ffill()
+            if enc_df.isna().any().any():
+                col_mean = enc_df.mean(skipna=True).fillna(0.0)
+                enc_df = enc_df.fillna(col_mean)
+            enc_window = enc_df.values.astype(np.float32)
+        X_enc[i] = enc_window
         
         # Decoder input: [i + seq_len - label_len, i + seq_len + pred_len)
         dec_start = i + config.seq_len - config.label_len
         dec_end = i + config.seq_len + config.pred_len
-        X_dec[i] = data[dec_start:dec_end]
+        dec_window = data[dec_start:dec_end].copy()
+        if np.isnan(dec_window).any():
+            dec_df = pd.DataFrame(dec_window).ffill()
+            if dec_df.isna().any().any():
+                col_mean = dec_df.mean(skipna=True).fillna(0.0)
+                dec_df = dec_df.fillna(col_mean)
+            dec_window = dec_df.values.astype(np.float32)
+        X_dec[i] = dec_window
         
         # Target: [i + seq_len, i + seq_len + pred_len)
         y_start = i + config.seq_len

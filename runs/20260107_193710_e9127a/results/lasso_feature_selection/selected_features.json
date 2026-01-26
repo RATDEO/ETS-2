@@ -1,0 +1,107 @@
+{
+  "selected_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ],
+  "selected_features_by_horizon": {
+    "1": [
+      "y_return",
+      "y",
+      "icap_secondary",
+      "eua_high",
+      "eua_low",
+      "icap_return",
+      "eua_range",
+      "brent_price",
+      "eua_range_pct"
+    ],
+    "5": [
+      "y_return",
+      "icap_secondary",
+      "y",
+      "eua_high",
+      "eua_low",
+      "eua_range",
+      "icap_return",
+      "eua_range_pct"
+    ],
+    "20": [
+      "y_return",
+      "eua_high",
+      "icap_secondary",
+      "eua_low",
+      "eua_range",
+      "y",
+      "eua_range_pct",
+      "eua_volume",
+      "brent_price"
+    ],
+    "30": [
+      "y_return",
+      "icap_secondary",
+      "eua_high",
+      "y",
+      "eua_low",
+      "eua_range",
+      "brent_price",
+      "eua_range_pct"
+    ]
+  },
+  "total_features": [
+    "y_return",
+    "y",
+    "eua_high",
+    "eua_low",
+    "eua_volume",
+    "eua_range",
+    "eua_range_pct",
+    "icap_secondary",
+    "icap_return",
+    "eurusd",
+    "brent_price"
+  ],
+  "config": {
+    "enabled": true,
+    "alpha": 0.0005,
+    "alpha_by_horizon": {
+      "1": 0.001,
+      "5": 0.001,
+      "20": 0.0005,
+      "30": 0.0005
+    },
+    "max_iter": 50000,
+    "min_features": 6,
+    "max_features": 8,
+    "coef_threshold": 1e-06,
+    "feature_stats": [
+      "last",
+      "change_5",
+      "change_20",
+      "std_20"
+    ],
+    "target_horizons": [
+      1,
+      5,
+      20,
+      30
+    ],
+    "target_aggregation": "mean",
+    "mode": "per_horizon_models",
+    "target_weights": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "drop_weakest": 0
+  }
+}

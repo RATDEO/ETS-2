@@ -234,6 +234,118 @@ Your refined forecast (JSON only):"""
         return prompt
 
 
+class SentimentRefinementTemplate(PromptTemplate):
+    """TSM+LLM-COT-SENT: Refine a model forecast using news sentiment."""
+
+    def __init__(self):
+        super().__init__("TSM+LLM-COT-SENT")
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        sentiment_history: np.ndarray,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        **kwargs
+    ) -> str:
+        if len(history) > 60:
+            history = history[-60:]
+            dates = dates[-60:]
+
+        history_str = ", ".join([f"{v:.2f}" for v in history[-30:]])
+        forecast_str = ", ".join([f"{v:.2f}" for v in tsm_forecast])
+
+        sentiment_history = sentiment_history[-30:] if len(sentiment_history) > 30 else sentiment_history
+        sentiment_str = ", ".join([f"{v:.2f}" for v in sentiment_history])
+
+        prompt = f"""You are refining a quantitative EU ETS price forecast using recent news sentiment.
+
+## Historical Data (last 30 days)
+Currency: {currency}
+End date: {dates[-1]}
+Prices: [{history_str}]
+
+## News Sentiment (aligned to history)
+Values: [{sentiment_str}]
+Interpretation: +1 positive, 0 neutral, -1 negative for short-term price direction.
+
+## Model Forecast (to be refined)
+The quantitative model predicts the following {pred_len}-day path:
+[{forecast_str}]
+
+## Task
+Adjust the forecast using sentiment signals while respecting recent volatility.
+Avoid extreme revisions; sentiment should nudge, not override, the model.
+
+Provide your refined {pred_len}-day forecast as JSON.
+Return ONLY JSON with exactly {pred_len} numeric values and no code fences:
+{{"yhat": [day1_price, day2_price, ..., day{pred_len}_price]}}
+
+JSON only:"""
+
+        return prompt
+
+
+class NormDeltaRefinementTemplate(PromptTemplate):
+    """TSM+LLM-NORM-DELTA: Provide bounded deltas in normalized space."""
+
+    def __init__(self):
+        super().__init__("TSM+LLM-NORM-DELTA")
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        history_mean: Optional[float] = None,
+        history_std: Optional[float] = None,
+        max_delta: float = 0.5,
+        **kwargs
+    ) -> str:
+        """
+        Format normalized delta refinement prompt.
+        """
+        if len(history) > 60:
+            history = history[-60:]
+            dates = dates[-60:]
+
+        history_str = ", ".join([f"{v:.3f}" for v in history[-30:]])
+        forecast_str = ", ".join([f"{v:.3f}" for v in tsm_forecast])
+
+        mean_str = f"{history_mean:.3f}" if history_mean is not None else "N/A"
+        std_str = f"{history_std:.3f}" if history_std is not None else "N/A"
+
+        prompt = f"""You are refining a model forecast in normalized (z-score) space.
+
+## Normalization
+Prices were normalized using history mean={mean_str} and std={std_str}.
+All values below are in normalized units (z-scores).
+
+## Normalized History (last 30 days)
+End date: {dates[-1]}
+History_z: [{history_str}]
+
+## Normalized Model Forecast (to be adjusted)
+Forecast_z ({pred_len}d): [{forecast_str}]
+
+## Task
+Provide a small additive adjustment delta_z for each day.
+- Each delta_z is in normalized units and will be added to the forecast_z.
+- Keep |delta_z| <= {max_delta:.2f} for every day.
+- Favor small early-horizon adjustments unless clearly justified.
+
+Return ONLY JSON with exactly {pred_len} values:
+{{"delta_z": [d1, d2, ..., d{pred_len}]}}
+
+JSON only:"""
+
+        return prompt
+
+
 class CoTRefinementTemplate(PromptTemplate):
     """Chain-of-thought with self-refinement."""
     
@@ -280,13 +392,109 @@ Refined forecast (JSON only):"""
         return prompt
 
 
+class CoTRFReflectionTemplate(PromptTemplate):
+    """Chain-of-thought reflection to derive correction rules."""
+
+    def __init__(self):
+        super().__init__("CoT-RF-REFLECT")
+
+    def format(
+        self,
+        examples: List[Dict],
+        pred_len: int = 30,
+        currency: str = "EUR",
+        **kwargs
+    ) -> str:
+        if not examples:
+            return "No teaching examples available."
+
+        blocks = []
+        for idx, ex in enumerate(examples, start=1):
+            history = ex.get("history", [])
+            forecast = ex.get("forecast", [])
+            truth = ex.get("truth", [])
+            history_str = ", ".join([f"{v:.2f}" for v in history[-30:]])
+            forecast_str = ", ".join([f"{v:.2f}" for v in forecast])
+            truth_str = ", ".join([f"{v:.2f}" for v in truth])
+            ex_date = ex.get("date", "")
+
+            blocks.append(
+                f"""Example {idx} (date={ex_date})
+History (last 30 days): [{history_str}]
+Model forecast ({pred_len}d): [{forecast_str}]
+True outcome ({pred_len}d): [{truth_str}]"""
+            )
+
+        examples_text = "\n\n".join(blocks)
+
+        prompt = f"""You are analyzing past forecast errors to derive correction rules.
+
+## Teaching Examples
+{examples_text}
+
+## Task
+Identify systematic deviations between the model forecasts and the true outcomes.
+Output a short set of correction rules/heuristics (free text, concise).
+Focus on bias, lag, overshoot after spikes, mean reversion, or horizon-specific errors.
+
+Rules:"""
+
+        return prompt
+
+
+class CoTRFApplyTemplate(PromptTemplate):
+    """Apply reflection rules to refine a TSM forecast."""
+
+    def __init__(self):
+        super().__init__("CoT-RF-APPLY")
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        rules_text: str,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        **kwargs
+    ) -> str:
+        history_str = ", ".join([f"{v:.2f}" for v in history[-30:]])
+        forecast_str = ", ".join([f"{v:.2f}" for v in tsm_forecast])
+        rules_text = rules_text.strip() if rules_text else ""
+
+        prompt = f"""Refine the model forecast using the provided rules.
+
+## Context
+Current price: {history[-1]:.2f} {currency}
+Recent prices: [{history_str}]
+
+## Model Forecast (to be refined)
+[{forecast_str}]
+
+## Correction Rules
+{rules_text}
+
+## Task
+Apply the rules to adjust the forecast.
+Provide your refined {pred_len}-day forecast as JSON:
+{{"yhat": [day1_price, day2_price, ..., day{pred_len}_price]}}
+
+Refined forecast (JSON only):"""
+
+        return prompt
+
+
 def get_template(method: str) -> PromptTemplate:
     """Get prompt template by method name."""
     templates = {
         "DP": DirectPromptTemplate(),
         "CoT": ChainOfThoughtTemplate(),
         "TSM+LLM": RefinementTemplate(),
+        "TSM+LLM-NORM-DELTA": NormDeltaRefinementTemplate(),
+        "TSM+LLM-COT-SENT": SentimentRefinementTemplate(),
         "CoT-RF": CoTRefinementTemplate(),
+        "CoT-RF-REFLECT": CoTRFReflectionTemplate(),
+        "CoT-RF-APPLY": CoTRFApplyTemplate(),
     }
     
     if method not in templates:
