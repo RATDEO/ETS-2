@@ -109,7 +109,7 @@ class LLMRefiner:
         self.config = config
         
         self.provider = config.get("provider", "openai")
-        self.model = config.get("model", "gpt-4-turbo-preview")
+        self.model = config.get("model", "gpt-5.2")
         self.temperature = config.get("temperature", 0.1)
         self.max_tokens = config.get("max_tokens", 1000)
         self.max_retries = config.get("max_retries", 3)
@@ -175,15 +175,19 @@ class LLMRefiner:
         client = self._get_client()
         
         if self.provider == "openai":
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
+            request = {
+                "model": self.model,
+                "messages": [
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=self.temperature,
-                max_tokens=self.max_tokens
-            )
+                "temperature": self.temperature
+            }
+            if self.model.startswith("gpt-5"):
+                request["max_completion_tokens"] = self.max_tokens
+            else:
+                request["max_tokens"] = self.max_tokens
+            response = client.chat.completions.create(**request)
             content = response.choices[0].message.content
         
         elif self.provider == "anthropic":

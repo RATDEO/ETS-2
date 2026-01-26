@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 import logging
+import numpy as np
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -37,6 +38,12 @@ from paper import PaperWriter
 from utils import setup_logging, set_seed
 
 logger = logging.getLogger(__name__)
+
+
+def returns_to_prices(returns: np.ndarray, last_price: np.ndarray) -> np.ndarray:
+    """Convert log returns to price paths."""
+    last_price = np.asarray(last_price).reshape(-1, 1)
+    return last_price * np.exp(np.cumsum(returns, axis=1))
 
 
 def run_experiment(config_path: str = None, overrides: dict = None):
@@ -101,16 +108,27 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     logger.info("STEP 3: Creating windows and splitting data")
     logger.info("=" * 70)
     
-    # Get feature columns (exclude date and target)
-    feature_cols = [c for c in panel.columns if c not in ['date', 'y']]
+    target_mode = config.target.get("mode", "price")
+    target_col = "y_return" if target_mode == "returns" else "y"
+    
+    feature_candidates = [c for c in panel.columns if c not in ["date", target_col]]
+    if "y" in feature_candidates:
+        feature_candidates.remove("y")
+        feature_candidates = ["y"] + feature_candidates
+    
+    feature_cols = [target_col] + feature_candidates[:10]
     
     window_config = WindowConfig(
         seq_len=config.seq_len,
         label_len=config.label_len,
         pred_len=config.pred_len,
-        target_col='y',
-        feature_cols=['y'] + feature_cols[:10]  # Limit features for now
+        target_col=target_col,
+        feature_cols=feature_cols
     )
+    
+    price_idx = feature_cols.index("y") if "y" in feature_cols else None
+    if target_mode == "returns" and price_idx is None:
+        raise ValueError("Returns target requires price feature 'y' in window features.")
     
     X_enc, X_dec, y, dates = make_windows(panel, window_config, mode='MS')
     
@@ -135,13 +153,22 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     logger.info("STEP 4: Training and evaluating baselines")
     logger.info("=" * 70)
     
-    # Extract target only for baselines
-    y_train_hist = splits['train']['X_enc'][:, :, 0]  # Target is first feature
-    y_test_hist = splits['test']['X_enc'][:, :, 0]
-    y_test_future = splits['test']['y']
+    target_is_returns = target_mode == "returns"
     
-    # Get base price (last known price for each sample)
-    y_test_base = y_test_hist[:, -1]
+    if target_is_returns:
+        y_train_hist = splits['train']['X_enc'][:, :, price_idx]
+        y_test_hist = splits['test']['X_enc'][:, :, price_idx]
+        y_test_base = y_test_hist[:, -1]
+        y_test_future_returns = splits['test']['y']
+        y_test_future = returns_to_prices(y_test_future_returns, y_test_base)
+    else:
+        y_train_hist = splits['train']['X_enc'][:, :, 0]  # Target is first feature
+        y_test_hist = splits['test']['X_enc'][:, :, 0]
+        y_test_future = splits['test']['y']
+        # Get base price (last known price for each sample)
+        y_test_base = y_test_hist[:, -1]
+    
+    llm_histories = y_test_hist
     
     # Evaluate baselines
     baseline_results = {}
@@ -186,7 +213,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     logger.info("STEP 5: TSM model training")
     logger.info("=" * 70)
     
-    tsm_pred = None
+    tsm_pred_eval = None
     
     try:
         import torch
@@ -239,11 +266,16 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         # Inverse transform
         tsm_pred = scaler.inverse_transform_target(tsm_pred_scaled)
         
+        if target_is_returns:
+            tsm_pred_eval = returns_to_prices(tsm_pred, y_test_base)
+        else:
+            tsm_pred_eval = tsm_pred
+        
         # Evaluate
         baseline_results['tsm'] = {
-            'predictions': tsm_pred,
-            'metrics': compute_metrics_by_horizon(y_test_future, tsm_pred, horizons),
-            'errors': get_per_sample_errors(y_test_future, tsm_pred, horizons)
+            'predictions': tsm_pred_eval,
+            'metrics': compute_metrics_by_horizon(y_test_future, tsm_pred_eval, horizons),
+            'errors': get_per_sample_errors(y_test_future, tsm_pred_eval, horizons)
         }
         
         logger.info("\nTSM Results:")
@@ -256,7 +288,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         })
         for h in range(config.pred_len):
             pred_df[f'y_true_t_plus_{h+1}'] = y_test_future[:, h]
-            pred_df[f'yhat_t_plus_{h+1}'] = tsm_pred[:, h]
+            pred_df[f'yhat_t_plus_{h+1}'] = tsm_pred_eval[:, h]
         
         pred_df.to_parquet(run_dir / "predictions" / "tsm_pred_test.parquet")
         
@@ -282,6 +314,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             logger.warning("OPENAI_API_KEY not set - skipping LLM refinement")
         else:
             from llm import LLMRefiner
+            import pandas as pd
             
             refiner = LLMRefiner(
                 config.llm,
@@ -289,21 +322,32 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 log_dir=run_dir / "llm" / "logs"
             )
             
-            # Prepare data
-            test_dates = [list(map(str, d)) for d in splits['test']['dates']]
+            # Prepare date arrays aligned to history windows
+            panel_dates = pd.to_datetime(panel["date"]).to_numpy()
+            date_to_idx = {pd.Timestamp(d): i for i, d in enumerate(panel_dates)}
+            test_dates = []
+            for pred_date in splits["test"]["dates"]:
+                pred_date = pd.Timestamp(pred_date)
+                idx = date_to_idx.get(pred_date)
+                if idx is None:
+                    history_dates = panel_dates[:config.seq_len]
+                else:
+                    start_idx = max(0, idx - config.seq_len)
+                    history_dates = panel_dates[start_idx:idx]
+                test_dates.append([str(d) for d in history_dates])
             
             # Run each method (limit samples for cost control)
-            max_samples = min(50, len(y_test_hist))
+            max_samples = min(config.llm.get("max_samples", 50), len(llm_histories))
             
             for method in config.llm.get('methods', ['TSM+LLM']):
                 logger.info(f"Running method: {method}")
                 
-                tsm_forecast = tsm_pred[:max_samples] if tsm_pred is not None else None
+                tsm_forecast = tsm_pred_eval[:max_samples] if tsm_pred_eval is not None else None
                 
                 try:
                     predictions, metadata = refiner.refine_batch(
                         method=method,
-                        histories=y_test_hist[:max_samples],
+                        histories=llm_histories[:max_samples],
                         date_arrays=test_dates[:max_samples],
                         tsm_forecasts=tsm_forecast,
                         pred_len=config.pred_len
@@ -350,10 +394,57 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         logger.info("\nSignificance test results saved")
     
     # =========================================================================
-    # Step 8: Trend classification
+    # Step 8: Robustness suite
     # =========================================================================
     logger.info("\n" + "=" * 70)
-    logger.info("STEP 8: Trend classification accuracy")
+    logger.info("STEP 8: Robustness suite")
+    logger.info("=" * 70)
+
+    noise_results = None
+
+    try:
+        noise_levels = config.robustness.get("noise_levels", [])
+        if noise_levels:
+            from llm.refine import add_noise_to_forecast
+            import pandas as pd
+
+            noise_rows = []
+            candidate_models = {}
+
+            if baseline_results.get("tsm") and baseline_results["tsm"].get("predictions") is not None:
+                candidate_models["tsm"] = baseline_results["tsm"]["predictions"]
+
+            for name, result in llm_results.items():
+                if result.get("predictions") is not None:
+                    candidate_models[name] = result["predictions"]
+
+            for name, preds in candidate_models.items():
+                y_true = y_test_future[:len(preds)]
+                for level in noise_levels:
+                    noisy_pred = add_noise_to_forecast(preds, level, seed=config.seed)
+                    metrics = compute_metrics_by_horizon(y_true, noisy_pred, horizons)
+                    metrics = metrics.reset_index()
+                    metrics["noise_level"] = level
+                    metrics["model"] = name
+                    noise_rows.append(metrics)
+
+            if noise_rows:
+                noise_results = pd.concat(noise_rows, ignore_index=True)
+                noise_results.to_csv(
+                    run_dir / "results" / "robustness" / "noise_injection.csv",
+                    index=False
+                )
+                logger.info("Robustness noise injection results saved")
+        else:
+            logger.info("No noise levels configured; skipping robustness suite")
+    except Exception as e:
+        logger.warning(f"Robustness suite failed: {e}")
+
+    # =========================================================================
+    # Step 9: Trend classification
+    # =========================================================================
+    logger.info("\n" + "=" * 70)
+    logger.info("STEP 9: Trend classification accuracy")
     logger.info("=" * 70)
     
     trend_results = {}
@@ -377,13 +468,19 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         logger.info(trend_acc[['accuracy']])
     
     # =========================================================================
-    # Step 9: Generate paper
+    # Step 10: Generate paper
     # =========================================================================
-    logger.info("\n" + "=" * 70)
-    logger.info("STEP 9: Generating paper")
-    logger.info("=" * 70)
-    
-    writer = PaperWriter(run_dir / "paper_snapshot")
+    if config.output.get("generate_paper", True):
+        logger.info("\n" + "=" * 70)
+        logger.info("STEP 10: Generating paper")
+        logger.info("=" * 70)
+    else:
+        logger.info("Paper generation disabled by config")
+        logger.info("\n" + "=" * 70)
+        logger.info("EXPERIMENT COMPLETE")
+        logger.info("=" * 70)
+        logger.info(f"Results saved to: {run_dir}")
+        return run_dir
     
     # Collect metrics for paper
     import pandas as pd
@@ -407,16 +504,24 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             trend_dfs.append(df.reset_index())
         trend_df = pd.concat(trend_dfs, ignore_index=True)
     
-    writer.write_all_sections(
-        panel_schema=schema,
-        config=config.raw,
-        metrics_by_horizon=metrics_df,
-        trend_accuracy=trend_df,
-        significance_tests=significance_df if 'significance_df' in dir() else None
-    )
-    
-    paper_path = writer.save()
-    logger.info(f"Paper saved to: {paper_path}")
+    def _build_paper(output_dir: Path) -> Path:
+        writer = PaperWriter(output_dir)
+        writer.write_all_sections(
+            panel_schema=schema,
+            config=config.raw,
+            metrics_by_horizon=metrics_df,
+            trend_accuracy=trend_df,
+            significance_tests=significance_df if 'significance_df' in dir() else None,
+            noise_results=noise_results
+        )
+        return writer.save()
+
+    paper_snapshot_path = _build_paper(run_dir / "paper_snapshot")
+    logger.info(f"Paper snapshot saved to: {paper_snapshot_path}")
+
+    paper_root = Path(__file__).parent.parent / config.output.get("paper_dir", "paper")
+    paper_root_path = _build_paper(paper_root)
+    logger.info(f"Paper saved to: {paper_root_path}")
     
     # =========================================================================
     # Complete

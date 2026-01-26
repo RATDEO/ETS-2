@@ -128,7 +128,7 @@ class Config:
     
     @property
     def llm_model(self) -> str:
-        return self.llm.get("model", "gpt-4-turbo-preview")
+        return self.llm.get("model", "gpt-5.2")
     
     def get_device(self) -> str:
         """Determine compute device."""

@@ -2,8 +2,8 @@
 Time Series Model (TSM) implementation.
 
 Implements Autoformer-style architecture for 30-step daily forecasting.
-This is a simplified implementation that can be replaced with the full
-THUML Autoformer or pytorch-forecasting models.
+Also includes DLinear as a simpler alternative that often outperforms
+complex transformer models on time series benchmarks.
 """
 
 import numpy as np
@@ -26,6 +26,111 @@ logger = logging.getLogger(__name__)
 
 
 if TORCH_AVAILABLE:
+    
+    class DLinear(nn.Module):
+        """
+        DLinear: A simple yet effective baseline for time series forecasting.
+        
+        Paper: "Are Transformers Effective for Time Series Forecasting?"
+        Often outperforms complex transformer models with fewer parameters.
+        """
+        
+        def __init__(
+            self,
+            seq_len: int,
+            pred_len: int,
+            enc_in: int,
+            individual: bool = True,
+            kernel_size: int = 25
+        ):
+            super().__init__()
+            self.seq_len = seq_len
+            self.pred_len = pred_len
+            self.individual = individual
+            self.channels = enc_in
+            
+            # Moving average for decomposition
+            self.kernel_size = kernel_size
+            padding = (kernel_size - 1) // 2
+            self.avg = nn.AvgPool1d(kernel_size=kernel_size, stride=1, padding=padding)
+            
+            if individual:
+                # Separate linear layers per channel
+                self.Linear_Trend = nn.ModuleList([
+                    nn.Linear(seq_len, pred_len) for _ in range(enc_in)
+                ])
+                self.Linear_Seasonal = nn.ModuleList([
+                    nn.Linear(seq_len, pred_len) for _ in range(enc_in)
+                ])
+            else:
+                # Shared linear layers
+                self.Linear_Trend = nn.Linear(seq_len, pred_len)
+                self.Linear_Seasonal = nn.Linear(seq_len, pred_len)
+        
+        def forward(self, x_enc, x_dec=None):
+            """
+            Forward pass.
+            
+            Args:
+                x_enc: (batch, seq_len, channels)
+                x_dec: ignored (for API compatibility)
+                
+            Returns:
+                (batch, pred_len, 1) - only target channel
+            """
+            # Decompose: trend and seasonal
+            x = x_enc.permute(0, 2, 1)  # (batch, channels, seq_len)
+            trend = self.avg(x)
+            trend = trend.permute(0, 2, 1)  # (batch, seq_len, channels)
+            seasonal = x_enc - trend
+            
+            if self.individual:
+                trend_out = torch.zeros(
+                    x_enc.shape[0], self.pred_len, self.channels, 
+                    device=x_enc.device
+                )
+                seasonal_out = torch.zeros_like(trend_out)
+                
+                for i in range(self.channels):
+                    trend_out[:, :, i] = self.Linear_Trend[i](trend[:, :, i])
+                    seasonal_out[:, :, i] = self.Linear_Seasonal[i](seasonal[:, :, i])
+            else:
+                trend_out = self.Linear_Trend(trend.permute(0, 2, 1)).permute(0, 2, 1)
+                seasonal_out = self.Linear_Seasonal(seasonal.permute(0, 2, 1)).permute(0, 2, 1)
+            
+            output = trend_out + seasonal_out
+            
+            # Return only target channel (first channel)
+            return output[:, :, :1]
+    
+    
+    class ResidualWrapper(nn.Module):
+        """
+        Wrapper that adds residual connection to naive persistence.
+        
+        Ensures model can at worst match naive baseline.
+        """
+        
+        def __init__(self, base_model: nn.Module, pred_len: int, alpha_init: float = 0.1):
+            super().__init__()
+            self.base_model = base_model
+            self.pred_len = pred_len
+            # Learnable blending weight (starts conservative)
+            self.alpha = nn.Parameter(torch.tensor(alpha_init))
+        
+        def forward(self, x_enc, x_dec):
+            # Naive prediction: repeat last known value
+            last_value = x_enc[:, -1:, 0:1]  # (batch, 1, 1)
+            naive_pred = last_value.expand(-1, self.pred_len, -1)  # (batch, pred_len, 1)
+            
+            # Model residual prediction
+            residual = self.base_model(x_enc, x_dec)
+            
+            # Blend with constrained alpha (sigmoid to keep in [0, 1])
+            blend = torch.sigmoid(self.alpha)
+            
+            return naive_pred + blend * residual
+    
     
     class MovingAvg(nn.Module):
         """Moving average block for trend extraction."""
@@ -251,24 +356,56 @@ if TORCH_AVAILABLE:
             self.scheduler = None
             self.best_val_loss = float("inf")
         
-        def _build_model(self) -> SimpleAutoformer:
+        def _build_model(self) -> nn.Module:
             """Build the model from config."""
             model_config = self.config.get("model", {})
             ts_config = self.config.get("time_series", {})
             
-            return SimpleAutoformer(
-                enc_in=model_config.get("enc_in", 10),
-                dec_in=model_config.get("dec_in", 10),
-                c_out=1,
-                seq_len=ts_config.get("seq_len", 120),
-                label_len=ts_config.get("label_len", 30),
-                pred_len=ts_config.get("pred_len", 30),
-                d_model=model_config.get("d_model", 512),
-                n_heads=model_config.get("n_heads", 8),
-                e_layers=model_config.get("e_layers", 2),
-                d_ff=model_config.get("d_ff", 2048),
-                dropout=model_config.get("dropout", 0.05)
-            )
+            tsm_type = model_config.get("tsm_type", "autoformer").lower()
+            seq_len = ts_config.get("seq_len", 120)
+            pred_len = ts_config.get("pred_len", 30)
+            enc_in = model_config.get("enc_in", 10)
+            use_residual = model_config.get("use_residual_wrapper", False)
+            
+            logger.info(f"Building TSM model: type={tsm_type}, seq_len={seq_len}, pred_len={pred_len}")
+            
+            if tsm_type == "dlinear":
+                # Simple but effective linear model
+                base_model = DLinear(
+                    seq_len=seq_len,
+                    pred_len=pred_len,
+                    enc_in=enc_in,
+                    individual=model_config.get("dlinear_individual", True),
+                    kernel_size=model_config.get("kernel_size", 25)
+                )
+                logger.info(f"Built DLinear model with {sum(p.numel() for p in base_model.parameters())} parameters")
+                
+            else:  # autoformer or default
+                base_model = SimpleAutoformer(
+                    enc_in=enc_in,
+                    dec_in=model_config.get("dec_in", enc_in),
+                    c_out=1,
+                    seq_len=seq_len,
+                    label_len=ts_config.get("label_len", 30),
+                    pred_len=pred_len,
+                    d_model=model_config.get("d_model", 512),
+                    n_heads=model_config.get("n_heads", 8),
+                    e_layers=model_config.get("e_layers", 2),
+                    d_ff=model_config.get("d_ff", 2048),
+                    dropout=model_config.get("dropout", 0.05)
+                )
+                logger.info(f"Built Autoformer model with {sum(p.numel() for p in base_model.parameters())} parameters")
+            
+            # Optionally wrap with residual connection to naive baseline
+            if use_residual:
+                base_model = ResidualWrapper(
+                    base_model, 
+                    pred_len=pred_len,
+                    alpha_init=model_config.get("residual_alpha", 0.1)
+                )
+                logger.info("Wrapped model with residual connection to naive baseline")
+            
+            return base_model
         
         def fit(
             self,
@@ -293,12 +430,22 @@ if TORCH_AVAILABLE:
             """
             model_config = self.config.get("model", {})
             lr = model_config.get("learning_rate", 0.0001)
+            weight_decay = model_config.get("weight_decay", 0.0)
+            grad_clip = model_config.get("grad_clip", 1.0)
             
-            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
-            self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, mode="min", factor=0.5, patience=5
+            # Use AdamW for proper weight decay (L2 regularization)
+            self.optimizer = torch.optim.AdamW(
+                self.model.parameters(), 
+                lr=lr,
+                weight_decay=weight_decay
             )
             
+            # Cosine annealing with warm restarts
+            self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+                self.optimizer, T_0=10, T_mult=2, eta_min=lr * 0.01
+            )
+            
+            self.grad_clip = grad_clip
             criterion = nn.MSELoss()
             
             history = {"train_loss": [], "val_loss": []}
@@ -320,8 +467,9 @@ if TORCH_AVAILABLE:
                     loss = criterion(output.squeeze(-1), y)
                     
                     loss.backward()
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
                     self.optimizer.step()
+                    self.scheduler.step()
                     
                     train_losses.append(loss.item())
                 

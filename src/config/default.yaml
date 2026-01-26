@@ -85,7 +85,7 @@ model:
 # LLM Configuration
 llm:
   provider: "openai"  # openai, anthropic
-  model: "gpt-4-turbo-preview"  # gpt-4-turbo-preview, gpt-4, claude-3-opus
+  model: "gpt-5.2"  # gpt-5.2, gpt-4-turbo-preview, gpt-4, claude-3-opus
   temperature: 0.1  # Low temperature for determinism
   max_tokens: 1000
   
@@ -99,6 +99,7 @@ llm:
   # Cost control
   max_retries: 3
   cache_enabled: true
+  max_samples: 10
 
 # Evaluation Configuration
 evaluation:

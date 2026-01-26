@@ -1,0 +1,305 @@
+2026-01-03 19:24:37 | INFO     | __main__ | Run ID: 20260103_192437_6829fd
+2026-01-03 19:24:37 | INFO     | __main__ | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd
+2026-01-03 19:24:37 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:24:37 | INFO     | __main__ | STEP 2: Building data panel
+2026-01-03 19:24:37 | INFO     | __main__ | ======================================================================
+2026-01-03 19:24:37 | INFO     | data.panel | ============================================================
+2026-01-03 19:24:37 | INFO     | data.panel | Building panel dataset
+2026-01-03 19:24:37 | INFO     | data.panel | ============================================================
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[1/7] Loading target series (ICAP)...
+2026-01-03 19:24:37 | INFO     | data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_icap | Loaded ICAP file: 1503 records from 2019-01-07 00:00:00 to 2025-09-30 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_icap | Combined ICAP data: 4984 records from 2005-03-09 00:00:00 to 2025-09-30 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_icap | ICAP target series: 2866 daily prices
+2026-01-03 19:24:37 | INFO     | data.panel | Master calendar: 2866 days from 2010-01-05 00:00:00 to 2025-09-30 00:00:00
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-01-03 19:24:37 | INFO     | data.fx | Loaded EUR/USD FX rates: 6910 observations from 1999-01-04 00:00:00 to 2025-12-24 00:00:00
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-01-03 19:24:37 | WARNING  | data.load_energy | Brent: Dropped 2 rows with invalid dates
+2026-01-03 19:24:37 | INFO     | data.load_energy | Loaded Brent crude: 9774 records from 1987-05-20 00:00:00 to 2025-11-24 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_energy | Loaded Rotterdam coal: 4967 records from 2006-07-18 00:00:00 to 2025-11-27 00:00:00
+2026-01-03 19:24:37 | WARNING  | data.fx | FX conversion: 30.2% of rows still missing FX rate after forward-fill
+2026-01-03 19:24:37 | INFO     | data.fx | Converted 6823 prices from USD to EUR
+2026-01-03 19:24:37 | INFO     | data.fx | Converted 4967 prices from USD to EUR
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-01-03 19:24:37 | INFO     | data.load_indices | Loaded KEUA: 1042 records from 2021-10-05 00:00:00 to 2025-11-26 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_indices | Loaded KRBN: 1339 records from 2020-07-31 00:00:00 to 2025-11-26 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_indices | Loaded GRN: 1558 records from 2019-09-18 00:00:00 to 2025-11-26 00:00:00
+2026-01-03 19:24:37 | INFO     | data.load_indices | Loaded 3 carbon market indices
+2026-01-03 19:24:37 | INFO     | data.fx | Converted 1042 prices from USD to EUR
+2026-01-03 19:24:37 | INFO     | data.fx | Converted 1339 prices from USD to EUR
+2026-01-03 19:24:37 | INFO     | data.fx | Converted 1558 prices from USD to EUR
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-01-03 19:24:37 | INFO     | data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-01-03 19:24:37 | INFO     | data.load_vstoxx | Loaded VSTOXX: 6851 records from 1999-01-04 00:00:00 to 2025-11-26 00:00:00
+2026-01-03 19:24:37 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-01-03 19:24:37 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd/data
+2026-01-03 19:24:37 | INFO     | data.panel | ============================================================
+2026-01-03 19:24:37 | INFO     | data.panel | Panel built: 2866 rows, 33 columns
+2026-01-03 19:24:37 | INFO     | data.panel | Target coverage: 100.0%
+2026-01-03 19:24:37 | INFO     | data.panel | ============================================================
+2026-01-03 19:24:37 | WARNING  | data.panel | matplotlib/seaborn not available for coverage plot
+2026-01-03 19:24:37 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:24:37 | INFO     | __main__ | STEP 3: Creating windows and splitting data
+2026-01-03 19:24:37 | INFO     | __main__ | ======================================================================
+2026-01-03 19:24:37 | INFO     | data.windows | Creating windows with 11 features, mode=MS
+2026-01-03 19:24:37 | INFO     | data.windows | Creating 2777 windows
+2026-01-03 19:24:37 | INFO     | data.windows | Window shapes: X_enc=(2777, 60, 11), X_dec=(2777, 45, 11), y=(2777, 30)
+2026-01-03 19:24:37 | INFO     | data.windows | train: 2188 windows
+2026-01-03 19:24:37 | INFO     | data.windows | val: 227 windows
+2026-01-03 19:24:37 | INFO     | data.windows | test: 362 windows
+2026-01-03 19:24:37 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd/data/datasets
+2026-01-03 19:24:37 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:24:37 | INFO     | __main__ | STEP 4: Training and evaluating baselines
+2026-01-03 19:24:37 | INFO     | __main__ | ======================================================================
+2026-01-03 19:24:37 | INFO     | __main__ | 
+Baseline Results (MSE by horizon):
+2026-01-03 19:24:37 | INFO     | __main__ | 
+naive_persistence:
+2026-01-03 19:24:37 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         4.281771  2.069244  1.443702  2.153483
+5        10.254531  3.202270  2.462100  3.710416
+20       36.828121  6.068618  4.850884  7.203065
+30       49.543682  7.038727  5.680552  8.323922
+2026-01-03 19:24:37 | INFO     | __main__ | 
+seasonal_naive:
+2026-01-03 19:24:37 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1        10.571004  3.251308  2.497541  3.760776
+5        10.254530  3.202270  2.462099  3.710416
+20       36.828119  6.068618  4.850884  7.203065
+30       49.543685  7.038728  5.680552  8.323922
+2026-01-03 19:24:37 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:24:37 | INFO     | __main__ | STEP 5: TSM model training
+2026-01-03 19:24:37 | INFO     | __main__ | ======================================================================
+2026-01-03 19:24:37 | INFO     | models.tsm | Building TSM model: type=dlinear, seq_len=60, pred_len=30
+2026-01-03 19:24:37 | INFO     | models.tsm | Built DLinear model with 40260 parameters
+2026-01-03 19:24:39 | INFO     | models.tsm | Epoch 1/50 - Train: 1.276636, Val: 1.080118
+2026-01-03 19:24:39 | INFO     | models.tsm | Epoch 2/50 - Train: 1.189882, Val: 1.022852
+2026-01-03 19:24:40 | INFO     | models.tsm | Epoch 3/50 - Train: 1.132348, Val: 0.981069
+2026-01-03 19:24:41 | INFO     | models.tsm | Epoch 4/50 - Train: 1.085154, Val: 0.954798
+2026-01-03 19:24:41 | INFO     | models.tsm | Epoch 5/50 - Train: 1.057608, Val: 0.935539
+2026-01-03 19:24:42 | INFO     | models.tsm | Epoch 6/50 - Train: 1.034401, Val: 0.922710
+2026-01-03 19:24:43 | INFO     | models.tsm | Epoch 7/50 - Train: 1.022756, Val: 0.913923
+2026-01-03 19:24:44 | INFO     | models.tsm | Epoch 8/50 - Train: 1.014723, Val: 0.909102
+2026-01-03 19:24:44 | INFO     | models.tsm | Epoch 9/50 - Train: 0.998071, Val: 0.905526
+2026-01-03 19:24:45 | INFO     | models.tsm | Epoch 10/50 - Train: 0.989731, Val: 0.903476
+2026-01-03 19:24:46 | INFO     | models.tsm | Epoch 11/50 - Train: 0.984429, Val: 0.903174
+2026-01-03 19:24:46 | INFO     | models.tsm | Epoch 12/50 - Train: 0.983528, Val: 0.902957
+2026-01-03 19:24:47 | INFO     | models.tsm | Epoch 13/50 - Train: 0.978048, Val: 0.903193
+2026-01-03 19:24:48 | INFO     | models.tsm | Epoch 14/50 - Train: 0.978001, Val: 0.903192
+2026-01-03 19:24:48 | INFO     | models.tsm | Epoch 15/50 - Train: 0.976412, Val: 0.903307
+2026-01-03 19:24:49 | INFO     | models.tsm | Epoch 16/50 - Train: 0.979350, Val: 0.903582
+2026-01-03 19:24:50 | INFO     | models.tsm | Epoch 17/50 - Train: 0.974293, Val: 0.904665
+2026-01-03 19:24:50 | INFO     | models.tsm | Epoch 18/50 - Train: 0.973022, Val: 0.904668
+2026-01-03 19:24:51 | INFO     | models.tsm | Epoch 19/50 - Train: 0.974302, Val: 0.905738
+2026-01-03 19:24:52 | INFO     | models.tsm | Epoch 20/50 - Train: 0.974697, Val: 0.906286
+2026-01-03 19:24:53 | INFO     | models.tsm | Epoch 21/50 - Train: 0.974777, Val: 0.906467
+2026-01-03 19:24:53 | INFO     | models.tsm | Epoch 22/50 - Train: 0.972642, Val: 0.906202
+2026-01-03 19:24:54 | INFO     | models.tsm | Epoch 23/50 - Train: 0.969667, Val: 0.905759
+2026-01-03 19:24:55 | INFO     | models.tsm | Epoch 24/50 - Train: 0.972362, Val: 0.907322
+2026-01-03 19:24:55 | INFO     | models.tsm | Epoch 25/50 - Train: 0.972351, Val: 0.907738
+2026-01-03 19:24:56 | INFO     | models.tsm | Epoch 26/50 - Train: 0.980352, Val: 0.909033
+2026-01-03 19:24:57 | INFO     | models.tsm | Epoch 27/50 - Train: 0.972327, Val: 0.907876
+2026-01-03 19:24:57 | INFO     | models.tsm | Early stopping at epoch 27
+2026-01-03 19:24:57 | INFO     | __main__ | 
+TSM Results:
+2026-01-03 19:24:57 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         4.032126  2.008015  1.429053  2.136855
+5        10.376886  3.221318  2.504499  3.781815
+20       37.016136  6.084089  4.736598  7.089127
+30       50.697536  7.120220  5.645159  8.372046
+2026-01-03 19:24:57 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:24:57 | INFO     | __main__ | STEP 6: LLM refinement
+2026-01-03 19:24:57 | INFO     | __main__ | ======================================================================
+2026-01-03 19:24:57 | INFO     | __main__ | Running method: DP
+2026-01-03 19:25:05 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:10 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:16 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:22 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:28 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:34 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:39 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:45 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:52 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:55 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:25:55 | INFO     | llm.refine | Processed 10/10 samples
+2026-01-03 19:25:55 | INFO     | __main__ | 
+DP Results:
+2026-01-03 19:25:55 | INFO     | __main__ |                 mse       rmse        mae       mape
+horizon                                             
+1         19.693136   4.437695   3.224999   4.745300
+5         33.480524   5.786236   3.525999   5.719690
+20       118.716101  10.895692   9.233000  16.753716
+30       178.401542  13.356704  10.907000  20.344359
+2026-01-03 19:25:55 | INFO     | __main__ | Running method: CoT
+2026-01-03 19:26:09 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:26:20 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:26:34 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:26:50 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:27:05 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:27:19 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:27:33 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:27:49 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:02 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:14 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:14 | INFO     | llm.refine | Processed 10/10 samples
+2026-01-03 19:28:14 | INFO     | __main__ | 
+CoT Results:
+2026-01-03 19:28:14 | INFO     | __main__ |                 mse       rmse        mae       mape
+horizon                                             
+1         20.123307   4.485901   3.279999   4.834109
+5         35.410085   5.950637   3.687999   5.984406
+20       166.887330  12.918488  12.072000  21.992921
+30       225.078341  15.002611  13.207001  24.433492
+2026-01-03 19:28:14 | INFO     | __main__ | Running method: CoT-RF
+2026-01-03 19:28:19 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:25 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:30 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:36 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:41 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:46 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:52 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:28:57 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:02 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:07 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:07 | INFO     | llm.refine | Processed 10/10 samples
+2026-01-03 19:29:07 | INFO     | __main__ | 
+CoT-RF Results:
+2026-01-03 19:29:07 | INFO     | __main__ |                 mse       rmse        mae       mape
+horizon                                             
+1         18.882358   4.345384   3.214999   4.742580
+5         34.079547   5.837769   3.811999   6.181475
+20       148.692204  12.193941  11.789000  21.448071
+30       190.251597  13.793172  12.090001  22.514153
+2026-01-03 19:29:07 | INFO     | __main__ | Running method: TSM+LLM
+2026-01-03 19:29:12 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:18 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:25 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:30 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:35 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:41 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:48 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:53 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:29:58 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:30:03 | INFO     | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-03 19:30:03 | INFO     | llm.refine | Processed 10/10 samples
+2026-01-03 19:30:03 | INFO     | __main__ | 
+TSM+LLM Results:
+2026-01-03 19:30:03 | INFO     | __main__ |                 mse       rmse        mae       mape
+horizon                                             
+1         17.364788   4.167108   3.105999   4.581207
+5         29.223487   5.405875   3.145999   5.096673
+20       128.920904  11.354334  10.659000  19.476781
+30       142.297169  11.928838  10.133001  18.787876
+2026-01-03 19:30:03 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | STEP 7: Statistical significance tests
+2026-01-03 19:30:03 | INFO     | __main__ | ======================================================================
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for DP vs naive_persistence at h=1; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for DP vs naive_persistence at h=5; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for DP vs naive_persistence at h=20; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for DP vs naive_persistence at h=30; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT vs naive_persistence at h=1; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT vs naive_persistence at h=5; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT vs naive_persistence at h=20; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT vs naive_persistence at h=30; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT-RF vs naive_persistence at h=1; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT-RF vs naive_persistence at h=5; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT-RF vs naive_persistence at h=20; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for CoT-RF vs naive_persistence at h=30; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for TSM+LLM vs naive_persistence at h=1; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for TSM+LLM vs naive_persistence at h=5; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for TSM+LLM vs naive_persistence at h=20; using first 10 samples.
+2026-01-03 19:30:03 | WARNING  | eval.significance | Length mismatch for TSM+LLM vs naive_persistence at h=30; using first 10 samples.
+2026-01-03 19:30:03 | INFO     | __main__ | 
+Significance test results saved
+2026-01-03 19:30:03 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | STEP 8: Robustness suite
+2026-01-03 19:30:03 | INFO     | __main__ | ======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | Robustness noise injection results saved
+2026-01-03 19:30:03 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | STEP 9: Trend classification accuracy
+2026-01-03 19:30:03 | INFO     | __main__ | ======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | 
+naive_persistence Trend Accuracy:
+2026-01-03 19:30:03 | INFO     | __main__ |          accuracy
+horizon          
+1        0.270718
+5        0.121547
+20       0.063536
+30       0.035912
+2026-01-03 19:30:03 | INFO     | __main__ | 
+seasonal_naive Trend Accuracy:
+2026-01-03 19:30:03 | INFO     | __main__ |          accuracy
+horizon          
+1        0.419890
+5        0.121547
+20       0.063536
+30       0.035912
+2026-01-03 19:30:03 | INFO     | __main__ | 
+tsm Trend Accuracy:
+2026-01-03 19:30:03 | INFO     | __main__ |          accuracy
+horizon          
+1        0.317680
+5        0.279006
+20       0.455801
+30       0.444751
+2026-01-03 19:30:03 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | STEP 10: Generating paper
+2026-01-03 19:30:03 | INFO     | __main__ | ======================================================================
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: abstract
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: introduction
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: data
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: methods
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: results
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: robustness
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: discussion
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: conclusion
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: appendix
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Saved paper to /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd/paper_snapshot/manuscript.md
+2026-01-03 19:30:03 | INFO     | __main__ | Paper snapshot saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd/paper_snapshot/manuscript.md
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: abstract
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: introduction
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: data
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: methods
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: results
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: robustness
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: discussion
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: conclusion
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Wrote section: appendix
+2026-01-03 19:30:03 | INFO     | paper.paper_writer | Saved paper to /Users/davidwilkinson/Desktop/ETS 2/paper/manuscript.md
+2026-01-03 19:30:03 | INFO     | __main__ | Paper saved to: /Users/davidwilkinson/Desktop/ETS 2/paper/manuscript.md
+2026-01-03 19:30:03 | INFO     | __main__ | 
+======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | EXPERIMENT COMPLETE
+2026-01-03 19:30:03 | INFO     | __main__ | ======================================================================
+2026-01-03 19:30:03 | INFO     | __main__ | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260103_192437_6829fd

@@ -1,0 +1,130 @@
+run_id: 20260103_193322_009b22
+git_hash: e2699593
+timestamp: '2026-01-03T19:33:22.707616'
+project:
+  name: EU_ETS_Forecasting
+  version: 0.1.1
+target:
+  instrument: ICAP_SECONDARY
+  column: close_eur
+  source: icap
+  mode: returns
+time_series:
+  freq: D
+  horizons:
+  - 1
+  - 5
+  - 20
+  - 30
+  pred_len: 30
+  seq_len: 60
+  label_len: 15
+split:
+  train_end: '2022-12-31'
+  val_end: '2023-12-31'
+  test_end: '2025-11-27'
+missing:
+  max_ffill_days: 5
+  min_coverage_pct: 0.8
+features:
+  include_brent: true
+  include_coal: true
+  include_indices: true
+  indices_list:
+  - KEUA
+  - KRBN
+  - GRN
+  include_auctions: true
+  auction_features:
+  - price
+  - volume
+  - is_auction_day
+  auction_lags:
+  - 1
+  - 5
+  include_vstoxx: true
+  returns: true
+  rolling_vol_window: 20
+  rolling_mean_windows:
+  - 5
+  - 20
+model:
+  tsm_type: dlinear
+  batch_size: 16
+  learning_rate: 0.001
+  max_epochs: 50
+  early_stopping_patience: 15
+  d_model: 64
+  n_heads: 2
+  e_layers: 1
+  d_layers: 1
+  d_ff: 128
+  dropout: 0.3
+  weight_decay: 0.01
+  grad_clip: 0.5
+  enc_in: 8
+  dec_in: 8
+  c_out: 1
+llm:
+  provider: openai
+  model: gpt-5.2
+  temperature: 0.1
+  max_tokens: 1000
+  methods:
+  - DP
+  - CoT
+  - CoT-RF
+  - TSM+LLM
+  history_points: 60
+  include_summary_stats: true
+  max_retries: 3
+  cache_enabled: true
+  max_samples: 10
+evaluation:
+  primary_metric: mse
+  additional_metrics:
+  - mae
+  - rmse
+  - mape
+  trend_threshold_method: volatility
+  trend_threshold_multiplier: 0.25
+  trend_classes:
+  - down
+  - flat
+  - up
+  significance_level: 0.05
+  tests:
+  - t_test
+  - wilcoxon
+robustness:
+  noise_levels:
+  - 0.05
+  - 0.1
+  - 0.2
+  - 0.3
+  subperiods:
+  - name: 2017-2019
+    start: '2017-01-01'
+    end: '2019-12-31'
+  - name: 2020-2021
+    start: '2020-01-01'
+    end: '2021-12-31'
+  - name: 2022-2025
+    start: '2022-01-01'
+    end: '2025-11-27'
+output:
+  runs_dir: runs
+  paper_dir: paper
+  save_predictions: true
+  save_model_checkpoints: true
+  generate_plots: true
+  generate_paper: true
+reproducibility:
+  seed: 42
+  deterministic: true
+  log_git_hash: true
+  save_config: true
+compute:
+  device: auto
+  num_workers: 4
+  pin_memory: true

@@ -151,6 +151,15 @@ def run_significance_tests(
     Returns:
         Dictionary with test results
     """
+    if len(errors_model) != len(errors_baseline):
+        n = min(len(errors_model), len(errors_baseline))
+        logger.warning(
+            f"Length mismatch for {model_name} vs {baseline_name} at h={horizon}; "
+            f"using first {n} samples."
+        )
+        errors_model = errors_model[:n]
+        errors_baseline = errors_baseline[:n]
+
     # Mean errors
     mean_baseline = np.mean(errors_baseline)
     mean_model = np.mean(errors_model)

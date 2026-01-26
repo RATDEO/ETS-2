@@ -2,7 +2,7 @@
 
 **Authors**: Auto-generated
 
-**Generated**: 2025-12-26 17:18:02
+**Generated**: 2026-01-02 14:56:02
 
 ---
 
@@ -19,6 +19,11 @@ strategies including direct prompting (DP), chain-of-thought (CoT), and TSM+LLM 
 
 Results are evaluated using mean squared error (MSE) for price prediction accuracy and classification accuracy 
 for trend direction prediction. Statistical significance is assessed using paired t-tests and Wilcoxon signed-rank tests.
+
+Key findings:
+- Dataset spans 2010-01-05 00:00:00 to 2025-09-30 00:00:00
+- 2866 daily observations
+- Best performing method: naive_persistence
 
 
 ## 1. Introduction
@@ -229,12 +234,17 @@ We compare the contribution of different components:
 
 We evaluate performance across different market regimes:
 
+No robustness suite results were generated for this run.
+
 
 ## 6. Discussion
 
 ### 6.1 Key Findings
 
-[To be completed based on results]
+- **Price accuracy**: naive_persistence has the lowest average MSE (25.227).
+- **TSM vs naive**: TSM MSE is 82.5x the naive baseline on average.
+- **Directional accuracy**: tsm has the highest average trend accuracy (0.423).
+- **LLM refinements**: No LLM results are available for this run, so LLM comparisons remain pending.
 
 ### 6.2 Comparison to Original Paper
 
@@ -261,16 +271,10 @@ and differences with the original Chinese carbon market study:
 
 ## 7. Conclusion
 
-This study demonstrates the application of LLM-based forecast refinement to EU ETS 
-carbon price prediction. By combining quantitative time series models with LLM reasoning, 
-we achieve [TBD] improvement in forecast accuracy.
-
-The TSM+LLM approach shows particular promise for capturing market dynamics that may 
-not be fully reflected in historical price patterns alone. However, the added value 
-varies by forecast horizon, with [TBD] showing the most significant improvement.
-
-This work contributes to the growing literature on hybrid AI systems for financial 
-forecasting and provides a reproducible framework for carbon market analysis.
+This run summarizes a reproducible pipeline for EU ETS carbon price forecasting.
+Price accuracy is best for naive_persistence, while directional accuracy is highest for tsm.
+LLM refinement results are not included in this run, so the hybrid TSM+LLM comparison remains pending.
+The framework remains suitable for future runs with full LLM and robustness evaluations enabled.
 
 
 ## Appendix A: Reproducibility
@@ -293,7 +297,9 @@ LLM Model: gpt-4-turbo-preview
 
 ### A.3 Compute Resources
 
-[To be completed based on actual run]
+- Device preference: auto
+- Data loader workers: 4
+- Pin memory: True
 
 ### A.4 Data Availability
 

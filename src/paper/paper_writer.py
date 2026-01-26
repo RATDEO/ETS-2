@@ -49,6 +49,72 @@ class PaperWriter:
         """Write a section to the sections dict."""
         self.sections[name] = content
         logger.info(f"Wrote section: {name}")
+
+    def _format_float(self, value: Optional[float], decimals: int = 3) -> str:
+        """Format a float for narrative text."""
+        if value is None or (isinstance(value, float) and np.isnan(value)):
+            return "N/A"
+        return f"{value:.{decimals}f}"
+
+    def _summarize_results(
+        self,
+        metrics_by_horizon: Optional[pd.DataFrame],
+        trend_accuracy: Optional[pd.DataFrame],
+        significance_tests: Optional[pd.DataFrame]
+    ) -> Dict[str, Any]:
+        """Summarize key result signals for narrative sections."""
+        summary: Dict[str, Any] = {
+            "has_metrics": False,
+            "has_trend": False,
+            "has_significance": False,
+            "has_llm": False,
+            "llm_models": []
+        }
+
+        if metrics_by_horizon is not None and not metrics_by_horizon.empty:
+            summary["has_metrics"] = True
+            metrics = metrics_by_horizon.copy()
+            if "model" in metrics.columns:
+                metrics["model"] = metrics["model"].astype(str)
+                model_names = sorted(metrics["model"].dropna().unique().tolist())
+                llm_markers = ("llm", "cot", "dp", "prompt", "gpt")
+                llm_models = [
+                    name for name in model_names
+                    if any(marker in name.lower() for marker in llm_markers)
+                ]
+                summary["has_llm"] = bool(llm_models)
+                summary["llm_models"] = llm_models
+
+            if "mse" in metrics.columns and "model" in metrics.columns:
+                model_mse = metrics.groupby("model")["mse"].mean().sort_values()
+                summary["model_mse"] = model_mse.to_dict()
+                summary["best_mse_model"] = model_mse.index[0]
+                summary["best_mse_value"] = float(model_mse.iloc[0])
+
+                if "naive_persistence" in model_mse.index:
+                    summary["naive_mse"] = float(model_mse["naive_persistence"])
+                if "tsm" in model_mse.index:
+                    summary["tsm_mse"] = float(model_mse["tsm"])
+
+        if trend_accuracy is not None and not trend_accuracy.empty:
+            summary["has_trend"] = True
+            trend = trend_accuracy.copy()
+            if "accuracy" in trend.columns and "model" in trend.columns:
+                model_acc = trend.groupby("model")["accuracy"].mean().sort_values(ascending=False)
+                summary["best_trend_model"] = model_acc.index[0]
+                summary["best_trend_value"] = float(model_acc.iloc[0])
+                best_row = trend.loc[trend["accuracy"].idxmax()]
+                summary["best_trend_horizon"] = best_row.get("horizon")
+
+        if significance_tests is not None and not significance_tests.empty:
+            summary["has_significance"] = True
+            if "model_better" in significance_tests.columns:
+                summary["any_model_better"] = bool(significance_tests["model_better"].any())
+
+        if summary.get("naive_mse") and summary.get("tsm_mse"):
+            summary["tsm_vs_naive_ratio"] = summary["tsm_mse"] / summary["naive_mse"]
+
+        return summary
     
     def write_abstract(self, summary_stats: Dict = None):
         """Write the abstract."""
@@ -289,11 +355,14 @@ Table 3 reports the results of significance tests comparing methods.
 
 ### 5.1 Noise Injection Test
 
-To assess the robustness of the LLM refinement, we inject noise into the TSM forecast 
-at levels of 5%, 10%, 20%, and 30% of the forecast standard deviation.
+To assess robustness, we inject noise into forecast paths at levels of 5%, 10%, 20%, 
+and 30% of the forecast standard deviation.
 """
         
         if noise_results is not None:
+            self.table_count += 1
+            table_path = self.tables_dir / "noise_injection.md"
+            noise_results.to_markdown(table_path, index=False)
             content += f"\n{noise_results.to_markdown()}\n"
         
         content += """
@@ -307,6 +376,9 @@ We compare the contribution of different components:
 """
         
         if ablation_results is not None:
+            self.table_count += 1
+            table_path = self.tables_dir / "ablation_results.md"
+            ablation_results.to_markdown(table_path, index=False)
             content += f"\n{ablation_results.to_markdown()}\n"
         
         content += """
@@ -316,17 +388,50 @@ We evaluate performance across different market regimes:
 """
         
         if subperiod_results is not None:
+            self.table_count += 1
+            table_path = self.tables_dir / "subperiod_results.md"
+            subperiod_results.to_markdown(table_path, index=False)
             content += f"\n{subperiod_results.to_markdown()}\n"
+        elif noise_results is None and ablation_results is None:
+            content += "\nNo robustness suite results were generated for this run.\n"
         
         self._write_section("robustness", content)
     
-    def write_discussion(self):
+    def write_discussion(self, summary: Optional[Dict[str, Any]] = None):
         """Write the discussion section."""
+        summary = summary or {}
+        key_findings = []
+        if summary.get("best_mse_model"):
+            key_findings.append(
+                f"- **Price accuracy**: {summary['best_mse_model']} has the lowest average MSE "
+                f"({self._format_float(summary.get('best_mse_value'))})."
+            )
+        if summary.get("tsm_vs_naive_ratio") is not None:
+            ratio = summary["tsm_vs_naive_ratio"]
+            key_findings.append(
+                f"- **TSM vs naive**: TSM MSE is {ratio:.1f}x the naive baseline on average."
+            )
+        if summary.get("best_trend_model"):
+            key_findings.append(
+                f"- **Directional accuracy**: {summary['best_trend_model']} has the highest average trend accuracy "
+                f"({self._format_float(summary.get('best_trend_value'))})."
+            )
+        if summary.get("has_metrics") and summary.get("has_llm") is False:
+            key_findings.append(
+                "- **LLM refinements**: No LLM results are available for this run, so LLM comparisons remain pending."
+            )
+        if summary.get("has_significance") and summary.get("any_model_better") is False:
+            key_findings.append(
+                "- **Significance**: No model shows a statistically significant MSE improvement over the naive baseline."
+            )
+        if not key_findings:
+            key_findings.append("- **Key findings**: Results summary not available for this run.")
+
         content = """## 6. Discussion
 
 ### 6.1 Key Findings
 
-[To be completed based on results]
+""" + "\n".join(key_findings) + """
 
 ### 6.2 Comparison to Original Paper
 
@@ -352,26 +457,40 @@ and differences with the original Chinese carbon market study:
 """
         self._write_section("discussion", content)
     
-    def write_conclusion(self):
+    def write_conclusion(self, summary: Optional[Dict[str, Any]] = None):
         """Write the conclusion section."""
-        content = """## 7. Conclusion
+        summary = summary or {}
+        conclusion_lines = [
+            "## 7. Conclusion",
+            "",
+            "This run summarizes a reproducible pipeline for EU ETS carbon price forecasting."
+        ]
 
-This study demonstrates the application of LLM-based forecast refinement to EU ETS 
-carbon price prediction. By combining quantitative time series models with LLM reasoning, 
-we achieve [TBD] improvement in forecast accuracy.
+        if summary.get("best_mse_model") and summary.get("best_trend_model"):
+            conclusion_lines.append(
+                f"Price accuracy is best for {summary['best_mse_model']}, while directional accuracy is highest for "
+                f"{summary['best_trend_model']}."
+            )
+        elif summary.get("best_mse_model"):
+            conclusion_lines.append(
+                f"Price accuracy is best for {summary['best_mse_model']}."
+            )
 
-The TSM+LLM approach shows particular promise for capturing market dynamics that may 
-not be fully reflected in historical price patterns alone. However, the added value 
-varies by forecast horizon, with [TBD] showing the most significant improvement.
+        if summary.get("has_metrics") and summary.get("has_llm") is False:
+            conclusion_lines.append(
+                "LLM refinement results are not included in this run, so the hybrid TSM+LLM comparison remains pending."
+            )
 
-This work contributes to the growing literature on hybrid AI systems for financial 
-forecasting and provides a reproducible framework for carbon market analysis.
-"""
+        conclusion_lines.append(
+            "The framework remains suitable for future runs with full LLM and robustness evaluations enabled."
+        )
+        content = "\n".join(conclusion_lines) + "\n"
         self._write_section("conclusion", content)
     
     def write_reproducibility_appendix(self, config: Dict = None):
         """Write the reproducibility appendix."""
         config = config or {}
+        compute = config.get("compute", {})
         
         content = f"""## Appendix A: Reproducibility
 
@@ -383,7 +502,7 @@ Random Seed: {config.get('reproducibility', {}).get('seed', 42)}
 Prediction Length: {config.get('time_series', {}).get('pred_len', 30)}
 Sequence Length: {config.get('time_series', {}).get('seq_len', 120)}
 TSM Type: {config.get('model', {}).get('tsm_type', 'autoformer')}
-LLM Model: {config.get('llm', {}).get('model', 'gpt-4-turbo-preview')}
+LLM Model: {config.get('llm', {}).get('model', 'gpt-5.2')}
 ```
 
 ### A.2 Environment
@@ -393,7 +512,9 @@ LLM Model: {config.get('llm', {}).get('model', 'gpt-4-turbo-preview')}
 
 ### A.3 Compute Resources
 
-[To be completed based on actual run]
+- Device preference: {compute.get("device", "auto")}
+- Data loader workers: {compute.get("num_workers", "N/A")}
+- Pin memory: {compute.get("pin_memory", "N/A")}
 
 ### A.4 Data Availability
 
@@ -452,15 +573,33 @@ Raw data sources:
         config: Dict = None,
         metrics_by_horizon: pd.DataFrame = None,
         trend_accuracy: pd.DataFrame = None,
-        significance_tests: pd.DataFrame = None
+        significance_tests: pd.DataFrame = None,
+        noise_results: pd.DataFrame = None,
+        ablation_results: pd.DataFrame = None,
+        subperiod_results: pd.DataFrame = None
     ):
         """Write all sections at once."""
-        self.write_abstract()
+        summary = self._summarize_results(metrics_by_horizon, trend_accuracy, significance_tests)
+        summary_stats = None
+        if panel_schema:
+            date_range = panel_schema.get("date_range", {})
+            date_range_str = f"{date_range.get('start', 'N/A')} to {date_range.get('end', 'N/A')}"
+            summary_stats = {
+                "date_range": date_range_str,
+                "n_observations": panel_schema.get("n_rows", "N/A"),
+                "best_method": summary.get("best_mse_model", "TBD")
+            }
+
+        self.write_abstract(summary_stats=summary_stats)
         self.write_introduction()
         self.write_data_section(panel_schema or {})
         self.write_methods_section(config)
         self.write_results_section(metrics_by_horizon, trend_accuracy, significance_tests)
-        self.write_robustness_section()
-        self.write_discussion()
-        self.write_conclusion()
+        self.write_robustness_section(
+            noise_results=noise_results,
+            ablation_results=ablation_results,
+            subperiod_results=subperiod_results
+        )
+        self.write_discussion(summary)
+        self.write_conclusion(summary)
         self.write_reproducibility_appendix(config)
