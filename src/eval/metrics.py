@@ -151,6 +151,24 @@ def compute_global_metrics(
     return compute_all_metrics(y_true_flat, y_pred_flat, metrics)
 
 
+def compute_path_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    metrics: Optional[List[str]] = None
+) -> Dict[str, float]:
+    """
+    Compute metrics over the full multi-step forecast path.
+
+    This is the paper-style evaluation for multi-step regression where MSE is
+    averaged across all predicted steps (e.g., the next 30 days) and all samples.
+
+    Returned keys are suffixed with `_path` to distinguish them from horizon-specific
+    metrics.
+    """
+    global_metrics = compute_global_metrics(y_true, y_pred, metrics=metrics)
+    return {f"{name}_path": value for name, value in global_metrics.items()}
+
+
 def get_per_sample_errors(
     y_true: np.ndarray,
     y_pred: np.ndarray,

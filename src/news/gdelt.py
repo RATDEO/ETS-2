@@ -129,10 +129,26 @@ def _request_gdelt(
     for attempt in range(max_retries):
         try:
             with urlopen(req, timeout=timeout) as resp:
-                data = resp.read().decode("utf-8")
+                raw = resp.read()
+                ctype = (resp.headers.get("content-type") or "").lower()
+            data = raw.decode("utf-8", errors="replace")
+            if "application/json" not in ctype:
+                # GDELT sometimes returns an HTML error page while still 200 OK.
+                logger.warning(
+                    "GDELT returned non-JSON content-type=%s (attempt %d).",
+                    ctype or "unknown",
+                    attempt + 1,
+                )
+                raise json.JSONDecodeError("non-json", data, 0)
             return json.loads(data)
         except json.JSONDecodeError:
-            logger.warning("GDELT returned non-JSON response (attempt %d).", attempt + 1)
+            wait = max(sleep_seconds, 0.5) * (attempt + 1) * 5
+            logger.warning(
+                "GDELT returned non-JSON response (attempt %d). Sleeping %.1fs.",
+                attempt + 1,
+                wait,
+            )
+            time.sleep(wait)
         except HTTPError as exc:
             if exc.code == 429:
                 wait = max(sleep_seconds, 1.0) * (attempt + 1) * 5
@@ -146,7 +162,7 @@ def _request_gdelt(
             logger.warning("GDELT request failed (attempt %d): %s", attempt + 1, exc)
         except Exception as exc:
             logger.warning("GDELT request failed (attempt %d): %s", attempt + 1, exc)
-        time.sleep(sleep_seconds * (attempt + 1))
+        time.sleep(max(sleep_seconds, 0.5) * (attempt + 1))
 
     return {}
 

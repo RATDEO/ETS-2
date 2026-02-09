@@ -1,0 +1,197 @@
+run_id: 20260131_021206_f39962
+git_hash: 91f7c7f6
+timestamp: '2026-01-31T02:12:06.061182'
+project:
+  name: EU_ETS_Forecasting
+  version: 0.1.1
+target:
+  instrument: EUA_FUTURES
+  column: close_eur
+  source: eua_futures
+  price_column: close
+  mode: returns
+time_series:
+  freq: D
+  horizons:
+  - 1
+  - 5
+  - 20
+  - 30
+  pred_len: 30
+  seq_len: 60
+  label_len: 15
+split:
+  train_end: '2023-06-30'
+  val_end: '2024-06-30'
+  test_end: '2026-01-05'
+missing:
+  max_ffill_days: 5
+  min_coverage_pct: 0.8
+features:
+  include_brent: true
+  include_coal: true
+  include_indices: true
+  indices_list:
+  - KEUA
+  - KRBN
+  - GRN
+  include_auctions: true
+  auction_features:
+  - price
+  - volume
+  - is_auction_day
+  auction_lags:
+  - 1
+  - 5
+  include_icap_secondary: true
+  include_vstoxx: true
+  returns: true
+  rolling_vol_window: 20
+  rolling_mean_windows:
+  - 5
+  - 20
+model:
+  tsm_type: autoformer
+  batch_size: 16
+  learning_rate: 0.001
+  max_epochs: 50
+  early_stopping_patience: 15
+  d_model: 64
+  n_heads: 2
+  e_layers: 1
+  d_layers: 1
+  d_ff: 128
+  dropout: 0.3
+  weight_decay: 0.01
+  grad_clip: 0.5
+  enc_in: 8
+  dec_in: 8
+  c_out: 1
+llm:
+  provider: openai
+  model: qwen3-vl-4b-gpu
+  temperature: 0.0
+  max_tokens: 512
+  methods:
+  - TSM+LLM-COT-SENT-RF
+  history_points: 60
+  include_summary_stats: true
+  max_retries: 3
+  cache_enabled: true
+  max_samples: 100
+  max_exogenous_features: 6
+  cot_rf:
+    k_examples: 10
+  blend:
+    mode: horizon_weighted
+    min_weight: 0.0
+    max_weight: 0.3
+    power: 2.0
+  gating:
+    enabled: false
+    volatility_window: 20
+    volatility_percentile: 0.6
+  base_url: http://192.168.1.140:9876/v1
+  sentiment:
+    enabled: true
+    path: data/news/daily_sentiment.csv
+    date_col: seendate
+    score_col: sent_score
+    history_points: 18
+evaluation:
+  primary_metric: mse
+  additional_metrics:
+  - mae
+  - rmse
+  - mape
+  trend_threshold_method: volatility
+  trend_threshold_multiplier: 0.25
+  trend_classes:
+  - down
+  - flat
+  - up
+  significance_level: 0.05
+  tests:
+  - t_test
+  - wilcoxon
+econometric:
+  quantile_lasso:
+    enabled: false
+    quantiles:
+    - 0.1
+    - 0.5
+    - 0.9
+    alpha: 0.01
+    lags:
+    - 1
+    - 5
+    - 10
+    - 20
+  lasso_feature_selection:
+    enabled: false
+    alpha: 0.0005
+    alpha_by_horizon:
+      1: 0.001
+      5: 0.001
+      20: 0.0005
+      30: 0.0005
+    max_iter: 50000
+    min_features: 6
+    max_features: 8
+    coef_threshold: 1.0e-06
+    feature_stats:
+    - last
+    - change_5
+    - change_20
+    - std_20
+    target_horizons:
+    - 1
+    - 5
+    - 20
+    - 30
+    target_aggregation: mean
+    mode: per_horizon_models
+    target_weights:
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    drop_weakest: 0
+robustness:
+  noise_levels:
+  - 0.05
+  - 0.1
+  - 0.2
+  - 0.3
+  subperiods:
+  - name: 2009-2012
+    start: '2009-04-01'
+    end: '2012-12-31'
+  - name: 2013-2017
+    start: '2013-01-01'
+    end: '2017-12-31'
+  - name: 2018-2020
+    start: '2018-01-01'
+    end: '2020-12-31'
+  - name: 2021-2023
+    start: '2021-01-01'
+    end: '2023-12-31'
+  - name: 2024-2026
+    start: '2024-01-01'
+    end: '2026-01-05'
+output:
+  runs_dir: runs
+  paper_dir: paper
+  save_predictions: true
+  save_model_checkpoints: true
+  generate_plots: true
+  generate_paper: false
+reproducibility:
+  seed: 42
+  deterministic: true
+  log_git_hash: true
+  save_config: true
+compute:
+  device: auto
+  num_workers: 4
+  pin_memory: true

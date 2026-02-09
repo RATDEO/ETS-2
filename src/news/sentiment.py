@@ -4,13 +4,20 @@ from __future__ import annotations
 
 import json
 import time
+import os
 from collections import Counter
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
 import pandas as pd
 
-from llm.cache import ResponseCache
+try:
+    # When `src/` is on sys.path (e.g. `python -m src.run_experiment`),
+    # modules are imported as top-level packages: `llm`, `news`, etc.
+    from llm.cache import ResponseCache  # type: ignore
+except ModuleNotFoundError:
+    # When importing as a package (e.g. `from src.news.sentiment import ...`).
+    from src.llm.cache import ResponseCache  # type: ignore
 
 
 LABEL_MAP = {"YES": 1, "NO": -1, "UNKNOWN": 0}
@@ -27,17 +34,24 @@ def _build_prompt(headline: str) -> str:
     )
 
 
-def _call_openai(prompt: str, model: str, temperature: float, max_tokens: int) -> str:
+def _call_openai(
+    prompt: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    timeout_seconds: Optional[float] = None,
+) -> str:
     from openai import OpenAI
-    import os
 
     kwargs = {}
-    api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_BASE_URL")
     if api_key:
         kwargs["api_key"] = api_key
     if base_url:
         kwargs["base_url"] = base_url
+    if timeout_seconds is not None:
+        kwargs["timeout"] = float(timeout_seconds)
     client = OpenAI(**kwargs)
     request = {
         "model": model,
@@ -79,10 +93,20 @@ def label_headlines_with_llm(
     max_tokens: int = 80,
     votes: int = 3,
     cache_dir: Optional[str] = None,
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    timeout_seconds: Optional[float] = None,
     sleep_seconds: float = 0.2,
 ) -> pd.DataFrame:
     cache = ResponseCache(cache_dir) if cache_dir else None
     records = []
+    base_url_value = base_url or os.getenv("OPENAI_BASE_URL") or ""
+    cache_context = {
+        "provider": "openai",
+        "base_url": base_url_value,
+        "system_message": "You output exactly two lines: label then one-sentence rationale.",
+        "max_tokens": max_tokens,
+    }
 
     for _, row in headlines.iterrows():
         headline = str(row.get(headline_col, "")).strip()
@@ -92,13 +116,31 @@ def label_headlines_with_llm(
         labels = []
         rationales = []
         for _ in range(votes):
-            cached = cache.get(prompt, model, temperature) if cache else None
+            cached = (
+                cache.get(prompt, model, temperature, context=cache_context)
+                if cache
+                else None
+            )
             if cached:
                 response = cached.get("content", "")
             else:
-                response = _call_openai(prompt, model, temperature, max_tokens)
+                response = _call_openai(
+                    prompt,
+                    model,
+                    temperature,
+                    max_tokens,
+                    api_key=api_key or os.getenv("OPENAI_API_KEY"),
+                    base_url=base_url_value,
+                    timeout_seconds=timeout_seconds,
+                )
                 if cache:
-                    cache.set(prompt, model, temperature, {"content": response})
+                    cache.set(
+                        prompt,
+                        model,
+                        temperature,
+                        {"content": response},
+                        context=cache_context,
+                    )
             label, rationale = _parse_label(response)
             labels.append(label)
             rationales.append(rationale)

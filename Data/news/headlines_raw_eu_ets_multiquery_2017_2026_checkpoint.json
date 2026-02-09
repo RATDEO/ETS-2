@@ -1,0 +1,10 @@
+{
+  "last_start": "2025-12-15T00:00:00",
+  "last_end": "2026-01-05T00:00:00",
+  "windows_completed": 61,
+  "output": "data/news/headlines_raw_eu_ets_multiquery_2017_2026.csv",
+  "queries": [
+    "(\"EU ETS\" OR EUA OR \"European Union Allowance\" OR \"carbon allowance\" OR \"carbon permit\" OR \"emissions trading\") AND (EU OR Europe OR European OR Brussels)",
+    "(carbon OR emissions OR allowance OR permit OR ETS) AND (gas OR power OR electricity OR coal OR oil OR brent OR LNG) AND (EU OR Europe OR European OR Brussels)"
+  ]
+}

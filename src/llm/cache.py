@@ -36,14 +36,19 @@ class ResponseCache:
         self,
         prompt: str,
         model: str,
-        temperature: float
+        temperature: float,
+        context: Optional[Dict] = None,
     ) -> str:
         """Compute hash key for cache lookup."""
-        content = json.dumps({
+        payload: Dict = {
             "prompt": prompt,
             "model": model,
-            "temperature": temperature
-        }, sort_keys=True)
+            "temperature": temperature,
+        }
+        if context:
+            payload["context"] = context
+
+        content = json.dumps(payload, sort_keys=True, ensure_ascii=False)
         
         return hashlib.sha256(content.encode()).hexdigest()[:16]
     
@@ -51,7 +56,8 @@ class ResponseCache:
         self,
         prompt: str,
         model: str,
-        temperature: float
+        temperature: float,
+        context: Optional[Dict] = None,
     ) -> Optional[Dict]:
         """
         Get cached response if available.
@@ -64,7 +70,7 @@ class ResponseCache:
         Returns:
             Cached response dict or None
         """
-        cache_key = self._compute_hash(prompt, model, temperature)
+        cache_key = self._compute_hash(prompt, model, temperature, context=context)
         
         # Check memory cache first
         if cache_key in self._memory_cache:
@@ -91,7 +97,8 @@ class ResponseCache:
         prompt: str,
         model: str,
         temperature: float,
-        response: Dict
+        response: Dict,
+        context: Optional[Dict] = None,
     ) -> None:
         """
         Cache a response.
@@ -102,7 +109,7 @@ class ResponseCache:
             temperature: Temperature setting
             response: Response to cache
         """
-        cache_key = self._compute_hash(prompt, model, temperature)
+        cache_key = self._compute_hash(prompt, model, temperature, context=context)
         
         # Store in memory
         self._memory_cache[cache_key] = response

@@ -165,6 +165,98 @@ def compute_trend_accuracy(
     return pd.DataFrame(results).set_index("horizon")
 
 
+def compute_paper_trend_accuracy(
+    history: np.ndarray,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    alpha: float = 0.02,
+    history_window: int = 18,
+    horizons: List[int] = [10, 20, 30],
+) -> pd.DataFrame:
+    """
+    Paper-style 3-way trend accuracy (up/flat/down).
+
+    This matches the carbon-paper definition: for each sample, compute the mean
+    of the past `history_window` prices and classify the future price at Day-h as:
+
+      - up    if y_{t+h} > (1 + alpha) * mean(history)
+      - down  if y_{t+h} < (1 - alpha) * mean(history)
+      - flat  otherwise
+
+    Args:
+        history: Historical price windows (batch, seq_len)
+        y_true: True future values (batch, pred_len)
+        y_pred: Predicted future values (batch, pred_len)
+        alpha: Neutrality band half-width (e.g., 0.02 for ±2%)
+        history_window: Number of past steps to average (paper uses 18)
+        horizons: Day-ahead horizons to evaluate (paper reports Day-10/20/30)
+
+    Returns:
+        DataFrame with accuracy by horizon (and per-class diagnostics).
+    """
+    if y_true.shape != y_pred.shape:
+        raise ValueError(f"Shape mismatch: y_true={y_true.shape}, y_pred={y_pred.shape}")
+    if history.ndim != 2:
+        raise ValueError(f"Expected history shape (batch, seq_len), got {history.shape}")
+    if history.shape[0] != y_true.shape[0]:
+        raise ValueError(
+            f"Batch mismatch: history={history.shape[0]} vs y_true={y_true.shape[0]}"
+        )
+
+    window = min(int(history_window), history.shape[1])
+    ref_mean = np.mean(history[:, -window:], axis=1)
+    upper = (1.0 + float(alpha)) * ref_mean
+    lower = (1.0 - float(alpha)) * ref_mean
+
+    results = []
+    for h in horizons:
+        h_idx = int(h) - 1
+        if h_idx < 0 or h_idx >= y_true.shape[1]:
+            continue
+
+        y_true_h = y_true[:, h_idx]
+        y_pred_h = y_pred[:, h_idx]
+
+        true_labels = np.zeros_like(y_true_h, dtype=int)
+        true_labels[y_true_h > upper] = 1
+        true_labels[y_true_h < lower] = -1
+
+        pred_labels = np.zeros_like(y_pred_h, dtype=int)
+        pred_labels[y_pred_h > upper] = 1
+        pred_labels[y_pred_h < lower] = -1
+
+        accuracy = float(np.mean(true_labels == pred_labels))
+
+        up_mask = true_labels == 1
+        down_mask = true_labels == -1
+        flat_mask = true_labels == 0
+
+        up_acc = float(np.mean(pred_labels[up_mask] == 1)) if up_mask.sum() > 0 else np.nan
+        down_acc = (
+            float(np.mean(pred_labels[down_mask] == -1)) if down_mask.sum() > 0 else np.nan
+        )
+        flat_acc = (
+            float(np.mean(pred_labels[flat_mask] == 0)) if flat_mask.sum() > 0 else np.nan
+        )
+
+        results.append(
+            {
+                "horizon": int(h),
+                "accuracy": accuracy,
+                "accuracy_up": up_acc,
+                "accuracy_down": down_acc,
+                "accuracy_flat": flat_acc,
+                "n_up": int(up_mask.sum()),
+                "n_down": int(down_mask.sum()),
+                "n_flat": int(flat_mask.sum()),
+                "alpha": float(alpha),
+                "history_window": int(window),
+            }
+        )
+
+    return pd.DataFrame(results).set_index("horizon")
+
+
 def compute_directional_accuracy(
     y_true: np.ndarray,
     y_pred: np.ndarray,

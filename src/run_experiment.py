@@ -26,6 +26,7 @@ from typing import Optional
 import logging
 import json
 import copy
+import re
 import numpy as np
 import pandas as pd
 
@@ -37,12 +38,12 @@ from data import build_panel
 from data.windows import make_windows, split_windows, StandardScaler, save_datasets, WindowConfig
 from data.panel import get_coverage_report, plot_coverage_heatmap
 from models.baselines import NaivePersistence, SeasonalNaive, LinearBaseline
-from eval.metrics import compute_metrics_by_horizon, get_per_sample_errors
+from eval.metrics import compute_metrics_by_horizon, compute_path_metrics, get_per_sample_errors
 from eval.return_metrics import (
     compute_drift_metrics_by_horizon,
     compute_long_short_portfolio_metrics
 )
-from eval.trend_classification import compute_trend_accuracy
+from eval.trend_classification import compute_paper_trend_accuracy, compute_trend_accuracy
 from eval.significance import compare_all_models
 from eval.quantile_metrics import compute_quantile_metrics
 from models.quantile_lasso import QuantileLasso, QuantileLassoConfig
@@ -203,6 +204,63 @@ def build_sentiment_histories(
     return histories
 
 
+def fit_sentiment_calibration(
+    histories: np.ndarray,
+    future: np.ndarray,
+    sentiment_histories: list,
+    sentiment_window: int
+) -> dict:
+    """Fit a linear mapping from sentiment score to next-day log return."""
+    scores = []
+    returns = []
+    for idx in range(len(histories)):
+        hist = histories[idx]
+        fut = future[idx]
+        if len(hist) == 0 or len(fut) == 0:
+            continue
+        base = float(hist[-1])
+        target = float(fut[0])
+        if base <= 0 or target <= 0:
+            continue
+        sent_hist = sentiment_histories[idx]
+        if sentiment_window > 0:
+            score = float(np.mean(sent_hist[-sentiment_window:]))
+        else:
+            score = float(np.mean(sent_hist)) if len(sent_hist) else 0.0
+        scores.append(score)
+        returns.append(float(np.log(target / base)))
+
+    if len(scores) < 2:
+        return {
+            "alpha": 0.0,
+            "beta": 0.0,
+            "n": len(scores),
+            "score_mean": float(np.mean(scores)) if scores else 0.0,
+            "score_std": float(np.std(scores)) if scores else 0.0,
+            "ret_std": float(np.std(returns)) if returns else 0.0,
+        }
+
+    s = np.array(scores, dtype=float)
+    r = np.array(returns, dtype=float)
+    var = float(np.var(s))
+    if var < 1e-12:
+        beta = 0.0
+        alpha = float(np.mean(r))
+    else:
+        cov = float(np.mean((s - np.mean(s)) * (r - np.mean(r))))
+        beta = cov / var
+        alpha = float(np.mean(r) - beta * np.mean(s))
+
+    return {
+        "alpha": alpha,
+        "beta": beta,
+        "n": len(scores),
+        "score_mean": float(np.mean(s)),
+        "score_std": float(np.std(s)),
+        "ret_std": float(np.std(r)),
+    }
+
+
 def fit_blend_weights(
     y_true: np.ndarray,
     base_pred: np.ndarray,
@@ -242,6 +300,168 @@ def apply_blend_weights(
         if 0 <= idx < pred_len:
             blended[:, idx] = base_pred[:, idx] + weight * (llm_pred[:, idx] - base_pred[:, idx])
     return blended
+
+
+def _parse_float_list(value, default=None) -> list:
+    """Parse a YAML value that may be a list[float] or a comma-separated string."""
+    if value is None:
+        return list(default) if default is not None else []
+    if isinstance(value, (list, tuple)):
+        return [float(x) for x in value]
+    if isinstance(value, str):
+        parts = [p.strip() for p in value.split(",") if p.strip()]
+        return [float(p) for p in parts]
+    return [float(value)]
+
+
+def blend_forecasts(
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    strength: float,
+    schedule: str,
+    pred_len: int,
+    min_weight: float = 0.0,
+    power: float = 1.0,
+) -> np.ndarray:
+    """Blend base and LLM forecasts with either a uniform weight or a horizon ramp."""
+    strength = float(strength)
+    schedule = str(schedule or "uniform").lower()
+    if schedule == "uniform":
+        return base_pred + strength * (llm_pred - base_pred)
+    if schedule != "ramp":
+        raise ValueError(f"Unknown blend schedule: {schedule}")
+    w = np.linspace(float(min_weight), strength, int(pred_len))
+    if float(power) != 1.0:
+        w = np.power(w, float(power))
+    return base_pred * (1.0 - w) + llm_pred * w
+
+
+def mse_by_horizon(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """Compute MSE at each forecast step (vector length pred_len)."""
+    return np.mean((y_true - y_pred) ** 2, axis=0)
+
+
+def select_eval_indices(
+    eligible_idx: np.ndarray,
+    max_samples: int,
+    strategy: str = "first",
+    seed: int = 42,
+) -> np.ndarray:
+    """Select evaluation indices from eligible indices."""
+    eligible_idx = np.asarray(eligible_idx, dtype=int)
+    if eligible_idx.size == 0 or max_samples <= 0:
+        return np.array([], dtype=int)
+
+    max_samples = int(min(max_samples, eligible_idx.size))
+    strategy = str(strategy or "first").lower()
+
+    if strategy == "first":
+        chosen = eligible_idx[:max_samples]
+        return np.asarray(chosen, dtype=int)
+
+    if strategy == "random":
+        rng = np.random.default_rng(int(seed))
+        chosen = rng.choice(eligible_idx, size=max_samples, replace=False)
+        return np.sort(np.asarray(chosen, dtype=int))
+
+    if strategy == "spaced":
+        if max_samples == 1:
+            return np.array([int(eligible_idx[-1])], dtype=int)
+        pos = np.linspace(0, eligible_idx.size - 1, max_samples)
+        chosen = eligible_idx[np.round(pos).astype(int)]
+        return np.asarray(chosen, dtype=int)
+
+    raise ValueError(f"Unknown subset strategy: {strategy}")
+
+
+def evaluate_blend_grid(
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    weights: list,
+    schedule: str,
+    key_horizons: list,
+    min_weight: float = 0.0,
+    power: float = 1.0,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Evaluate blend strengths over a grid, returning:
+      - summary_df: one row per strength with MSE_path + selected horizon MSEs
+      - mse_by_h_df: long form (w, horizon, mse) for all horizons 1..pred_len
+      - best_by_h_df: best w per horizon (min mse) for each horizon 1..pred_len
+    """
+    pred_len = int(base_pred.shape[1])
+    rows = []
+    mse_rows = []
+    for w in weights:
+        blended = blend_forecasts(
+            base_pred=base_pred,
+            llm_pred=llm_pred,
+            strength=float(w),
+            schedule=schedule,
+            pred_len=pred_len,
+            min_weight=min_weight,
+            power=power,
+        )
+        mse_h = mse_by_horizon(y_true, blended)
+        row = {"w": float(w), "mse_path": float(np.mean(mse_h))}
+        for h in key_horizons:
+            idx = int(h) - 1
+            if 0 <= idx < pred_len:
+                row[f"h{int(h)}_mse"] = float(mse_h[idx])
+        rows.append(row)
+        for h in range(1, pred_len + 1):
+            mse_rows.append({"w": float(w), "horizon": int(h), "mse": float(mse_h[h - 1])})
+
+    summary_df = pd.DataFrame(rows).sort_values("w").reset_index(drop=True)
+    mse_by_h_df = pd.DataFrame(mse_rows).sort_values(["horizon", "w"]).reset_index(drop=True)
+    best_by_h_df = (
+        mse_by_h_df.loc[mse_by_h_df.groupby("horizon")["mse"].idxmin()]
+        .sort_values("horizon")
+        .reset_index(drop=True)
+    )
+    return summary_df, mse_by_h_df, best_by_h_df
+
+
+def save_blend_grid_artifacts(
+    summary_df: pd.DataFrame,
+    mse_by_h_df: pd.DataFrame,
+    best_by_h_df: pd.DataFrame,
+    out_dir: Path,
+) -> None:
+    """Save blend grid CSVs and plots to out_dir."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    summary_df.to_csv(out_dir / "blend_grid_summary.csv", index=False)
+    mse_by_h_df.to_csv(out_dir / "blend_grid_mse_by_horizon.csv", index=False)
+    best_by_h_df.to_csv(out_dir / "blend_grid_best_w_by_horizon.csv", index=False)
+
+    try:
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        for w, grp in mse_by_h_df.groupby("w", sort=True):
+            ax.plot(grp["horizon"], grp["mse"], label=f"w={w:g}", linewidth=2)
+        ax.set_title("Blend Grid — MSE by Horizon (TSM + w·(LLM−TSM))")
+        ax.set_xlabel("Horizon (days ahead)")
+        ax.set_ylabel("MSE (EUR^2)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(ncol=3, fontsize=9)
+        fig.tight_layout()
+        fig.savefig(out_dir / "blend_grid_mse_by_horizon.png", dpi=200)
+        plt.close(fig)
+
+        fig, ax = plt.subplots(figsize=(12, 3.5))
+        ax.step(best_by_h_df["horizon"], best_by_h_df["w"], where="mid", linewidth=2)
+        ax.set_title("Blend Grid — Best w by Horizon (min MSE at each horizon)")
+        ax.set_xlabel("Horizon (days ahead)")
+        ax.set_ylabel("Best w")
+        ax.set_yticks(sorted(best_by_h_df["w"].unique()))
+        ax.grid(True, alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(out_dir / "blend_grid_best_w_by_horizon.png", dpi=200)
+        plt.close(fig)
+    except Exception as e:
+        logger.warning("Failed to save blend grid plots: %s", e)
 
 
 def select_features_via_lasso(
@@ -620,6 +840,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     baseline_results['naive_persistence'] = {
         'predictions': naive_pred,
         'metrics': compute_metrics_by_horizon(y_test_future, naive_pred, horizons),
+        'path_metrics': compute_path_metrics(y_test_future, naive_pred),
         'errors': get_per_sample_errors(y_test_future, naive_pred, horizons)
     }
     
@@ -631,6 +852,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     baseline_results['seasonal_naive'] = {
         'predictions': seasonal_pred,
         'metrics': compute_metrics_by_horizon(y_test_future, seasonal_pred, horizons),
+        'path_metrics': compute_path_metrics(y_test_future, seasonal_pred),
         'errors': get_per_sample_errors(y_test_future, seasonal_pred, horizons)
     }
 
@@ -642,6 +864,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         baseline_results['linear_ridge'] = {
             'predictions': linear_ridge_pred,
             'metrics': compute_metrics_by_horizon(y_test_future, linear_ridge_pred, horizons),
+            'path_metrics': compute_path_metrics(y_test_future, linear_ridge_pred),
             'errors': get_per_sample_errors(y_test_future, linear_ridge_pred, horizons)
         }
     except Exception as e:
@@ -654,6 +877,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         baseline_results['linear_lasso'] = {
             'predictions': linear_lasso_pred,
             'metrics': compute_metrics_by_horizon(y_test_future, linear_lasso_pred, horizons),
+            'path_metrics': compute_path_metrics(y_test_future, linear_lasso_pred),
             'errors': get_per_sample_errors(y_test_future, linear_lasso_pred, horizons)
         }
     except Exception as e:
@@ -664,6 +888,9 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     for name, result in baseline_results.items():
         logger.info(f"\n{name}:")
         logger.info(result['metrics'])
+        path_mse = (result.get("path_metrics") or {}).get("mse_path")
+        if path_mse is not None:
+            logger.info("Path MSE (avg over %dd): %.6f", config.pred_len, float(path_mse))
     
     # Save baseline results
     for name, result in baseline_results.items():
@@ -853,11 +1080,15 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         baseline_results['tsm'] = {
             'predictions': tsm_pred_eval,
             'metrics': compute_metrics_by_horizon(y_test_future, tsm_pred_eval, horizons),
+            'path_metrics': compute_path_metrics(y_test_future, tsm_pred_eval),
             'errors': get_per_sample_errors(y_test_future, tsm_pred_eval, horizons)
         }
         
         logger.info("\nTSM Results:")
         logger.info(baseline_results['tsm']['metrics'])
+        tsm_path_mse = (baseline_results["tsm"].get("path_metrics") or {}).get("mse_path")
+        if tsm_path_mse is not None:
+            logger.info("TSM Path MSE (avg over %dd): %.6f", config.pred_len, float(tsm_path_mse))
         
         # Save predictions
         pred_df = pd.DataFrame({
@@ -903,6 +1134,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                     'metrics': compute_metrics_by_horizon(
                         y_test_future, tsm_lasso_pred_eval, [h]
                     ),
+                    'path_metrics': compute_path_metrics(y_test_future, tsm_lasso_pred_eval),
                     'errors': get_per_sample_errors(y_test_future, tsm_lasso_pred_eval, [h])
                 }
 
@@ -944,6 +1176,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             baseline_results['tsm_lasso'] = {
                 'predictions': tsm_lasso_pred_eval,
                 'metrics': compute_metrics_by_horizon(y_test_future, tsm_lasso_pred_eval, horizons),
+                'path_metrics': compute_path_metrics(y_test_future, tsm_lasso_pred_eval),
                 'errors': get_per_sample_errors(y_test_future, tsm_lasso_pred_eval, horizons)
             }
 
@@ -975,17 +1208,14 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     
     try:
         import os
-        if not os.environ.get('OPENAI_API_KEY'):
-            logger.warning("OPENAI_API_KEY not set - skipping LLM refinement")
+        has_api_key = bool(config.llm.get("api_key") or os.environ.get("OPENAI_API_KEY"))
+        if not has_api_key:
+            logger.warning(
+                "No API key available (set llm.api_key in config or OPENAI_API_KEY) - skipping LLM refinement"
+            )
         else:
             from llm import LLMRefiner
-            
-            refiner = LLMRefiner(
-                config.llm,
-                cache_dir=run_dir / "llm" / "cache",
-                log_dir=run_dir / "llm" / "logs"
-            )
-            
+
             history_points = min(
                 int(config.llm.get("history_points", config.seq_len)),
                 config.seq_len
@@ -1062,6 +1292,60 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 else:
                     logger.warning("Sentiment enabled but no sentiment data loaded.")
 
+            drift_cfg = config.llm.get("news_drift", {})
+            calib_cfg = drift_cfg.get("calibration", {})
+            if calib_cfg.get("enabled", False) and sentiment_map:
+                calib_split = calib_cfg.get("split", "val")
+                if calib_split == "train":
+                    calib_histories = y_train_hist[:, -history_points:]
+                    calib_future = y_train_future
+                    calib_dates = build_history_dates(
+                        panel_dates,
+                        date_to_idx,
+                        splits["train"]["dates"],
+                        history_points
+                    )
+                else:
+                    calib_histories = y_val_hist[:, -history_points:]
+                    calib_future = y_val_future
+                    calib_dates = build_history_dates(
+                        panel_dates,
+                        date_to_idx,
+                        splits["val"]["dates"],
+                        history_points
+                    )
+                calib_sentiment = build_sentiment_histories(
+                    calib_dates,
+                    sentiment_map,
+                    sentiment_points
+                )
+                sentiment_window = int(drift_cfg.get("sentiment_window", 1))
+                calib = fit_sentiment_calibration(
+                    calib_histories,
+                    calib_future,
+                    calib_sentiment,
+                    sentiment_window
+                )
+                drift_cfg["calibration"] = {
+                    **calib,
+                    "enabled": True,
+                    "split": calib_split,
+                    "sentiment_window": sentiment_window,
+                }
+                config.llm["news_drift"] = drift_cfg
+                logger.info(
+                    "Sentiment calibration: alpha=%.6f beta=%.6f n=%d",
+                    calib.get("alpha", 0.0),
+                    calib.get("beta", 0.0),
+                    calib.get("n", 0),
+                )
+
+            refiner = LLMRefiner(
+                config.llm,
+                cache_dir=run_dir / "llm" / "cache",
+                log_dir=run_dir / "llm" / "logs"
+            )
+
             calibrate_cfg = config.llm.get("calibrate_blend", {})
             calibrate_enabled = bool(calibrate_cfg.get("enabled", False))
             calibrate_methods = calibrate_cfg.get("methods")
@@ -1070,12 +1354,41 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             min_weight = float(calibrate_cfg.get("min_weight", 0.0))
             max_weight = float(calibrate_cfg.get("max_weight", 1.0))
 
+            subset_cfg = config.llm.get("subset", {}) or {}
+            subset_strategy = str(subset_cfg.get("strategy", "first")).lower()
+            subset_seed = int(subset_cfg.get("seed", config.seed))
+            val_subset_strategy = str(subset_cfg.get("val_strategy", subset_strategy)).lower()
+            val_subset_seed = int(subset_cfg.get("val_seed", subset_seed))
+
+            blend_grid_cfg = config.llm.get("blend_grid", {}) or {}
+            blend_grid_enabled = bool(blend_grid_cfg.get("enabled", False))
+            blend_grid_methods = blend_grid_cfg.get("methods")
+            if blend_grid_methods is None:
+                blend_grid_methods = config.llm.get("methods", ["TSM+LLM"])
+            blend_grid_schedule = str(blend_grid_cfg.get("schedule", "ramp")).lower()
+            blend_grid_weights = _parse_float_list(
+                blend_grid_cfg.get("weights"),
+                default=[0.0, 0.25, 0.5, 0.75, 1.0],
+            )
+            blend_grid_key_horizons = [
+                int(x)
+                for x in _parse_float_list(
+                    blend_grid_cfg.get("key_horizons"),
+                    default=[1, 5, 10, 20, 30],
+                )
+            ]
+            blend_grid_min_weight = float(blend_grid_cfg.get("min_weight", 0.0))
+            blend_grid_power = float(blend_grid_cfg.get("power", 1.0))
+            blend_grid_tune_split = str(blend_grid_cfg.get("tune_split", "val")).lower()
+            blend_grid_metric = str(blend_grid_cfg.get("metric", "mse_path")).lower()
+
             val_histories = None
             val_dates = None
             val_exogenous_summaries = None
             val_sentiment_histories = None
             val_eval_indices = None
-            if calibrate_enabled:
+            val_eval_indices_grid = None
+            if calibrate_enabled or blend_grid_enabled:
                 val_histories = y_val_hist[:, -history_points:]
                 val_dates = build_history_dates(
                     panel_dates,
@@ -1113,12 +1426,36 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 else:
                     eligible_val_idx = np.arange(len(val_histories))
 
-                cal_max = int(calibrate_cfg.get("max_samples", config.llm.get("max_samples", 50)))
-                val_eval_indices = eligible_val_idx[:min(cal_max, len(eligible_val_idx))]
+                if calibrate_enabled:
+                    cal_max = int(
+                        calibrate_cfg.get("max_samples", config.llm.get("max_samples", 50))
+                    )
+                    val_eval_indices = select_eval_indices(
+                        eligible_val_idx,
+                        cal_max,
+                        strategy=val_subset_strategy,
+                        seed=val_subset_seed,
+                    )
+
+                if blend_grid_enabled and blend_grid_tune_split == "val":
+                    grid_max = int(
+                        blend_grid_cfg.get("max_samples", config.llm.get("max_samples", 50))
+                    )
+                    val_eval_indices_grid = select_eval_indices(
+                        eligible_val_idx,
+                        grid_max,
+                        strategy=val_subset_strategy,
+                        seed=val_subset_seed,
+                    )
             
             # Run each method (limit samples for cost control)
             max_samples = min(config.llm.get("max_samples", 50), len(eligible_idx))
-            llm_eval_indices = eligible_idx[:max_samples]
+            llm_eval_indices = select_eval_indices(
+                eligible_idx,
+                max_samples,
+                strategy=subset_strategy,
+                seed=subset_seed,
+            )
             histories_subset = llm_histories[llm_eval_indices]
             dates_subset = [test_dates[i] for i in llm_eval_indices]
             exogenous_subset = [exogenous_summaries[i] for i in llm_eval_indices]
@@ -1130,10 +1467,15 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             
             for method in config.llm.get('methods', ['TSM+LLM']):
                 logger.info(f"Running method: {method}")
+                val_teaching_examples_subset = None
 
-                if method == "TSM+LLM-COT-RF":
+                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
                     cot_cfg = config.llm.get("cot_rf", {})
                     k_examples = int(cot_cfg.get("k_examples", 5))
+                    selection_mode = cot_cfg.get("example_selection", "recent")
+                    feature_window = int(cot_cfg.get("feature_window", 20))
+                    lookback_days = cot_cfg.get("lookback_days")
+                    lookback_days = int(lookback_days) if lookback_days is not None else None
 
                     all_dates = np.concatenate(
                         [
@@ -1154,27 +1496,160 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         [y_train_future, y_val_future, y_test_future]
                     )
 
+                    # Pre-compute per-window TSM error so we can pick informative
+                    # "teaching examples" (if requested). If the model is already
+                    # accurate in the teaching set, the LLM learns that the best
+                    # correction is often “do nothing”.
+                    all_path_mse = np.mean((all_forecasts - all_truth) ** 2, axis=1)
+
                     sorted_idx = np.argsort(all_dates)
                     dates_sorted = all_dates[sorted_idx]
+                    if selection_mode == "similarity":
+                        def _history_features(hist: np.ndarray) -> np.ndarray:
+                            window = hist[-feature_window:] if len(hist) >= feature_window else hist
+                            mean = float(np.mean(window)) if len(window) else 0.0
+                            std = float(np.std(window)) if len(window) else 0.0
+                            if len(window) > 1:
+                                slope = float(np.polyfit(np.arange(len(window)), window, 1)[0])
+                            else:
+                                slope = 0.0
+                            return np.array([mean, std, slope], dtype=float)
+
+                        all_history_features = np.vstack([
+                            _history_features(hist) for hist in all_histories
+                        ])
 
                     teaching_examples_subset = []
+                    val_teaching_examples_subset = []
                     for sample_idx in llm_eval_indices:
                         test_date = pd.Timestamp(splits["test"]["dates"][sample_idx]).to_datetime64()
                         pos = np.searchsorted(dates_sorted, test_date, side="left")
-                        start = max(0, pos - k_examples)
-                        example_indices = sorted_idx[start:pos]
+                        if selection_mode in ("high_error", "recent_high_error") and pos > 0:
+                            candidate_indices = sorted_idx[:pos]
+                            if selection_mode == "recent_high_error" and lookback_days is not None:
+                                cutoff = np.datetime64(
+                                    pd.Timestamp(test_date) - pd.Timedelta(days=lookback_days)
+                                )
+                                candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
+                                if candidate_indices.size == 0:
+                                    candidate_indices = sorted_idx[:pos]
+                            cand_errors = all_path_mse[candidate_indices]
+                            if len(candidate_indices) > k_examples:
+                                order = np.argsort(cand_errors)[-k_examples:]
+                                example_indices = candidate_indices[order]
+                            else:
+                                example_indices = candidate_indices
+                            # Keep examples in chronological order for readability
+                            example_indices = example_indices[np.argsort(all_dates[example_indices])]
+                        elif selection_mode == "similarity" and pos > 0:
+                            candidate_indices = sorted_idx[:pos]
+                            if lookback_days is not None:
+                                cutoff = np.datetime64(
+                                    pd.Timestamp(test_date) - pd.Timedelta(days=lookback_days)
+                                )
+                                candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
+                                if candidate_indices.size == 0:
+                                    candidate_indices = sorted_idx[:pos]
+                            sample_feat = _history_features(y_test_hist[sample_idx])
+                            cand_feats = all_history_features[candidate_indices]
+                            distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
+                            order = np.argsort(distances)[:k_examples]
+                            example_indices = candidate_indices[order]
+                        else:
+                            start = max(0, pos - k_examples)
+                            example_indices = sorted_idx[start:pos]
 
                         examples = []
                         for idx in example_indices:
+                            sent_hist = None
+                            if sentiment_map:
+                                ex_date = pd.Timestamp(all_dates[idx])
+                                ex_dates = build_history_dates(
+                                    panel_dates,
+                                    date_to_idx,
+                                    np.array([ex_date]),
+                                    history_points
+                                )[0]
+                                sent_hist = build_sentiment_histories(
+                                    [ex_dates],
+                                    sentiment_map,
+                                    sentiment_points
+                                )[0]
                             examples.append(
                                 {
                                     "history": all_histories[idx],
                                     "forecast": all_forecasts[idx],
                                     "truth": all_truth[idx],
                                     "date": str(pd.Timestamp(all_dates[idx])),
+                                    "sentiment_history": sent_hist if sent_hist is not None else [],
                                 }
                             )
                         teaching_examples_subset.append(examples)
+
+                    if val_eval_indices_grid is not None and len(val_eval_indices_grid) > 0:
+                        for sample_idx in val_eval_indices_grid:
+                            val_date = pd.Timestamp(splits["val"]["dates"][sample_idx]).to_datetime64()
+                            pos = np.searchsorted(dates_sorted, val_date, side="left")
+                            if selection_mode in ("high_error", "recent_high_error") and pos > 0:
+                                candidate_indices = sorted_idx[:pos]
+                                if selection_mode == "recent_high_error" and lookback_days is not None:
+                                    cutoff = np.datetime64(
+                                        pd.Timestamp(val_date) - pd.Timedelta(days=lookback_days)
+                                    )
+                                    candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
+                                    if candidate_indices.size == 0:
+                                        candidate_indices = sorted_idx[:pos]
+                                cand_errors = all_path_mse[candidate_indices]
+                                if len(candidate_indices) > k_examples:
+                                    order = np.argsort(cand_errors)[-k_examples:]
+                                    example_indices = candidate_indices[order]
+                                else:
+                                    example_indices = candidate_indices
+                                example_indices = example_indices[np.argsort(all_dates[example_indices])]
+                            elif selection_mode == "similarity" and pos > 0:
+                                candidate_indices = sorted_idx[:pos]
+                                if lookback_days is not None:
+                                    cutoff = np.datetime64(
+                                        pd.Timestamp(val_date) - pd.Timedelta(days=lookback_days)
+                                    )
+                                    candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
+                                    if candidate_indices.size == 0:
+                                        candidate_indices = sorted_idx[:pos]
+                                sample_feat = _history_features(y_val_hist[sample_idx])
+                                cand_feats = all_history_features[candidate_indices]
+                                distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
+                                order = np.argsort(distances)[:k_examples]
+                                example_indices = candidate_indices[order]
+                            else:
+                                start = max(0, pos - k_examples)
+                                example_indices = sorted_idx[start:pos]
+
+                            examples = []
+                            for idx in example_indices:
+                                sent_hist = None
+                                if sentiment_map:
+                                    ex_date = pd.Timestamp(all_dates[idx])
+                                    ex_dates = build_history_dates(
+                                        panel_dates,
+                                        date_to_idx,
+                                        np.array([ex_date]),
+                                        history_points
+                                    )[0]
+                                    sent_hist = build_sentiment_histories(
+                                        [ex_dates],
+                                        sentiment_map,
+                                        sentiment_points
+                                    )[0]
+                                examples.append(
+                                    {
+                                        "history": all_histories[idx],
+                                        "forecast": all_forecasts[idx],
+                                        "truth": all_truth[idx],
+                                        "date": str(pd.Timestamp(all_dates[idx])),
+                                        "sentiment_history": sent_hist if sent_hist is not None else [],
+                                    }
+                                )
+                            val_teaching_examples_subset.append(examples)
                     exogenous_subset = [None for _ in llm_eval_indices]
                 
                 tsm_forecast = (
@@ -1209,7 +1684,11 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         pred_len=config.pred_len,
                         exogenous_summaries=method_exogenous,
                         price_bases=method_price_bases,
-                        teaching_examples=teaching_examples_subset if method == "TSM+LLM-COT-RF" else None,
+                        teaching_examples=(
+                            teaching_examples_subset
+                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA")
+                            else None
+                        ),
                         sentiment_histories=method_sentiment
                     )
                     
@@ -1218,14 +1697,46 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         'metrics': compute_metrics_by_horizon(
                             y_test_future[llm_eval_indices], predictions, horizons
                         ),
+                        'path_metrics': compute_path_metrics(
+                            y_test_future[llm_eval_indices], predictions
+                        ),
                         'errors': get_per_sample_errors(
                             y_test_future[llm_eval_indices], predictions, horizons
                         ),
                         'eval_indices': llm_eval_indices
                     }
+
+                    # Persist subset predictions so we can debug deltas vs TSM and
+                    # produce paper-style plots without re-running the LLM.
+                    try:
+                        out_path = run_dir / "predictions" / f"{method}_pred_test_subset.npz"
+                        np.savez_compressed(
+                            out_path,
+                            method=np.array([method]),
+                            eval_indices=np.asarray(llm_eval_indices, dtype=int),
+                            dates=np.asarray(
+                                [str(splits["test"]["dates"][i]) for i in llm_eval_indices],
+                                dtype="U",
+                            ),
+                            y_true=np.asarray(y_test_future[llm_eval_indices], dtype=float),
+                            tsm_pred=np.asarray(tsm_pred_eval[llm_eval_indices], dtype=float)
+                            if tsm_pred_eval is not None
+                            else np.empty((0, 0), dtype=float),
+                            yhat=np.asarray(predictions, dtype=float),
+                        )
+                    except Exception as e:
+                        logger.warning("Failed to save LLM subset predictions: %s", e)
                     
                     logger.info(f"\n{method} Results:")
                     logger.info(llm_results[method]['metrics'])
+                    method_path_mse = (llm_results[method].get("path_metrics") or {}).get("mse_path")
+                    if method_path_mse is not None:
+                        logger.info(
+                            "%s Path MSE (avg over %dd): %.6f",
+                            method,
+                            config.pred_len,
+                            float(method_path_mse),
+                        )
 
                     if calibrate_enabled and method in calibrate_methods:
                         if val_eval_indices is None or len(val_eval_indices) == 0:
@@ -1275,6 +1786,9 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                                 'metrics': compute_metrics_by_horizon(
                                     y_test_future[llm_eval_indices], blended, horizons
                                 ),
+                                'path_metrics': compute_path_metrics(
+                                    y_test_future[llm_eval_indices], blended
+                                ),
                                 'errors': get_per_sample_errors(
                                     y_test_future[llm_eval_indices], blended, horizons
                                 ),
@@ -1283,9 +1797,183 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                             }
                             logger.info(f"\n{blend_name} Results:")
                             logger.info(llm_results[blend_name]['metrics'])
+                            blend_path_mse = (llm_results[blend_name].get("path_metrics") or {}).get("mse_path")
+                            if blend_path_mse is not None:
+                                logger.info(
+                                    "%s Path MSE (avg over %dd): %.6f",
+                                    blend_name,
+                                    config.pred_len,
+                                    float(blend_path_mse),
+                                )
                             weights_path = run_dir / "llm" / "blend_weights.json"
                             with weights_path.open("w") as f:
                                 json.dump({blend_name: weights}, f, indent=2)
+
+                    # Blend-grid tuning: select a blend strength on validation, then
+                    # evaluate the same strength on the test subset. This avoids
+                    # leaking test information when we "dial up" LLM influence.
+                    if blend_grid_enabled and method in blend_grid_methods:
+                        if method == "NEWS-SENTIMENT-ONLY":
+                            logger.warning("Blend grid skipped for NEWS-SENTIMENT-ONLY.")
+                        elif tsm_pred_eval is None or tsm_pred_val_eval is None:
+                            logger.warning("Blend grid skipped (missing TSM predictions).")
+                        elif blend_grid_tune_split != "val":
+                            logger.warning(
+                                "Blend grid skipped (unsupported tune_split=%s).",
+                                blend_grid_tune_split,
+                            )
+                        elif val_eval_indices_grid is None or len(val_eval_indices_grid) == 0:
+                            logger.warning("Blend grid skipped (no validation samples).")
+                        else:
+                            method_slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", method)
+                            out_root = run_dir / "results" / f"blend_grid_{blend_grid_schedule}" / method_slug
+
+                            # 1) Get LLM predictions on the validation subset
+                            val_method_exogenous = (
+                                [val_exogenous_summaries[i] for i in val_eval_indices_grid]
+                                if val_exogenous_summaries is not None
+                                else None
+                            )
+                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
+                                # These methods don't consume exogenous summaries in prompts.
+                                val_method_exogenous = [None for _ in val_eval_indices_grid]
+
+                            val_method_sentiment = (
+                                [val_sentiment_histories[i] for i in val_eval_indices_grid]
+                                if val_sentiment_histories is not None
+                                else None
+                            )
+
+                            val_teaching = (
+                                val_teaching_examples_subset
+                                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA")
+                                else None
+                            )
+
+                            val_llm_pred, _ = refiner.refine_batch(
+                                method=method,
+                                histories=val_histories[val_eval_indices_grid],
+                                date_arrays=[val_dates[i] for i in val_eval_indices_grid],
+                                tsm_forecasts=tsm_pred_val_eval[val_eval_indices_grid],
+                                pred_len=config.pred_len,
+                                exogenous_summaries=val_method_exogenous,
+                                price_bases=None,
+                                teaching_examples=val_teaching,
+                                sentiment_histories=val_method_sentiment,
+                            )
+
+                            # 2) Evaluate blend grid on validation (selection split)
+                            val_summary, val_mse_by_h, val_best_by_h = evaluate_blend_grid(
+                                y_true=y_val_future[val_eval_indices_grid],
+                                base_pred=tsm_pred_val_eval[val_eval_indices_grid],
+                                llm_pred=val_llm_pred,
+                                weights=blend_grid_weights,
+                                schedule=blend_grid_schedule,
+                                key_horizons=blend_grid_key_horizons,
+                                min_weight=blend_grid_min_weight,
+                                power=blend_grid_power,
+                            )
+                            save_blend_grid_artifacts(
+                                summary_df=val_summary,
+                                mse_by_h_df=val_mse_by_h,
+                                best_by_h_df=val_best_by_h,
+                                out_dir=out_root / "val",
+                            )
+
+                            # 3) Evaluate blend grid on test (reporting split)
+                            test_summary, test_mse_by_h, test_best_by_h = evaluate_blend_grid(
+                                y_true=y_test_future[llm_eval_indices],
+                                base_pred=tsm_pred_eval[llm_eval_indices],
+                                llm_pred=predictions,
+                                weights=blend_grid_weights,
+                                schedule=blend_grid_schedule,
+                                key_horizons=blend_grid_key_horizons,
+                                min_weight=blend_grid_min_weight,
+                                power=blend_grid_power,
+                            )
+                            save_blend_grid_artifacts(
+                                summary_df=test_summary,
+                                mse_by_h_df=test_mse_by_h,
+                                best_by_h_df=test_best_by_h,
+                                out_dir=out_root / "test",
+                            )
+
+                            # 4) Pick the best blend strength on validation
+                            metric_col = "mse_path"
+                            if blend_grid_metric != "mse_path":
+                                candidate = blend_grid_metric
+                                if candidate in val_summary.columns:
+                                    metric_col = candidate
+                            best_w_path = float(val_summary.loc[val_summary[metric_col].idxmin(), "w"])
+
+                            best_w_by_horizon = {}
+                            for h in horizons:
+                                col = f"h{int(h)}_mse"
+                                if col in val_summary.columns:
+                                    best_w_by_horizon[int(h)] = float(
+                                        val_summary.loc[val_summary[col].idxmin(), "w"]
+                                    )
+
+                            selection_payload = {
+                                "method": method,
+                                "schedule": blend_grid_schedule,
+                                "weights": blend_grid_weights,
+                                "tune_split": blend_grid_tune_split,
+                                "metric": metric_col,
+                                "min_weight": blend_grid_min_weight,
+                                "power": blend_grid_power,
+                                "best_w_path": best_w_path,
+                                "best_w_by_horizon": best_w_by_horizon,
+                                "n_val": int(len(val_eval_indices_grid)),
+                                "n_test": int(len(llm_eval_indices)),
+                            }
+                            with (run_dir / "llm" / f"blend_grid_selection_{method_slug}.json").open("w") as f:
+                                json.dump(selection_payload, f, indent=2)
+
+                            logger.info(
+                                "Blend grid (val): best %s at w=%.2f",
+                                metric_col,
+                                best_w_path,
+                            )
+
+                            # 5) Register best-on-val blended variants as first-class models
+                            def _register_blend(name_suffix: str, w: float) -> None:
+                                blended_pred = blend_forecasts(
+                                    base_pred=tsm_pred_eval[llm_eval_indices],
+                                    llm_pred=predictions,
+                                    strength=float(w),
+                                    schedule=blend_grid_schedule,
+                                    pred_len=config.pred_len,
+                                    min_weight=blend_grid_min_weight,
+                                    power=blend_grid_power,
+                                )
+                                model_name = f"{method}_blend_{blend_grid_schedule}_{name_suffix}"
+                                llm_results[model_name] = {
+                                    "predictions": blended_pred,
+                                    "metrics": compute_metrics_by_horizon(
+                                        y_test_future[llm_eval_indices], blended_pred, horizons
+                                    ),
+                                    "path_metrics": compute_path_metrics(
+                                        y_test_future[llm_eval_indices], blended_pred
+                                    ),
+                                    "errors": get_per_sample_errors(
+                                        y_test_future[llm_eval_indices], blended_pred, horizons
+                                    ),
+                                    "eval_indices": llm_eval_indices,
+                                    "blend": {
+                                        "schedule": blend_grid_schedule,
+                                        "w": float(w),
+                                        "min_weight": blend_grid_min_weight,
+                                        "power": blend_grid_power,
+                                        "selected_on": "val",
+                                        "metric": metric_col,
+                                    },
+                                }
+                                logger.info("Added blended model: %s (w=%.2f)", model_name, float(w))
+
+                            _register_blend("bestval_path", best_w_path)
+                            for h, w in best_w_by_horizon.items():
+                                _register_blend(f"bestval_h{int(h)}", float(w))
 
                     if method == "TSM+LLM-COT-RF":
                         rules_path = run_dir / "llm" / "cot_rf_rules.jsonl"
@@ -1320,11 +2008,57 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                     baseline_subset_results[f"{name}_llm_subset"] = {
                         "predictions": preds[llm_eval_indices],
                         "metrics": subset_metrics,
-                        "errors": subset_errors
+                        "path_metrics": compute_path_metrics(
+                            y_test_future[llm_eval_indices], preds[llm_eval_indices]
+                        ),
+                        "errors": subset_errors,
+                        "eval_indices": llm_eval_indices,
                     }
     
     except Exception as e:
         logger.error(f"LLM refinement failed: {e}")
+
+    # Save paper-style path metrics (MSE over full forecast path) and a combined
+    # metrics-by-horizon table so we can benchmark methods without enabling
+    # full paper generation.
+    try:
+        path_rows = []
+        metrics_rows = []
+
+        def _append_rows(model_name: str, result: dict, subset: str) -> None:
+            preds = result.get("predictions")
+            n_samples = int(len(preds)) if preds is not None else 0
+
+            pm = result.get("path_metrics")
+            if pm:
+                row = {"model": model_name, "subset": subset, "n_samples": n_samples}
+                row.update({k: float(v) for k, v in pm.items()})
+                path_rows.append(row)
+
+            mdf = result.get("metrics")
+            if mdf is not None:
+                tmp = mdf.copy()
+                tmp["model"] = model_name
+                tmp["subset"] = subset
+                tmp["n_samples"] = n_samples
+                metrics_rows.append(tmp.reset_index())
+
+        for name, result in baseline_results.items():
+            _append_rows(name, result, subset="full")
+        for name, result in llm_results.items():
+            subset = "llm_subset" if result.get("eval_indices") is not None else "full"
+            _append_rows(name, result, subset=subset)
+        for name, result in baseline_subset_results.items():
+            _append_rows(name, result, subset="llm_subset")
+
+        if path_rows:
+            pd.DataFrame(path_rows).to_csv(run_dir / "results" / "path_metrics.csv", index=False)
+        if metrics_rows:
+            pd.concat(metrics_rows, ignore_index=True).to_csv(
+                run_dir / "results" / "metrics_by_horizon.csv", index=False
+            )
+    except Exception as e:
+        logger.warning("Failed to save combined metrics tables: %s", e)
     
     # =========================================================================
     # Step 7: Statistical significance tests
@@ -1500,24 +2234,92 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     logger.info("=" * 70)
     
     trend_results = {}
+    paper_trend_results = {}
+    trend_meta = {}
+
+    paper_trend_cfg = config.evaluation.get("paper_trend", {})
+    paper_alpha = float(paper_trend_cfg.get("alpha", 0.02))
+    paper_history_window = int(paper_trend_cfg.get("history_window", 18))
+    paper_horizons = paper_trend_cfg.get("horizons", [10, 20, 30])
     
-    for name, result in {**baseline_results, **llm_results}.items():
-        pred = result['predictions']
-        # Match dimensions
-        if len(pred) != len(y_test_base):
+    for name, result in {**baseline_results, **llm_results, **baseline_subset_results}.items():
+        pred = result.get("predictions")
+        if pred is None:
             continue
-            
+
+        indices = result.get("eval_indices")
+        subset_label = "llm_subset" if indices is not None else "full"
+        trend_meta[name] = {"subset": subset_label, "n_samples": int(len(pred))}
+        if indices is None:
+            y_true_prices = y_test_future[: len(pred)]
+            base_prices = y_test_base[: len(pred)]
+            hist_prices = y_test_hist[: len(pred)]
+        else:
+            y_true_prices = y_test_future[indices]
+            base_prices = y_test_base[indices]
+            hist_prices = y_test_hist[indices]
+
+        if pred.shape != y_true_prices.shape:
+            logger.warning(
+                "Skipping trend metrics for %s due to shape mismatch: %s vs %s",
+                name,
+                pred.shape,
+                y_true_prices.shape,
+            )
+            continue
+
         trend_acc = compute_trend_accuracy(
-            y_test_future[:len(pred)],
+            y_true_prices,
             pred,
-            y_test_base[:len(pred)],
-            threshold=0.5,  # EUR
-            horizons=horizons
+            base_prices,
+            threshold=0.5,  # EUR (legacy, non-paper)
+            horizons=horizons,
         )
         trend_results[name] = trend_acc
-        
-        logger.info(f"\n{name} Trend Accuracy:")
-        logger.info(trend_acc[['accuracy']])
+
+        paper_trend_acc = compute_paper_trend_accuracy(
+            hist_prices,
+            y_true_prices,
+            pred,
+            alpha=paper_alpha,
+            history_window=paper_history_window,
+            horizons=paper_horizons,
+        )
+        paper_trend_results[name] = paper_trend_acc
+
+        logger.info(f"\n{name} Trend Accuracy (legacy, fixed threshold):")
+        logger.info(trend_acc[["accuracy"]])
+        logger.info(
+            "\n%s Trend Accuracy (paper-style: Th=%d, α=%.3f):",
+            name,
+            paper_history_window,
+            paper_alpha,
+        )
+        logger.info(paper_trend_acc[["accuracy"]])
+
+    if trend_results:
+        trend_dfs = []
+        for name, df in trend_results.items():
+            df = df.copy()
+            df["model"] = name
+            df["subset"] = trend_meta.get(name, {}).get("subset", "unknown")
+            df["n_samples"] = trend_meta.get(name, {}).get("n_samples", 0)
+            trend_dfs.append(df.reset_index())
+        pd.concat(trend_dfs, ignore_index=True).to_csv(
+            run_dir / "results" / "trend_accuracy.csv", index=False
+        )
+
+    if paper_trend_results:
+        paper_trend_dfs = []
+        for name, df in paper_trend_results.items():
+            df = df.copy()
+            df["model"] = name
+            df["subset"] = trend_meta.get(name, {}).get("subset", "unknown")
+            df["n_samples"] = trend_meta.get(name, {}).get("n_samples", 0)
+            paper_trend_dfs.append(df.reset_index())
+        pd.concat(paper_trend_dfs, ignore_index=True).to_csv(
+            run_dir / "results" / "trend_accuracy_paper.csv", index=False
+        )
     
     # =========================================================================
     # Step 11: Generate paper

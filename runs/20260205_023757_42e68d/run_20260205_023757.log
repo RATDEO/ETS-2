@@ -1,0 +1,1260 @@
+2026-02-05 02:37:57 | INFO     | __main__ | Run ID: 20260205_023757_42e68d
+2026-02-05 02:37:57 | INFO     | __main__ | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260205_023757_42e68d
+2026-02-05 02:37:57 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:37:57 | INFO     | __main__ | STEP 2: Building data panel
+2026-02-05 02:37:57 | INFO     | __main__ | ======================================================================
+2026-02-05 02:37:57 | INFO     | data.panel | ============================================================
+2026-02-05 02:37:57 | INFO     | data.panel | Building panel dataset
+2026-02-05 02:37:57 | INFO     | data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-02-05 02:37:57 | INFO     | data.panel | ============================================================
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-02-05 02:37:57 | INFO     | data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data UK-2.csv
+2026-02-05 02:37:57 | INFO     | data.load_eua_futures | Loaded EUA futures: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_eua_futures | Combined EUA futures data: 4311 records from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_eua_futures | EUA futures target series: 4311 records, price range: 2.75 - 100.29 EUR
+2026-02-05 02:37:57 | INFO     | data.panel | EUA Futures loaded: 4311 records
+2026-02-05 02:37:57 | INFO     | data.panel | Master calendar: 4311 days from 2009-04-01 00:00:00 to 2026-01-05 00:00:00
+2026-02-05 02:37:57 | INFO     | data.panel | Target coverage: 4311 / 4311 days
+2026-02-05 02:37:57 | INFO     | data.panel | Adding EUA futures OHLC and volume features...
+2026-02-05 02:37:57 | INFO     | data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-02-05 02:37:57 | INFO     | data.panel | Adding ICAP secondary market as exogenous feature...
+2026-02-05 02:37:57 | INFO     | data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_icap | Loaded ICAP file: 1503 records from 2019-01-07 00:00:00 to 2025-09-30 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_icap | Combined ICAP data: 4984 records from 2005-03-09 00:00:00 to 2025-09-30 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_icap | ICAP target series: 2866 daily prices
+2026-02-05 02:37:57 | INFO     | data.panel | Added ICAP secondary market feature
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-02-05 02:37:57 | INFO     | data.fx | Loaded EUR/USD FX rates: 6910 observations from 1999-01-04 00:00:00 to 2025-12-24 00:00:00
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-02-05 02:37:57 | WARNING  | data.load_energy | Brent: Dropped 2 rows with invalid dates
+2026-02-05 02:37:57 | INFO     | data.load_energy | Loaded Brent crude: 9774 records from 1987-05-20 00:00:00 to 2025-11-24 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_energy | Loaded Rotterdam coal: 4967 records from 2006-07-18 00:00:00 to 2025-11-27 00:00:00
+2026-02-05 02:37:57 | WARNING  | data.fx | FX conversion: 30.2% of rows still missing FX rate after forward-fill
+2026-02-05 02:37:57 | INFO     | data.fx | Converted 6823 prices from USD to EUR
+2026-02-05 02:37:57 | INFO     | data.fx | Converted 4967 prices from USD to EUR
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-02-05 02:37:57 | INFO     | data.load_indices | Loaded KEUA: 1042 records from 2021-10-05 00:00:00 to 2025-11-26 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_indices | Loaded KRBN: 1339 records from 2020-07-31 00:00:00 to 2025-11-26 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_indices | Loaded GRN: 1558 records from 2019-09-18 00:00:00 to 2025-11-26 00:00:00
+2026-02-05 02:37:57 | INFO     | data.load_indices | Loaded 3 carbon market indices
+2026-02-05 02:37:57 | INFO     | data.fx | Converted 1042 prices from USD to EUR
+2026-02-05 02:37:57 | INFO     | data.fx | Converted 1339 prices from USD to EUR
+2026-02-05 02:37:57 | INFO     | data.fx | Converted 1558 prices from USD to EUR
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-02-05 02:37:57 | INFO     | data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-02-05 02:37:57 | INFO     | data.load_vstoxx | Loaded VSTOXX: 6851 records from 1999-01-04 00:00:00 to 2025-11-26 00:00:00
+2026-02-05 02:37:57 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-02-05 02:37:57 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260205_023757_42e68d/data
+2026-02-05 02:37:57 | INFO     | data.panel | ============================================================
+2026-02-05 02:37:57 | INFO     | data.panel | Panel built: 4311 rows, 40 columns
+2026-02-05 02:37:57 | INFO     | data.panel | Target coverage: 100.0%
+2026-02-05 02:37:57 | INFO     | data.panel | ============================================================
+2026-02-05 02:37:58 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260205_023757_42e68d/paper_snapshot/fig_data_coverage.png
+2026-02-05 02:37:58 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:37:58 | INFO     | __main__ | STEP 3: Creating windows and splitting data
+2026-02-05 02:37:58 | INFO     | __main__ | ======================================================================
+2026-02-05 02:37:58 | INFO     | data.windows | Creating windows with 11 features, mode=MS
+2026-02-05 02:37:58 | INFO     | data.windows | Creating 4222 windows
+2026-02-05 02:37:58 | INFO     | data.windows | Window shapes: X_enc=(4222, 60, 11), X_dec=(4222, 45, 11), y=(4222, 30)
+2026-02-05 02:37:58 | INFO     | data.windows | train: 3608 windows
+2026-02-05 02:37:58 | INFO     | data.windows | val: 255 windows
+2026-02-05 02:37:58 | INFO     | data.windows | test: 359 windows
+2026-02-05 02:37:58 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260205_023757_42e68d/data/datasets
+2026-02-05 02:37:58 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:37:58 | INFO     | __main__ | STEP 4: Training and evaluating baselines
+2026-02-05 02:37:58 | INFO     | __main__ | ======================================================================
+2026-02-05 02:37:58 | INFO     | models.baselines | Fitted 30 linear models
+2026-02-05 02:37:58 | INFO     | models.baselines | Fitted 30 linear models
+2026-02-05 02:37:58 | INFO     | __main__ | 
+Baseline Results (MSE by horizon):
+2026-02-05 02:37:58 | INFO     | __main__ | 
+naive_persistence:
+2026-02-05 02:37:58 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.416031  1.189971  0.963454  1.360579
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938980  5.093032  3.972535  5.521094
+30       37.794167  6.147696  4.985906  6.844857
+2026-02-05 02:37:58 | INFO     | __main__ | Path MSE (avg over 30d): 19.974094
+2026-02-05 02:37:58 | INFO     | __main__ | 
+seasonal_naive:
+2026-02-05 02:37:58 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         6.642022  2.577212  2.067103  2.932119
+5         6.543584  2.558043  2.043733  2.897462
+20       25.938978  5.093032  3.972535  5.521094
+30       37.794169  6.147696  4.985906  6.844857
+2026-02-05 02:37:58 | INFO     | __main__ | Path MSE (avg over 30d): 22.403142
+2026-02-05 02:37:58 | INFO     | __main__ | 
+linear_ridge:
+2026-02-05 02:37:58 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         1.430786  1.196155  0.969301  1.368408
+5         6.776788  2.603226  2.073692  2.945110
+20       26.949851  5.191325  3.963449  5.617849
+30       35.867324  5.988933  4.759430  6.638536
+2026-02-05 02:37:58 | INFO     | __main__ | Path MSE (avg over 30d): 20.207191
+2026-02-05 02:37:58 | INFO     | __main__ | 
+linear_lasso:
+2026-02-05 02:37:58 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         5.249424  2.291162  1.996119  2.772775
+5        10.064285  3.172426  2.635072  3.653516
+20       28.228351  5.313036  4.423775  6.080842
+30       37.740303  6.143314  5.100215  6.969766
+2026-02-05 02:37:58 | INFO     | __main__ | Path MSE (avg over 30d): 22.408314
+2026-02-05 02:37:58 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:37:58 | INFO     | __main__ | STEP 5: TSM model training
+2026-02-05 02:37:58 | INFO     | __main__ | ======================================================================
+2026-02-05 02:37:58 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=60, pred_len=30
+2026-02-05 02:37:58 | INFO     | models.tsm | Built Autoformer model with 68033 parameters
+2026-02-05 02:38:00 | INFO     | models.tsm | Epoch 1/50 - Train: 0.169562, Val: 0.057798
+2026-02-05 02:38:00 | INFO     | models.tsm | Epoch 2/50 - Train: 0.106845, Val: 0.056406
+2026-02-05 02:38:01 | INFO     | models.tsm | Epoch 3/50 - Train: 0.103852, Val: 0.056513
+2026-02-05 02:38:02 | INFO     | models.tsm | Epoch 4/50 - Train: 0.103726, Val: 0.056747
+2026-02-05 02:38:02 | INFO     | models.tsm | Epoch 5/50 - Train: 0.101690, Val: 0.056463
+2026-02-05 02:38:03 | INFO     | models.tsm | Epoch 6/50 - Train: 0.101701, Val: 0.057156
+2026-02-05 02:38:04 | INFO     | models.tsm | Epoch 7/50 - Train: 0.100062, Val: 0.056876
+2026-02-05 02:38:04 | INFO     | models.tsm | Epoch 8/50 - Train: 0.099857, Val: 0.056589
+2026-02-05 02:38:05 | INFO     | models.tsm | Epoch 9/50 - Train: 0.099514, Val: 0.056828
+2026-02-05 02:38:05 | INFO     | models.tsm | Epoch 10/50 - Train: 0.098981, Val: 0.057147
+2026-02-05 02:38:06 | INFO     | models.tsm | Epoch 11/50 - Train: 0.099054, Val: 0.057244
+2026-02-05 02:38:06 | INFO     | models.tsm | Epoch 12/50 - Train: 0.098685, Val: 0.057190
+2026-02-05 02:38:07 | INFO     | models.tsm | Epoch 13/50 - Train: 0.098352, Val: 0.058727
+2026-02-05 02:38:08 | INFO     | models.tsm | Epoch 14/50 - Train: 0.097953, Val: 0.057467
+2026-02-05 02:38:08 | INFO     | models.tsm | Epoch 15/50 - Train: 0.098037, Val: 0.057067
+2026-02-05 02:38:09 | INFO     | models.tsm | Epoch 16/50 - Train: 0.097594, Val: 0.056601
+2026-02-05 02:38:09 | INFO     | models.tsm | Epoch 17/50 - Train: 0.097979, Val: 0.056923
+2026-02-05 02:38:09 | INFO     | models.tsm | Early stopping at epoch 17
+2026-02-05 02:38:10 | INFO     | __main__ | 
+TSM Results:
+2026-02-05 02:38:10 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         0.097459  0.312184  0.243567  0.341986
+5         1.890105  1.374811  1.048756  1.471557
+20       19.232149  4.385448  3.385018  4.726893
+30       40.764973  6.384745  5.022877  6.993155
+2026-02-05 02:38:10 | INFO     | __main__ | TSM Path MSE (avg over 30d): 14.515775
+2026-02-05 02:38:10 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:38:10 | INFO     | __main__ | STEP 6: LLM refinement
+2026-02-05 02:38:10 | INFO     | __main__ | ======================================================================
+2026-02-05 02:38:10 | INFO     | __main__ | Running method: TSM+LLM-COT-SENT-RF
+2026-02-05 02:38:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-05 02:38:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-05 02:38:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-05 02:38:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420072 seconds
+2026-02-05 02:38:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.993747 seconds
+2026-02-05 02:38:36 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Request timed out.
+2026-02-05 02:38:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.465621 seconds
+2026-02-05 02:38:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.944197 seconds
+2026-02-05 02:38:38 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:38:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.407941 seconds
+2026-02-05 02:38:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.830825 seconds
+2026-02-05 02:38:39 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:38:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.388478 seconds
+2026-02-05 02:38:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.978265 seconds
+2026-02-05 02:38:40 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:38:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447260 seconds
+2026-02-05 02:38:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.992551 seconds
+2026-02-05 02:38:42 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:38:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.472670 seconds
+2026-02-05 02:38:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.873661 seconds
+2026-02-05 02:38:43 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:38:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.496683 seconds
+2026-02-05 02:38:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.950291 seconds
+2026-02-05 02:38:45 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:38:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418764 seconds
+2026-02-05 02:38:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.863765 seconds
+2026-02-05 02:38:46 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:38:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.472445 seconds
+2026-02-05 02:38:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.852684 seconds
+2026-02-05 02:38:47 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:38:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.398821 seconds
+2026-02-05 02:38:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.998375 seconds
+2026-02-05 02:38:49 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:38:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.399273 seconds
+2026-02-05 02:38:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.825465 seconds
+2026-02-05 02:38:50 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:38:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.457469 seconds
+2026-02-05 02:38:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.961130 seconds
+2026-02-05 02:38:51 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:38:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.380348 seconds
+2026-02-05 02:38:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.915851 seconds
+2026-02-05 02:38:53 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:38:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.488407 seconds
+2026-02-05 02:38:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.975821 seconds
+2026-02-05 02:38:54 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:38:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.394063 seconds
+2026-02-05 02:38:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.849068 seconds
+2026-02-05 02:39:00 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Request timed out.
+2026-02-05 02:39:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.399109 seconds
+2026-02-05 02:39:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.817567 seconds
+2026-02-05 02:39:02 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432971 seconds
+2026-02-05 02:39:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.756721 seconds
+2026-02-05 02:39:03 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.452683 seconds
+2026-02-05 02:39:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.861990 seconds
+2026-02-05 02:39:04 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.396324 seconds
+2026-02-05 02:39:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.845370 seconds
+2026-02-05 02:39:05 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.392287 seconds
+2026-02-05 02:39:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.855662 seconds
+2026-02-05 02:39:07 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.411929 seconds
+2026-02-05 02:39:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.988544 seconds
+2026-02-05 02:39:08 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.471513 seconds
+2026-02-05 02:39:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.927653 seconds
+2026-02-05 02:39:09 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.490026 seconds
+2026-02-05 02:39:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.941802 seconds
+2026-02-05 02:39:11 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.487375 seconds
+2026-02-05 02:39:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.930507 seconds
+2026-02-05 02:39:12 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:12 | INFO     | llm.refine | Processed 10/100 samples
+2026-02-05 02:39:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420539 seconds
+2026-02-05 02:39:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.908792 seconds
+2026-02-05 02:39:14 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.453727 seconds
+2026-02-05 02:39:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.947623 seconds
+2026-02-05 02:39:15 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466628 seconds
+2026-02-05 02:39:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.765836 seconds
+2026-02-05 02:39:16 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418996 seconds
+2026-02-05 02:39:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.847717 seconds
+2026-02-05 02:39:18 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.478608 seconds
+2026-02-05 02:39:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.817718 seconds
+2026-02-05 02:39:19 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.479575 seconds
+2026-02-05 02:39:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.905136 seconds
+2026-02-05 02:39:25 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Request timed out.
+2026-02-05 02:39:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.376310 seconds
+2026-02-05 02:39:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.840000 seconds
+2026-02-05 02:39:27 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.430381 seconds
+2026-02-05 02:39:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.828846 seconds
+2026-02-05 02:39:28 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.394644 seconds
+2026-02-05 02:39:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.806000 seconds
+2026-02-05 02:39:29 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.471369 seconds
+2026-02-05 02:39:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.991975 seconds
+2026-02-05 02:39:31 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.460568 seconds
+2026-02-05 02:39:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.933065 seconds
+2026-02-05 02:39:32 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.473627 seconds
+2026-02-05 02:39:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.764273 seconds
+2026-02-05 02:39:33 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.390454 seconds
+2026-02-05 02:39:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.921331 seconds
+2026-02-05 02:39:35 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418070 seconds
+2026-02-05 02:39:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.901092 seconds
+2026-02-05 02:39:36 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.385682 seconds
+2026-02-05 02:39:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.885287 seconds
+2026-02-05 02:39:37 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466890 seconds
+2026-02-05 02:39:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.938343 seconds
+2026-02-05 02:39:39 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.429829 seconds
+2026-02-05 02:39:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.934315 seconds
+2026-02-05 02:39:40 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.426927 seconds
+2026-02-05 02:39:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.775544 seconds
+2026-02-05 02:39:41 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.450075 seconds
+2026-02-05 02:39:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.945170 seconds
+2026-02-05 02:39:43 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375308 seconds
+2026-02-05 02:39:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.872618 seconds
+2026-02-05 02:39:44 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.488636 seconds
+2026-02-05 02:39:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.988221 seconds
+2026-02-05 02:39:45 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486294 seconds
+2026-02-05 02:39:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.843138 seconds
+2026-02-05 02:39:47 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.400990 seconds
+2026-02-05 02:39:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.894460 seconds
+2026-02-05 02:39:49 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.492059 seconds
+2026-02-05 02:39:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.904595 seconds
+2026-02-05 02:39:50 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375485 seconds
+2026-02-05 02:39:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.867721 seconds
+2026-02-05 02:39:52 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.378615 seconds
+2026-02-05 02:39:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.784805 seconds
+2026-02-05 02:39:53 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.498565 seconds
+2026-02-05 02:39:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.819820 seconds
+2026-02-05 02:39:55 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:39:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.414786 seconds
+2026-02-05 02:39:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.865757 seconds
+2026-02-05 02:39:56 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:39:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466647 seconds
+2026-02-05 02:39:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.839760 seconds
+2026-02-05 02:39:58 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:39:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486056 seconds
+2026-02-05 02:39:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.891309 seconds
+2026-02-05 02:40:00 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:00 | INFO     | llm.refine | Processed 20/100 samples
+2026-02-05 02:40:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.443285 seconds
+2026-02-05 02:40:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.761546 seconds
+2026-02-05 02:40:01 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.390518 seconds
+2026-02-05 02:40:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.934153 seconds
+2026-02-05 02:40:03 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.437427 seconds
+2026-02-05 02:40:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.955337 seconds
+2026-02-05 02:40:04 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.385922 seconds
+2026-02-05 02:40:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.782370 seconds
+2026-02-05 02:40:06 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.462694 seconds
+2026-02-05 02:40:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.840263 seconds
+2026-02-05 02:40:07 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.423879 seconds
+2026-02-05 02:40:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.961790 seconds
+2026-02-05 02:40:09 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.404686 seconds
+2026-02-05 02:40:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.865155 seconds
+2026-02-05 02:40:10 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.402672 seconds
+2026-02-05 02:40:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.867412 seconds
+2026-02-05 02:40:12 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.499929 seconds
+2026-02-05 02:40:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.918961 seconds
+2026-02-05 02:40:13 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.497565 seconds
+2026-02-05 02:40:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.767725 seconds
+2026-02-05 02:40:15 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.390160 seconds
+2026-02-05 02:40:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.792084 seconds
+2026-02-05 02:40:16 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.461561 seconds
+2026-02-05 02:40:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.985519 seconds
+2026-02-05 02:40:18 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.390249 seconds
+2026-02-05 02:40:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.763263 seconds
+2026-02-05 02:40:20 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.489293 seconds
+2026-02-05 02:40:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.878502 seconds
+2026-02-05 02:40:21 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.491348 seconds
+2026-02-05 02:40:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.809849 seconds
+2026-02-05 02:40:23 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.404271 seconds
+2026-02-05 02:40:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.967902 seconds
+2026-02-05 02:40:24 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.440590 seconds
+2026-02-05 02:40:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.862549 seconds
+2026-02-05 02:40:26 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466868 seconds
+2026-02-05 02:40:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.781892 seconds
+2026-02-05 02:40:27 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447108 seconds
+2026-02-05 02:40:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.947050 seconds
+2026-02-05 02:40:29 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432588 seconds
+2026-02-05 02:40:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.817517 seconds
+2026-02-05 02:40:31 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.474856 seconds
+2026-02-05 02:40:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.922071 seconds
+2026-02-05 02:40:32 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375606 seconds
+2026-02-05 02:40:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.837530 seconds
+2026-02-05 02:40:34 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.445237 seconds
+2026-02-05 02:40:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.870606 seconds
+2026-02-05 02:40:35 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.484874 seconds
+2026-02-05 02:40:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.943826 seconds
+2026-02-05 02:40:37 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.457739 seconds
+2026-02-05 02:40:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.852923 seconds
+2026-02-05 02:40:39 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.471236 seconds
+2026-02-05 02:40:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.944946 seconds
+2026-02-05 02:40:40 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.491126 seconds
+2026-02-05 02:40:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.842224 seconds
+2026-02-05 02:40:42 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.471382 seconds
+2026-02-05 02:40:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.773645 seconds
+2026-02-05 02:40:43 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.392546 seconds
+2026-02-05 02:40:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.982286 seconds
+2026-02-05 02:40:45 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.470249 seconds
+2026-02-05 02:40:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.832756 seconds
+2026-02-05 02:40:47 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:47 | INFO     | llm.refine | Processed 30/100 samples
+2026-02-05 02:40:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.473220 seconds
+2026-02-05 02:40:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.966922 seconds
+2026-02-05 02:40:48 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.383061 seconds
+2026-02-05 02:40:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.857239 seconds
+2026-02-05 02:40:50 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.440916 seconds
+2026-02-05 02:40:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.803845 seconds
+2026-02-05 02:40:51 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.399063 seconds
+2026-02-05 02:40:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.952398 seconds
+2026-02-05 02:40:53 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.487884 seconds
+2026-02-05 02:40:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.892237 seconds
+2026-02-05 02:40:55 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447053 seconds
+2026-02-05 02:40:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.883244 seconds
+2026-02-05 02:40:56 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:40:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.408866 seconds
+2026-02-05 02:40:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.831659 seconds
+2026-02-05 02:40:58 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:40:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.376979 seconds
+2026-02-05 02:40:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.975396 seconds
+2026-02-05 02:40:59 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:40:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449672 seconds
+2026-02-05 02:41:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.915174 seconds
+2026-02-05 02:41:01 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.392291 seconds
+2026-02-05 02:41:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.937836 seconds
+2026-02-05 02:41:03 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.476224 seconds
+2026-02-05 02:41:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.887847 seconds
+2026-02-05 02:41:04 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447265 seconds
+2026-02-05 02:41:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.930364 seconds
+2026-02-05 02:41:06 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.468774 seconds
+2026-02-05 02:41:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.769184 seconds
+2026-02-05 02:41:07 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.444609 seconds
+2026-02-05 02:41:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.784663 seconds
+2026-02-05 02:41:09 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.431209 seconds
+2026-02-05 02:41:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.987353 seconds
+2026-02-05 02:41:11 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375090 seconds
+2026-02-05 02:41:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.790993 seconds
+2026-02-05 02:41:12 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.378875 seconds
+2026-02-05 02:41:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.768408 seconds
+2026-02-05 02:41:13 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.393913 seconds
+2026-02-05 02:41:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.958422 seconds
+2026-02-05 02:41:15 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.439295 seconds
+2026-02-05 02:41:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.946563 seconds
+2026-02-05 02:41:17 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449870 seconds
+2026-02-05 02:41:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.985341 seconds
+2026-02-05 02:41:18 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.452628 seconds
+2026-02-05 02:41:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.753673 seconds
+2026-02-05 02:41:20 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466850 seconds
+2026-02-05 02:41:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.803982 seconds
+2026-02-05 02:41:21 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.443124 seconds
+2026-02-05 02:41:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.894248 seconds
+2026-02-05 02:41:23 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.380335 seconds
+2026-02-05 02:41:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.751144 seconds
+2026-02-05 02:41:24 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.430529 seconds
+2026-02-05 02:41:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.820398 seconds
+2026-02-05 02:41:26 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.480650 seconds
+2026-02-05 02:41:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.925823 seconds
+2026-02-05 02:41:28 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.378911 seconds
+2026-02-05 02:41:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.855205 seconds
+2026-02-05 02:41:29 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432226 seconds
+2026-02-05 02:41:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.813006 seconds
+2026-02-05 02:41:31 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.492854 seconds
+2026-02-05 02:41:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.853956 seconds
+2026-02-05 02:41:32 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.437144 seconds
+2026-02-05 02:41:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.786820 seconds
+2026-02-05 02:41:34 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:34 | INFO     | llm.refine | Processed 40/100 samples
+2026-02-05 02:41:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.480321 seconds
+2026-02-05 02:41:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.759805 seconds
+2026-02-05 02:41:35 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.489986 seconds
+2026-02-05 02:41:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.953544 seconds
+2026-02-05 02:41:37 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.425621 seconds
+2026-02-05 02:41:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.831197 seconds
+2026-02-05 02:41:38 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.470600 seconds
+2026-02-05 02:41:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.970028 seconds
+2026-02-05 02:41:40 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.388714 seconds
+2026-02-05 02:41:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.938446 seconds
+2026-02-05 02:41:42 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.425685 seconds
+2026-02-05 02:41:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.845155 seconds
+2026-02-05 02:41:43 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447597 seconds
+2026-02-05 02:41:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.854082 seconds
+2026-02-05 02:41:45 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.434652 seconds
+2026-02-05 02:41:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.766323 seconds
+2026-02-05 02:41:46 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.474468 seconds
+2026-02-05 02:41:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.820952 seconds
+2026-02-05 02:41:48 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.470164 seconds
+2026-02-05 02:41:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.901054 seconds
+2026-02-05 02:41:50 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.416039 seconds
+2026-02-05 02:41:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.925001 seconds
+2026-02-05 02:41:51 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.460478 seconds
+2026-02-05 02:41:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.812034 seconds
+2026-02-05 02:41:53 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.490932 seconds
+2026-02-05 02:41:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.885429 seconds
+2026-02-05 02:41:54 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375193 seconds
+2026-02-05 02:41:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.750976 seconds
+2026-02-05 02:41:56 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:41:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.490842 seconds
+2026-02-05 02:41:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.946711 seconds
+2026-02-05 02:41:58 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:41:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466850 seconds
+2026-02-05 02:41:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.766685 seconds
+2026-02-05 02:41:59 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:41:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.389892 seconds
+2026-02-05 02:42:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.780182 seconds
+2026-02-05 02:42:00 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.453809 seconds
+2026-02-05 02:42:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.960563 seconds
+2026-02-05 02:42:02 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.395782 seconds
+2026-02-05 02:42:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.824115 seconds
+2026-02-05 02:42:04 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.423540 seconds
+2026-02-05 02:42:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.753192 seconds
+2026-02-05 02:42:05 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418253 seconds
+2026-02-05 02:42:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.998044 seconds
+2026-02-05 02:42:07 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.397862 seconds
+2026-02-05 02:42:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.925155 seconds
+2026-02-05 02:42:08 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.417076 seconds
+2026-02-05 02:42:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.765267 seconds
+2026-02-05 02:42:10 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.483214 seconds
+2026-02-05 02:42:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.971143 seconds
+2026-02-05 02:42:12 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486621 seconds
+2026-02-05 02:42:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.861694 seconds
+2026-02-05 02:42:13 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.465956 seconds
+2026-02-05 02:42:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.848793 seconds
+2026-02-05 02:42:15 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.410298 seconds
+2026-02-05 02:42:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.949101 seconds
+2026-02-05 02:42:16 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420720 seconds
+2026-02-05 02:42:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.934004 seconds
+2026-02-05 02:42:18 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.438934 seconds
+2026-02-05 02:42:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.773666 seconds
+2026-02-05 02:42:19 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.394237 seconds
+2026-02-05 02:42:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.976925 seconds
+2026-02-05 02:42:21 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:21 | INFO     | llm.refine | Processed 50/100 samples
+2026-02-05 02:42:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447053 seconds
+2026-02-05 02:42:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.930830 seconds
+2026-02-05 02:42:23 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.499557 seconds
+2026-02-05 02:42:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.807220 seconds
+2026-02-05 02:42:24 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420361 seconds
+2026-02-05 02:42:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.934511 seconds
+2026-02-05 02:42:26 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.407346 seconds
+2026-02-05 02:42:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.862080 seconds
+2026-02-05 02:42:28 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.446539 seconds
+2026-02-05 02:42:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.997583 seconds
+2026-02-05 02:42:29 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.490595 seconds
+2026-02-05 02:42:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.779223 seconds
+2026-02-05 02:42:31 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.387009 seconds
+2026-02-05 02:42:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.863602 seconds
+2026-02-05 02:42:32 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.395676 seconds
+2026-02-05 02:42:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.854373 seconds
+2026-02-05 02:42:34 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.481488 seconds
+2026-02-05 02:42:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.968139 seconds
+2026-02-05 02:42:36 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.461468 seconds
+2026-02-05 02:42:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.775255 seconds
+2026-02-05 02:42:37 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.400485 seconds
+2026-02-05 02:42:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.784824 seconds
+2026-02-05 02:42:39 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.387634 seconds
+2026-02-05 02:42:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.947481 seconds
+2026-02-05 02:42:40 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.468809 seconds
+2026-02-05 02:42:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.974302 seconds
+2026-02-05 02:42:42 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.402485 seconds
+2026-02-05 02:42:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.778966 seconds
+2026-02-05 02:42:43 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449203 seconds
+2026-02-05 02:42:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.844835 seconds
+2026-02-05 02:42:45 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.480681 seconds
+2026-02-05 02:42:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.767530 seconds
+2026-02-05 02:42:46 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.391924 seconds
+2026-02-05 02:42:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.755948 seconds
+2026-02-05 02:42:48 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.398654 seconds
+2026-02-05 02:42:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.779646 seconds
+2026-02-05 02:42:49 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.496902 seconds
+2026-02-05 02:42:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.815859 seconds
+2026-02-05 02:42:51 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.458477 seconds
+2026-02-05 02:42:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.767296 seconds
+2026-02-05 02:42:52 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.399721 seconds
+2026-02-05 02:42:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.783984 seconds
+2026-02-05 02:42:54 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.398656 seconds
+2026-02-05 02:42:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.933299 seconds
+2026-02-05 02:42:55 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:42:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.401578 seconds
+2026-02-05 02:42:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.972976 seconds
+2026-02-05 02:42:57 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:42:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.390979 seconds
+2026-02-05 02:42:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.785352 seconds
+2026-02-05 02:42:58 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:42:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.472196 seconds
+2026-02-05 02:42:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.795853 seconds
+2026-02-05 02:43:00 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.442462 seconds
+2026-02-05 02:43:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.923702 seconds
+2026-02-05 02:43:02 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.400582 seconds
+2026-02-05 02:43:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.943101 seconds
+2026-02-05 02:43:03 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.497042 seconds
+2026-02-05 02:43:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.951718 seconds
+2026-02-05 02:43:05 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.458967 seconds
+2026-02-05 02:43:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.783912 seconds
+2026-02-05 02:43:06 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.379139 seconds
+2026-02-05 02:43:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.930219 seconds
+2026-02-05 02:43:08 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:08 | INFO     | llm.refine | Processed 60/100 samples
+2026-02-05 02:43:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.419815 seconds
+2026-02-05 02:43:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.900080 seconds
+2026-02-05 02:43:10 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.377356 seconds
+2026-02-05 02:43:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.865946 seconds
+2026-02-05 02:43:11 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.382595 seconds
+2026-02-05 02:43:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.971165 seconds
+2026-02-05 02:43:13 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.378700 seconds
+2026-02-05 02:43:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.955358 seconds
+2026-02-05 02:43:14 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.379683 seconds
+2026-02-05 02:43:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.933633 seconds
+2026-02-05 02:43:16 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486450 seconds
+2026-02-05 02:43:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.891359 seconds
+2026-02-05 02:43:18 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.408932 seconds
+2026-02-05 02:43:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.921581 seconds
+2026-02-05 02:43:19 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.424224 seconds
+2026-02-05 02:43:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.872144 seconds
+2026-02-05 02:43:21 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.451851 seconds
+2026-02-05 02:43:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.855853 seconds
+2026-02-05 02:43:22 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.468160 seconds
+2026-02-05 02:43:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.822804 seconds
+2026-02-05 02:43:24 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.499789 seconds
+2026-02-05 02:43:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.768606 seconds
+2026-02-05 02:43:25 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432694 seconds
+2026-02-05 02:43:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.820143 seconds
+2026-02-05 02:43:27 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.407256 seconds
+2026-02-05 02:43:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.832343 seconds
+2026-02-05 02:43:28 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.454472 seconds
+2026-02-05 02:43:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.982507 seconds
+2026-02-05 02:43:30 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.416970 seconds
+2026-02-05 02:43:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.917450 seconds
+2026-02-05 02:43:32 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.460761 seconds
+2026-02-05 02:43:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.787996 seconds
+2026-02-05 02:43:33 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.410031 seconds
+2026-02-05 02:43:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.924919 seconds
+2026-02-05 02:43:35 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.461339 seconds
+2026-02-05 02:43:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.897902 seconds
+2026-02-05 02:43:37 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449700 seconds
+2026-02-05 02:43:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.926086 seconds
+2026-02-05 02:43:38 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.484089 seconds
+2026-02-05 02:43:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.894888 seconds
+2026-02-05 02:43:40 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.382455 seconds
+2026-02-05 02:43:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.830671 seconds
+2026-02-05 02:43:41 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.387149 seconds
+2026-02-05 02:43:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.846121 seconds
+2026-02-05 02:43:43 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.462381 seconds
+2026-02-05 02:43:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.863016 seconds
+2026-02-05 02:43:44 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.499949 seconds
+2026-02-05 02:43:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.928272 seconds
+2026-02-05 02:43:46 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.446264 seconds
+2026-02-05 02:43:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.855004 seconds
+2026-02-05 02:43:48 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418162 seconds
+2026-02-05 02:43:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.883753 seconds
+2026-02-05 02:43:49 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.444730 seconds
+2026-02-05 02:43:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.946575 seconds
+2026-02-05 02:43:51 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.440852 seconds
+2026-02-05 02:43:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.774705 seconds
+2026-02-05 02:43:52 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.400497 seconds
+2026-02-05 02:43:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.957577 seconds
+2026-02-05 02:43:54 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.489401 seconds
+2026-02-05 02:43:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.871137 seconds
+2026-02-05 02:43:56 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:43:56 | INFO     | llm.refine | Processed 70/100 samples
+2026-02-05 02:43:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420882 seconds
+2026-02-05 02:43:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.916203 seconds
+2026-02-05 02:43:57 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:43:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.397697 seconds
+2026-02-05 02:43:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.812215 seconds
+2026-02-05 02:43:59 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:43:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.415901 seconds
+2026-02-05 02:43:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.943840 seconds
+2026-02-05 02:44:00 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.475109 seconds
+2026-02-05 02:44:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.993894 seconds
+2026-02-05 02:44:02 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.469395 seconds
+2026-02-05 02:44:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.881216 seconds
+2026-02-05 02:44:04 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.393783 seconds
+2026-02-05 02:44:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.981793 seconds
+2026-02-05 02:44:05 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.448195 seconds
+2026-02-05 02:44:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.842559 seconds
+2026-02-05 02:44:07 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.475696 seconds
+2026-02-05 02:44:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.825911 seconds
+2026-02-05 02:44:09 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.438203 seconds
+2026-02-05 02:44:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.939004 seconds
+2026-02-05 02:44:10 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.417993 seconds
+2026-02-05 02:44:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.998614 seconds
+2026-02-05 02:44:12 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.406129 seconds
+2026-02-05 02:44:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.807488 seconds
+2026-02-05 02:44:13 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486677 seconds
+2026-02-05 02:44:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.893713 seconds
+2026-02-05 02:44:15 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.478014 seconds
+2026-02-05 02:44:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.760508 seconds
+2026-02-05 02:44:17 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.435255 seconds
+2026-02-05 02:44:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.987445 seconds
+2026-02-05 02:44:18 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.468850 seconds
+2026-02-05 02:44:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.787916 seconds
+2026-02-05 02:44:20 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.442942 seconds
+2026-02-05 02:44:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.799646 seconds
+2026-02-05 02:44:21 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.416553 seconds
+2026-02-05 02:44:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.753027 seconds
+2026-02-05 02:44:23 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.425568 seconds
+2026-02-05 02:44:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.762490 seconds
+2026-02-05 02:44:24 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.388572 seconds
+2026-02-05 02:44:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.846837 seconds
+2026-02-05 02:44:26 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.410091 seconds
+2026-02-05 02:44:26 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.873805 seconds
+2026-02-05 02:44:27 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.396179 seconds
+2026-02-05 02:44:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.863032 seconds
+2026-02-05 02:44:29 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.387849 seconds
+2026-02-05 02:44:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.814086 seconds
+2026-02-05 02:44:30 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.440666 seconds
+2026-02-05 02:44:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.935202 seconds
+2026-02-05 02:44:32 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.469095 seconds
+2026-02-05 02:44:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.840585 seconds
+2026-02-05 02:44:33 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.404273 seconds
+2026-02-05 02:44:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.869675 seconds
+2026-02-05 02:44:35 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.421656 seconds
+2026-02-05 02:44:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.931351 seconds
+2026-02-05 02:44:37 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.490315 seconds
+2026-02-05 02:44:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.928568 seconds
+2026-02-05 02:44:38 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466036 seconds
+2026-02-05 02:44:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.920073 seconds
+2026-02-05 02:44:40 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432481 seconds
+2026-02-05 02:44:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.965406 seconds
+2026-02-05 02:44:42 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.471092 seconds
+2026-02-05 02:44:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.826513 seconds
+2026-02-05 02:44:43 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:43 | INFO     | llm.refine | Processed 80/100 samples
+2026-02-05 02:44:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.411698 seconds
+2026-02-05 02:44:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.983943 seconds
+2026-02-05 02:44:45 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449050 seconds
+2026-02-05 02:44:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.864347 seconds
+2026-02-05 02:44:46 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.448028 seconds
+2026-02-05 02:44:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.948291 seconds
+2026-02-05 02:44:48 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447482 seconds
+2026-02-05 02:44:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.773790 seconds
+2026-02-05 02:44:50 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.426990 seconds
+2026-02-05 02:44:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.826119 seconds
+2026-02-05 02:44:51 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.392908 seconds
+2026-02-05 02:44:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.808601 seconds
+2026-02-05 02:44:53 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.452452 seconds
+2026-02-05 02:44:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.998526 seconds
+2026-02-05 02:44:54 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.456030 seconds
+2026-02-05 02:44:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.811631 seconds
+2026-02-05 02:44:56 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:44:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.393319 seconds
+2026-02-05 02:44:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.761642 seconds
+2026-02-05 02:44:57 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:44:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.447622 seconds
+2026-02-05 02:44:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.813121 seconds
+2026-02-05 02:44:59 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:44:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.431733 seconds
+2026-02-05 02:44:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.849187 seconds
+2026-02-05 02:45:00 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.472433 seconds
+2026-02-05 02:45:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.945145 seconds
+2026-02-05 02:45:02 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.445521 seconds
+2026-02-05 02:45:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.992744 seconds
+2026-02-05 02:45:04 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.457984 seconds
+2026-02-05 02:45:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.830215 seconds
+2026-02-05 02:45:05 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.449460 seconds
+2026-02-05 02:45:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.958739 seconds
+2026-02-05 02:45:07 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.441576 seconds
+2026-02-05 02:45:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.968093 seconds
+2026-02-05 02:45:09 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.422218 seconds
+2026-02-05 02:45:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.993258 seconds
+2026-02-05 02:45:10 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.450747 seconds
+2026-02-05 02:45:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.858902 seconds
+2026-02-05 02:45:12 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.496612 seconds
+2026-02-05 02:45:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.839313 seconds
+2026-02-05 02:45:13 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.483038 seconds
+2026-02-05 02:45:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.884575 seconds
+2026-02-05 02:45:15 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.493714 seconds
+2026-02-05 02:45:16 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.905224 seconds
+2026-02-05 02:45:17 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.473542 seconds
+2026-02-05 02:45:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.918289 seconds
+2026-02-05 02:45:18 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.404846 seconds
+2026-02-05 02:45:19 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.905218 seconds
+2026-02-05 02:45:20 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:20 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.405999 seconds
+2026-02-05 02:45:21 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.792019 seconds
+2026-02-05 02:45:21 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.468466 seconds
+2026-02-05 02:45:22 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.979523 seconds
+2026-02-05 02:45:23 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:23 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.497577 seconds
+2026-02-05 02:45:24 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.865145 seconds
+2026-02-05 02:45:25 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.375012 seconds
+2026-02-05 02:45:25 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.912510 seconds
+2026-02-05 02:45:26 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418732 seconds
+2026-02-05 02:45:27 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.804692 seconds
+2026-02-05 02:45:28 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:28 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.418531 seconds
+2026-02-05 02:45:29 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.811442 seconds
+2026-02-05 02:45:29 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.381299 seconds
+2026-02-05 02:45:30 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.950160 seconds
+2026-02-05 02:45:31 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:31 | INFO     | llm.refine | Processed 90/100 samples
+2026-02-05 02:45:31 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.497452 seconds
+2026-02-05 02:45:32 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.961904 seconds
+2026-02-05 02:45:33 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.484222 seconds
+2026-02-05 02:45:33 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.832635 seconds
+2026-02-05 02:45:34 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:34 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.429504 seconds
+2026-02-05 02:45:35 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.945509 seconds
+2026-02-05 02:45:36 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:36 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.412567 seconds
+2026-02-05 02:45:37 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.808275 seconds
+2026-02-05 02:45:37 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.479026 seconds
+2026-02-05 02:45:38 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.848188 seconds
+2026-02-05 02:45:39 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:39 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.406509 seconds
+2026-02-05 02:45:40 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.971367 seconds
+2026-02-05 02:45:41 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.397587 seconds
+2026-02-05 02:45:41 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.758820 seconds
+2026-02-05 02:45:42 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:42 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486488 seconds
+2026-02-05 02:45:43 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.993580 seconds
+2026-02-05 02:45:44 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:44 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.461005 seconds
+2026-02-05 02:45:45 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.830663 seconds
+2026-02-05 02:45:45 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.380228 seconds
+2026-02-05 02:45:46 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.900836 seconds
+2026-02-05 02:45:47 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:47 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.410623 seconds
+2026-02-05 02:45:48 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.981001 seconds
+2026-02-05 02:45:49 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.413673 seconds
+2026-02-05 02:45:49 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.843189 seconds
+2026-02-05 02:45:50 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:50 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.487262 seconds
+2026-02-05 02:45:51 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.806880 seconds
+2026-02-05 02:45:52 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.393713 seconds
+2026-02-05 02:45:52 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.849897 seconds
+2026-02-05 02:45:53 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:53 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.484868 seconds
+2026-02-05 02:45:54 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.754039 seconds
+2026-02-05 02:45:55 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:45:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.402171 seconds
+2026-02-05 02:45:55 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.913199 seconds
+2026-02-05 02:45:56 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:45:56 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.446453 seconds
+2026-02-05 02:45:57 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.907357 seconds
+2026-02-05 02:45:58 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:45:58 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.436755 seconds
+2026-02-05 02:45:59 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.914692 seconds
+2026-02-05 02:46:00 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:46:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.393803 seconds
+2026-02-05 02:46:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.794417 seconds
+2026-02-05 02:46:01 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:46:01 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.486808 seconds
+2026-02-05 02:46:02 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.759803 seconds
+2026-02-05 02:46:03 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:46:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420552 seconds
+2026-02-05 02:46:03 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.792823 seconds
+2026-02-05 02:46:04 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:46:04 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.411586 seconds
+2026-02-05 02:46:05 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.891128 seconds
+2026-02-05 02:46:06 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:46:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.408276 seconds
+2026-02-05 02:46:06 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.758632 seconds
+2026-02-05 02:46:07 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:46:07 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466240 seconds
+2026-02-05 02:46:08 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.797950 seconds
+2026-02-05 02:46:09 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:46:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.432728 seconds
+2026-02-05 02:46:09 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.879126 seconds
+2026-02-05 02:46:10 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:46:10 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.445553 seconds
+2026-02-05 02:46:11 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.817243 seconds
+2026-02-05 02:46:12 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:46:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.466451 seconds
+2026-02-05 02:46:12 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.787072 seconds
+2026-02-05 02:46:13 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:46:13 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.396159 seconds
+2026-02-05 02:46:14 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.978334 seconds
+2026-02-05 02:46:15 | WARNING  | llm.refine | LLM apply call failed (attempt 1): Connection error.
+2026-02-05 02:46:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.389796 seconds
+2026-02-05 02:46:15 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.939034 seconds
+2026-02-05 02:46:17 | WARNING  | llm.refine | LLM apply call failed (attempt 2): Connection error.
+2026-02-05 02:46:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.441911 seconds
+2026-02-05 02:46:17 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.847417 seconds
+2026-02-05 02:46:18 | WARNING  | llm.refine | LLM apply call failed (attempt 3): Connection error.
+2026-02-05 02:46:18 | INFO     | llm.refine | Processed 100/100 samples
+2026-02-05 02:46:18 | INFO     | __main__ | 
+TSM+LLM-COT-SENT-RF Results:
+2026-02-05 02:46:18 | INFO     | __main__ |                mse      rmse       mae      mape
+horizon                                         
+1         0.146298  0.382490  0.275625  0.408788
+5         1.520892  1.233245  1.009896  1.503897
+20       13.793280  3.713931  2.981942  4.490537
+30       30.764935  5.546615  4.469161  6.785368
+2026-02-05 02:46:18 | INFO     | __main__ | TSM+LLM-COT-SENT-RF Path MSE (avg over 30d): 10.358078
+2026-02-05 02:46:18 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | STEP 7: Statistical significance tests
+2026-02-05 02:46:18 | INFO     | __main__ | ======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | 
+Significance test results saved
+2026-02-05 02:46:18 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | STEP 8: Robustness suite
+2026-02-05 02:46:18 | INFO     | __main__ | ======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | No noise levels configured; skipping robustness suite
+2026-02-05 02:46:18 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | STEP 9: Drift/return and long-short portfolio evaluation
+2026-02-05 02:46:18 | INFO     | __main__ | ======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | Drift metrics saved
+2026-02-05 02:46:18 | INFO     | __main__ | Long-short portfolio metrics saved
+2026-02-05 02:46:18 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | STEP 10: Trend classification accuracy
+2026-02-05 02:46:18 | INFO     | __main__ | ======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | 
+naive_persistence Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.142061
+20       0.091922
+30       0.058496
+2026-02-05 02:46:18 | INFO     | __main__ | 
+naive_persistence Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10       0.512535
+20       0.417827
+30       0.406685
+2026-02-05 02:46:18 | INFO     | __main__ | 
+seasonal_naive Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1        0.345404
+5        0.142061
+20       0.091922
+30       0.058496
+2026-02-05 02:46:18 | INFO     | __main__ | 
+seasonal_naive Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10       0.512535
+20       0.417827
+30       0.406685
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_ridge Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1        0.295265
+5        0.256267
+20       0.526462
+30       0.571031
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_ridge Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10       0.529248
+20       0.537604
+30       0.456825
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_lasso Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1        0.359331
+5        0.409471
+20       0.289694
+30       0.367688
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_lasso Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10       0.420613
+20       0.270195
+30       0.309192
+2026-02-05 02:46:18 | INFO     | __main__ | 
+tsm Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1        0.832869
+5        0.752089
+20       0.579387
+30       0.515320
+2026-02-05 02:46:18 | INFO     | __main__ | 
+tsm Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10       0.696379
+20       0.548747
+30       0.426184
+2026-02-05 02:46:18 | INFO     | __main__ | 
+TSM+LLM-COT-SENT-RF Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.78
+5            0.72
+20           0.56
+30           0.47
+2026-02-05 02:46:18 | INFO     | __main__ | 
+TSM+LLM-COT-SENT-RF Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.73
+20           0.49
+30           0.31
+2026-02-05 02:46:18 | INFO     | __main__ | 
+naive_persistence_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.27
+5            0.10
+20           0.12
+30           0.08
+2026-02-05 02:46:18 | INFO     | __main__ | 
+naive_persistence_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.52
+20           0.39
+30           0.36
+2026-02-05 02:46:18 | INFO     | __main__ | 
+seasonal_naive_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.31
+5            0.10
+20           0.12
+30           0.08
+2026-02-05 02:46:18 | INFO     | __main__ | 
+seasonal_naive_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.52
+20           0.39
+30           0.36
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_ridge_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.27
+5            0.26
+20           0.51
+30           0.54
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_ridge_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.48
+20           0.41
+30           0.35
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_lasso_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.41
+5            0.47
+20           0.30
+30           0.47
+2026-02-05 02:46:18 | INFO     | __main__ | 
+linear_lasso_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.44
+20           0.33
+30           0.33
+2026-02-05 02:46:18 | INFO     | __main__ | 
+tsm_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+1            0.80
+5            0.73
+20           0.56
+30           0.47
+2026-02-05 02:46:18 | INFO     | __main__ | 
+tsm_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-02-05 02:46:18 | INFO     | __main__ |          accuracy
+horizon          
+10           0.71
+20           0.48
+30           0.31
+2026-02-05 02:46:18 | INFO     | __main__ | Paper generation disabled by config
+2026-02-05 02:46:18 | INFO     | __main__ | 
+======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | EXPERIMENT COMPLETE
+2026-02-05 02:46:18 | INFO     | __main__ | ======================================================================
+2026-02-05 02:46:18 | INFO     | __main__ | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260205_023757_42e68d

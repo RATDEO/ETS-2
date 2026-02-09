@@ -5,10 +5,16 @@ import argparse
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
+import sys
 
 import pandas as pd
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
 from src.news.sentiment import aggregate_daily_sentiment
+from src.news.entities import classify_entity
 
 
 def main() -> None:
@@ -17,6 +23,14 @@ def main() -> None:
     parser.add_argument("--output", default="data/news/daily_sentiment.csv")
     parser.add_argument("--date-col", default="seendate")
     parser.add_argument("--score-col", default="llm_score")
+    parser.add_argument("--headline-col", default="title")
+    parser.add_argument("--entity-filter", default=None)
+    parser.add_argument(
+        "--entity-mode",
+        choices=["filter", "neutralize"],
+        default="filter",
+        help="Filter to entity or neutralize non-matching scores.",
+    )
     parser.add_argument(
         "--timing",
         choices=["all", "overnight", "intraday"],
@@ -44,6 +58,17 @@ def main() -> None:
         else:
             df = df[valid_mask & ~overnight_mask]
         print(f"Filtered to {len(df)} {args.timing} headlines")
+
+    if args.entity_filter:
+        if args.headline_col not in df.columns:
+            raise ValueError(f"Missing headline column: {args.headline_col}")
+        df["entity_target"] = df[args.headline_col].apply(classify_entity)
+        if args.entity_mode == "filter":
+            df = df[df["entity_target"] == args.entity_filter]
+        else:
+            mask = df["entity_target"] != args.entity_filter
+            df.loc[mask, args.score_col] = 0.0
+        print(f"Entity filter '{args.entity_filter}' -> {len(df)} headlines")
 
     daily = aggregate_daily_sentiment(
         df, date_col=args.date_col, score_col=args.score_col

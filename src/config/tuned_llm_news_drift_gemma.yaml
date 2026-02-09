@@ -61,7 +61,9 @@ model:
 
 llm:
   provider: "openai"
-  model: "unsloth/gemma-3-4b-it-qat-GGUF:Q4_K_M"
+  model: "qwen3-vl-4b-gpu"
+  base_url: "http://192.168.1.140:9877/v1"
+  api_key: deo
   temperature: 0.0
   max_tokens: 256
   methods: ["TSM+NEWS-DRIFT"]
@@ -79,9 +81,9 @@ llm:
     score_col: "sent_score"
     history_points: 18
   news_drift:
-    horizons: 3
+    horizons: 30
     sentiment_window: 3
-    min_abs: 0.6
+    min_abs: 0.2
     scale: 0.5
     pos_mult: 0.5
     neg_mult: 1.75
@@ -89,6 +91,10 @@ llm:
     decay: "exp"
     half_life: 1.0
     max_adjust_pct: 0.01
+    calibration:
+      enabled: true
+      split: "val"
+      scale: 1.0
 
 evaluation:
   primary_metric: "mse"

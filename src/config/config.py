@@ -233,13 +233,20 @@ def load_config(config_path: Optional[str] = None, overrides: Optional[Dict] = N
         config_path = Path(config_path)
     
     with open(config_path, "r") as f:
-        raw_config = yaml.safe_load(f)
+        raw_config = yaml.safe_load(f) or {}
+
+    # Allow loading from a resolved config (which includes run metadata).
+    # If present, use `run_id` to re-open the same run directory (useful for
+    # resuming long experiments) and strip metadata keys from the raw config.
+    run_id = raw_config.pop("run_id", None)
+    raw_config.pop("git_hash", None)
+    raw_config.pop("timestamp", None)
     
     # Apply overrides
     if overrides:
         raw_config = _deep_update(raw_config, overrides)
     
-    return Config(raw=raw_config)
+    return Config(raw=raw_config, run_id=str(run_id) if run_id else "")
 
 
 def _deep_update(base: Dict, updates: Dict) -> Dict:

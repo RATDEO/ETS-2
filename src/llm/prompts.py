@@ -398,11 +398,21 @@ class CoTRFReflectionTemplate(PromptTemplate):
     def __init__(self):
         super().__init__("CoT-RF-REFLECT")
 
+    def get_system_message(self) -> str:
+        return (
+            "You are an expert financial analyst specializing in carbon markets and EU ETS price forecasting.\n"
+            "Your job is to analyze teaching examples of past forecasts vs true outcomes and derive concise\n"
+            "correction rules/heuristics.\n"
+            "Respond with plain text rules only (no JSON, no code fences)."
+        )
+
     def format(
         self,
         examples: List[Dict],
         pred_len: int = 30,
         currency: str = "EUR",
+        history_points: int = 30,
+        sentiment_points: int = 30,
         **kwargs
     ) -> str:
         if not examples:
@@ -484,6 +494,170 @@ Refined forecast (JSON only):"""
         return prompt
 
 
+class CoTSentRFReflectionTemplate(PromptTemplate):
+    """Chain-of-thought reflection to derive correction rules with sentiment."""
+
+    def __init__(self):
+        super().__init__("CoT-SENT-RF-REFLECT")
+
+    def get_system_message(self) -> str:
+        return (
+            "You are an expert financial analyst specializing in carbon markets and EU ETS price forecasting.\n"
+            "Your job is to analyze teaching examples of past forecasts vs true outcomes, using sentiment\n"
+            "history as additional context, and derive concise correction rules/heuristics.\n"
+            "Respond with plain text rules only (no JSON, no code fences)."
+        )
+
+    def format(
+        self,
+        examples: List[Dict],
+        pred_len: int = 30,
+        currency: str = "EUR",
+        history_points: int = 30,
+        sentiment_points: int = 30,
+        **kwargs
+    ) -> str:
+        if not examples:
+            return "No teaching examples available."
+
+        blocks = []
+        for idx, ex in enumerate(examples, start=1):
+            history = ex.get("history", [])
+            forecast = ex.get("forecast", [])
+            truth = ex.get("truth", [])
+            sent_hist = ex.get("sentiment_history", [])
+            history_str = ", ".join([f"{v:.2f}" for v in history[-history_points:]])
+            forecast_str = ", ".join([f"{v:.2f}" for v in forecast])
+            truth_str = ", ".join([f"{v:.2f}" for v in truth])
+            sent_str = ", ".join([f"{v:.2f}" for v in sent_hist[-sentiment_points:]])
+            ex_date = ex.get("date", "")
+
+            blocks.append(
+                f"""Example {idx} (date={ex_date})
+History (last {history_points} days): [{history_str}]
+Sentiment history: [{sent_str}]
+Model forecast ({pred_len}d): [{forecast_str}]
+True outcome ({pred_len}d): [{truth_str}]"""
+            )
+
+        examples_text = "\n\n".join(blocks)
+
+        prompt = f"""You are analyzing past forecast errors to derive correction rules.
+
+## Teaching Examples
+{examples_text}
+
+## Task
+Identify systematic deviations between the model forecasts and the true outcomes,
+considering the sentiment history. Output a short set of correction rules/heuristics
+(free text, concise). Focus on bias, lag, overshoot after spikes, mean reversion,
+or horizon-specific errors in relation to sentiment.
+
+Rules:"""
+
+        return prompt
+
+
+class CoTSentRFApplyTemplate(PromptTemplate):
+    """Apply reflection rules to refine a TSM forecast with sentiment."""
+
+    def __init__(self):
+        super().__init__("CoT-SENT-RF-APPLY")
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        sentiment_history: np.ndarray,
+        rules_text: str,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        history_points: int = 30,
+        sentiment_points: int = 30,
+        **kwargs
+    ) -> str:
+        history_str = ", ".join([f"{v:.2f}" for v in history[-history_points:]])
+        forecast_str = ", ".join([f"{v:.2f}" for v in tsm_forecast])
+        sent_str = ", ".join([f"{v:.2f}" for v in sentiment_history[-sentiment_points:]])
+        rules_text = rules_text.strip() if rules_text else ""
+
+        prompt = f"""Refine the model forecast using the provided rules.
+
+## Context
+Current price: {history[-1]:.2f} {currency}
+Recent prices: [{history_str}]
+Sentiment history (+1 positive, 0 neutral, -1 negative): [{sent_str}]
+
+## Model Forecast (to be refined)
+[{forecast_str}]
+
+## Correction Rules
+{rules_text}
+
+## Task
+Apply the rules to adjust the forecast.
+Provide your refined {pred_len}-day forecast as JSON:
+{{"yhat": [day1_price, day2_price, ..., day{pred_len}_price]}}
+
+Refined forecast (JSON only):"""
+
+        return prompt
+
+
+class CoTSentRFDeltaApplyTemplate(PromptTemplate):
+    """Apply reflection rules by proposing bounded deltas to a TSM forecast."""
+
+    def __init__(self):
+        super().__init__("CoT-SENT-RF-DELTA-APPLY")
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        sentiment_history: np.ndarray,
+        rules_text: str,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        max_delta: Optional[float] = None,
+        history_points: int = 30,
+        sentiment_points: int = 30,
+        **kwargs
+    ) -> str:
+        history_str = ", ".join([f"{v:.2f}" for v in history[-history_points:]])
+        forecast_str = ", ".join([f"{v:.2f}" for v in tsm_forecast])
+        sent_str = ", ".join([f"{v:.2f}" for v in sentiment_history[-sentiment_points:]])
+        rules_text = rules_text.strip() if rules_text else ""
+        max_delta_str = f"{max_delta:.4f}" if max_delta is not None else "N/A"
+
+        prompt = f"""Refine the model forecast using the provided rules by proposing bounded price deltas.
+
+## Context
+Current price: {history[-1]:.2f} {currency}
+Recent prices: [{history_str}]
+Sentiment history (+1 positive, 0 neutral, -1 negative): [{sent_str}]
+
+## Model Forecast (to be refined)
+[{forecast_str}]
+
+## Correction Rules
+{rules_text}
+
+## Task
+Provide a per-day additive adjustment (delta) to the model forecast.
+- Delta is in absolute price units ({currency}).
+- Keep each delta within ±{max_delta_str} when possible.
+- Small corrections are preferred; avoid large rewrites.
+
+Return ONLY JSON with exactly {pred_len} values:
+{{"delta": [d1, d2, ..., d{pred_len}]}}
+
+JSON only:"""
+
+        return prompt
+
+
 def get_template(method: str) -> PromptTemplate:
     """Get prompt template by method name."""
     templates = {
@@ -495,6 +669,9 @@ def get_template(method: str) -> PromptTemplate:
         "CoT-RF": CoTRefinementTemplate(),
         "CoT-RF-REFLECT": CoTRFReflectionTemplate(),
         "CoT-RF-APPLY": CoTRFApplyTemplate(),
+        "CoT-SENT-RF-REFLECT": CoTSentRFReflectionTemplate(),
+        "CoT-SENT-RF-APPLY": CoTSentRFApplyTemplate(),
+        "CoT-SENT-RF-DELTA-APPLY": CoTSentRFDeltaApplyTemplate(),
     }
     
     if method not in templates:

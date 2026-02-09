@@ -157,6 +157,8 @@ class LLMRefiner:
         self.temperature = config.get("temperature", 0.1)
         self.max_tokens = config.get("max_tokens", 1000)
         self.max_retries = config.get("max_retries", 3)
+        self.timeout_seconds = float(config.get("timeout_seconds", 120.0))
+        self.client_max_retries = int(config.get("client_max_retries", 2))
         self.blend_config = config.get("blend", {})
         self.api_key = config.get("api_key")
         self.base_url = config.get("base_url")
@@ -210,6 +212,8 @@ class LLMRefiner:
                     kwargs["api_key"] = api_key
                 if base_url:
                     kwargs["base_url"] = base_url
+                kwargs["timeout"] = self.timeout_seconds
+                kwargs["max_retries"] = self.client_max_retries
                 self._client = OpenAI(**kwargs)
             except ImportError:
                 raise ImportError("openai package required for OpenAI provider")
@@ -241,7 +245,17 @@ class LLMRefiner:
         """
         # Check cache first
         if self.cache:
-            cached = self.cache.get(prompt, self.model, self.temperature)
+            import os
+
+            cache_context = {
+                "provider": self.provider,
+                "base_url": self.base_url or os.getenv("OPENAI_BASE_URL") or "",
+                "system_message": system_message,
+                "max_tokens": self.max_tokens,
+            }
+            cached = self.cache.get(
+                prompt, self.model, self.temperature, context=cache_context
+            )
             if cached:
                 return cached.get("content", "")
         
@@ -282,10 +296,89 @@ class LLMRefiner:
         
         # Cache response
         if self.cache:
-            self.cache.set(prompt, self.model, self.temperature, {"content": content})
+            self.cache.set(
+                prompt,
+                self.model,
+                self.temperature,
+                {"content": content},
+                context=cache_context,
+            )
         
         return content
-    
+
+    def _call_llm_messages(
+        self,
+        messages: List[Dict[str, str]],
+        system_message: str = "",
+    ) -> str:
+        """Call the LLM API with an explicit multi-message chat history."""
+        payload = {"messages": messages}
+        if system_message:
+            payload["system_message"] = system_message
+        prompt_key = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+
+        # Cache
+        if self.cache:
+            import os
+
+            cache_context = {
+                "provider": self.provider,
+                "base_url": self.base_url or os.getenv("OPENAI_BASE_URL") or "",
+                "system_message": system_message,
+                "max_tokens": self.max_tokens,
+            }
+            cached = self.cache.get(
+                prompt_key, self.model, self.temperature, context=cache_context
+            )
+            if cached:
+                return cached.get("content", "")
+
+        client = self._get_client()
+
+        if self.provider == "openai":
+            request_messages: List[Dict[str, str]] = []
+            if system_message:
+                request_messages.append({"role": "system", "content": system_message})
+            request_messages.extend(messages)
+
+            request = {
+                "model": self.model,
+                "messages": request_messages,
+                "temperature": self.temperature,
+            }
+            if self.model.startswith("gpt-5"):
+                request["max_completion_tokens"] = self.max_tokens
+            else:
+                request["max_tokens"] = self.max_tokens
+
+            response = client.chat.completions.create(**request)
+            message = response.choices[0].message
+            content = message.content
+            if not content:
+                content = getattr(message, "reasoning_content", None) or ""
+
+        elif self.provider == "anthropic":
+            response = client.messages.create(
+                model=self.model,
+                max_tokens=self.max_tokens,
+                system=system_message,
+                messages=messages,
+            )
+            content = response.content[0].text
+        else:
+            raise ValueError(f"Unknown provider: {self.provider}")
+
+        if self.cache:
+            self.cache.set(
+                prompt_key,
+                self.model,
+                self.temperature,
+                {"content": content},
+                context=cache_context,
+            )
+
+        return content
+
     def refine(
         self,
         method: str,
@@ -329,6 +422,7 @@ class LLMRefiner:
             max_pct = float(drift_cfg.get("max_adjust_pct", 0.03))
             decay_mode = str(drift_cfg.get("decay", "linear")).lower()
             half_life = float(drift_cfg.get("half_life", 3.0))
+            calib_cfg = drift_cfg.get("calibration", {})
 
             if sentiment_window > 0:
                 recent_sent = sentiment_history[-sentiment_window:]
@@ -357,7 +451,14 @@ class LLMRefiner:
                 return_std = 0.01
 
             weight = pos_mult if score >= 0 else neg_mult
-            base_adj = score * scale * weight * return_std
+
+            if calib_cfg.get("enabled") and "beta" in calib_cfg:
+                alpha = float(calib_cfg.get("alpha", 0.0))
+                beta = float(calib_cfg.get("beta", 0.0))
+                calib_scale = float(calib_cfg.get("scale", 1.0))
+                base_adj = (alpha + beta * score) * calib_scale * weight
+            else:
+                base_adj = score * scale * weight * return_std
             horizon = min(horizon, pred_len, len(tsm_forecast))
 
             if decay_mode == "exp":
@@ -383,6 +484,7 @@ class LLMRefiner:
                 "return_std": return_std,
                 "base_adjustment": base_adj,
                 "horizons": horizon,
+                "calibrated": bool(calib_cfg.get("enabled") and "beta" in calib_cfg),
             }
 
         if method == "NEWS-SENTIMENT-ONLY":
@@ -468,7 +570,7 @@ class LLMRefiner:
             }
 
         template = None
-        if method != "TSM+LLM-COT-RF":
+        if method not in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
             template = get_template(method)
 
         # Prepare prompt
@@ -528,6 +630,40 @@ class LLMRefiner:
                 examples=teaching_examples,
                 pred_len=pred_len
             )
+        elif method == "TSM+LLM-COT-SENT-RF":
+            if tsm_forecast is None:
+                raise ValueError("TSM forecast required for CoT-SENT-RF method")
+            if not teaching_examples:
+                raise ValueError("Teaching examples required for CoT-SENT-RF method")
+            if sentiment_history is None:
+                raise ValueError("Sentiment history required for CoT-SENT-RF method")
+            reflection_template = get_template("CoT-SENT-RF-REFLECT")
+            apply_template = get_template("CoT-SENT-RF-APPLY")
+            prompt_hist = int(self.config.get("prompt_history_points", 30))
+            prompt_sent = int(self.config.get("prompt_sentiment_points", 30))
+            prompt = reflection_template.format(
+                examples=teaching_examples,
+                pred_len=pred_len,
+                history_points=prompt_hist,
+                sentiment_points=prompt_sent
+            )
+        elif method == "TSM+LLM-COT-SENT-RF-DELTA":
+            if tsm_forecast is None:
+                raise ValueError("TSM forecast required for CoT-SENT-RF-DELTA method")
+            if not teaching_examples:
+                raise ValueError("Teaching examples required for CoT-SENT-RF-DELTA method")
+            if sentiment_history is None:
+                raise ValueError("Sentiment history required for CoT-SENT-RF-DELTA method")
+            reflection_template = get_template("CoT-SENT-RF-REFLECT")
+            apply_template = get_template("CoT-SENT-RF-DELTA-APPLY")
+            prompt_hist = int(self.config.get("prompt_history_points", 30))
+            prompt_sent = int(self.config.get("prompt_sentiment_points", 30))
+            prompt = reflection_template.format(
+                examples=teaching_examples,
+                pred_len=pred_len,
+                history_points=prompt_hist,
+                sentiment_points=prompt_sent
+            )
         elif method == "CoT-RF":
             # First get initial forecast
             initial_result, _ = self.refine(
@@ -550,31 +686,190 @@ class LLMRefiner:
                 pred_len=pred_len,
                 exogenous_summary=exogenous_summary
             )
-        
-        if method == "TSM+LLM-COT-RF":
-            system_message = reflection_template.get_system_message()
-        else:
-            system_message = template.get_system_message() if template else ""
-        
-        # Try with retries
+
+        # Special handling: two-stage reflect→apply methods
+        if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
+            retain_context = bool(
+                (self.config.get("cot_rf", {}) or {}).get("retain_context", False)
+            )
+
+            # Stage A: reflection → rules_text (plain text)
+            reflect_system = reflection_template.get_system_message()
+            rules_text = None
+            reflect_response = ""
+            reflect_error = None
+            reflect_attempts = 0
+            for reflect_attempt in range(self.max_retries):
+                reflect_attempts = reflect_attempt + 1
+                try:
+                    reflect_response = self._call_llm(prompt, reflect_system)
+                    rules_text = (reflect_response or "").strip()
+                    if rules_text:
+                        break
+                except Exception as e:
+                    reflect_error = str(e)
+                    logger.warning(
+                        "LLM reflection call failed (attempt %d): %s",
+                        reflect_attempt + 1,
+                        e,
+                    )
+
+            if self.log_store:
+                self.log_store.log_call(
+                    prompt=prompt,
+                    response={"content": reflect_response},
+                    model=self.model,
+                    temperature=self.temperature,
+                    method=f"{method}:reflect",
+                    metadata={
+                        "success": bool(rules_text),
+                        "attempts": reflect_attempts,
+                        "error": reflect_error,
+                        "retain_context": retain_context,
+                        "teaching_examples": len(teaching_examples or []),
+                    },
+                )
+
+            if not rules_text:
+                metadata = {
+                    "method": method,
+                    "model": self.model,
+                    "temperature": self.temperature,
+                    "success": False,
+                    "reflect_attempts": reflect_attempts,
+                    "apply_attempts": 0,
+                    "retain_context": retain_context,
+                    "error": reflect_error or "Empty rules_text from reflection stage",
+                }
+                return None, metadata
+
+            # Stage B: apply rules → refined forecast (JSON)
+            prompt_hist = int(self.config.get("prompt_history_points", 30))
+            prompt_sent = int(self.config.get("prompt_sentiment_points", 30))
+
+            if method == "TSM+LLM-COT-RF":
+                apply_prompt = apply_template.format(
+                    history=history,
+                    dates=dates,
+                    tsm_forecast=tsm_forecast,
+                    rules_text=rules_text,
+                    pred_len=pred_len,
+                )
+            else:
+                apply_kwargs = {
+                    "history": history,
+                    "dates": dates,
+                    "tsm_forecast": tsm_forecast,
+                    "sentiment_history": sentiment_history,
+                    "rules_text": rules_text,
+                    "pred_len": pred_len,
+                    "history_points": prompt_hist,
+                    "sentiment_points": prompt_sent,
+                }
+                if method == "TSM+LLM-COT-SENT-RF-DELTA":
+                    delta_cfg = self.config.get("delta", {})
+                    max_std = float(delta_cfg.get("max_delta_std", 0.5))
+                    max_abs = delta_cfg.get("max_delta_abs")
+                    hist_window = history[-20:] if len(history) >= 20 else history
+                    hist_std = float(np.std(hist_window)) if len(hist_window) else 0.0
+                    max_delta = float(max_abs) if max_abs is not None else max_std * hist_std
+                    apply_kwargs["max_delta"] = max_delta
+
+                apply_prompt = apply_template.format(**apply_kwargs)
+
+            apply_system = apply_template.get_system_message()
+            forecast = None
+            last_error = None
+            apply_response = ""
+            apply_prompt_for_log = apply_prompt
+            apply_attempts = 0
+
+            for apply_attempt in range(self.max_retries):
+                apply_attempts = apply_attempt + 1
+                try:
+                    if retain_context:
+                        messages = [
+                            {"role": "user", "content": prompt},
+                            {"role": "assistant", "content": rules_text},
+                            {"role": "user", "content": apply_prompt},
+                        ]
+                        apply_prompt_for_log = json.dumps(
+                            {"system": apply_system, "messages": messages},
+                            sort_keys=True,
+                            ensure_ascii=False,
+                        )
+                        apply_response = self._call_llm_messages(messages, apply_system)
+                    else:
+                        apply_prompt_for_log = apply_prompt
+                        apply_response = self._call_llm(apply_prompt, apply_system)
+
+                    if method == "TSM+LLM-COT-SENT-RF-DELTA":
+                        delta = parse_json_array(
+                            apply_response,
+                            expected_len=pred_len,
+                            keys=("delta", "delta_price", "adjustment"),
+                        )
+                        if delta is not None:
+                            max_delta = apply_kwargs.get("max_delta", 0.0)
+                            if max_delta and max_delta > 0:
+                                delta = np.clip(delta, -max_delta, max_delta)
+                            refined = tsm_forecast + delta
+                            forecast = self._blend_forecast(tsm_forecast, refined)
+                    else:
+                        forecast = parse_json_forecast(apply_response, expected_len=pred_len)
+
+                    if forecast is not None:
+                        break
+
+                    if apply_attempt < self.max_retries - 1:
+                        apply_prompt += "\n\nIMPORTANT: Respond ONLY with valid JSON. No other text."
+
+                except Exception as e:
+                    last_error = str(e)
+                    logger.warning(
+                        "LLM apply call failed (attempt %d): %s",
+                        apply_attempt + 1,
+                        e,
+                    )
+
+            metadata = {
+                "method": method,
+                "model": self.model,
+                "temperature": self.temperature,
+                "success": forecast is not None,
+                "reflect_attempts": reflect_attempts,
+                "apply_attempts": apply_attempts,
+                "retain_context": retain_context,
+                "rules_text": rules_text,
+                "teaching_examples": len(teaching_examples or []),
+                "teaching_dates": [ex.get("date") for ex in (teaching_examples or [])],
+            }
+            if last_error:
+                metadata["error"] = last_error
+
+            if self.log_store:
+                self.log_store.log_call(
+                    prompt=apply_prompt_for_log,
+                    response={"content": apply_response},
+                    model=self.model,
+                    temperature=self.temperature,
+                    method=f"{method}:apply",
+                    metadata=metadata,
+                )
+
+            return forecast, metadata
+
+        system_message = template.get_system_message() if template else ""
+
+        # Try with retries (single-call methods)
         forecast = None
         last_error = None
-        
+        response = ""
+
         for attempt in range(self.max_retries):
             try:
                 response = self._call_llm(prompt, system_message)
-                if method == "TSM+LLM-COT-RF":
-                    rules_text = response.strip()
-                    apply_prompt = apply_template.format(
-                        history=history,
-                        dates=dates,
-                        tsm_forecast=tsm_forecast,
-                        rules_text=rules_text,
-                        pred_len=pred_len
-                    )
-                    response = self._call_llm(apply_prompt, apply_template.get_system_message())
-                    forecast = parse_json_forecast(response, expected_len=pred_len)
-                elif method == "TSM+LLM-NORM-DELTA":
+                if method == "TSM+LLM-NORM-DELTA":
                     norm_cfg = self.config.get("norm_delta", {})
                     max_delta = float(norm_cfg.get("max_delta", 0.5))
                     window = int(norm_cfg.get("history_window", len(history)))
@@ -586,7 +881,7 @@ class LLMRefiner:
                     delta = parse_json_array(
                         response,
                         expected_len=pred_len,
-                        keys=("delta_z", "delta")
+                        keys=("delta_z", "delta"),
                     )
                     if delta is not None:
                         delta = np.clip(delta, -max_delta, max_delta)
@@ -596,46 +891,37 @@ class LLMRefiner:
                         forecast = self._blend_forecast(tsm_forecast, refined)
                 else:
                     forecast = parse_json_forecast(response, expected_len=pred_len)
-                
+
                 if forecast is not None:
                     break
-                
-                # If parsing failed, try with a stricter prompt
+
                 if attempt < self.max_retries - 1:
                     prompt += "\n\nIMPORTANT: Respond ONLY with valid JSON. No other text."
-                    
+
             except Exception as e:
                 last_error = str(e)
                 logger.warning(f"LLM call failed (attempt {attempt + 1}): {e}")
-        
+
         metadata = {
             "method": method,
             "model": self.model,
             "temperature": self.temperature,
             "success": forecast is not None,
-            "attempts": attempt + 1
+            "attempts": attempt + 1,
         }
-        if method == "TSM+LLM-COT-RF":
-            metadata["rules_text"] = rules_text if "rules_text" in locals() else None
-            metadata["teaching_examples"] = len(teaching_examples or [])
-            metadata["teaching_dates"] = [
-                ex.get("date") for ex in (teaching_examples or [])
-            ]
-        
         if last_error:
             metadata["error"] = last_error
-        
-        # Log the call
+
         if self.log_store:
             self.log_store.log_call(
                 prompt=prompt,
-                response={"content": response if 'response' in dir() else None},
+                response={"content": response},
                 model=self.model,
                 temperature=self.temperature,
                 method=method,
-                metadata=metadata
+                metadata=metadata,
             )
-        
+
         return forecast, metadata
     
     def refine_batch(

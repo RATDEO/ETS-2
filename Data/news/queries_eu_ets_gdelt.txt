@@ -1,0 +1,6 @@
+# GDELT Doc API queries for EU ETS / EUA drivers (English headlines).
+# One query per line. These are intentionally broader than "EUA" only, to
+# improve daily coverage while remaining EU-focused.
+
+("EU ETS" OR EUA OR "European Union Allowance" OR "carbon allowance" OR "carbon permit" OR "emissions trading") AND (EU OR Europe OR European OR Brussels)
+(carbon OR emissions OR allowance OR permit OR ETS) AND (gas OR power OR electricity OR coal OR oil OR brent OR LNG) AND (EU OR Europe OR European OR Brussels)

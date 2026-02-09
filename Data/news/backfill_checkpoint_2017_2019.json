@@ -1,0 +1,6 @@
+{
+  "last_start": "2019-12-29T00:00:00",
+  "last_end": "2019-12-31T00:00:00",
+  "windows_completed": 157,
+  "output": "data/news/headlines_raw_backfill_2017_2019.csv"
+}
