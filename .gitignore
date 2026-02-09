@@ -2,3 +2,4 @@
 
 # large data files
 Data/news/*.csv
+Data/news/headlines_raw_eu_ets_multiquery_2017_2026.csv
