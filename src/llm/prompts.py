@@ -558,6 +558,78 @@ Rules:"""
         return prompt
 
 
+class CoTSentRFReflectionStrictJSONTemplate(PromptTemplate):
+    """Strict JSON reflection prompt for deriving correction rules with sentiment."""
+
+    def __init__(self):
+        super().__init__("CoT-SENT-RF-REFLECT-STRICTJSON")
+
+    def get_system_message(self) -> str:
+        return (
+            "You are an expert financial analyst specializing in carbon markets and EU ETS price forecasting.\n"
+            "Analyze the examples and return ONLY strict JSON with this schema:\n"
+            "{\"rules\": [\"rule 1\", \"rule 2\", ...]}\n"
+            "No markdown, no prose outside JSON, no code fences."
+        )
+
+    def format(
+        self,
+        examples: List[Dict],
+        pred_len: int = 30,
+        currency: str = "EUR",
+        history_points: int = 30,
+        sentiment_points: int = 30,
+        **kwargs
+    ) -> str:
+        if not examples:
+            return (
+                "Return ONLY JSON:\n"
+                '{"rules": ["No teaching examples available. Keep base forecast conservative."]}'
+            )
+
+        blocks = []
+        for idx, ex in enumerate(examples, start=1):
+            history = ex.get("history", [])
+            forecast = ex.get("forecast", [])
+            truth = ex.get("truth", [])
+            sent_hist = ex.get("sentiment_history", [])
+            history_str = ", ".join([f"{v:.2f}" for v in history[-history_points:]])
+            forecast_str = ", ".join([f"{v:.2f}" for v in forecast])
+            truth_str = ", ".join([f"{v:.2f}" for v in truth])
+            sent_str = ", ".join([f"{v:.2f}" for v in sent_hist[-sentiment_points:]])
+            ex_date = ex.get("date", "")
+
+            blocks.append(
+                f"""Example {idx} (date={ex_date})
+History (last {history_points} days): [{history_str}]
+Sentiment history: [{sent_str}]
+Model forecast ({pred_len}d): [{forecast_str}]
+True outcome ({pred_len}d): [{truth_str}]"""
+            )
+
+        examples_text = "\n\n".join(blocks)
+
+        prompt = f"""Analyze the examples and derive correction rules.
+
+## Teaching Examples
+{examples_text}
+
+## Output Contract (MANDATORY)
+Return EXACTLY one JSON object with key "rules":
+{{"rules": ["short actionable rule 1", "short actionable rule 2", ...]}}
+
+Constraints:
+- 4 to 8 rules.
+- Each rule must be one short sentence.
+- Mention forecast bias/lag/overshoot/mean-reversion and sentiment interaction when relevant.
+- No extra keys.
+- No text outside JSON.
+
+JSON only:"""
+
+        return prompt
+
+
 class CoTSentRFApplyTemplate(PromptTemplate):
     """Apply reflection rules to refine a TSM forecast with sentiment."""
 
@@ -601,6 +673,65 @@ Provide your refined {pred_len}-day forecast as JSON:
 {{"yhat": [day1_price, day2_price, ..., day{pred_len}_price]}}
 
 Refined forecast (JSON only):"""
+
+        return prompt
+
+
+class CoTSentRFApplyStrictJSONTemplate(PromptTemplate):
+    """Strict JSON apply prompt for refining a TSM forecast with sentiment."""
+
+    def __init__(self):
+        super().__init__("CoT-SENT-RF-APPLY-STRICTJSON")
+
+    def get_system_message(self) -> str:
+        return (
+            "Return ONLY strict JSON with this schema:\n"
+            '{"yhat": [n1, n2, ..., n30]}\n'
+            "No markdown, no explanation, no code fences, no extra keys."
+        )
+
+    def format(
+        self,
+        history: np.ndarray,
+        dates: List[str],
+        tsm_forecast: np.ndarray,
+        sentiment_history: np.ndarray,
+        rules_text: str,
+        pred_len: int = 30,
+        currency: str = "EUR",
+        history_points: int = 30,
+        sentiment_points: int = 30,
+        **kwargs
+    ) -> str:
+        history_str = ", ".join([f"{v:.2f}" for v in history[-history_points:]])
+        forecast_str = ", ".join([f"{v:.2f}" for v in tsm_forecast])
+        sent_str = ", ".join([f"{v:.2f}" for v in sentiment_history[-sentiment_points:]])
+        rules_text = rules_text.strip() if rules_text else ""
+
+        prompt = f"""Refine the model forecast using the provided rules.
+
+## Context
+Current price: {history[-1]:.2f} {currency}
+Recent prices: [{history_str}]
+Sentiment history (+1 positive, 0 neutral, -1 negative): [{sent_str}]
+
+## Model Forecast (to be refined)
+[{forecast_str}]
+
+## Correction Rules
+{rules_text}
+
+## Output Contract (MANDATORY)
+Return EXACTLY one JSON object:
+{{"yhat": [day1_price, day2_price, ..., day{pred_len}_price]}}
+
+Hard constraints:
+- Exactly {pred_len} numeric values in yhat.
+- Keep values in realistic EU ETS range (positive, non-zero).
+- No code fences, no markdown, no extra keys, no explanation text.
+- First character must be '{{' and last character must be '}}'.
+
+JSON only:"""
 
         return prompt
 
@@ -670,7 +801,9 @@ def get_template(method: str) -> PromptTemplate:
         "CoT-RF-REFLECT": CoTRFReflectionTemplate(),
         "CoT-RF-APPLY": CoTRFApplyTemplate(),
         "CoT-SENT-RF-REFLECT": CoTSentRFReflectionTemplate(),
+        "CoT-SENT-RF-REFLECT-STRICTJSON": CoTSentRFReflectionStrictJSONTemplate(),
         "CoT-SENT-RF-APPLY": CoTSentRFApplyTemplate(),
+        "CoT-SENT-RF-APPLY-STRICTJSON": CoTSentRFApplyStrictJSONTemplate(),
         "CoT-SENT-RF-DELTA-APPLY": CoTSentRFDeltaApplyTemplate(),
     }
     

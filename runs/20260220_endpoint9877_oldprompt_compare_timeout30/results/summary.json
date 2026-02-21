@@ -1,0 +1,35 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260219_h1only_baseline_ep9877_timeout30",
+  "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment_qwen_votes3_daily3.csv",
+  "method": "TSM+LLM-COT-SENT-RF",
+  "n_test": 359,
+  "n_refined_windows": 359,
+  "n_reused_baseline_windows": 0,
+  "force_refine_all": true,
+  "paper_replication_mode": false,
+  "mse_path_base": 13.893302810366302,
+  "mse_path_new": 14.175240626373132,
+  "mse_horizons_base": {
+    "h1": 0.23721827110120478,
+    "h5": 1.8328393010772124,
+    "h20": 18.385665958080224,
+    "h30": 38.52112586248776
+  },
+  "mse_horizons_new": {
+    "h1": 0.2544268671804015,
+    "h5": 1.90381700407606,
+    "h20": 18.79953980070745,
+    "h30": 39.258105007548444
+  },
+  "trend_accuracy_base": {
+    "d10": 0.7465181058495822,
+    "d20": 0.6935933147632312,
+    "d30": 0.596100278551532
+  },
+  "trend_accuracy_new": {
+    "d10": 0.7381615598885793,
+    "d20": 0.6935933147632312,
+    "d30": 0.6044568245125348
+  },
+  "blend_comparison": null
+}

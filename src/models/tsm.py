@@ -558,7 +558,13 @@ if TORCH_AVAILABLE:
         
         def load(self, path: Union[str, Path]):
             """Load model checkpoint."""
-            checkpoint = torch.load(path, map_location=self.device)
+            # PyTorch 2.6 defaults `weights_only=True`, which can fail for our
+            # legacy checkpoints that include non-tensor metadata. We trust our
+            # own checkpoints in this repo, so force a full load when supported.
+            try:
+                checkpoint = torch.load(path, map_location=self.device, weights_only=False)
+            except TypeError:
+                checkpoint = torch.load(path, map_location=self.device)
             self.model.load_state_dict(checkpoint["model_state_dict"])
             self.best_val_loss = checkpoint.get("best_val_loss", float("inf"))
 

@@ -1,0 +1,42 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260219_h1only_baseline_ep9879",
+  "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment_qwen_votes3_daily3.csv",
+  "method": "TSM+LLM-COT-SENT-RF",
+  "n_test": 359,
+  "n_refined_windows": 359,
+  "n_reused_baseline_windows": 0,
+  "force_refine_all": true,
+  "paper_replication_mode": false,
+  "mse_path_base": 13.893302810366302,
+  "mse_path_new": 64.70939756738119,
+  "mse_horizons_base": {
+    "h1": 0.23721827110120478,
+    "h5": 1.8328393010772124,
+    "h20": 18.385665958080224,
+    "h30": 38.52112586248776
+  },
+  "mse_horizons_new": {
+    "h1": 1.1485269970713763,
+    "h5": 3.101872199315454,
+    "h20": 41.06595820043535,
+    "h30": 69.72177912264071
+  },
+  "trend_accuracy_base": {
+    "d10": 0.7465181058495822,
+    "d20": 0.6935933147632312,
+    "d30": 0.596100278551532
+  },
+  "trend_accuracy_new": {
+    "d10": 0.7019498607242339,
+    "d20": 0.6991643454038997,
+    "d30": 0.5933147632311978
+  },
+  "blend_comparison": {
+    "best_w_path": 1.0,
+    "schedule": "ramp",
+    "min_weight": 0.0,
+    "power": 1.0,
+    "base_mse_path": 14.002024635022009,
+    "new_mse_path": 31.553441026336596
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "method": "train_return",
+  "panel_path": "runs/20260208_042155_ea55a7/data/panel.parquet",
+  "panel_date_col": "date",
+  "panel_price_col": "y",
+  "train_end": "2023-06-30",
+  "min_count": 30,
+  "shrinkage": 30.0,
+  "global_mean_ret_fwd1": 0.0014946976894609414,
+  "bucket_stats": [
+    {
+      "score": -1.0,
+      "count": 405,
+      "mean_ret_fwd1": 0.0009357703869556152,
+      "mapped_score": -1.0
+    },
+    {
+      "score": 0.0,
+      "count": 1194,
+      "mean_ret_fwd1": 0.0014955966599786276,
+      "mapped_score": 0.0016851837675512479
+    },
+    {
+      "score": 1.0,
+      "count": 2580,
+      "mean_ret_fwd1": 0.0015820202424518487,
+      "mapped_score": 0.16587637358947088
+    }
+  ],
+  "score_map": {
+    "-1.0": -1.0,
+    "0.0": 0.0016851837675512479,
+    "1.0": 0.16587637358947088
+  }
+}

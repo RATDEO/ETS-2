@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU ETS Forecasting: A Complete Technical Course</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --fg: #c9d1d9;
+    --fg2: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #79c0ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --border: #30363d;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  /* ── Navigation ── */
+  nav {
+    position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+    background: var(--bg2); border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 20px 16px; z-index: 100;
+  }
+  nav h2 { color: var(--accent); font-size: 15px; margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
+  nav ol { list-style: none; counter-reset: nav-counter; }
+  nav ol li { counter-increment: nav-counter; margin-bottom: 4px; }
+  nav ol li a {
+    color: var(--fg2); text-decoration: none; font-size: 14px;
+    display: block; padding: 4px 8px; border-radius: 6px; transition: all .15s;
+  }
+  nav ol li a::before { content: counter(nav-counter) ". "; color: var(--accent); font-weight: 600; }
+  nav ol li a:hover, nav ol li a.active { background: var(--bg3); color: var(--fg); }
+  /* ── Main Content ── */
+  main { margin-left: 280px; max-width: 920px; padding: 40px 48px 120px; }
+  h1 { font-size: 2.4em; color: #fff; margin-bottom: 8px; }
+  .subtitle { color: var(--fg2); font-size: 1.1em; margin-bottom: 40px; }
+  h2 {
+    font-size: 1.7em; color: var(--accent); margin: 60px 0 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.25em; color: var(--accent2); margin: 32px 0 10px; }
+  h4 { font-size: 1.05em; color: var(--purple); margin: 24px 0 8px; }
+  p, li { margin-bottom: 12px; }
+  ul, ol { padding-left: 24px; }
+  a { color: var(--accent); }
+  strong { color: #fff; }
+  em { color: var(--orange); font-style: normal; }
+  /* ── Code ── */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 18px 20px; overflow-x: auto; margin: 16px 0; font-size: 14px; line-height: 1.55;
+  }
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-size: 0.92em;
+  }
+  :not(pre) > code {
+    background: var(--bg3); padding: 2px 7px; border-radius: 4px;
+  }
+  .comment { color: #6a737d; }
+  .keyword { color: #ff7b72; }
+  .string { color: #a5d6ff; }
+  .number { color: #79c0ff; }
+  .func { color: #d2a8ff; }
+  .type { color: #ffa657; }
+  /* ── Math ── */
+  .math {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; margin: 16px 0; font-family: 'Georgia', serif;
+    font-size: 1.05em; color: var(--accent2); text-align: center; overflow-x: auto;
+  }
+  .math-inline { font-family: 'Georgia', serif; color: var(--accent2); }
+  /* ── Info/Tip boxes ── */
+  .box {
+    border-radius: 8px; padding: 16px 20px; margin: 20px 0;
+    border-left: 4px solid;
+  }
+  .box-info { background: rgba(88,166,255,0.08); border-color: var(--accent); }
+  .box-tip { background: rgba(63,185,80,0.08); border-color: var(--green); }
+  .box-warn { background: rgba(210,153,34,0.08); border-color: var(--orange); }
+  .box-key { background: rgba(188,140,255,0.08); border-color: var(--purple); }
+  .box h4 { margin-top: 0; }
+  /* ── Quiz ── */
+  .quiz {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px; margin: 28px 0;
+  }
+  .quiz h4 { color: var(--orange); margin-top: 0; }
+  .quiz-q { margin-bottom: 18px; }
+  .quiz-q p { font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .quiz-q label {
+    display: block; padding: 8px 14px; margin: 4px 0; border-radius: 6px;
+    cursor: pointer; border: 1px solid var(--border); transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .quiz-q label:hover { border-color: var(--accent); background: var(--bg3); }
+  .quiz-q input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+  .quiz-q input:checked + label { border-color: var(--accent); background: rgba(88,166,255,0.12); }
+  .quiz button {
+    background: var(--accent); color: #000; border: none; padding: 10px 28px;
+    border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600;
+    transition: opacity .15s;
+  }
+  .quiz button:hover { opacity: 0.85; }
+  .quiz .result { margin-top: 14px; padding: 12px 16px; border-radius: 6px; display: none; }
+  .quiz .result.show { display: block; }
+  .quiz .result.correct { background: rgba(63,185,80,0.15); color: var(--green); }
+  .quiz .result.wrong { background: rgba(248,81,73,0.15); color: var(--red); }
+  /* ── Tables ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 15px;
+  }
+  th { background: var(--bg3); color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+  td { padding: 8px 14px; border: 1px solid var(--border); }
+  tr:nth-child(even) { background: var(--bg2); }
+  /* ── Diagram ── */
+  .diagram {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; margin: 16px 0; text-align: center;
+    font-family: 'SF Mono', Consolas, monospace; font-size: 14px;
+    white-space: pre; overflow-x: auto; line-height: 1.4; color: var(--fg2);
+  }
+  .diagram .hl { color: var(--accent); font-weight: bold; }
+  .diagram .hl2 { color: var(--green); font-weight: bold; }
+  .diagram .hl3 { color: var(--orange); font-weight: bold; }
+  /* ── Progress bar ── */
+  .progress-bar {
+    position: fixed; top: 0; left: 280px; right: 0; height: 3px;
+    background: var(--bg3); z-index: 200;
+  }
+  .progress-bar .fill { height: 100%; background: var(--accent); width: 0; transition: width .1s; }
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 24px; }
+    .progress-bar { left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+
+<!-- Side Navigation -->
+<nav>
+  <h2>Course Contents</h2>
+  <ol>
+    <li><a href="#s1">The EU ETS & Carbon Markets</a></li>
+    <li><a href="#s2">Time Series Fundamentals</a></li>
+    <li><a href="#s3">Data Pipeline & Feature Engineering</a></li>
+    <li><a href="#s4">Sliding Windows & Train/Val/Test</a></li>
+    <li><a href="#s5">Baseline Models</a></li>
+    <li><a href="#s6">DLinear: Decomposition + Linear</a></li>
+    <li><a href="#s7">Autoformer Architecture</a></li>
+    <li><a href="#s8">Training Deep Models (PyTorch)</a></li>
+    <li><a href="#s9">Evaluation Metrics (MSE, RMSE…)</a></li>
+    <li><a href="#s10">Trend Classification</a></li>
+    <li><a href="#s11">Statistical Significance Tests</a></li>
+    <li><a href="#s12">LLM Prompting Strategies</a></li>
+    <li><a href="#s13">Two-Stage Reflect → Apply</a></li>
+    <li><a href="#s14">Sentiment Analysis Pipeline</a></li>
+    <li><a href="#s15">Blending & Ramp Weighting</a></li>
+    <li><a href="#s16">Teaching Example Selection</a></li>
+    <li><a href="#s17">Quantile Regression & LASSO</a></li>
+    <li><a href="#s18">Experiment Management</a></li>
+    <li><a href="#s19">Results & Ablation Studies</a></li>
+    <li><a href="#s20">Full Pipeline Walkthrough</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<main>
+
+<h1>EU ETS Forecasting: A Complete Technical Course</h1>
+<p class="subtitle">From A-level maths to state-of-the-art LLM-augmented time series forecasting — every technique in this codebase, explained and tested.</p>
+
+<!-- ═══════════════════ SECTION 1 ═══════════════════ -->
+<h2 id="s1">1. The EU ETS & Carbon Markets</h2>
+
+<h3>What is the EU ETS?</h3>
+<p>The <strong>European Union Emissions Trading System (EU ETS)</strong> is the world's largest carbon market. Think of it as a system where companies must buy permits (called <strong>European Union Allowances — EUAs</strong>) for each tonne of CO₂ they emit. Fewer permits are issued each year, so the price rises, incentivising companies to cut emissions.</p>
+
+<div class="box box-info">
+<h4>💡 Real-World Analogy</h4>
+<p>Imagine a school with 100 "noise permits". Each permit lets you shout once in the corridor. If you run out, you must buy more from someone else. As the school reduces total permits each term, the price of shouting goes up — so students learn to be quieter.</p>
+</div>
+
+<h3>Why Forecast EUA Prices?</h3>
+<p>EUA prices drive investment decisions worth billions. If a power company can predict that carbon prices will rise from €65 to €80 over the next month, they might switch to natural gas (lower emissions) earlier. Our repo builds models that forecast the EUA futures price <strong>30 trading days ahead</strong>.</p>
+
+<h3>Data Sources in This Repo</h3>
+<table>
+<tr><th>Source</th><th>What It Contains</th><th>File Location</th></tr>
+<tr><td>EUA Futures</td><td>Daily open/high/low/close prices</td><td><code>Data/eua-futures/</code></td></tr>
+<tr><td>ICAP Secondary Market</td><td>Alternative price source</td><td><code>Data/icap-allowance-price-explorer-secondary-market/</code></td></tr>
+<tr><td>Energy Benchmarks</td><td>Brent oil, coal prices (USD → EUR)</td><td><code>Data/energy-benchmarks/</code></td></tr>
+<tr><td>Carbon Indices</td><td>KEUA, KRBN, GRN index prices</td><td><code>Data/carbon-market-indices/</code></td></tr>
+<tr><td>Auction Data</td><td>Primary market auction results</td><td><code>Data/emission-spot-primary-market-auction/</code></td></tr>
+<tr><td>VSTOXX</td><td>EU volatility index (fear gauge)</td><td><code>Data/volatility-proxy/</code></td></tr>
+<tr><td>EUR/USD FX</td><td>Currency conversion rates</td><td><code>Data/usd.xml</code></td></tr>
+<tr><td>News Headlines</td><td>GDELT-sourced EU ETS news</td><td><code>Data/news/</code></td></tr>
+</table>
+
+<div class="quiz" id="quiz1">
+<h4>📝 Quiz — Section 1</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: What does EUA stand for?</p>
+  <input type="radio" name="q1_1" id="q1_1a" value="a"><label for="q1_1a">A) European United Authority</label>
+  <input type="radio" name="q1_1" id="q1_1b" value="b"><label for="q1_1b">B) European Union Allowance</label>
+  <input type="radio" name="q1_1" id="q1_1c" value="c"><label for="q1_1c">C) Emissions Usage Agreement</label>
+  <input type="radio" name="q1_1" id="q1_1d" value="d"><label for="q1_1d">D) Energy Utilisation Allocation</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: How many trading days ahead does the repo forecast?</p>
+  <input type="radio" name="q1_2" id="q1_2a" value="a"><label for="q1_2a">A) 7 days</label>
+  <input type="radio" name="q1_2" id="q1_2b" value="b"><label for="q1_2b">B) 14 days</label>
+  <input type="radio" name="q1_2" id="q1_2c" value="c"><label for="q1_2c">C) 30 days</label>
+  <input type="radio" name="q1_2" id="q1_2d" value="d"><label for="q1_2d">D) 365 days</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: Why must energy prices be FX-converted in this repo?</p>
+  <input type="radio" name="q1_3" id="q1_3a" value="a"><label for="q1_3a">A) They're quoted in USD but EUAs trade in EUR</label>
+  <input type="radio" name="q1_3" id="q1_3b" value="b"><label for="q1_3b">B) The models only accept GBP</label>
+  <input type="radio" name="q1_3" id="q1_3c" value="c"><label for="q1_3c">C) Currencies are always random</label>
+</div>
+<button onclick="checkQuiz('quiz1')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 2 ═══════════════════ -->
+<h2 id="s2">2. Time Series Fundamentals</h2>
+
+<h3>What Is a Time Series?</h3>
+<p>A <strong>time series</strong> is a sequence of data points ordered by time. The EUA closing price each day forms a time series:</p>
+<div class="math">y₁, y₂, y₃, …, yₜ   where yₜ = price on day t</div>
+
+<h3>Key Concepts</h3>
+
+<h4>Returns (Log Returns)</h4>
+<p>Instead of working with raw prices, we often use <strong>log returns</strong>. These are more statistically well-behaved (closer to normally distributed):</p>
+<div class="math">rₜ = ln(yₜ / yₜ₋₁) = ln(yₜ) − ln(yₜ₋₁)</div>
+<p>To convert back from returns to prices, we use the inverse:</p>
+<div class="math">yₜ₊ₕ = yₜ · exp(rₜ₊₁ + rₜ₊₂ + … + rₜ₊ₕ) = yₜ · exp(Σᵢ₌₁ʰ rₜ₊ᵢ)</div>
+
+<p>Here's how the code does it:</p>
+<pre><code><span class="keyword">def</span> <span class="func">returns_to_prices</span>(returns: np.ndarray, last_price: <span class="type">float</span>) -> np.ndarray:
+    <span class="string">"""Convert log returns to price path."""</span>
+    last_price = <span class="func">float</span>(last_price)
+    <span class="keyword">return</span> last_price * np.<span class="func">exp</span>(np.<span class="func">cumsum</span>(returns, axis=<span class="number">0</span>))</code></pre>
+
+<div class="box box-tip">
+<h4>🔑 Why cumsum?</h4>
+<p><code>np.cumsum</code> computes the running total: [r₁, r₁+r₂, r₁+r₂+r₃, …]. When we <code>exp()</code> that and multiply by the last known price, we get the full predicted price path. This is because ln is the inverse of exp.</p>
+</div>
+
+<h4>Volatility</h4>
+<p>Volatility measures how much prices fluctuate. We typically use the <strong>standard deviation of log returns</strong> over a rolling window:</p>
+<div class="math">σ₂₀ = std(rₜ₋₁₉, rₜ₋₁₈, …, rₜ)</div>
+<p>Higher σ means more uncertainty. The repo uses a 20-day window by default.</p>
+
+<h4>Trend and Momentum</h4>
+<p><strong>Trend</strong> = the general direction of prices (up or down). <strong>Momentum</strong> = the speed of change. In the code:</p>
+<pre><code><span class="comment"># 5-day momentum</span>
+momentum_5d = y[<span class="number">-1</span>] - y[<span class="number">-5</span>]
+
+<span class="comment"># 5-day percentage change</span>
+pct_change_5d = (y[<span class="number">-1</span>] / y[<span class="number">-5</span>] - <span class="number">1</span>) * <span class="number">100</span></code></pre>
+
+<h4>Stationarity</h4>
+<p>A time series is <strong>stationary</strong> if its statistical properties (mean, variance) don't change over time. Raw prices are <em>not</em> stationary (they trend up/down), but log returns usually <em>are</em>. Many models (like ARIMA) require stationarity, which is why differencing (computing returns) is so common.</p>
+
+<h4>Autocorrelation</h4>
+<p>Autocorrelation measures how much today's value is correlated with yesterday's, or the day before that, etc. If today's price is highly correlated with yesterday's, the series has strong autocorrelation at lag 1. The Autoformer model in this repo explicitly uses autocorrelation patterns.</p>
+
+<div class="quiz" id="quiz2">
+<h4>📝 Quiz — Section 2</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: If a stock price goes from £100 to £105, what is the log return?</p>
+  <input type="radio" name="q2_1" id="q2_1a" value="a"><label for="q2_1a">A) 5%</label>
+  <input type="radio" name="q2_1" id="q2_1b" value="b"><label for="q2_1b">B) ln(105/100) ≈ 0.0488</label>
+  <input type="radio" name="q2_1" id="q2_1c" value="c"><label for="q2_1c">C) 105 − 100 = 5</label>
+  <input type="radio" name="q2_1" id="q2_1d" value="d"><label for="q2_1d">D) 100/105</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: Why do we prefer log returns over raw prices for modelling?</p>
+  <input type="radio" name="q2_2" id="q2_2a" value="a"><label for="q2_2a">A) They're always positive</label>
+  <input type="radio" name="q2_2" id="q2_2b" value="b"><label for="q2_2b">B) They make prices go up</label>
+  <input type="radio" name="q2_2" id="q2_2c" value="c"><label for="q2_2c">C) They're closer to stationary and normally distributed</label>
+  <input type="radio" name="q2_2" id="q2_2d" value="d"><label for="q2_2d">D) They don't require a calculator</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: What does <code>np.cumsum([0.01, -0.02, 0.03])</code> return?</p>
+  <input type="radio" name="q2_3" id="q2_3a" value="a"><label for="q2_3a">A) [0.01, -0.01, 0.02]</label>
+  <input type="radio" name="q2_3" id="q2_3b" value="b"><label for="q2_3b">B) [0.01, 0.02, 0.03]</label>
+  <input type="radio" name="q2_3" id="q2_3c" value="c"><label for="q2_3c">C) [0.02, -0.01, 0.03]</label>
+</div>
+<button onclick="checkQuiz('quiz2')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 3 ═══════════════════ -->
+<h2 id="s3">3. Data Pipeline & Feature Engineering</h2>
+
+<h3>The Panel Builder</h3>
+<p>The repo merges all data sources into a single <strong>daily panel</strong> — a big table where each row is a trading day and each column is a feature. The code lives in <code>src/data/panel.py</code>.</p>
+
+<div class="diagram">
+  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+  │  <span class="hl">EUA Futures</span>  │   │ <span class="hl">Energy Bench</span> │   │  <span class="hl">Carbon Idx</span>  │
+  │  (close EUR)  │   │ (Brent, Coal) │   │ (KEUA, KRBN) │
+  └──────┬───────┘   └──────┬───────┘   └──────┬───────┘
+         │                  │                   │
+         │    ┌─────────────┤                   │
+         │    │  <span class="hl3">FX Convert</span> │                   │
+         │    │  USD → EUR  │                   │
+         │    └─────────────┤                   │
+         ▼                  ▼                   ▼
+  ┌─────────────────────────────────────────────────────┐
+  │              <span class="hl2">Master Calendar (Trading Days)</span>           │
+  │  Align all sources → forward-fill gaps (max 5 days) │
+  └──────────────────────┬──────────────────────────────┘
+                         ▼
+  ┌─────────────────────────────────────────────────────┐
+  │          <span class="hl2">Feature Engineering</span>                        │
+  │  • Log returns    • Rolling mean (5, 20, 60 day)    │
+  │  • Rolling vol    • Auction flags & lagged volumes   │
+  │  • VSTOXX levels  • Cross-market spreads             │
+  └─────────────────────────────────────────────────────┘
+</div>
+
+<h3>Step-by-Step Code Walkthrough</h3>
+
+<h4>1. Creating the Master Calendar</h4>
+<pre><code><span class="keyword">def</span> <span class="func">create_master_calendar</span>(target_df, date_col=<span class="string">"date"</span>):
+    <span class="string">"""Use dates where the target has valid prices."""</span>
+    dates = target_df[date_col].<span class="func">dropna</span>().<span class="func">sort_values</span>().<span class="func">unique</span>()
+    calendar = pd.<span class="func">DatetimeIndex</span>(dates)
+    <span class="keyword">return</span> calendar</code></pre>
+<p>This extracts every date where we have a valid EUA price. Weekends and holidays are automatically excluded because there are no prices on those days.</p>
+
+<h4>2. Forward-Filling Missing Data</h4>
+<p>Sometimes a feature is missing on a trading day (e.g. no auction happened). We <strong>forward-fill</strong> — carry the last known value forward — up to 5 days:</p>
+<pre><code>panel[<span class="string">"icap_secondary"</span>] = panel[<span class="string">"icap_secondary"</span>].<span class="func">ffill</span>(limit=<span class="number">5</span>)</code></pre>
+
+<div class="box box-warn">
+<h4>⚠️ Why limit=5?</h4>
+<p>If data is missing for more than 5 days, something is seriously wrong (data feed issue, delisted instrument). Filling indefinitely would create fake data. The limit prevents that.</p>
+</div>
+
+<h4>3. FX Conversion</h4>
+<p>Energy benchmarks (Brent oil, coal) are quoted in USD. We convert to EUR using daily ECB exchange rates:</p>
+<div class="math">price_EUR = price_USD / EURUSD_rate</div>
+<pre><code>df_converted, audit = <span class="func">convert_usd_to_eur</span>(
+    df, fx_df, 
+    price_col=<span class="string">"price_usd"</span>,
+    out_col=<span class="string">"price_eur"</span>
+)</code></pre>
+
+<h4>4. Technical Feature Engineering</h4>
+<pre><code><span class="comment"># Log returns</span>
+panel[<span class="string">"eua_return"</span>] = np.<span class="func">log</span>(panel[<span class="string">"y"</span>] / panel[<span class="string">"y"</span>].<span class="func">shift</span>(<span class="number">1</span>))
+
+<span class="comment"># Rolling 20-day standard deviation of returns → volatility</span>
+panel[<span class="string">"rolling_vol_20"</span>] = panel[<span class="string">"eua_return"</span>].<span class="func">rolling</span>(<span class="number">20</span>).<span class="func">std</span>()
+
+<span class="comment"># Rolling means at different windows</span>
+<span class="keyword">for</span> w <span class="keyword">in</span> [<span class="number">5</span>, <span class="number">20</span>, <span class="number">60</span>]:
+    panel[<span class="keyword">f</span><span class="string">"rolling_mean_{w}"</span>] = panel[<span class="string">"y"</span>].<span class="func">rolling</span>(w).<span class="func">mean</span>()</code></pre>
+
+<div class="quiz" id="quiz3">
+<h4>📝 Quiz — Section 3</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: What does forward-filling do?</p>
+  <input type="radio" name="q3_1" id="q3_1a" value="a"><label for="q3_1a">A) Replaces missing values with zeros</label>
+  <input type="radio" name="q3_1" id="q3_1b" value="b"><label for="q3_1b">B) Copies the last known value into the gap</label>
+  <input type="radio" name="q3_1" id="q3_1c" value="c"><label for="q3_1c">C) Deletes rows with missing data</label>
+  <input type="radio" name="q3_1" id="q3_1d" value="d"><label for="q3_1d">D) Uses the next value to fill backwards</label>
+</div>
+<div class="quiz-q" data-correct="d">
+  <p>Q2: If EURUSD = 1.10 and Brent is $80, what is the EUR price?</p>
+  <input type="radio" name="q3_2" id="q3_2a" value="a"><label for="q3_2a">A) €88.00</label>
+  <input type="radio" name="q3_2" id="q3_2b" value="b"><label for="q3_2b">B) €80.00</label>
+  <input type="radio" name="q3_2" id="q3_2c" value="c"><label for="q3_2c">C) €70.00</label>
+  <input type="radio" name="q3_2" id="q3_2d" value="d"><label for="q3_2d">D) €72.73 (80 / 1.10)</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: A 20-day rolling mean of [10,12,11,13,…,15] uses which values at day 25?</p>
+  <input type="radio" name="q3_3" id="q3_3a" value="a"><label for="q3_3a">A) Days 1–25</label>
+  <input type="radio" name="q3_3" id="q3_3b" value="b"><label for="q3_3b">B) Days 1–20</label>
+  <input type="radio" name="q3_3" id="q3_3c" value="c"><label for="q3_3c">C) Days 6–25 (the most recent 20)</label>
+</div>
+<button onclick="checkQuiz('quiz3')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 4 ═══════════════════ -->
+<h2 id="s4">4. Sliding Windows & Train/Val/Test Splits</h2>
+
+<h3>The Sliding Window Approach</h3>
+<p>To train a model, we need input→output pairs. We create them by sliding a window across the time series:</p>
+
+<div class="diagram">
+  Day: 1  2  3  ··· 120 121 122 ··· 150
+       ├───── <span class="hl">seq_len = 120</span> ─────┤├── <span class="hl2">pred_len = 30</span> ──┤
+       │      INPUT (X_enc)       ││    TARGET (y)     │
+</div>
+
+<p>We slide this window one day at a time to create thousands of training examples:</p>
+
+<pre><code><span class="keyword">@dataclass</span>
+<span class="keyword">class</span> <span class="type">WindowConfig</span>:
+    seq_len: <span class="type">int</span> = <span class="number">120</span>   <span class="comment"># Input: look at 120 past days</span>
+    label_len: <span class="type">int</span> = <span class="number">30</span>  <span class="comment"># Decoder context overlap</span>
+    pred_len: <span class="type">int</span> = <span class="number">30</span>   <span class="comment"># Output: predict 30 future days</span></code></pre>
+
+<h3>Array Shapes (Critical!)</h3>
+<table>
+<tr><th>Array</th><th>Shape</th><th>Meaning</th></tr>
+<tr><td><code>X_enc</code></td><td>(N, 120, F)</td><td>N windows × 120 days × F features</td></tr>
+<tr><td><code>X_dec</code></td><td>(N, 60, F)</td><td>Decoder input (30 label + 30 prediction)</td></tr>
+<tr><td><code>y</code></td><td>(N, 30)</td><td>The 30 target prices we want to predict</td></tr>
+<tr><td><code>dates</code></td><td>(N,)</td><td>The first prediction date for each window</td></tr>
+</table>
+
+<h3>Train/Validation/Test Split</h3>
+<p>Unlike random splits in classification, time series <strong>must be split chronologically</strong> to avoid <em>data leakage</em> (using future data to predict the past).</p>
+
+<div class="diagram">
+  ←──── <span class="hl">Train</span> ────→←─ <span class="hl2">Val</span> ─→←── <span class="hl3">Test</span> ──→
+  2017-01-01      2023-06-30  2024-06-30  2026-01-05
+</div>
+
+<pre><code><span class="keyword">def</span> <span class="func">split_windows</span>(X_enc, X_dec, y, dates, train_end, val_end):
+    train_end = pd.<span class="func">Timestamp</span>(train_end)
+    val_end = pd.<span class="func">Timestamp</span>(val_end)
+    dates = pd.<span class="func">to_datetime</span>(dates)
+    
+    train_mask = dates <= train_end
+    val_mask   = (dates > train_end) & (dates <= val_end)
+    test_mask  = dates > val_end
+    
+    <span class="keyword">return</span> {
+        <span class="string">"train"</span>: {<span class="string">"X_enc"</span>: X_enc[train_mask], ...},
+        <span class="string">"val"</span>:   {<span class="string">"X_enc"</span>: X_enc[val_mask], ...},
+        <span class="string">"test"</span>:  {<span class="string">"X_enc"</span>: X_enc[test_mask], ...},
+    }</code></pre>
+
+<div class="box box-key">
+<h4>🎯 Key Idea: No Future Leakage</h4>
+<p>The model is trained on data up to June 2023, validated on Jul 2023–Jun 2024, and tested on Jul 2024–Jan 2026. At no point does training data contain information from the future test period. This is essential for honest performance evaluation.</p>
+</div>
+
+<div class="quiz" id="quiz4">
+<h4>📝 Quiz — Section 4</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: If seq_len=120 and pred_len=30, how many total days does one window span?</p>
+  <input type="radio" name="q4_1" id="q4_1a" value="a"><label for="q4_1a">A) 120</label>
+  <input type="radio" name="q4_1" id="q4_1b" value="b"><label for="q4_1b">B) 150</label>
+  <input type="radio" name="q4_1" id="q4_1c" value="c"><label for="q4_1c">C) 30</label>
+  <input type="radio" name="q4_1" id="q4_1d" value="d"><label for="q4_1d">D) 90</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: Why can't we randomly shuffle time series samples into train/val/test?</p>
+  <input type="radio" name="q4_2" id="q4_2a" value="a"><label for="q4_2a">A) It would leak future information into training</label>
+  <input type="radio" name="q4_2" id="q4_2b" value="b"><label for="q4_2b">B) Python doesn't support it</label>
+  <input type="radio" name="q4_2" id="q4_2c" value="c"><label for="q4_2c">C) Time series data is always identical</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: With 1000 days of data, seq_len=120, pred_len=30, how many windows?</p>
+  <input type="radio" name="q4_3" id="q4_3a" value="a"><label for="q4_3a">A) 1000</label>
+  <input type="radio" name="q4_3" id="q4_3b" value="b"><label for="q4_3b">B) 880</label>
+  <input type="radio" name="q4_3" id="q4_3c" value="c"><label for="q4_3c">C) 851 (1000 − 150 + 1)</label>
+</div>
+<button onclick="checkQuiz('quiz4')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 5 ═══════════════════ -->
+<h2 id="s5">5. Baseline Models</h2>
+
+<p>Before building complex models, we need simple baselines to compare against. If a fancy model can't beat a naive baseline, it's not useful.</p>
+
+<h3>Naive Persistence</h3>
+<p>The simplest possible forecast: <em>tomorrow's price will be today's price</em> (for all 30 days).</p>
+<div class="math">ŷₜ₊ₕ = yₜ    for all h = 1, 2, …, 30</div>
+
+<pre><code><span class="keyword">class</span> <span class="type">NaivePersistence</span>(<span class="type">BaseForecaster</span>):
+    <span class="keyword">def</span> <span class="func">predict</span>(self, y):
+        <span class="keyword">if</span> y.ndim == <span class="number">1</span>:
+            y = y.<span class="func">reshape</span>(<span class="number">1</span>, <span class="number">-1</span>)
+        last_value = y[:, <span class="number">-1</span>:]          <span class="comment"># Shape: (batch, 1)</span>
+        predictions = np.<span class="func">repeat</span>(last_value, self.pred_len, axis=<span class="number">1</span>)
+        <span class="keyword">return</span> predictions             <span class="comment"># Shape: (batch, 30)</span></code></pre>
+
+<div class="box box-info">
+<h4>💡 Why is this useful?</h4>
+<p>In efficient markets, prices follow a <strong>random walk</strong>, meaning the best prediction of tomorrow's price is today's price. If our model can't beat this, our model isn't capturing any signal.</p>
+</div>
+
+<h3>Seasonal Naive</h3>
+<p>Uses weekly patterns: <em>next Monday will be like last Monday</em>. With 5-day trading weeks:</p>
+<div class="math">ŷₜ₊ₕ = yₜ₊ₕ₋₅    (repeat the pattern from one week ago)</div>
+
+<h3>Linear Regression Baseline</h3>
+<p>A separate <strong>Ridge regression</strong> model for each horizon, using hand-crafted features:</p>
+<pre><code><span class="keyword">def</span> <span class="func">_create_features</span>(self, y):
+    features = []
+    <span class="keyword">for</span> lag <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">5</span>, <span class="number">10</span>, <span class="number">20</span>]:
+        features.<span class="func">append</span>(y[:, -lag])          <span class="comment"># Lagged values</span>
+    features.<span class="func">append</span>(np.<span class="func">mean</span>(y[:, <span class="number">-20</span>:], axis=<span class="number">1</span>))  <span class="comment"># 20-day mean</span>
+    features.<span class="func">append</span>(np.<span class="func">std</span>(y[:, <span class="number">-20</span>:], axis=<span class="number">1</span>))   <span class="comment"># 20-day std</span>
+    features.<span class="func">append</span>(y[:, <span class="number">-1</span>] - y[:, <span class="number">-5</span>])        <span class="comment"># 5-day momentum</span>
+    <span class="keyword">return</span> np.<span class="func">column_stack</span>(features)</code></pre>
+
+<p>Ridge regression minimises:</p>
+<div class="math">L = Σᵢ(yᵢ − ŷᵢ)² + α · Σⱼ wⱼ²</div>
+<p>where α is the <strong>regularisation strength</strong>. The penalty term <span class="math-inline">α · Σ wⱼ²</span> prevents weights from growing too large (overfitting).</p>
+
+<h3>ARIMA</h3>
+<p><strong>ARIMA(p, d, q)</strong> = AutoRegressive Integrated Moving Average. A classic statistical model:</p>
+<ul>
+<li><strong>AR(p)</strong>: Use the last p values as inputs (autoregressive)</li>
+<li><strong>I(d)</strong>: Difference the series d times to make it stationary</li>
+<li><strong>MA(q)</strong>: Use the last q forecast errors</li>
+</ul>
+<p>The repo uses ARIMA(5, 1, 2) by default:</p>
+<pre><code>model = <span class="type">ARIMA</span>(y, order=(<span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>))
+fitted = model.<span class="func">fit</span>(disp=<span class="keyword">False</span>)
+forecast = fitted.<span class="func">forecast</span>(steps=<span class="number">30</span>)</code></pre>
+
+<div class="quiz" id="quiz5">
+<h4>📝 Quiz — Section 5</h4>
+<div class="quiz-q" data-correct="a">
+  <p>Q1: What does the naive persistence model predict for Day 15 ahead?</p>
+  <input type="radio" name="q5_1" id="q5_1a" value="a"><label for="q5_1a">A) Today's price</label>
+  <input type="radio" name="q5_1" id="q5_1b" value="b"><label for="q5_1b">B) The price 15 days ago</label>
+  <input type="radio" name="q5_1" id="q5_1c" value="c"><label for="q5_1c">C) Zero</label>
+  <input type="radio" name="q5_1" id="q5_1d" value="d"><label for="q5_1d">D) The average of the last 15 days</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q2: In Ridge regression, what happens when α is very large?</p>
+  <input type="radio" name="q5_2" id="q5_2a" value="a"><label for="q5_2a">A) The model overfits more</label>
+  <input type="radio" name="q5_2" id="q5_2b" value="b"><label for="q5_2b">B) Weights are pushed towards zero (simpler model)</label>
+  <input type="radio" name="q5_2" id="q5_2c" value="c"><label for="q5_2c">C) Training speed increases</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: In ARIMA(5,1,2), what does the "1" represent?</p>
+  <input type="radio" name="q5_3" id="q5_3a" value="a"><label for="q5_3a">A) 1 autoregressive term</label>
+  <input type="radio" name="q5_3" id="q5_3b" value="b"><label for="q5_3b">B) 1 moving average term</label>
+  <input type="radio" name="q5_3" id="q5_3c" value="c"><label for="q5_3c">C) Difference the series 1 time to achieve stationarity</label>
+</div>
+<button onclick="checkQuiz('quiz5')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 6 ═══════════════════ -->
+<h2 id="s6">6. DLinear: Decomposition + Linear Mapping</h2>
+
+<h3>The Big Idea</h3>
+<p>A 2022 paper asked: <em>"Are Transformers Effective for Time Series Forecasting?"</em> They showed that a simple linear model often beats complex transformers. DLinear works by:</p>
+<ol>
+<li><strong>Decompose</strong> the input into trend and seasonal components</li>
+<li>Apply a <strong>separate linear layer</strong> to each component</li>
+<li><strong>Add them back together</strong></li>
+</ol>
+
+<div class="diagram">
+  Input (120 days, F features)
+         │
+    ┌────┴────┐
+    │ <span class="hl">AvgPool</span>  │  ← Moving average (kernel_size=25)
+    └────┬────┘
+         │
+    ┌────┴────────────┐
+    │                 │
+  <span class="hl2">Trend</span>           <span class="hl3">Seasonal</span>
+  (smooth)       (input − trend)
+    │                 │
+  <span class="hl2">Linear(120→30)</span>  <span class="hl3">Linear(120→30)</span>
+    │                 │
+    └────────┬────────┘
+             │
+          <span class="hl">Output</span> (30 days)
+          Trend + Seasonal
+</div>
+
+<h3>Code Walkthrough</h3>
+<pre><code><span class="keyword">class</span> <span class="type">DLinear</span>(nn.Module):
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, seq_len, pred_len, enc_in, individual=<span class="keyword">True</span>, kernel_size=<span class="number">25</span>):
+        <span class="func">super</span>().__init__()
+        <span class="comment"># Moving average for trend extraction</span>
+        padding = (kernel_size - <span class="number">1</span>) // <span class="number">2</span>
+        self.avg = nn.<span class="func">AvgPool1d</span>(kernel_size=kernel_size, stride=<span class="number">1</span>, padding=padding)
+        
+        <span class="keyword">if</span> individual:
+            <span class="comment"># Separate linear layer per feature channel</span>
+            self.Linear_Trend = nn.<span class="func">ModuleList</span>([
+                nn.<span class="func">Linear</span>(seq_len, pred_len) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="func">range</span>(enc_in)
+            ])
+            self.Linear_Seasonal = nn.<span class="func">ModuleList</span>([
+                nn.<span class="func">Linear</span>(seq_len, pred_len) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="func">range</span>(enc_in)
+            ])
+
+    <span class="keyword">def</span> <span class="func">forward</span>(self, x_enc, x_dec=<span class="keyword">None</span>):
+        <span class="comment"># Step 1: Decompose into trend + seasonal</span>
+        x = x_enc.<span class="func">permute</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>)    <span class="comment"># (batch, features, seq_len)</span>
+        trend = self.<span class="func">avg</span>(x).<span class="func">permute</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>)
+        seasonal = x_enc - trend
+        
+        <span class="comment"># Step 2: Apply separate linear maps</span>
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="func">range</span>(self.channels):
+            trend_out[:, :, i] = self.Linear_Trend[i](trend[:, :, i])
+            seasonal_out[:, :, i] = self.Linear_Seasonal[i](seasonal[:, :, i])
+        
+        <span class="comment"># Step 3: Recombine</span>
+        output = trend_out + seasonal_out
+        <span class="keyword">return</span> output[:, :, :<span class="number">1</span>]  <span class="comment"># Return only target channel</span></code></pre>
+
+<h3>Why It Works</h3>
+<p>The decomposition separates "where prices are heading" (trend) from "short-term oscillations" (seasonal). A linear layer <code>nn.Linear(120, 30)</code> is just a matrix multiplication:</p>
+<div class="math">output = W · input + b     where W is a 30×120 matrix</div>
+<p>Each output day is a <strong>weighted sum of all 120 input days</strong>. The model learns which past days matter most for each future day.</p>
+
+<div class="box box-key">
+<h4>🧮 A-Level Maths Connection: Matrix Multiplication</h4>
+<p>If you have a column vector <strong>x</strong> of length 120 (past prices) and a matrix <strong>W</strong> of size 30×120, then <strong>Wx</strong> gives a vector of length 30 (future prices). Each element of the output is a dot product of one row of W with the input — that's just a weighted average where the model learns the weights.</p>
+</div>
+
+<div class="quiz" id="quiz6">
+<h4>📝 Quiz — Section 6</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: What does the AvgPool1d layer extract?</p>
+  <input type="radio" name="q6_1" id="q6_1a" value="a"><label for="q6_1a">A) The seasonal component</label>
+  <input type="radio" name="q6_1" id="q6_1b" value="b"><label for="q6_1b">B) The trend component (smoothed version)</label>
+  <input type="radio" name="q6_1" id="q6_1c" value="c"><label for="q6_1c">C) The maximum values</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: How is the seasonal component computed?</p>
+  <input type="radio" name="q6_2" id="q6_2a" value="a"><label for="q6_2a">A) Input minus the trend</label>
+  <input type="radio" name="q6_2" id="q6_2b" value="b"><label for="q6_2b">B) The trend multiplied by 2</label>
+  <input type="radio" name="q6_2" id="q6_2c" value="c"><label for="q6_2c">C) A random signal</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: How many learnable parameters are in nn.Linear(120, 30)?</p>
+  <input type="radio" name="q6_3" id="q6_3a" value="a"><label for="q6_3a">A) 120</label>
+  <input type="radio" name="q6_3" id="q6_3b" value="b"><label for="q6_3b">B) 150</label>
+  <input type="radio" name="q6_3" id="q6_3c" value="c"><label for="q6_3c">C) 120 × 30 + 30 = 3630 (weights + biases)</label>
+</div>
+<button onclick="checkQuiz('quiz6')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 7 ═══════════════════ -->
+<h2 id="s7">7. Autoformer Architecture</h2>
+
+<h3>What Is a Transformer?</h3>
+<p>Transformers (from the 2017 "Attention Is All You Need" paper) use <strong>attention</strong> to decide which parts of the input are most relevant. Instead of processing input sequentially (like ARIMA), transformers look at all positions simultaneously.</p>
+
+<h4>The Attention Formula</h4>
+<div class="math">Attention(Q, K, V) = softmax(QKᵀ / √d) · V</div>
+<p>Where:</p>
+<ul>
+<li><strong>Q</strong> (Query) = "What am I looking for?"</li>
+<li><strong>K</strong> (Key) = "What do I contain?"</li>
+<li><strong>V</strong> (Value) = "What's my actual content?"</li>
+<li><strong>d</strong> = dimension of the keys (for numerical stability)</li>
+</ul>
+
+<p>The softmax converts scores into probabilities (weights that sum to 1), then we take a weighted average of the values.</p>
+
+<h3>Auto-Correlation Mechanism</h3>
+<p>The <strong>Autoformer</strong> replaces standard attention with <strong>auto-correlation</strong>. Instead of learning arbitrary attention patterns, it finds the natural periodic patterns in the data:</p>
+
+<pre><code><span class="keyword">class</span> <span class="type">AutoCorrelation</span>(nn.Module):
+    <span class="keyword">def</span> <span class="func">forward</span>(self, queries, keys, values):
+        B, L, _ = queries.shape
+        H = self.n_heads
+        
+        <span class="comment"># Project into multi-head space</span>
+        queries = self.query_projection(queries).view(B, L, H, <span class="number">-1</span>)
+        keys = self.key_projection(keys).view(B, S, H, <span class="number">-1</span>)
+        values = self.value_projection(values).view(B, S, H, <span class="number">-1</span>)
+        
+        <span class="comment"># Compute attention scores</span>
+        scale = <span class="number">1.</span> / np.<span class="func">sqrt</span>(self.d_keys)
+        scores = torch.<span class="func">einsum</span>(<span class="string">"blhe,bshe->bhls"</span>, queries, keys) * scale
+        
+        <span class="comment"># Softmax → probabilities</span>
+        attn = F.<span class="func">softmax</span>(scores, dim=<span class="number">-1</span>)
+        
+        <span class="comment"># Weighted sum of values</span>
+        out = torch.<span class="func">einsum</span>(<span class="string">"bhls,bshd->blhd"</span>, attn, values)
+        <span class="keyword">return</span> self.out_projection(out.<span class="func">reshape</span>(B, L, <span class="number">-1</span>))</code></pre>
+
+<h3>Multi-Head Attention</h3>
+<p>Instead of one attention computation, we split into <strong>8 heads</strong> (by default), each focusing on different patterns. With d_model=512 and 8 heads, each head works with 512/8=64 dimensions.</p>
+
+<h3>Series Decomposition Blocks</h3>
+<p>Between every attention layer, the Autoformer decomposes the signal:</p>
+<pre><code><span class="keyword">class</span> <span class="type">SeriesDecomp</span>(nn.Module):
+    <span class="keyword">def</span> <span class="func">forward</span>(self, x):
+        trend = self.<span class="func">moving_avg</span>(x)  <span class="comment"># Smooth the signal</span>
+        seasonal = x - trend       <span class="comment"># What's left = oscillations</span>
+        <span class="keyword">return</span> seasonal, trend</code></pre>
+
+<h3>Encoder-Decoder Architecture</h3>
+<div class="diagram">
+  <span class="hl">Encoder</span> (processes input):
+  ┌──────────────────────────────────────────┐
+  │  Input Embedding → Linear(F → 512)       │
+  │        ↓                                  │
+  │  EncoderLayer × 2:                        │
+  │    AutoCorrelation → Decomp → FFN → Decomp│
+  └──────────────────────┬───────────────────┘
+                         ↓
+  <span class="hl2">Decoder</span> (generates output):
+  ┌──────────────────────────────────────────┐
+  │  Decoder Embedding → Linear(F → 512)     │
+  │        ↓                                  │
+  │  DecoderLayer × 1:                        │
+  │    Self-Attention → Decomp → FFN → Decomp │
+  └──────────────────────┬───────────────────┘
+                         ↓
+  <span class="hl3">Projection</span>: Linear(512 → 1)  →  30 price predictions
+</div>
+
+<h3>Residual Wrapper</h3>
+<p>The repo adds an optional <strong>residual connection to naive persistence</strong>:</p>
+<pre><code><span class="keyword">class</span> <span class="type">ResidualWrapper</span>(nn.Module):
+    <span class="keyword">def</span> <span class="func">forward</span>(self, x_enc, x_dec):
+        <span class="comment"># Naive prediction: repeat last known value</span>
+        naive_pred = x_enc[:, <span class="number">-1</span>:, <span class="number">0</span>:<span class="number">1</span>].<span class="func">expand</span>(<span class="number">-1</span>, self.pred_len, <span class="number">-1</span>)
+        
+        <span class="comment"># Model predicts a residual (correction)</span>
+        residual = self.base_model(x_enc, x_dec)
+        
+        <span class="comment"># Blend: start close to naive, let model gradually contribute</span>
+        blend = torch.<span class="func">sigmoid</span>(self.alpha)  <span class="comment"># Learnable weight in [0, 1]</span>
+        <span class="keyword">return</span> naive_pred + blend * residual</code></pre>
+
+<div class="box box-tip">
+<h4>💡 Why Add a Residual Connection?</h4>
+<p>This ensures the model <em>at worst</em> matches the naive baseline. The model only needs to learn the <em>correction</em> to persistence, not the entire price level. This is much easier to learn.</p>
+</div>
+
+<div class="quiz" id="quiz7">
+<h4>📝 Quiz — Section 7</h4>
+<div class="quiz-q" data-correct="c">
+  <p>Q1: In attention, what does the softmax function do?</p>
+  <input type="radio" name="q7_1" id="q7_1a" value="a"><label for="q7_1a">A) Makes all values negative</label>
+  <input type="radio" name="q7_1" id="q7_1b" value="b"><label for="q7_1b">B) Sorts the scores</label>
+  <input type="radio" name="q7_1" id="q7_1c" value="c"><label for="q7_1c">C) Converts scores to probabilities (sum to 1)</label>
+  <input type="radio" name="q7_1" id="q7_1d" value="d"><label for="q7_1d">D) Doubles the largest value</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q2: With d_model=512 and 8 heads, what is each head's dimension?</p>
+  <input type="radio" name="q7_2" id="q7_2a" value="a"><label for="q7_2a">A) 512</label>
+  <input type="radio" name="q7_2" id="q7_2b" value="b"><label for="q7_2b">B) 64</label>
+  <input type="radio" name="q7_2" id="q7_2c" value="c"><label for="q7_2c">C) 8</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: The ResidualWrapper ensures the model always predicts at least as well as:</p>
+  <input type="radio" name="q7_3" id="q7_3a" value="a"><label for="q7_3a">A) The naive persistence baseline</label>
+  <input type="radio" name="q7_3" id="q7_3b" value="b"><label for="q7_3b">B) ARIMA</label>
+  <input type="radio" name="q7_3" id="q7_3c" value="c"><label for="q7_3c">C) Perfect prediction</label>
+</div>
+<button onclick="checkQuiz('quiz7')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 8 ═══════════════════ -->
+<h2 id="s8">8. Training Deep Models (PyTorch)</h2>
+
+<h3>The Training Loop</h3>
+<p>Training a neural network is an iterative process of: <strong>predict → measure error → adjust weights</strong>.</p>
+
+<pre><code><span class="comment"># Core training loop (simplified from src/models/tsm.py)</span>
+criterion = nn.<span class="func">MSELoss</span>()           <span class="comment"># Loss function</span>
+optimizer = torch.optim.<span class="func">AdamW</span>(     <span class="comment"># Weight updater</span>
+    model.<span class="func">parameters</span>(), lr=<span class="number">0.0001</span>, weight_decay=<span class="number">0.0</span>
+)
+
+<span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="func">range</span>(<span class="number">100</span>):
+    <span class="keyword">for</span> batch <span class="keyword">in</span> train_loader:
+        <span class="comment"># 1. Forward pass: make predictions</span>
+        output = model(batch[<span class="string">"X_enc"</span>], batch[<span class="string">"X_dec"</span>])
+        
+        <span class="comment"># 2. Compute loss: how wrong are we?</span>
+        loss = <span class="func">criterion</span>(output, batch[<span class="string">"y"</span>])
+        
+        <span class="comment"># 3. Backward pass: compute gradients</span>
+        loss.<span class="func">backward</span>()
+        
+        <span class="comment"># 4. Gradient clipping: prevent explosions</span>
+        torch.nn.utils.<span class="func">clip_grad_norm_</span>(model.<span class="func">parameters</span>(), <span class="number">1.0</span>)
+        
+        <span class="comment"># 5. Update weights</span>
+        optimizer.<span class="func">step</span>()
+        optimizer.<span class="func">zero_grad</span>()</code></pre>
+
+<h3>Key Concepts</h3>
+
+<h4>Loss Function: MSE</h4>
+<div class="math">MSE = (1/n) · Σᵢ (yᵢ − ŷᵢ)²</div>
+<p>Squares the errors so large mistakes are penalised much more than small ones.</p>
+
+<h4>Gradient Descent</h4>
+<p>Imagine you're on a hill in fog and want to reach the lowest point. You feel the slope at your feet (the <strong>gradient</strong>) and take a small step downhill. Repeat until you can't go lower.</p>
+<div class="math">wₙₑₓₜ = w − η · ∂L/∂w</div>
+<p>where η = <strong>learning rate</strong> (step size) = 0.0001 in this repo.</p>
+
+<h4>AdamW Optimizer</h4>
+<p>AdamW is an advanced gradient descent method that:</p>
+<ul>
+<li>Adapts the learning rate per parameter (frequently updated params get smaller steps)</li>
+<li>Uses momentum (keeps moving in recent direction, like a ball rolling)</li>
+<li>Applies <strong>weight decay</strong> separately from gradient (proper L2 regularisation)</li>
+</ul>
+
+<h4>Early Stopping</h4>
+<p>We track validation loss each epoch. If it hasn't improved for <code>patience=10</code> epochs, we stop training and use the best checkpoint.</p>
+<pre><code><span class="keyword">if</span> val_loss < self.best_val_loss:
+    self.best_val_loss = val_loss
+    no_improve = <span class="number">0</span>
+    self.<span class="func">save</span>(save_path)     <span class="comment"># Save best model</span>
+<span class="keyword">else</span>:
+    no_improve += <span class="number">1</span>
+    <span class="keyword">if</span> no_improve >= patience:
+        <span class="keyword">break</span>               <span class="comment"># Stop early!</span></code></pre>
+
+<h4>Cosine Annealing Learning Rate</h4>
+<p>The learning rate isn't constant — it follows a cosine curve, starting high and gradually decreasing:</p>
+<div class="math">η(t) = η_min + ½(η_max − η_min)(1 + cos(πt/T))</div>
+<p>This helps the model explore broadly early on, then fine-tune as it converges.</p>
+
+<div class="quiz" id="quiz8">
+<h4>📝 Quiz — Section 8</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: What does <code>loss.backward()</code> compute?</p>
+  <input type="radio" name="q8_1" id="q8_1a" value="a"><label for="q8_1a">A) The final prediction</label>
+  <input type="radio" name="q8_1" id="q8_1b" value="b"><label for="q8_1b">B) The gradient of the loss with respect to each weight</label>
+  <input type="radio" name="q8_1" id="q8_1c" value="c"><label for="q8_1c">C) The training data</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: Why do we clip gradients to a max of 1.0?</p>
+  <input type="radio" name="q8_2" id="q8_2a" value="a"><label for="q8_2a">A) To speed up training</label>
+  <input type="radio" name="q8_2" id="q8_2b" value="b"><label for="q8_2b">B) To make the model simpler</label>
+  <input type="radio" name="q8_2" id="q8_2c" value="c"><label for="q8_2c">C) To prevent exploding gradients that destabilise training</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: Early stopping prevents:</p>
+  <input type="radio" name="q8_3" id="q8_3a" value="a"><label for="q8_3a">A) Overfitting (model memorises training data)</label>
+  <input type="radio" name="q8_3" id="q8_3b" value="b"><label for="q8_3b">B) Underfitting (model is too simple)</label>
+  <input type="radio" name="q8_3" id="q8_3c" value="c"><label for="q8_3c">C) The computer from overheating</label>
+</div>
+<button onclick="checkQuiz('quiz8')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 9 ═══════════════════ -->
+<h2 id="s9">9. Evaluation Metrics</h2>
+
+<h3>Why Multiple Metrics?</h3>
+<p>No single metric captures everything. We use several:</p>
+
+<table>
+<tr><th>Metric</th><th>Formula</th><th>What It Measures</th></tr>
+<tr><td><strong>MSE</strong></td><td>(1/n) Σ(y−ŷ)²</td><td>Average squared error — penalises big mistakes heavily</td></tr>
+<tr><td><strong>RMSE</strong></td><td>√MSE</td><td>Same units as the data (EUR) — more interpretable</td></tr>
+<tr><td><strong>MAE</strong></td><td>(1/n) Σ|y−ŷ|</td><td>Average absolute error — treats all errors equally</td></tr>
+<tr><td><strong>MAPE</strong></td><td>(1/n) Σ|y−ŷ|/|y| × 100</td><td>Percentage error — scale-independent</td></tr>
+</table>
+
+<h3>Code Implementation</h3>
+<pre><code><span class="keyword">def</span> <span class="func">mse</span>(y_true, y_pred):
+    <span class="keyword">return</span> np.<span class="func">mean</span>((y_true - y_pred) ** <span class="number">2</span>)
+
+<span class="keyword">def</span> <span class="func">rmse</span>(y_true, y_pred):
+    <span class="keyword">return</span> np.<span class="func">sqrt</span>(<span class="func">mse</span>(y_true, y_pred))
+
+<span class="keyword">def</span> <span class="func">mae</span>(y_true, y_pred):
+    <span class="keyword">return</span> np.<span class="func">mean</span>(np.<span class="func">abs</span>(y_true - y_pred))
+
+<span class="keyword">def</span> <span class="func">mape</span>(y_true, y_pred, epsilon=<span class="number">1e-8</span>):
+    <span class="keyword">return</span> np.<span class="func">mean</span>(np.<span class="func">abs</span>((y_true - y_pred) / (np.<span class="func">abs</span>(y_true) + epsilon))) * <span class="number">100</span></code></pre>
+
+<h3>Horizon-Specific vs. Path-Level Evaluation</h3>
+
+<h4>Horizon-Specific</h4>
+<p>Evaluate at specific forecast horizons: Day 1, Day 5, Day 20, Day 30. This tells us "how accurate is the model N days ahead?"</p>
+<pre><code><span class="comment"># For horizon h=5 (1-indexed):</span>
+y_true_h5 = y_true[:, <span class="number">4</span>]   <span class="comment"># 0-indexed → column 4</span>
+y_pred_h5 = y_pred[:, <span class="number">4</span>]
+mse_h5 = np.<span class="func">mean</span>((y_true_h5 - y_pred_h5) ** <span class="number">2</span>)</code></pre>
+
+<h4>Path-Level (Paper-Style)</h4>
+<p>Average MSE across <strong>all 30 steps</strong>. This matches the carbon price paper's evaluation:</p>
+<div class="math">MSE_path = (1/(n·30)) · Σₜ Σₕ (y_true[t,h] − y_pred[t,h])²</div>
+<pre><code><span class="keyword">def</span> <span class="func">compute_path_metrics</span>(y_true, y_pred):
+    <span class="comment"># Flatten all predictions → single MSE</span>
+    global_metrics = <span class="func">compute_global_metrics</span>(y_true, y_pred)
+    <span class="keyword">return</span> {<span class="keyword">f</span><span class="string">"{name}_path"</span>: value <span class="keyword">for</span> name, value <span class="keyword">in</span> global_metrics.items()}</code></pre>
+
+<div class="quiz" id="quiz9">
+<h4>📝 Quiz — Section 9</h4>
+<div class="quiz-q" data-correct="c">
+  <p>Q1: If true prices are [10, 12] and predictions are [11, 10], what is the MSE?</p>
+  <input type="radio" name="q9_1" id="q9_1a" value="a"><label for="q9_1a">A) 1.0</label>
+  <input type="radio" name="q9_1" id="q9_1b" value="b"><label for="q9_1b">B) 3.0</label>
+  <input type="radio" name="q9_1" id="q9_1c" value="c"><label for="q9_1c">C) 2.5 — ((10−11)² + (12−10)²)/2 = (1+4)/2</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q2: Why use RMSE instead of MSE for reporting?</p>
+  <input type="radio" name="q9_2" id="q9_2a" value="a"><label for="q9_2a">A) It's always smaller</label>
+  <input type="radio" name="q9_2" id="q9_2b" value="b"><label for="q9_2b">B) It's in the same units as the original data (EUR)</label>
+  <input type="radio" name="q9_2" id="q9_2c" value="c"><label for="q9_2c">C) It ignores outliers</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: Path-level MSE is computed across:</p>
+  <input type="radio" name="q9_3" id="q9_3a" value="a"><label for="q9_3a">A) All 30 forecast steps and all samples</label>
+  <input type="radio" name="q9_3" id="q9_3b" value="b"><label for="q9_3b">B) Only the last forecast step</label>
+  <input type="radio" name="q9_3" id="q9_3c" value="c"><label for="q9_3c">C) Only the first forecast step</label>
+</div>
+<button onclick="checkQuiz('quiz9')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 10 ═══════════════════ -->
+<h2 id="s10">10. Trend Classification</h2>
+
+<h3>Going Beyond Numbers: Did the Model Get the Direction Right?</h3>
+<p>Even if the exact price forecast is off, getting the <strong>direction</strong> right (up/down/flat) matters for trading decisions.</p>
+
+<h4>Our Approach (Volatility-Based Threshold)</h4>
+<div class="math">
+threshold = 0.25 × σ₂₀ × mean(recent prices)
+</div>
+<ul>
+<li>If price change > threshold → <strong>UP</strong> (+1)</li>
+<li>If price change < −threshold → <strong>DOWN</strong> (−1)</li>
+<li>Otherwise → <strong>FLAT</strong> (0)</li>
+</ul>
+
+<h4>Paper-Style (α-Band around Historical Mean)</h4>
+<p>The carbon paper uses a <strong>2% neutrality band</strong> around the mean of the last 18 prices:</p>
+<div class="math">
+ref = mean(yₜ₋₁₇, …, yₜ)
+
+UP:   yₜ₊ₕ > (1 + 0.02) × ref
+DOWN: yₜ₊ₕ < (1 − 0.02) × ref
+FLAT: otherwise
+</div>
+
+<pre><code><span class="keyword">def</span> <span class="func">compute_paper_trend_accuracy</span>(history, y_true, y_pred,
+                                 alpha=<span class="number">0.02</span>, history_window=<span class="number">18</span>,
+                                 horizons=[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]):
+    <span class="comment"># Reference = mean of last 18 prices</span>
+    ref = np.<span class="func">mean</span>(history[:, -history_window:], axis=<span class="number">1</span>)
+    
+    upper = (<span class="number">1</span> + alpha) * ref  <span class="comment"># +2% band</span>
+    lower = (<span class="number">1</span> - alpha) * ref  <span class="comment"># −2% band</span>
+    
+    <span class="keyword">for</span> h <span class="keyword">in</span> horizons:
+        <span class="comment"># Classify true outcomes</span>
+        true_up = y_true[:, h<span class="number">-1</span>] > upper
+        true_dn = y_true[:, h<span class="number">-1</span>] < lower
+        <span class="comment"># ... same for predictions, then compute accuracy</span></code></pre>
+
+<div class="quiz" id="quiz10">
+<h4>📝 Quiz — Section 10</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: With α=0.02, ref=€70, what's the upper bound for an UP classification?</p>
+  <input type="radio" name="q10_1" id="q10_1a" value="a"><label for="q10_1a">A) €70.02</label>
+  <input type="radio" name="q10_1" id="q10_1b" value="b"><label for="q10_1b">B) €71.40 (70 × 1.02)</label>
+  <input type="radio" name="q10_1" id="q10_1c" value="c"><label for="q10_1c">C) €72.00</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: Why use a "flat" category at all?</p>
+  <input type="radio" name="q10_2" id="q10_2a" value="a"><label for="q10_2a">A) To make the test easier</label>
+  <input type="radio" name="q10_2" id="q10_2b" value="b"><label for="q10_2b">B) Because prices never move</label>
+  <input type="radio" name="q10_2" id="q10_2c" value="c"><label for="q10_2c">C) Small moves are noise; only big moves are trading signals</label>
+</div>
+<button onclick="checkQuiz('quiz10')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 11 ═══════════════════ -->
+<h2 id="s11">11. Statistical Significance Tests</h2>
+
+<h3>Is the Improvement Real or Just Luck?</h3>
+<p>When Model A has MSE=14.0 and Model B has MSE=14.5, is A truly better? Or could random variation explain the difference? Statistical tests answer this.</p>
+
+<h4>Paired t-Test</h4>
+<p>Compares <strong>paired</strong> errors (same sample, different model). The null hypothesis: "there is no difference on average".</p>
+<div class="math">
+t = (mean of differences) / (SE of differences)
+<br>where SE = std(diffs) / √n
+</div>
+<pre><code>t_stat, p_value = stats.<span class="func">ttest_rel</span>(errors_a, errors_b)</code></pre>
+<p>If <strong>p-value &lt; 0.05</strong>, we reject the null → the improvement is statistically significant at the 5% level.</p>
+
+<h4>Wilcoxon Signed-Rank Test</h4>
+<p>A <strong>non-parametric</strong> alternative (doesn't assume normal distribution). It ranks the absolute differences and compares the sum of positive vs. negative ranks.</p>
+<pre><code>stat, p_value = stats.<span class="func">wilcoxon</span>(diff, alternative=<span class="string">"two-sided"</span>)</code></pre>
+
+<h4>Diebold-Mariano Test</h4>
+<p>Specifically designed for comparing forecast accuracy. Accounts for <strong>autocorrelation in forecast errors</strong> using a Newey-West variance estimator:</p>
+<pre><code><span class="keyword">def</span> <span class="func">diebold_mariano_test</span>(errors_a, errors_b, h=<span class="number">1</span>):
+    d = errors_a - errors_b          <span class="comment"># Loss differential</span>
+    d_mean = np.<span class="func">mean</span>(d)
+    d_var = np.<span class="func">var</span>(d, ddof=<span class="number">1</span>)
+    
+    <span class="comment"># Newey-West: add autocorrelation correction</span>
+    <span class="keyword">for</span> k <span class="keyword">in</span> <span class="func">range</span>(<span class="number">1</span>, h):
+        gamma_k = np.<span class="func">mean</span>((d[k:] - d_mean) * (d[:−k] - d_mean))
+        d_var += <span class="number">2</span> * gamma_k
+    
+    dm_stat = d_mean / np.<span class="func">sqrt</span>(d_var / n)
+    p_value = <span class="number">2</span> * (<span class="number">1</span> - stats.norm.<span class="func">cdf</span>(<span class="func">abs</span>(dm_stat)))</code></pre>
+
+<div class="box box-key">
+<h4>🎯 Why Three Tests?</h4>
+<p><strong>Paired t-test</strong>: Simple, powerful if errors are roughly normal. <strong>Wilcoxon</strong>: Robust to non-normality and outliers. <strong>Diebold-Mariano</strong>: Handles autocorrelated forecast errors. If all three agree, we have strong evidence.</p>
+</div>
+
+<div class="quiz" id="quiz11">
+<h4>📝 Quiz — Section 11</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: A p-value of 0.03 means:</p>
+  <input type="radio" name="q11_1" id="q11_1a" value="a"><label for="q11_1a">A) There's a 3% chance Model A is better</label>
+  <input type="radio" name="q11_1" id="q11_1b" value="b"><label for="q11_1b">B) If the models were equally good, we'd see this big a difference only 3% of the time by chance</label>
+  <input type="radio" name="q11_1" id="q11_1c" value="c"><label for="q11_1c">C) Model A is 3% better</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: Why is the Wilcoxon test called "non-parametric"?</p>
+  <input type="radio" name="q11_2" id="q11_2a" value="a"><label for="q11_2a">A) It doesn't assume errors follow a specific distribution (e.g. normal)</label>
+  <input type="radio" name="q11_2" id="q11_2b" value="b"><label for="q11_2b">B) It has no parameters</label>
+  <input type="radio" name="q11_2" id="q11_2c" value="c"><label for="q11_2c">C) It's faster than the t-test</label>
+</div>
+<button onclick="checkQuiz('quiz11')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 12 ═══════════════════ -->
+<h2 id="s12">12. LLM Prompting Strategies</h2>
+
+<h3>The Core Idea: Can an LLM Improve a Maths Model?</h3>
+<p>The Time Series Model (TSM) is great at learning patterns from numbers. But it can't read the news or understand that "EU tightens emissions targets" means prices will rise. The LLM can. The question is: <strong>how do we combine them?</strong></p>
+
+<h3>Strategy 1: Direct Prompting (DP)</h3>
+<p>Give the LLM raw price history and ask it to forecast. No TSM involved.</p>
+<pre><code><span class="comment"># Simplified prompt (from src/llm/prompts.py)</span>
+<span class="string">"""
+Historical Data: [65.20, 65.80, 66.10, ..., 68.40]
+Current price: 68.40 EUR
+20-day volatility: 1.85 EUR
+5-day change: +3.20 EUR (+4.9%)
+
+Task: Forecast the next 30 trading days.
+Return JSON: {"yhat": [d1, d2, ..., d30]}
+"""</span></code></pre>
+
+<h3>Strategy 2: Chain-of-Thought (CoT)</h3>
+<p>"Think step by step" — forces the LLM to reason before answering:</p>
+<pre><code><span class="string">"""
+Think step by step:
+1. Analyze the recent price trend and momentum
+2. Consider the volatility regime
+3. Identify support/resistance levels
+4. Factor in carbon market seasonality
+5. Generate your forecast
+
+Your analysis: [LLM reasons here]
+Based on your analysis: {"yhat": [...]}
+"""</span></code></pre>
+
+<h3>Strategy 3: TSM+LLM (Simple Refinement)</h3>
+<p>Give the LLM <em>both</em> the price history and the TSM forecast, and ask it to refine:</p>
+<pre><code><span class="string">"""
+Model Forecast: [68.50, 68.60, ..., 70.10]
+Model predicts +2.5% over 30 days.
+
+Task: Review and refine this forecast.
+Is the trend direction reasonable? Is the magnitude realistic?
+"""</span></code></pre>
+
+<h3>Strategy 4: TSM+LLM-COT-SENT (Sentiment-Informed)</h3>
+<p>Adds daily <strong>news sentiment scores</strong> (−1 to +1) to the prompt:</p>
+<pre><code><span class="string">"""
+Recent prices: [65.20, ..., 68.40]
+Sentiment history: [0.33, -0.67, 0.00, 1.00, 0.33, ...]
+Model forecast: [68.50, 68.60, ..., 70.10]
+
+Task: Adjust the forecast using sentiment signals.
+Sentiment should nudge, not override, the model.
+"""</span></code></pre>
+
+<h3>Strategy 5: Delta-Based Refinement</h3>
+<p>Instead of outputting a full new forecast, the LLM outputs <strong>adjustments</strong>:</p>
+<pre><code><span class="string">"""Task: Provide per-day additive adjustments (delta).
+Keep each delta within ±0.50 EUR.
+Return: {"delta": [+0.10, -0.05, ..., +0.30]}"""</span>
+
+<span class="comment"># Final forecast = TSM forecast + delta</span>
+refined = tsm_forecast + delta</code></pre>
+
+<h3>Strategy 6: Normalized Delta</h3>
+<p>Work in <strong>z-score space</strong> (standard deviations from the mean) so adjustments are scale-independent:</p>
+<div class="math">z = (price − mean) / std</div>
+<pre><code>norm_history = (history - mean) / std
+norm_forecast = (tsm_forecast - mean) / std
+<span class="comment"># LLM adjusts in z-score space, then we convert back:</span>
+refined_prices = (norm_forecast + delta_z) * std + mean</code></pre>
+
+<div class="box box-info">
+<h4>💡 Temperature Parameter</h4>
+<p>The LLM's <code>temperature</code> controls randomness. At temperature=0, the model always picks the most likely token (deterministic). At temperature=1, it samples randomly. The repo uses <code>temperature=0.1</code> for nearly-deterministic, reproducible outputs.</p>
+</div>
+
+<div class="quiz" id="quiz12">
+<h4>📝 Quiz — Section 12</h4>
+<div class="quiz-q" data-correct="c">
+  <p>Q1: What is the advantage of CoT over direct prompting?</p>
+  <input type="radio" name="q12_1" id="q12_1a" value="a"><label for="q12_1a">A) It uses less tokens</label>
+  <input type="radio" name="q12_1" id="q12_1b" value="b"><label for="q12_1b">B) It's always more accurate</label>
+  <input type="radio" name="q12_1" id="q12_1c" value="c"><label for="q12_1c">C) It forces the LLM to reason step-by-step before answering</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q2: In delta-based refinement, if TSM predicts €70 and delta=+0.50, the final forecast is:</p>
+  <input type="radio" name="q12_2" id="q12_2a" value="a"><label for="q12_2a">A) €70.00</label>
+  <input type="radio" name="q12_2" id="q12_2b" value="b"><label for="q12_2b">B) €70.50</label>
+  <input type="radio" name="q12_2" id="q12_2c" value="c"><label for="q12_2c">C) €69.50</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: Why use temperature=0.1 rather than temperature=1.0?</p>
+  <input type="radio" name="q12_3" id="q12_3a" value="a"><label for="q12_3a">A) We want reproducible, near-deterministic forecasts</label>
+  <input type="radio" name="q12_3" id="q12_3b" value="b"><label for="q12_3b">B) Higher temperature is always better</label>
+  <input type="radio" name="q12_3" id="q12_3c" value="c"><label for="q12_3c">C) The LLM only works at low temperatures</label>
+</div>
+<button onclick="checkQuiz('quiz12')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 13 ═══════════════════ -->
+<h2 id="s13">13. Two-Stage Reflect → Apply (CoT-RF)</h2>
+
+<h3>The Key Innovation</h3>
+<p>Instead of asking the LLM to refine in one shot, we split the task into two stages:</p>
+
+<div class="diagram">
+  <span class="hl">Stage A: REFLECT</span>
+  ┌────────────────────────────────────────────────┐
+  │  Input: K teaching examples showing:            │
+  │    • History → TSM forecast → True outcome      │
+  │    • (optionally: sentiment history)             │
+  │                                                  │
+  │  Output: Plain-text CORRECTION RULES             │
+  │    e.g. "Model overshoots after spikes by ~1.5€" │
+  │    e.g. "Negative sentiment leads to lag by 3d"  │
+  └─────────────────────┬──────────────────────────┘
+                        │ rules_text
+                        ▼
+  <span class="hl2">Stage B: APPLY</span>
+  ┌────────────────────────────────────────────────┐
+  │  Input:                                         │
+  │    • Current history + TSM forecast              │
+  │    • (optionally: current sentiment)             │
+  │    • The rules from Stage A                      │
+  │                                                  │
+  │  Output: Refined 30-day forecast (JSON)          │
+  └────────────────────────────────────────────────┘
+</div>
+
+<h3>Stage A: Reflection (Learning from Mistakes)</h3>
+<pre><code><span class="comment"># The reflect prompt shows K past examples:</span>
+<span class="string">"""
+Example 1 (date=2024-03-15):
+  History: [64.20, 64.50, ...]
+  Model forecast: [65.00, 65.20, ..., 67.50]
+  True outcome:   [64.80, 64.30, ..., 63.10]
+
+Example 2 (date=2024-04-02):
+  History: [63.10, 63.50, ...]
+  ...
+
+Task: Identify systematic deviations. Output correction rules.
+Focus on: bias, lag, overshoot, mean reversion, horizon errors.
+
+Rules: [LLM writes rules here]
+"""</span></code></pre>
+
+<h3>Stage B: Application</h3>
+<pre><code><span class="string">"""
+Current price: 68.40 EUR
+Recent prices: [65.20, ..., 68.40]
+Model Forecast: [68.50, 68.60, ..., 70.10]
+
+Correction Rules:
+- Model tends to overshoot by ~1.2 EUR at h=30
+- After positive momentum >3%, expect mean reversion by day 15
+- Negative sentiment signals precede downturns by 2-3 days
+
+Task: Apply the rules. Return refined forecast as JSON.
+"""</span></code></pre>
+
+<h3>Context Retention</h3>
+<p>A crucial optimisation: Stage B can <strong>retain the chat context from Stage A</strong> (using <code>retain_context: true</code>), so the LLM remembers the teaching examples and its own reasoning:</p>
+<pre><code><span class="comment"># Multi-message chat (like a conversation):</span>
+messages = [
+    {<span class="string">"role"</span>: <span class="string">"user"</span>,    <span class="string">"content"</span>: stage_a_prompt},   <span class="comment"># Examples</span>
+    {<span class="string">"role"</span>: <span class="string">"assistant"</span>, <span class="string">"content"</span>: rules_text},      <span class="comment"># LLM's rules</span>
+    {<span class="string">"role"</span>: <span class="string">"user"</span>,    <span class="string">"content"</span>: stage_b_prompt},   <span class="comment"># Apply now</span>
+]
+response = client.chat.completions.<span class="func">create</span>(messages=messages)</code></pre>
+
+<div class="box box-key">
+<h4>🎯 Why Two Stages?</h4>
+<p>By separating "learning rules" from "applying rules", we force the LLM to be <em>explicit</em> about what it learned. This is more reliable than hoping the LLM silently absorbed the lessons. It also lets us <em>inspect</em> what the LLM learned (the rules are readable text).</p>
+</div>
+
+<div class="quiz" id="quiz13">
+<h4>📝 Quiz — Section 13</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: In the two-stage approach, what does Stage A output?</p>
+  <input type="radio" name="q13_1" id="q13_1a" value="a"><label for="q13_1a">A) A refined price forecast</label>
+  <input type="radio" name="q13_1" id="q13_1b" value="b"><label for="q13_1b">B) Plain-text correction rules derived from teaching examples</label>
+  <input type="radio" name="q13_1" id="q13_1c" value="c"><label for="q13_1c">C) A list of news headlines</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: What does "retain context" achieve?</p>
+  <input type="radio" name="q13_2" id="q13_2a" value="a"><label for="q13_2a">A) It saves disk space</label>
+  <input type="radio" name="q13_2" id="q13_2b" value="b"><label for="q13_2b">B) It makes the LLM run faster</label>
+  <input type="radio" name="q13_2" id="q13_2c" value="c"><label for="q13_2c">C) Stage B can see both the examples and rules from Stage A</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: How many teaching examples (K) does the paper-aligned config use?</p>
+  <input type="radio" name="q13_3" id="q13_3a" value="a"><label for="q13_3a">A) 5</label>
+  <input type="radio" name="q13_3" id="q13_3b" value="b"><label for="q13_3b">B) 100</label>
+  <input type="radio" name="q13_3" id="q13_3c" value="c"><label for="q13_3c">C) 1</label>
+</div>
+<button onclick="checkQuiz('quiz13')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 14 ═══════════════════ -->
+<h2 id="s14">14. Sentiment Analysis Pipeline</h2>
+
+<h3>From Raw News to a Daily Score</h3>
+<p>The pipeline converts thousands of noisy headlines into a clean daily sentiment signal:</p>
+
+<div class="diagram">
+  <span class="hl">1. Collect</span>         <span class="hl2">2. Filter</span>        <span class="hl3">3. Label</span>          <span class="hl">4. Aggregate</span>
+  GDELT/GKG    →   Relevance    →   LLM Vote     →   Daily Mean
+  ~456k rows       Score ≥ 2        YES/NO/UNK        sent_score
+                   SimHash dedup    3 votes each       per day
+                   Policy gate      Majority wins
+</div>
+
+<h4>Step 1: Collection</h4>
+<p>Headlines fetched from GDELT using multiple queries (e.g., "EU ETS", "carbon trading", "emission allowances").</p>
+
+<h4>Step 2: Relevance Filtering</h4>
+<ul>
+<li><strong>Heuristic EU ETS Score</strong>: Keywords scored 0–5, threshold at 2+</li>
+<li><strong>SimHash Dedup</strong>: Near-duplicate headlines removed (same story from multiple outlets)</li>
+<li><strong>Policy/Shipping Gate</strong>: Policy/shipping headlines dropped unless they mention ETS-specific terms</li>
+</ul>
+
+<h4>Step 3: LLM Labelling (Paper-Style)</h4>
+<p>Each headline is classified by the LLM as <strong>YES</strong> (price will rise), <strong>NO</strong> (fall), or <strong>UNKNOWN</strong> (neutral):</p>
+<pre><code><span class="comment"># Per headline, 3 independent votes (majority wins):</span>
+headline = <span class="string">"EU tightens 2030 emission caps as ETS reform advances"</span>
+votes = [<span class="string">"YES"</span>, <span class="string">"YES"</span>, <span class="string">"YES"</span>]   <span class="comment"># → unanimous YES → score = +1</span>
+
+headline = <span class="string">"Global shipping costs decline amid trade uncertainty"</span>
+votes = [<span class="string">"NO"</span>, <span class="string">"UNKNOWN"</span>, <span class="string">"NO"</span>]  <span class="comment"># → majority NO → score = -1</span>
+
+headline = <span class="string">"UK weather forecast shows mild winter ahead"</span>
+votes = [<span class="string">"UNKNOWN"</span>, <span class="string">"NO"</span>, <span class="string">"UNKNOWN"</span>]  <span class="comment"># → majority UNKNOWN → score = 0</span></code></pre>
+
+<h4>Step 4: Daily Aggregation</h4>
+<p>Top 3 highest-scoring headlines per day → average their scores:</p>
+<pre><code><span class="comment"># Day with 3 headlines: scores = [+1, +1, -1]</span>
+daily_sentiment = mean([<span class="number">+1</span>, <span class="number">+1</span>, <span class="number">-1</span>]) = <span class="number">+0.33</span></code></pre>
+
+<h3>Dawid-Skene Aggregation (Advanced)</h3>
+<p>A probabilistic method from 1979 that estimates both the <em>true label</em> and each voter's <em>reliability</em>:</p>
+<pre><code><span class="comment"># Dawid-Skene iterates:</span>
+<span class="comment"># E-step: estimate true labels given voter reliabilities</span>
+<span class="comment"># M-step: estimate voter reliabilities given true labels</span>
+<span class="comment"># Converges to posterior probabilities for each label</span>
+expected_score = P(YES)*<span class="number">(+1)</span> + P(UNKNOWN)*<span class="number">(0)</span> + P(NO)*<span class="number">(-1)</span></code></pre>
+<p>In practice, with a 4B model voting deterministically, all votes were nearly unanimous, making Dawid-Skene equivalent to majority vote.</p>
+
+<div class="box box-warn">
+<h4>⚠️ Key Finding from Experiments</h4>
+<p>Removing sentiment entirely (<strong>CoT-RF</strong>) actually outperformed sentiment-augmented methods (<strong>CoT-Sent-RF</strong>). The self-refinement signal was real (−13.78% MSE), but sentiment was too noisy to help further. This suggests the bottleneck is sentiment <em>quality</em>, not <em>quantity</em>.</p>
+</div>
+
+<div class="quiz" id="quiz14">
+<h4>📝 Quiz — Section 14</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: Why use 3 votes per headline?</p>
+  <input type="radio" name="q14_1" id="q14_1a" value="a"><label for="q14_1a">A) It's cheaper</label>
+  <input type="radio" name="q14_1" id="q14_1b" value="b"><label for="q14_1b">B) Majority voting reduces noise from individual LLM calls</label>
+  <input type="radio" name="q14_1" id="q14_1c" value="c"><label for="q14_1c">C) The LLM requires exactly 3 calls</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: What is SimHash deduplication?</p>
+  <input type="radio" name="q14_2" id="q14_2a" value="a"><label for="q14_2a">A) Detecting near-duplicate headlines using hash-based fingerprinting</label>
+  <input type="radio" name="q14_2" id="q14_2b" value="b"><label for="q14_2b">B) Counting words in each headline</label>
+  <input type="radio" name="q14_2" id="q14_2c" value="c"><label for="q14_2c">C) Translating headlines into different languages</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: In experiments, which performed better on path MSE?</p>
+  <input type="radio" name="q14_3" id="q14_3a" value="a"><label for="q14_3a">A) CoT-Sent-RF (with sentiment)</label>
+  <input type="radio" name="q14_3" id="q14_3b" value="b"><label for="q14_3b">B) Direct prompting alone</label>
+  <input type="radio" name="q14_3" id="q14_3c" value="c"><label for="q14_3c">C) CoT-RF (without sentiment) — 13.78% improvement vs TSM</label>
+</div>
+<button onclick="checkQuiz('quiz14')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 15 ═══════════════════ -->
+<h2 id="s15">15. Blending & Ramp Weighting</h2>
+
+<h3>The Problem</h3>
+<p>The LLM improves long-horizon forecasts (Day 20–30) but <em>harms</em> short-horizon accuracy (Day 1–5). The TSM is already very precise at Day 1. How do we keep the best of both?</p>
+
+<h3>Solution: Horizon-Weighted Ramp Blending</h3>
+<div class="math">ŷ_blend[h] = (1 − wₕ) · ŷ_TSM[h] + wₕ · ŷ_LLM[h]</div>
+
+<p>Where the weights <strong>ramp up linearly</strong> from 0 to max_w:</p>
+<div class="math">wₕ = linspace(0, max_w, 30)</div>
+<p>So <strong>w₁ = 0</strong> (Day 1 is pure TSM) and <strong>w₃₀ = max_w</strong> (Day 30 gets most LLM influence).</p>
+
+<div class="diagram">
+  Weight (wₕ)
+  max_w ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ <span class="hl2">●</span>
+  │                                          <span class="hl2">╱</span>
+  │                                      <span class="hl2">╱</span>
+  │                                  <span class="hl2">╱</span>
+  │                              <span class="hl2">╱</span>
+  │                          <span class="hl2">╱</span>
+  │                      <span class="hl2">╱</span>
+  │                  <span class="hl2">╱</span>
+  0 ─ <span class="hl">●</span>─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─→ Horizon (h)
+      1    5       10       15       20       30
+      
+      <span class="hl">Pure TSM</span>            →            <span class="hl2">Mostly LLM</span>
+</div>
+
+<h3>Code Implementation</h3>
+<pre><code><span class="keyword">def</span> <span class="func">_blend_forecast</span>(self, base, refined):
+    min_weight = <span class="number">0.0</span>    <span class="comment"># w₁ = 0 (pure TSM at Day 1)</span>
+    max_weight = <span class="number">0.75</span>   <span class="comment"># w₃₀ = 0.75 (75% LLM at Day 30)</span>
+    
+    ramp = np.<span class="func">linspace</span>(min_weight, max_weight, <span class="number">30</span>)
+    <span class="comment"># ramp = [0.0, 0.026, 0.052, ..., 0.75]</span>
+    
+    blended = base * (<span class="number">1</span> - ramp) + refined * ramp
+    <span class="keyword">return</span> blended</code></pre>
+
+<h3>Validation-Based Weight Selection</h3>
+<p>We don't hardcode max_w — we test 5 candidates on the <strong>validation set</strong> and pick the best:</p>
+<table>
+<tr><th>max_w</th><th>MSE_path (test)</th><th>h1 MSE</th><th>h30 MSE</th></tr>
+<tr><td>0.00 (TSM only)</td><td>14.5158</td><td>0.0848</td><td>40.77</td></tr>
+<tr><td>0.25</td><td>14.22</td><td>0.0848</td><td>37.51</td></tr>
+<tr><td>0.50</td><td>13.50</td><td>0.0848</td><td>35.32</td></tr>
+<tr><td><strong>0.75</strong></td><td><strong>12.51</strong></td><td><strong>0.0848</strong></td><td><strong>33.89</strong></td></tr>
+<tr><td>1.00</td><td>12.80</td><td>0.0848</td><td>34.50</td></tr>
+</table>
+<p>Best: <strong>max_w = 0.75</strong> → Day 1 unchanged, Day 30 error drops 16.9%.</p>
+
+<div class="quiz" id="quiz15">
+<h4>📝 Quiz — Section 15</h4>
+<div class="quiz-q" data-correct="a">
+  <p>Q1: At Day 1, ramp blending with min_weight=0 means:</p>
+  <input type="radio" name="q15_1" id="q15_1a" value="a"><label for="q15_1a">A) Pure TSM forecast (no LLM influence)</label>
+  <input type="radio" name="q15_1" id="q15_1b" value="b"><label for="q15_1b">B) Pure LLM forecast</label>
+  <input type="radio" name="q15_1" id="q15_1c" value="c"><label for="q15_1c">C) 50/50 blend</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q2: Why is max_w selected on the validation set, not the test set?</p>
+  <input type="radio" name="q15_2" id="q15_2a" value="a"><label for="q15_2a">A) The test set is too small</label>
+  <input type="radio" name="q15_2" id="q15_2b" value="b"><label for="q15_2b">B) Using the test set to choose max_w would be data leakage</label>
+  <input type="radio" name="q15_2" id="q15_2c" value="c"><label for="q15_2c">C) Validation is faster to compute</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: If TSM=70, LLM=72, and w=0.5, what is the blended forecast?</p>
+  <input type="radio" name="q15_3" id="q15_3a" value="a"><label for="q15_3a">A) 70</label>
+  <input type="radio" name="q15_3" id="q15_3b" value="b"><label for="q15_3b">B) 72</label>
+  <input type="radio" name="q15_3" id="q15_3c" value="c"><label for="q15_3c">C) 71 — (0.5 × 70 + 0.5 × 72)</label>
+</div>
+<button onclick="checkQuiz('quiz15')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 16 ═══════════════════ -->
+<h2 id="s16">16. Teaching Example Selection</h2>
+
+<h3>Why Selection Matters</h3>
+<p>The Stage A reflection prompt receives K=5 "teaching examples" showing past TSM forecasts vs truth. <strong>Which 5 examples we choose dramatically affects what the LLM learns.</strong></p>
+
+<h3>Selection Strategies</h3>
+
+<h4>1. Most Recent</h4>
+<p>Simply pick the K most recent past windows. Problem: if recent history was calm, the examples all look similar → the LLM learns "do nothing".</p>
+
+<h4>2. High-Error (Where TSM Failed)</h4>
+<p>Select windows where the TSM had the largest errors:</p>
+<pre><code><span class="comment"># Rank past windows by TSM error, pick top K</span>
+errors = np.<span class="func">mean</span>((forecast - truth)**<span class="number">2</span>, axis=<span class="number">1</span>)
+top_k_indices = np.<span class="func">argsort</span>(errors)[<span class="number">-K</span>:]</code></pre>
+<p>Problem: without a lookback constraint, the same 5 extreme dates are chosen every time → same rules, no diversity.</p>
+
+<h4>3. Similarity-Based (Regime Matching)</h4>
+<p>Find past windows whose statistics <strong>resemble the current window</strong>:</p>
+<pre><code><span class="comment"># Features: mean, std, slope of recent prices</span>
+current_features = [mean(current), std(current), slope(current)]
+past_features = [[mean(w), std(w), slope(w)] <span class="keyword">for</span> w <span class="keyword">in</span> past_windows]
+
+<span class="comment"># Euclidean distance → pick K closest</span>
+distances = np.<span class="func">linalg.norm</span>(past_features - current_features, axis=<span class="number">1</span>)
+top_k = np.<span class="func">argsort</span>(distances)[:K]</code></pre>
+
+<h4>4. Lookback Constraint</h4>
+<p>Only consider examples within the last <code>lookback_days=365</code> days. This prevents using ancient, possibly irrelevant data and ensures freshness.</p>
+
+<div class="box box-tip">
+<h4>🔑 Best Combo Found</h4>
+<p><strong>Similarity + 365-day lookback</strong> produced the best results: −13.78% path MSE improvement. The similarity matching ensures relevant examples while the lookback ensures recency.</p>
+</div>
+
+<div class="quiz" id="quiz16">
+<h4>📝 Quiz — Section 16</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: Why did "high-error without lookback" fail?</p>
+  <input type="radio" name="q16_1" id="q16_1a" value="a"><label for="q16_1a">A) The errors were too small</label>
+  <input type="radio" name="q16_1" id="q16_1b" value="b"><label for="q16_1b">B) The same extreme dates were chosen every time → no diversity</label>
+  <input type="radio" name="q16_1" id="q16_1c" value="c"><label for="q16_1c">C) The LLM refused to process them</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: Similarity-based selection matches examples by:</p>
+  <input type="radio" name="q16_2" id="q16_2a" value="a"><label for="q16_2a">A) Date only</label>
+  <input type="radio" name="q16_2" id="q16_2b" value="b"><label for="q16_2b">B) Exact price level</label>
+  <input type="radio" name="q16_2" id="q16_2c" value="c"><label for="q16_2c">C) Statistical properties (mean, std, slope) of the price window</label>
+</div>
+<button onclick="checkQuiz('quiz16')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 17 ═══════════════════ -->
+<h2 id="s17">17. Quantile Regression & LASSO</h2>
+
+<h3>Beyond the Mean: Predicting Uncertainty</h3>
+<p>Standard regression predicts the <strong>mean</strong>. Quantile regression predicts <strong>specific percentiles</strong>:</p>
+<ul>
+<li>10th percentile: "price will be above this 90% of the time"</li>
+<li>50th percentile: the median (another measure of centre)</li>
+<li>90th percentile: "price will be below this 90% of the time"</li>
+</ul>
+<p>This gives us <strong>prediction intervals</strong> (confidence bands).</p>
+
+<h3>The Quantile Loss Function</h3>
+<div class="math">
+ρ_q(u) = u · (q − 𝟙(u < 0))
+</div>
+<p>For quantile q=0.9, errors where the prediction is <em>too low</em> (underestimate) are penalised 9× more than errors where it's too high. This pulls the prediction toward the 90th percentile.</p>
+
+<h3>LASSO (L1) Regularisation</h3>
+<p>LASSO adds an L1 penalty that <strong>forces some feature weights to exactly zero</strong>, performing automatic feature selection:</p>
+<div class="math">L = Σᵢ ρ_q(yᵢ − ŷᵢ) + α · Σⱼ |wⱼ|</div>
+<p>Compare with Ridge (L2): Ridge shrinks weights but rarely zeroes them out. LASSO creates a sparse model.</p>
+
+<h3>Code Walkthrough</h3>
+<pre><code><span class="keyword">class</span> <span class="type">QuantileLasso</span>:
+    <span class="keyword">def</span> <span class="func">fit</span>(self, X_enc, feature_names, target_idx, y_future):
+        <span class="comment"># Create compact features from input windows</span>
+        X, self.feature_names_ = <span class="func">_create_feature_matrix</span>(
+            X_enc, feature_names, target_idx, self.config.lags
+        )
+        
+        <span class="comment"># Fit one model per (quantile, horizon) pair</span>
+        <span class="keyword">for</span> q <span class="keyword">in</span> self.config.quantiles:       <span class="comment"># e.g. [0.1, 0.5, 0.9]</span>
+            <span class="keyword">for</span> h <span class="keyword">in</span> <span class="func">range</span>(pred_len):          <span class="comment"># 30 horizons</span>
+                model = <span class="type">QuantileRegressor</span>(
+                    quantile=q,
+                    alpha=<span class="number">0.01</span>,            <span class="comment"># LASSO penalty</span>
+                    solver=<span class="string">"highs"</span>,
+                )
+                model.<span class="func">fit</span>(X, y_future[:, h])</code></pre>
+
+<h3>Feature Selection Output</h3>
+<pre><code><span class="keyword">def</span> <span class="func">selected_features</span>(self, threshold=<span class="number">1e-6</span>):
+    <span class="comment"># Features with |weight| > threshold are "selected"</span>
+    <span class="keyword">for</span> q, coef_matrix <span class="keyword">in</span> self.<span class="func">coefficients</span>().items():
+        mean_abs = np.<span class="func">mean</span>(np.<span class="func">abs</span>(coef_matrix), axis=<span class="number">0</span>)
+        mask = mean_abs > threshold
+        selected[q] = [name <span class="keyword">for</span> name, keep <span class="keyword">in</span> <span class="func">zip</span>(names, mask) <span class="keyword">if</span> keep]</code></pre>
+
+<div class="quiz" id="quiz17">
+<h4>📝 Quiz — Section 17</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: LASSO uses which penalty on weights?</p>
+  <input type="radio" name="q17_1" id="q17_1a" value="a"><label for="q17_1a">A) L2 (sum of squared weights)</label>
+  <input type="radio" name="q17_1" id="q17_1b" value="b"><label for="q17_1b">B) L1 (sum of absolute weights)</label>
+  <input type="radio" name="q17_1" id="q17_1c" value="c"><label for="q17_1c">C) No penalty</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: What is special about LASSO compared to Ridge regression?</p>
+  <input type="radio" name="q17_2" id="q17_2a" value="a"><label for="q17_2a">A) LASSO can force weights to exactly zero (selecting features)</label>
+  <input type="radio" name="q17_2" id="q17_2b" value="b"><label for="q17_2b">B) LASSO always has lower error</label>
+  <input type="radio" name="q17_2" id="q17_2c" value="c"><label for="q17_2c">C) LASSO doesn't use regularisation</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: Quantile regression at q=0.1 predicts:</p>
+  <input type="radio" name="q17_3" id="q17_3a" value="a"><label for="q17_3a">A) The mean</label>
+  <input type="radio" name="q17_3" id="q17_3b" value="b"><label for="q17_3b">B) The 90th percentile</label>
+  <input type="radio" name="q17_3" id="q17_3c" value="c"><label for="q17_3c">C) The 10th percentile (lower bound)</label>
+</div>
+<button onclick="checkQuiz('quiz17')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 18 ═══════════════════ -->
+<h2 id="s18">18. Experiment Management</h2>
+
+<h3>Config-Driven Experiments</h3>
+<p>Every experiment is defined by a <strong>YAML config file</strong>. This ensures reproducibility — you can re-run any experiment exactly.</p>
+<pre><code><span class="comment"># src/config/paper_llm_cot_sent_rf_qwen_k5_h18_similarity_ctx_full.yaml</span>
+project:
+  name: <span class="string">"EU_ETS_Forecasting"</span>
+time_series:
+  pred_len: <span class="number">30</span>
+  seq_len: <span class="number">120</span>
+split:
+  train_end: <span class="string">"2023-06-30"</span>
+  val_end: <span class="string">"2024-06-30"</span>
+llm:
+  model: <span class="string">"qwen3-vl-4b-gpu"</span>
+  temperature: <span class="number">0.0</span>
+  methods: [<span class="string">"TSM+LLM-COT-SENT-RF"</span>]
+  cot_rf:
+    k_examples: <span class="number">5</span>
+    history_points: <span class="number">18</span>
+    example_selection: <span class="string">"similarity"</span>
+    lookback_days: <span class="number">365</span>
+    retain_context: <span class="keyword">true</span></code></pre>
+
+<h3>Run Directory Structure</h3>
+<p>Each experiment run creates a timestamped directory:</p>
+<pre><code>runs/20260205_211858_a0c3c1/
+├── config.yaml              <span class="comment"># Exact config used</span>
+├── metrics_by_horizon.csv   <span class="comment"># MSE/RMSE/MAE per horizon</span>
+├── path_metrics.csv         <span class="comment"># Paper-style multi-step MSE</span>
+├── significance_tests.csv   <span class="comment"># p-values for all comparisons</span>
+├── predictions/             <span class="comment"># Saved numpy arrays</span>
+│   ├── TSM_pred_test.npz
+│   └── TSM+LLM-COT-SENT-RF_pred_test.npz
+└── results/
+    ├── blend_grid_ramp/     <span class="comment"># Influence sweep results</span>
+    └── plots/               <span class="comment"># Visualisations</span></code></pre>
+
+<h3>Caching</h3>
+<p>LLM calls are expensive. The repo caches every response keyed by <code>(prompt, model, temperature, base_url, system_message, max_tokens)</code>. Repeat experiments hit the cache instead of re-calling the LLM.</p>
+
+<pre><code><span class="keyword">class</span> <span class="type">ResponseCache</span>:
+    <span class="keyword">def</span> <span class="func">get</span>(self, prompt, model, temperature, context=<span class="keyword">None</span>):
+        key = <span class="func">hash</span>(prompt + model + <span class="func">str</span>(temperature) + <span class="func">str</span>(context))
+        <span class="comment"># Return cached response if exists</span>
+    
+    <span class="keyword">def</span> <span class="func">set</span>(self, prompt, model, temperature, response, context=<span class="keyword">None</span>):
+        <span class="comment"># Store for future use</span></code></pre>
+
+<div class="quiz" id="quiz18">
+<h4>📝 Quiz — Section 18</h4>
+<div class="quiz-q" data-correct="c">
+  <p>Q1: Why use YAML config files for experiments?</p>
+  <input type="radio" name="q18_1" id="q18_1a" value="a"><label for="q18_1a">A) They're faster to parse</label>
+  <input type="radio" name="q18_1" id="q18_1b" value="b"><label for="q18_1b">B) Python requires them</label>
+  <input type="radio" name="q18_1" id="q18_1c" value="c"><label for="q18_1c">C) Reproducibility — every setting is recorded and re-runnable</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: LLM response caching helps because:</p>
+  <input type="radio" name="q18_2" id="q18_2a" value="a"><label for="q18_2a">A) It avoids re-calling expensive LLMs for identical prompts</label>
+  <input type="radio" name="q18_2" id="q18_2b" value="b"><label for="q18_2b">B) It makes the LLM smarter</label>
+  <input type="radio" name="q18_2" id="q18_2c" value="c"><label for="q18_2c">C) It compresses the responses</label>
+</div>
+<button onclick="checkQuiz('quiz18')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 19 ═══════════════════ -->
+<h2 id="s19">19. Results & Ablation Studies</h2>
+
+<h3>The Ablation Approach</h3>
+<p>An <strong>ablation study</strong> tests "what happens if we remove or change one component?" This identifies which parts actually matter.</p>
+
+<h3>Key Findings (Full Test Set, n=359)</h3>
+
+<table>
+<tr><th>Method</th><th>MSE_path</th><th>Change vs TSM</th></tr>
+<tr><td>TSM (baseline)</td><td>14.52</td><td>—</td></tr>
+<tr><td>TSM + CoT-Sent-RF (early, damped)</td><td>14.50</td><td>−0.1%</td></tr>
+<tr><td>TSM + CoT-RF (no sentiment, similarity+lookback)</td><td><strong>12.51</strong></td><td><strong>−13.8%</strong></td></tr>
+<tr><td>TSM + CoT-Sent-RF (improved sentiment)</td><td>13.89</td><td>−4.3%</td></tr>
+</table>
+
+<h3>What Worked</h3>
+<ul>
+<li><strong>Similarity-based example selection + lookback</strong>: The biggest win. Giving the LLM relevant, diverse teaching examples.</li>
+<li><strong>Context retention</strong>: Letting Stage B see Stage A's full conversation.</li>
+<li><strong>Ramp blending</strong>: Protecting short-horizon accuracy while gaining long-horizon improvement.</li>
+<li><strong>Removing damping</strong>: The original delta-bounded, conservative approach produced near-zero adjustments.</li>
+</ul>
+
+<h3>What Didn't Work</h3>
+<ul>
+<li><strong>Multiple sentiment variations</strong>: EU-close alignment, confidence weighting, EWMA smoothing, domain weighting, richer features — all slightly worsened or were neutral.</li>
+<li><strong>0–10 importance scoring</strong>: More complex sentiment labelling didn't improve on simple YES/NO/UNKNOWN.</li>
+<li><strong>Abnormal sentiment (z-score)</strong>: +1.4% worse path MSE.</li>
+<li><strong>Dawid-Skene aggregation</strong>: Votes were too deterministic to benefit from probabilistic methods.</li>
+</ul>
+
+<h3>The Core Lesson</h3>
+<div class="box box-key">
+<h4>🎯 Self-Refinement > Sentiment</h4>
+<p>The LLM's ability to <em>reflect on past TSM errors and learn correction rules</em> was the primary source of improvement. Adding sentiment data was secondary and often counterproductive with a small model.</p>
+</div>
+
+<div class="quiz" id="quiz19">
+<h4>📝 Quiz — Section 19</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: What is an ablation study?</p>
+  <input type="radio" name="q19_1" id="q19_1a" value="a"><label for="q19_1a">A) Running the model 100 times</label>
+  <input type="radio" name="q19_1" id="q19_1b" value="b"><label for="q19_1b">B) Removing/changing one component at a time to measure its impact</label>
+  <input type="radio" name="q19_1" id="q19_1c" value="c"><label for="q19_1c">C) A medical procedure</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q2: The single most impactful change in this project was:</p>
+  <input type="radio" name="q19_2" id="q19_2a" value="a"><label for="q19_2a">A) Similarity-based example selection with lookback</label>
+  <input type="radio" name="q19_2" id="q19_2b" value="b"><label for="q19_2b">B) Adding more sentiment data</label>
+  <input type="radio" name="q19_2" id="q19_2c" value="c"><label for="q19_2c">C) Using a bigger LLM</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q3: Why did the original delta-based approach produce "LLM ≈ TSM"?</p>
+  <input type="radio" name="q19_3" id="q19_3a" value="a"><label for="q19_3a">A) The LLM was broken</label>
+  <input type="radio" name="q19_3" id="q19_3b" value="b"><label for="q19_3b">B) The data was wrong</label>
+  <input type="radio" name="q19_3" id="q19_3c" value="c"><label for="q19_3c">C) Bounding + blending + conservative prompts made adjustments negligibly small</label>
+</div>
+<button onclick="checkQuiz('quiz19')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<!-- ═══════════════════ SECTION 20 ═══════════════════ -->
+<h2 id="s20">20. Full Pipeline Walkthrough</h2>
+
+<h3>End-to-End: From Raw Data to Final Forecast</h3>
+<p>Here's the complete flow when you run <code>python -m src.run_experiment --config ...</code>:</p>
+
+<div class="diagram">
+ ① <span class="hl">Load Config</span> (YAML)
+         │
+ ② <span class="hl">Build Panel</span>
+    Load all data sources → FX convert → align to calendar
+    → engineer features → save panel.csv
+         │
+ ③ <span class="hl">Create Windows</span>
+    Panel → sliding windows → split train/val/test
+    → normalize features (StandardScaler on train only)
+         │
+ ④ <span class="hl">Train TSM</span>
+    DLinear or Autoformer → AdamW + cosine schedule
+    → early stopping on val loss → save checkpoint
+         │
+ ⑤ <span class="hl">Generate TSM Predictions</span>
+    Load best checkpoint → predict on val & test
+    → save predictions as .npz files
+         │
+ ⑥ <span class="hl">Run Baselines</span>
+    Naive persistence, seasonal naive, linear Ridge
+         │
+ ⑦ <span class="hl2">LLM Refinement</span> (the innovative part)
+    For each test window:
+    a. Select K teaching examples (similarity + lookback)
+    b. Stage A: Reflect → derive correction rules
+    c. Stage B: Apply rules → refined 30-day forecast
+    d. Cache all LLM calls
+         │
+ ⑧ <span class="hl2">Blend Grid</span>
+    Test influence weights [0, 0.25, 0.5, 0.75, 1.0] on val
+    → pick best max_w → apply to test
+         │
+ ⑨ <span class="hl3">Evaluate</span>
+    Horizon MSE (1/5/20/30) + path MSE + trend accuracy
+    + significance tests (t-test, Wilcoxon, DM)
+    + drift/long-short portfolio metrics
+         │
+ ⑩ <span class="hl3">Report</span>
+    Write tables, plots, paper sections
+</div>
+
+<h3>Running an Experiment (Practical)</h3>
+<pre><code><span class="comment"># From the project root:</span>
+python -m src.run_experiment \
+    <span class="keyword">--config</span> src/config/paper_llm_cot_sent_rf_qwen_k5_h18_similarity_ctx_full.yaml \
+    <span class="keyword">--data-dir</span> Data/ \
+    <span class="keyword">--seed</span> <span class="number">42</span></code></pre>
+
+<h3>Understanding the Output</h3>
+<pre><code><span class="comment"># metrics_by_horizon.csv</span>
+model                      horizon   mse      rmse     mae
+TSM                        1         0.0848   0.2912   0.2195
+TSM                        30        40.7650  6.3847   5.1082
+TSM+LLM-COT-RF_blend_ramp  1         0.0848   0.2912   0.2195
+TSM+LLM-COT-RF_blend_ramp  30        33.8886  5.8214   4.6521
+
+<span class="comment"># path_metrics.csv</span>
+model                       mse_path  rmse_path  mae_path
+TSM                         14.5158   3.8100     2.9604
+TSM+LLM-COT-RF_blend_ramp  12.5149   3.5376     2.7280</code></pre>
+
+<h3>What You've Learned</h3>
+<p>Congratulations! You now understand:</p>
+<ul>
+<li>How <strong>time series data</strong> is prepared, windowed, and split</li>
+<li>Multiple <strong>baseline models</strong> (naive, linear, ARIMA)</li>
+<li><strong>Deep learning architectures</strong> (DLinear, Autoformer) and how to train them</li>
+<li><strong>LLM prompting strategies</strong> (DP, CoT, TSM+LLM, CoT-RF, CoT-Sent-RF)</li>
+<li>The <strong>two-stage reflect→apply</strong> framework</li>
+<li><strong>Sentiment analysis</strong> from news to daily scores</li>
+<li><strong>Blending strategies</strong> (ramp weighting, validation-based selection)</li>
+<li><strong>Evaluation</strong> (MSE, trend accuracy, statistical significance)</li>
+<li><strong>Quantile regression with LASSO</strong> for feature selection</li>
+<li><strong>Experiment management</strong> and reproducibility</li>
+</ul>
+
+<div class="quiz" id="quiz20">
+<h4>📝 Final Quiz — Putting It All Together</h4>
+<div class="quiz-q" data-correct="b">
+  <p>Q1: In the full pipeline, what happens BEFORE the LLM is called?</p>
+  <input type="radio" name="q20_1" id="q20_1a" value="a"><label for="q20_1a">A) The final report is written</label>
+  <input type="radio" name="q20_1" id="q20_1b" value="b"><label for="q20_1b">B) The TSM model is trained and generates base forecasts</label>
+  <input type="radio" name="q20_1" id="q20_1c" value="c"><label for="q20_1c">C) The data is deleted</label>
+</div>
+<div class="quiz-q" data-correct="c">
+  <p>Q2: The blend grid is evaluated on which split?</p>
+  <input type="radio" name="q20_2" id="q20_2a" value="a"><label for="q20_2a">A) Training</label>
+  <input type="radio" name="q20_2" id="q20_2b" value="b"><label for="q20_2b">B) Test</label>
+  <input type="radio" name="q20_2" id="q20_2c" value="c"><label for="q20_2c">C) Validation (to select max_w without test leakage)</label>
+</div>
+<div class="quiz-q" data-correct="a">
+  <p>Q3: The repo's best result was a path MSE improvement of approximately:</p>
+  <input type="radio" name="q20_3" id="q20_3a" value="a"><label for="q20_3a">A) ~14% (from 14.52 to 12.51)</label>
+  <input type="radio" name="q20_3" id="q20_3b" value="b"><label for="q20_3b">B) ~1%</label>
+  <input type="radio" name="q20_3" id="q20_3c" value="c"><label for="q20_3c">C) ~50%</label>
+</div>
+<div class="quiz-q" data-correct="b">
+  <p>Q4: Which component was found to be most dispensable?</p>
+  <input type="radio" name="q20_4" id="q20_4a" value="a"><label for="q20_4a">A) The TSM model</label>
+  <input type="radio" name="q20_4" id="q20_4b" value="b"><label for="q20_4b">B) Sentiment analysis (CoT-RF beat CoT-Sent-RF)</label>
+  <input type="radio" name="q20_4" id="q20_4c" value="c"><label for="q20_4c">C) The ramp blending</label>
+</div>
+<button onclick="checkQuiz('quiz20')">Check Answers</button>
+<div class="result"></div>
+</div>
+
+<div style="text-align:center; margin-top:60px; padding:40px; border-top:1px solid var(--border);">
+<h2 style="border:none; color: var(--green);">🎓 Course Complete!</h2>
+<p style="font-size:1.2em; color:var(--fg2);">You've covered every major technique in this repo.<br>From sliding windows to Autoformers, from LLM prompting to Dawid-Skene vote aggregation.</p>
+<p style="color:var(--fg2); margin-top:20px;">Total sections: 20 | Total quiz questions: ~50 | Topics: 15+</p>
+</div>
+
+</main>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+function eachNode(nodeList, callback) {
+  for (var i = 0; i < nodeList.length; i++) {
+    callback(nodeList[i], i);
+  }
+}
+
+function matchesSelector(el, selector) {
+  if (!el) return false;
+  var fn = el.matches || el.matchesSelector || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+  if (!fn) return false;
+  return fn.call(el, selector);
+}
+
+function bindQuizInputFallback() {
+  var quizLabels = document.querySelectorAll('.quiz-q label[for]');
+  eachNode(quizLabels, function (label) {
+    var forceSelect = function (event) {
+      var inputId = label.getAttribute('for');
+      if (!inputId) return;
+      var input = document.getElementById(inputId);
+      if (!input || input.checked) return;
+      input.checked = true;
+      if (event && event.type === 'touchend') {
+        event.preventDefault();
+      }
+    };
+
+    label.addEventListener('touchend', forceSelect, false);
+    label.addEventListener('click', forceSelect, false);
+  });
+}
+
+function bindQuizButtons() {
+  var buttons = document.querySelectorAll('.quiz button');
+  eachNode(buttons, function (button) {
+    button.setAttribute('type', 'button');
+    var runCheck = function (event) {
+      if (event) {
+        event.preventDefault();
+      }
+      var quiz = button;
+      while (quiz && (!quiz.className || quiz.className.indexOf('quiz') === -1)) {
+        quiz = quiz.parentNode;
+      }
+      if (quiz && quiz.id) {
+        checkQuiz(quiz.id);
+      }
+    };
+    button.addEventListener('click', runCheck, false);
+    button.addEventListener('touchend', runCheck, false);
+  });
+}
+
+function bindDelegatedQuizButtons() {
+  var delegatedRunCheck = function (event) {
+    var target = event.target;
+    while (target && target !== document.body && !matchesSelector(target, '.quiz button')) {
+      target = target.parentNode;
+    }
+    if (!target || target === document.body) return;
+
+    if (event) {
+      event.preventDefault();
+    }
+
+    var quiz = target;
+    while (quiz && quiz !== document.body && (!quiz.className || quiz.className.indexOf('quiz') === -1)) {
+      quiz = quiz.parentNode;
+    }
+
+    if (quiz && quiz.id) {
+      checkQuiz(quiz.id);
+    }
+  };
+
+  document.addEventListener('touchend', delegatedRunCheck, false);
+  document.addEventListener('click', delegatedRunCheck, false);
+}
+
+function checkQuiz(quizId) {
+  var quiz = document.getElementById(quizId);
+  if (!quiz) return;
+
+  var questions = quiz.querySelectorAll('.quiz-q');
+  var correct = 0;
+  var total = questions.length;
+
+  eachNode(questions, function (q) {
+    var correctAnswer = q.getAttribute('data-correct');
+    var selected = q.querySelector('input:checked');
+    var labels = q.querySelectorAll('label');
+
+    eachNode(labels, function (l) {
+      l.style.background = '';
+      l.style.borderColor = '';
+    });
+
+    if (selected) {
+      if (selected.value === correctAnswer) {
+        correct++;
+        if (selected.nextElementSibling) {
+          selected.nextElementSibling.style.background = 'rgba(63,185,80,0.2)';
+          selected.nextElementSibling.style.borderColor = '#3fb950';
+        }
+      } else {
+        if (selected.nextElementSibling) {
+          selected.nextElementSibling.style.background = 'rgba(248,81,73,0.2)';
+          selected.nextElementSibling.style.borderColor = '#f85149';
+        }
+
+        var inputs = q.querySelectorAll('input');
+        eachNode(inputs, function (inp) {
+          if (inp.value === correctAnswer && inp.nextElementSibling) {
+            inp.nextElementSibling.style.background = 'rgba(63,185,80,0.15)';
+            inp.nextElementSibling.style.borderColor = '#3fb950';
+          }
+        });
+      }
+    }
+  });
+
+  var result = quiz.querySelector('.result');
+  if (!result) return;
+
+  result.className = 'result show';
+  if (correct === total) {
+    result.className += ' correct';
+    result.textContent = 'Perfect! ' + correct + '/' + total + ' correct! 🎉';
+  } else {
+    result.className += ' wrong';
+    result.textContent = correct + '/' + total + ' correct. Incorrect answers highlighted in red, correct in green.';
+  }
+}
+
+window.checkQuiz = checkQuiz;
+
+window.addEventListener('scroll', function () {
+  var fill = document.getElementById('progressFill');
+  if (!fill) return;
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = docHeight > 0 ? (scrollTop / docHeight * 100) : 0;
+  fill.style.width = pct + '%';
+}, false);
+
+function bindActiveNavTracking() {
+  var sections = document.querySelectorAll('h2[id]');
+  var navLinks = document.querySelectorAll('nav ol li a');
+
+  if (window.IntersectionObserver) {
+    var observer = new IntersectionObserver(function (entries) {
+      eachNode(entries, function (entry) {
+        if (entry.isIntersecting) {
+          eachNode(navLinks, function (l) {
+            l.classList.remove('active');
+          });
+          var id = entry.target.id;
+          var link = document.querySelector('nav a[href="#' + id + '"]');
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    eachNode(sections, function (s) {
+      observer.observe(s);
+    });
+  }
+}
+
+bindQuizInputFallback();
+bindQuizButtons();
+bindDelegatedQuizButtons();
+bindActiveNavTracking();
+</script>
+
+</body>
+</html>

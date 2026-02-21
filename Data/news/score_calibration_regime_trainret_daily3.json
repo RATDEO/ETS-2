@@ -1,0 +1,82 @@
+{
+  "method": "train_return_regime",
+  "panel_path": "runs/20260208_042155_ea55a7/data/panel.parquet",
+  "panel_date_col": "date",
+  "panel_price_col": "y",
+  "train_end": "2023-06-30",
+  "min_count": 30,
+  "shrinkage": 30.0,
+  "regime_vol_window": 20,
+  "regime_vol_quantile": 0.5,
+  "regime_threshold": 0.024678028789187862,
+  "overall_mean_ret_fwd1": 0.0014946976894609414,
+  "regime_mean_ret_fwd1": {
+    "high_vol": 0.0005711496640770442,
+    "low_vol": 0.0026372670078025832
+  },
+  "global_map": {
+    "-1.0": -1.0,
+    "0.0": 0.0016851837675512479,
+    "1.0": 0.16587637358947088
+  },
+  "regime_maps": {
+    "high_vol": {
+      "-1.0": -1.0,
+      "0.0": 0.022648726226317414,
+      "1.0": 0.17471243848851425
+    },
+    "low_vol": {
+      "-1.0": 1.0,
+      "0.0": -0.019422439538680804,
+      "1.0": -0.1557090505302966
+    }
+  },
+  "regime_stats": {
+    "high_vol": [
+      {
+        "score": -1.0,
+        "count": 237,
+        "mean_ret_fwd1": -0.0013539411241764864,
+        "mapped_score": -1.0
+      },
+      {
+        "score": 0.0,
+        "count": 666,
+        "mean_ret_fwd1": 0.0006115948739270662,
+        "mapped_score": 0.022648726226317414
+      },
+      {
+        "score": 1.0,
+        "count": 1408,
+        "mean_ret_fwd1": 0.000876057339542934,
+        "mapped_score": 0.17471243848851425
+      }
+    ],
+    "low_vol": [
+      {
+        "score": -1.0,
+        "count": 168,
+        "mean_ret_fwd1": 0.004165899125874116,
+        "mapped_score": 1.0
+      },
+      {
+        "score": 0.0,
+        "count": 528,
+        "mean_ret_fwd1": 0.0026106443673845742,
+        "mapped_score": -0.019422439538680804
+      },
+      {
+        "score": 1.0,
+        "count": 1172,
+        "mean_ret_fwd1": 0.0024301394978236504,
+        "mapped_score": -0.1557090505302966
+      }
+    ]
+  },
+  "apply_counts": {
+    "n_joined": 5829,
+    "n_regime_mapped": 5829,
+    "n_global_fallback": 1724,
+    "n_identity_fallback": 0
+  }
+}

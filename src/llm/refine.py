@@ -19,10 +19,38 @@ from .cache import ResponseCache, LogStore
 logger = logging.getLogger(__name__)
 
 
+def _extract_openai_message_text(message: object) -> str:
+    """
+    Extract only assistant final output text from an OpenAI chat message.
+
+    This intentionally ignores any reasoning-specific fields.
+    """
+    content = getattr(message, "content", None)
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content.strip()
+    if isinstance(content, list):
+        parts: List[str] = []
+        for item in content:
+            if isinstance(item, str):
+                text = item
+            elif isinstance(item, dict):
+                text = item.get("text") or ""
+            else:
+                text = getattr(item, "text", "") or ""
+            text = str(text).strip()
+            if text:
+                parts.append(text)
+        return "\n".join(parts).strip()
+    return str(content).strip()
+
+
 def parse_json_array(
     response_text: str,
     expected_len: int = 30,
-    keys: Sequence[str] = ("yhat",)
+    keys: Sequence[str] = ("yhat",),
+    allow_bare_array: bool = True,
 ) -> Optional[np.ndarray]:
     """
     Parse a numeric array from LLM response JSON.
@@ -31,6 +59,7 @@ def parse_json_array(
         response_text: Raw LLM response
         expected_len: Expected length of array
         keys: JSON keys to search for
+        allow_bare_array: Whether to accept a top-level JSON array response
         
     Returns:
         Numpy array or None if parsing fails
@@ -43,14 +72,32 @@ def parse_json_array(
     cleaned = cleaned.replace("...", "")
     cleaned = re.sub(r",\s*([\]}])", r"\1", cleaned)
 
-    # Try to extract JSON from response
-    # First, try to find JSON object
+    # Fast path: full-response JSON
+    try:
+        direct = json.loads(cleaned)
+        if isinstance(direct, dict):
+            for key in keys:
+                values = direct.get(key)
+                if isinstance(values, list):
+                    if len(values) == expected_len:
+                        return np.array(values, dtype=float)
+                    if len(values) == expected_len - 1:
+                        values = list(values) + [values[-1]]
+                        return np.array(values, dtype=float)
+        if allow_bare_array and isinstance(direct, list):
+            if len(direct) == expected_len:
+                return np.array(direct, dtype=float)
+            if len(direct) == expected_len - 1:
+                values = list(direct) + [direct[-1]]
+                return np.array(values, dtype=float)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        pass
+
+    # Try to extract keyed JSON snippets from response
     key_pattern = "|".join(re.escape(k) for k in keys)
-    json_patterns = [
-        rf'\{{[^{{}}]*"(?:{key_pattern})"\s*:\s*\[[^\]]+\][^{{}}]*\}}',  # Full JSON object
-        rf'"(?:{key_pattern})"\s*:\s*\[([^\]]+)\]',  # Just the array
-        r'\[[\d\.,\s]+\]',  # Any array of numbers
-    ]
+    json_patterns = [rf'\{{[^{{}}]*"(?:{key_pattern})"\s*:\s*\[[^\]]+\][^{{}}]*\}}']
+    if allow_bare_array:
+        json_patterns.append(r'^\s*\[[^\]]+\]\s*$')
     
     for pattern in json_patterns:
         match = re.search(pattern, cleaned, re.DOTALL)
@@ -97,29 +144,102 @@ def parse_json_array(
                 logger.debug(f"JSON parse attempt failed: {e}")
                 continue
     
-    # Last resort: find any sequence of numbers
-    numbers = re.findall(r'\d+\.?\d*', cleaned)
-    if len(numbers) >= expected_len:
-        try:
-            values = [float(n) for n in numbers[:expected_len]]
-            return np.array(values)
-        except ValueError:
-            pass
-    if len(numbers) == expected_len - 1:
-        try:
-            values = [float(n) for n in numbers]
-            values.append(values[-1])
-            return np.array(values)
-        except ValueError:
-            pass
-    
     logger.warning(f"Failed to parse forecast from response: {response_text[:200]}...")
     return None
 
 
 def parse_json_forecast(response_text: str, expected_len: int = 30) -> Optional[np.ndarray]:
     """Parse JSON forecast (yhat) from LLM response."""
-    return parse_json_array(response_text, expected_len, keys=("yhat",))
+    return parse_json_array(
+        response_text,
+        expected_len,
+        keys=("yhat",),
+        allow_bare_array=False,
+    )
+
+
+def parse_reflection_rules(response_text: str) -> Optional[str]:
+    """
+    Parse correction rules from a strict-JSON reflection response.
+
+    Expected shape: {"rules": ["...", "..."]} (or {"rules_text": "..."}).
+    Returns a plain-text rules block suitable for downstream apply prompts.
+    """
+    cleaned = (response_text or "").strip()
+    if not cleaned:
+        return None
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```[a-zA-Z0-9_-]*\n", "", cleaned)
+        cleaned = re.sub(r"\n```$", "", cleaned)
+
+    candidates = [cleaned]
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if match:
+        candidates.append(match.group(0))
+
+    for cand in candidates:
+        try:
+            obj = json.loads(cand)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(obj, dict):
+            continue
+        rules = obj.get("rules")
+        if isinstance(rules, list):
+            lines = [str(x).strip() for x in rules if str(x).strip()]
+            if lines:
+                return "\n".join(f"- {line}" for line in lines)
+        rules_text = obj.get("rules_text")
+        if isinstance(rules_text, str) and rules_text.strip():
+            return rules_text.strip()
+
+    return None
+
+
+def _strict_rules_response_format() -> Dict:
+    """OpenAI response_format schema for reflection rules JSON."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "cot_sent_rf_rules",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "rules": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 4,
+                        "maxItems": 8,
+                    }
+                },
+                "required": ["rules"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def _strict_yhat_response_format(pred_len: int) -> Dict:
+    """OpenAI response_format schema for forecast JSON."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "cot_sent_rf_yhat",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "yhat": {
+                        "type": "array",
+                        "items": {"type": "number"},
+                        "minItems": int(pred_len),
+                        "maxItems": int(pred_len),
+                    }
+                },
+                "required": ["yhat"],
+                "additionalProperties": False,
+            },
+        },
+    }
 
 
 def returns_to_prices(returns: np.ndarray, last_price: float) -> np.ndarray:
@@ -231,7 +351,8 @@ class LLMRefiner:
     def _call_llm(
         self,
         prompt: str,
-        system_message: str
+        system_message: str,
+        response_format: Optional[Dict] = None,
     ) -> str:
         """
         Call the LLM API.
@@ -252,6 +373,7 @@ class LLMRefiner:
                 "base_url": self.base_url or os.getenv("OPENAI_BASE_URL") or "",
                 "system_message": system_message,
                 "max_tokens": self.max_tokens,
+                "response_format": response_format,
             }
             cached = self.cache.get(
                 prompt, self.model, self.temperature, context=cache_context
@@ -270,15 +392,15 @@ class LLMRefiner:
                 ],
                 "temperature": self.temperature
             }
+            if response_format is not None:
+                request["response_format"] = response_format
             if self.model.startswith("gpt-5"):
                 request["max_completion_tokens"] = self.max_tokens
             else:
                 request["max_tokens"] = self.max_tokens
             response = client.chat.completions.create(**request)
             message = response.choices[0].message
-            content = message.content
-            if not content:
-                content = getattr(message, "reasoning_content", None) or ""
+            content = _extract_openai_message_text(message)
         
         elif self.provider == "anthropic":
             response = client.messages.create(
@@ -310,6 +432,7 @@ class LLMRefiner:
         self,
         messages: List[Dict[str, str]],
         system_message: str = "",
+        response_format: Optional[Dict] = None,
     ) -> str:
         """Call the LLM API with an explicit multi-message chat history."""
         payload = {"messages": messages}
@@ -326,6 +449,7 @@ class LLMRefiner:
                 "base_url": self.base_url or os.getenv("OPENAI_BASE_URL") or "",
                 "system_message": system_message,
                 "max_tokens": self.max_tokens,
+                "response_format": response_format,
             }
             cached = self.cache.get(
                 prompt_key, self.model, self.temperature, context=cache_context
@@ -346,6 +470,8 @@ class LLMRefiner:
                 "messages": request_messages,
                 "temperature": self.temperature,
             }
+            if response_format is not None:
+                request["response_format"] = response_format
             if self.model.startswith("gpt-5"):
                 request["max_completion_tokens"] = self.max_tokens
             else:
@@ -353,9 +479,7 @@ class LLMRefiner:
 
             response = client.chat.completions.create(**request)
             message = response.choices[0].message
-            content = message.content
-            if not content:
-                content = getattr(message, "reasoning_content", None) or ""
+            content = _extract_openai_message_text(message)
 
         elif self.provider == "anthropic":
             response = client.messages.create(
@@ -637,8 +761,14 @@ class LLMRefiner:
                 raise ValueError("Teaching examples required for CoT-SENT-RF method")
             if sentiment_history is None:
                 raise ValueError("Sentiment history required for CoT-SENT-RF method")
-            reflection_template = get_template("CoT-SENT-RF-REFLECT")
-            apply_template = get_template("CoT-SENT-RF-APPLY")
+            cot_rf_cfg = self.config.get("cot_rf", {}) or {}
+            strict_json_prompt = bool(cot_rf_cfg.get("strict_json_prompt", False))
+            if strict_json_prompt:
+                reflection_template = get_template("CoT-SENT-RF-REFLECT-STRICTJSON")
+                apply_template = get_template("CoT-SENT-RF-APPLY-STRICTJSON")
+            else:
+                reflection_template = get_template("CoT-SENT-RF-REFLECT")
+                apply_template = get_template("CoT-SENT-RF-APPLY")
             prompt_hist = int(self.config.get("prompt_history_points", 30))
             prompt_sent = int(self.config.get("prompt_sentiment_points", 30))
             prompt = reflection_template.format(
@@ -689,8 +819,23 @@ class LLMRefiner:
 
         # Special handling: two-stage reflect→apply methods
         if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
+            cot_rf_cfg = self.config.get("cot_rf", {}) or {}
+            strict_json_prompt = bool(cot_rf_cfg.get("strict_json_prompt", False)) and (
+                method == "TSM+LLM-COT-SENT-RF"
+            )
             retain_context = bool(
-                (self.config.get("cot_rf", {}) or {}).get("retain_context", False)
+                cot_rf_cfg.get("retain_context", False)
+            )
+            strict_json_response_format = bool(cot_rf_cfg.get("strict_json_response_format", True))
+            reflect_response_format = (
+                _strict_rules_response_format()
+                if strict_json_prompt and strict_json_response_format
+                else None
+            )
+            apply_response_format = (
+                _strict_yhat_response_format(pred_len)
+                if strict_json_prompt and strict_json_response_format and method == "TSM+LLM-COT-SENT-RF"
+                else None
             )
 
             # Stage A: reflection → rules_text (plain text)
@@ -702,8 +847,16 @@ class LLMRefiner:
             for reflect_attempt in range(self.max_retries):
                 reflect_attempts = reflect_attempt + 1
                 try:
-                    reflect_response = self._call_llm(prompt, reflect_system)
-                    rules_text = (reflect_response or "").strip()
+                    reflect_response = self._call_llm(
+                        prompt,
+                        reflect_system,
+                        response_format=reflect_response_format,
+                    )
+                    raw_reflect = (reflect_response or "").strip()
+                    if strict_json_prompt:
+                        rules_text = parse_reflection_rules(raw_reflect)
+                    else:
+                        rules_text = raw_reflect
                     if rules_text:
                         break
                 except Exception as e:
@@ -726,6 +879,8 @@ class LLMRefiner:
                         "attempts": reflect_attempts,
                         "error": reflect_error,
                         "retain_context": retain_context,
+                        "strict_json_prompt": strict_json_prompt,
+                        "strict_json_response_format": strict_json_response_format,
                         "teaching_examples": len(teaching_examples or []),
                     },
                 )
@@ -739,6 +894,8 @@ class LLMRefiner:
                     "reflect_attempts": reflect_attempts,
                     "apply_attempts": 0,
                     "retain_context": retain_context,
+                    "strict_json_prompt": strict_json_prompt,
+                    "strict_json_response_format": strict_json_response_format,
                     "error": reflect_error or "Empty rules_text from reflection stage",
                 }
                 return None, metadata
@@ -798,16 +955,25 @@ class LLMRefiner:
                             sort_keys=True,
                             ensure_ascii=False,
                         )
-                        apply_response = self._call_llm_messages(messages, apply_system)
+                        apply_response = self._call_llm_messages(
+                            messages,
+                            apply_system,
+                            response_format=apply_response_format,
+                        )
                     else:
                         apply_prompt_for_log = apply_prompt
-                        apply_response = self._call_llm(apply_prompt, apply_system)
+                        apply_response = self._call_llm(
+                            apply_prompt,
+                            apply_system,
+                            response_format=apply_response_format,
+                        )
 
                     if method == "TSM+LLM-COT-SENT-RF-DELTA":
                         delta = parse_json_array(
                             apply_response,
                             expected_len=pred_len,
                             keys=("delta", "delta_price", "adjustment"),
+                            allow_bare_array=False,
                         )
                         if delta is not None:
                             max_delta = apply_kwargs.get("max_delta", 0.0)
@@ -840,6 +1006,8 @@ class LLMRefiner:
                 "reflect_attempts": reflect_attempts,
                 "apply_attempts": apply_attempts,
                 "retain_context": retain_context,
+                "strict_json_prompt": strict_json_prompt,
+                "strict_json_response_format": strict_json_response_format,
                 "rules_text": rules_text,
                 "teaching_examples": len(teaching_examples or []),
                 "teaching_dates": [ex.get("date") for ex in (teaching_examples or [])],
@@ -882,6 +1050,7 @@ class LLMRefiner:
                         response,
                         expected_len=pred_len,
                         keys=("delta_z", "delta"),
+                        allow_bare_array=False,
                     )
                     if delta is not None:
                         delta = np.clip(delta, -max_delta, max_delta)

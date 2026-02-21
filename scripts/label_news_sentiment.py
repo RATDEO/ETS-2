@@ -31,6 +31,30 @@ def main() -> None:
     parser.add_argument("--cache-dir", default="data/news/cache")
     parser.add_argument("--batch-size", type=int, default=200)
     parser.add_argument("--sleep-seconds", type=float, default=0.2)
+    parser.add_argument(
+        "--scoring-mode",
+        choices=["effect", "effect_importance"],
+        default="effect",
+        help="Label direction only, or direction + importance (0-10).",
+    )
+    parser.add_argument(
+        "--vote-cache-mode",
+        choices=["shared", "independent"],
+        default="independent",
+        help="Whether vote calls share cache entries or use independent cache keys.",
+    )
+    parser.add_argument(
+        "--importance-confidence-power",
+        type=float,
+        default=1.0,
+        help="Confidence penalty exponent for importance-weighted score (0 disables penalty).",
+    )
+    parser.add_argument(
+        "--vote-method",
+        choices=["per_call", "single_call_multi_vote"],
+        default="per_call",
+        help="Voting execution mode for effect_importance scoring.",
+    )
     parser.add_argument("--resume", action="store_true", default=False)
     parser.add_argument("--id-col", default="url")
     parser.add_argument(
@@ -95,6 +119,10 @@ def main() -> None:
             base_url=args.base_url,
             timeout_seconds=args.timeout_seconds,
             sleep_seconds=args.sleep_seconds,
+            scoring_mode=args.scoring_mode,
+            vote_cache_mode=args.vote_cache_mode,
+            importance_confidence_power=args.importance_confidence_power,
+            vote_method=args.vote_method,
         )
         labeled.to_csv(output_path, index=False, mode="a", header=not header_written)
         header_written = True

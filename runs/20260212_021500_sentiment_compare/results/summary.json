@@ -1,0 +1,30 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260208_042155_ea55a7",
+  "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/Data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy_feat4.csv",
+  "method": "TSM+LLM-COT-SENT-RF",
+  "n_test": 359,
+  "n_refined_windows": 359,
+  "n_reused_baseline_windows": 0,
+  "mse_path_base": 13.894228497865562,
+  "mse_path_new": 14.283607164338358,
+  "mse_horizons_base": {
+    "h1": 0.264988896079103,
+    "h5": 1.8328393010772124,
+    "h20": 18.385665958080224,
+    "h30": 38.52112586248776
+  },
+  "mse_horizons_new": {
+    "h1": 0.3102478788899708,
+    "h5": 1.9040698308283632,
+    "h20": 18.857626359796967,
+    "h30": 40.11168370766456
+  },
+  "blend_comparison": {
+    "best_w_path": 1.0,
+    "schedule": "ramp",
+    "min_weight": 0.0,
+    "power": 1.0,
+    "base_mse_path": 14.002024635022009,
+    "new_mse_path": 14.302132136729673
+  }
+}

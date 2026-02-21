@@ -1,0 +1,1 @@
+{"content": "Analyzing the examples reveals several systematic forecast errors:\n\n**Underforecast Bias with Positive Sentiment**\nWhen sentiment turns positive (sentiment > 0.33), the model consistently underforecasts by 0.3-0.8 EUR/MT. This is most evident in examples"}

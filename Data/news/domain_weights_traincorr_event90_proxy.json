@@ -1,0 +1,30 @@
+{
+  "bucket_col": "domain",
+  "train_end": "2023-06-30",
+  "default_weight": 1.1571065425159814,
+  "weights": {
+    "4-traders.com": 0.813082527659265,
+    "af.reuters.com": 0.8321423435707495,
+    "bnnbloomberg.ca": 1.48750119338066,
+    "businessgreen.com": 1.3327321943753931,
+    "carbon-pulse.com": 0.5503833554681186,
+    "etftrends.com": 1.477303349033467,
+    "euobserver.com": 1.4106571155737653,
+    "euractiv.com": 0.9770128524456776,
+    "eureporter.co": 1.3727815830364603,
+    "finance.yahoo.com": 0.5990375978571456,
+    "finanznachrichten.de": 2.0,
+    "hedgeweek.com": 0.7714709241386963,
+    "hellenicshippingnews.com": 1.5410642861273804,
+    "jdsupra.com": 1.1571065425159814,
+    "lexology.com": 1.4959261615022388,
+    "mondovisione.com": 0.5,
+    "msn.com": 1.3349466821222058,
+    "platts.com": 0.6683127964113977,
+    "politico.eu": 0.5825557736466532,
+    "prnewswire.com": 0.5346926750075253,
+    "reuters.com": 0.9206305054728732,
+    "sciencebusiness.net": 1.2672052947331984,
+    "uk.reuters.com": 1.9734914941522814
+  }
+}

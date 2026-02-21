@@ -1,0 +1,7 @@
+{
+  "description": "New baseline created by splicing h1 from option-4 Dawid-Skene run onto original baseline horizons 2..30",
+  "created_from": {
+    "original_baseline_run": "runs/20260208_042155_ea55a7",
+    "option4_run": "runs/20260218_dawidskene_sentiment_compare"
+  }
+}

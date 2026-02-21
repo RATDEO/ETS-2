@@ -1,6 +1,6 @@
 run_id: 20260208_042155_ea55a7
-git_hash: 91f7c7f6
-timestamp: '2026-02-08T04:21:55.586296'
+git_hash: c9e66d56
+timestamp: '2026-02-20T16:36:06.323462'
 project:
   name: EU_ETS_Forecasting
   version: 0.1.1
@@ -72,8 +72,9 @@ llm:
   model: qwen3-vl-4b-gpu
   temperature: 0.0
   max_tokens: 512
-  timeout_seconds: 300
+  timeout_seconds: 30
   methods:
+  - TSM+LLM-COT-RF
   - TSM+LLM-COT-SENT-RF
   history_points: 18
   include_summary_stats: true
@@ -105,7 +106,7 @@ llm:
     score_col: sent_score
     history_points: 18
   blend_grid:
-    enabled: true
+    enabled: false
     schedule: ramp
     weights:
     - 0.0
@@ -126,6 +127,7 @@ llm:
     max_samples: 100000
     methods:
     - TSM+LLM-COT-SENT-RF
+  client_max_retries: 0
 evaluation:
   primary_metric: mse
   additional_metrics:
