@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor shows slight upward bias, keep it unchanged.\", \"H20 anchor shows strong positive drift, consider mean reversion.\", \"H30 anchor shows moderate overshoot, align with H20 for stability.\", \"Avoid large 5d pct changes when volatility is low.\", \"Hold 20d vol near 0.89 to prevent overreaction.\"]}"}

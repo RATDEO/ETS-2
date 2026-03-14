@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 1.32 if anchors show minimal drift\", \"Keep h20 anchor error below 0.5% to avoid mean reversion bias\", \"If h30 anchor error is small, maintain current price stability\", \"Do not adjust h1 anchor if 5d pct change is modest\"]}"}

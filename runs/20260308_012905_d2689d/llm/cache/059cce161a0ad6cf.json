@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with low vol_20d\", \"Hold 20d pct change near zero when vol_20d is low\", \"Anchor h20 price should not overshoot spot by >1.5% if 20d pct change is flat\", \"If 5d pct change is negative, keep h1 anchor within 1.5% of spot\", \"If 20d vol is low, keep h30 anchor within 1.5% of spot\"]}"}

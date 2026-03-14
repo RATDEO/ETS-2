@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with low volatility.\", \"Hold 20d pct change near zero when volatility is low.\", \"Keep base anchors stable if 20d vol is below 5.5.\", \"Do not adjust h30 anchor if 5d pct change is negative.\", \"If 20d pct change is zero, maintain anchor values unchanged.\"]}"}

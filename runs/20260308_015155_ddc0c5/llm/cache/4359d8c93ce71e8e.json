@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 58.96 due to zero 20d change\", \"Avoid overshoot on h1 as 55.95 shows small positive error\", \"Lag 5d change to -3.03 suggests mean reversion near spot\", \"H30 anchor 58.30 should stay unchanged as error is moderate\", \"Hold vol_20d at 0.85 as low volatility implies stable price\"]}"}

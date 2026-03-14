@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 2.4 if anchors show weak divergence\", \"Keep h20 anchor close to spot if 20d pct is near zero\", \"Do not adjust h1 if 5d pct is small and 20d pct is flat\", \"If h30 anchor is far from spot, defer adjustment until 5d pct stabilizes\"]}"}

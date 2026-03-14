@@ -1,0 +1,5 @@
+{
+  "config": "uk_ets/config/uk_ets_tuned.yaml",
+  "data_dir": "uk_ets/Data_auto_uk",
+  "n_candidates": 4
+}

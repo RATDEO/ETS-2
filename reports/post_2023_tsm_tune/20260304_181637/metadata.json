@@ -1,0 +1,12 @@
+{
+  "config": "src/config/post_2023_paper_event90_proxy.yaml",
+  "data_dir": "Data_auto",
+  "seed": 42,
+  "n_candidates": 13,
+  "panel_rows": 794,
+  "split_sizes": {
+    "train": 474,
+    "val": 97,
+    "test": 126
+  }
+}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.47 with no significant trend signal.\", \"Avoid large overshoots in h5; cap forecast at 55.98.\", \"Match h1 to spot closely; limit error to \u00b10.15%.\", \"Ignore 20d vol spike; don\u2019t adjust anchor based on volatility alone.\", \"Hold h30 at 56.07 if 5d change is modestly positive.\"]}"}

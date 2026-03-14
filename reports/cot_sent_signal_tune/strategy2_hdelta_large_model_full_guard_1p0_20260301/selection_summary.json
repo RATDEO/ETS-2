@@ -1,0 +1,138 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": false,
+    "strict_json_prompt": true
+  },
+  "best_signal": {
+    "name": "baseline_daily_sentiment",
+    "path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "date_col": "seendate",
+    "source_path": null,
+    "transform": null
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 36.88114313542881,
+      "h1_mse": 3.449483396699361,
+      "h5_mse": 14.591332635348685,
+      "h20_mse": 44.330968919781476,
+      "h30_mse": 70.92611254384745,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": false,
+        "strict_json_prompt": true,
+        "strict_json_response_format": true,
+        "rules_text": "- Correct for severe mean reversion bias: When history shows a sharp peak followed by a decline (e.g., Example 1), the model's flat or slightly rising forecast significantly overestimates future prices; apply a downward correction proportional to the recent drop magnitude.\n- Adjust for momentum lag in bull runs: When history shows a sustained upward trend (e.g., Examples 2, 3, 4), the model underestimates the immediate continuation of the spike; increase the forecast for the first 5-10 days to capture the overshoot before the eventual pullback.\n- Invert sentiment-weighted expectations: When sentiment history is zero but price action is volatile, the model fails to react to implied market stress; if prices are falling despite neutral sentiment, apply a steeper downward slope than the model's flat projection.\n- Account for post-spike volatility decay: After a price spike (e.g., Example 2's peak at 100.29), the model fails to predict the subsequent sharp drop; apply a non-linear decay factor in the forecast horizon 10-20 days out to align with the observed volatility clustering.\n- Calibrate for low-volatility stagnation: In periods of low sentiment and flat price history (e.g., Example 5 start), the model's slight upward drift is often incorrect; flatten the forecast or introduce a slight downward bias if the trend is already established as bearish.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ],
+  "stage2_best": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 37.742088153326705,
+    "h1_mse": 2.7679753556429816,
+    "h5_mse": 16.1544769312019,
+    "h20_mse": 45.83274928022692,
+    "h30_mse": 71.25297822865137,
+    "split": "val",
+    "n_samples": 226,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": false,
+      "strict_json_prompt": true,
+      "strict_json_response_format": true,
+      "rules_text": "- Correct for severe mean reversion bias: When history shows a sharp peak followed by a decline (e.g., Example 1), the model's flat or slightly rising forecast significantly overestimates future prices; apply a downward correction proportional to the recent drop magnitude.\n- Adjust for momentum lag in bull runs: When history shows a sustained upward trend (e.g., Examples 2, 3, 4), the model underestimates the immediate continuation of the spike; increase the forecast for the first 5-10 days to capture the overshoot before the eventual pullback.\n- Invert sentiment-weighted expectations: When sentiment history is zero but price action is volatile, the model fails to react to implied market stress; if prices are falling despite neutral sentiment, apply a steeper downward slope than the model's flat projection.\n- Account for post-spike volatility decay: After a price spike (e.g., Example 2's peak at 100.29), the model fails to predict the subsequent sharp drop; apply a non-linear decay factor in the forecast horizon 10-20 days out to align with the observed volatility clustering.\n- Calibrate for low-volatility stagnation: In periods of low sentiment and flat price history (e.g., Example 5 start), the model's slight upward drift is often incorrect; flatten the forecast or introduce a slight downward bias if the trend is already established as bearish.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2022-08-30 00:00:00",
+        "2023-02-13 00:00:00",
+        "2023-02-14 00:00:00",
+        "2023-02-15 00:00:00",
+        "2023-05-09 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  },
+  "baseline_test": {
+    "signal_name": "baseline_paper_signal",
+    "sentiment_path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "path_mse": 20.60442973689488
+  },
+  "best_signal_test": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 20.87225814477285,
+    "h1_mse": 1.384548651839924,
+    "h5_mse": 6.620938501722126,
+    "h20_mse": 26.321728051875425,
+    "h30_mse": 40.86487179517961,
+    "split": "test",
+    "n_samples": 382,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": false,
+      "strict_json_prompt": true,
+      "strict_json_response_format": true,
+      "rules_text": "- Correct for severe mean reversion lag: The model consistently fails to anticipate sharp upward spikes (e.g., 70 to 76) and subsequent rapid declines, often predicting a flat or slowly trending path while the market oscillates violently.\n- Apply aggressive downward correction after sentiment spikes: When sentiment history shows a value of 1.00 (positive) followed by a price spike, the model's subsequent forecasts are systematically too high; reduce predictions by 3-5 EUR to account for the immediate post-spike pullback.\n- Adjust for 'flat-line' bias in volatile regimes: The model exhibits a strong bias toward the recent mean (approx. 70-71) regardless of momentum; in periods where true outcomes deviate significantly from the 18-day history mean, apply a momentum-based adjustment rather than relying on the model's static trend.\n- Horizon-specific overshoot correction: For forecasts beyond 10 days, the model consistently overestimates prices during the second half of the 30-day window (predicting 74+ while true outcomes drop to 68-70); apply a linear decay factor to long-horizon forecasts.\n- Sentiment-weighted volatility scaling: The model ignores sentiment magnitude; when sentiment history contains values > 0.5, increase forecast volatility (wider range) and reduce the central tendency to match the observed high-variance behavior.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2024-05-07 00:00:00",
+        "2024-05-08 00:00:00",
+        "2024-05-09 00:00:00",
+        "2024-05-16 00:00:00",
+        "2024-05-17 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  }
+}

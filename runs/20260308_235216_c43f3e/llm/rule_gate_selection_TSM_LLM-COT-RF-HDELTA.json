@@ -1,0 +1,23 @@
+{
+  "method": "TSM+LLM-COT-RF-HDELTA",
+  "method_template": "TSM+LLM-COT-RF-HDELTA",
+  "base_model": "tsm",
+  "selected_candidate": "abs_h30_ge_0_25",
+  "tune_split": "val",
+  "metric": "mse_path",
+  "key_horizons": [
+    1,
+    5,
+    20,
+    30
+  ],
+  "low_match_threshold": 2,
+  "abs_h30_thresholds_pct": [
+    0.25,
+    0.4
+  ],
+  "n_val": 228,
+  "n_test": 144,
+  "val_flagged_count": 102,
+  "test_flagged_count": 19
+}

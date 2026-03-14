@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.94 with no significant change\", \"Avoid large 5d pct swings; current -0.87 is stable\", \"Halt if vol_20d < 0.55 as low volatility suggests mean reversion\", \"Do not adjust h1 or h30 unless anchor_error_pct exceeds \u00b12.5%\", \"Hold current_price at 49.95 if 5d and 20d changes are near zero\"]}"}

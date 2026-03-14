@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic short-term forecasts\", \"Underweight high-volatility periods in horizon adjustments\", \"Correct for mean reversion in medium-term anchors\", \"Reduce forecast lag in high-change scenarios\", \"Anchor forecasts to recent volatility trends\", \"Adjust for diminishing error in long horizons\"]}"}

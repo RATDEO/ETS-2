@@ -1,0 +1,28 @@
+{
+  "candidate": "sim_k3_h18_ctx",
+  "raw_path_mse": 41.96745414438593,
+  "blend_path_mse": 39.22557939422483,
+  "blend_h1base_path_mse": 39.22557939422483,
+  "best_variant": "blend_ramp",
+  "best_variant_path_mse": 39.22557939422483,
+  "best_w": 0.0,
+  "n_val_samples": 40,
+  "metadata_sample": {
+    "method": "TSM+LLM-COT-RF",
+    "model": "qwen3-vl-4b-gpu",
+    "temperature": 0.0,
+    "success": true,
+    "reflect_attempts": 1,
+    "apply_attempts": 1,
+    "retain_context": true,
+    "strict_json_prompt": false,
+    "strict_json_response_format": true,
+    "rules_text": "- Model consistently overestimates prices, especially in early forecast periods (first 5\u201310 days of forecast horizon).\n- After sharp price spikes, model tends to overshoot and fail to correct downward quickly \u2014 overcorrects or lags in mean reversion.\n- Model exhibits strong upward bias in high-volatility periods (e.g., 2023-02), particularly when true prices show sharp declines after peaks.\n- Forecasts often fail to capture mean reversion in the short term (1\u20133 days) after a peak, leading to persistent overestimation.\n- Model underestimates volatility in the final 5\u201310 days of the forecast horizon, especially when true prices show sudden drops or corrections.\n- Model tends to smooth out short-term volatility, leading to underestimation of sharp downward moves in the last 5\u201310 days.\n- Forecasts should be adjusted downward by 5\u201315% in the final 5\u201310 days if the prior 5\u201310 days show a clear downward trend or volatility spike.\n- Model overestimates prices when the 30-day history shows a recent upward trend \u2014 should reduce forecast by 3\u20138% for such cases.\n- Model underestimates prices when the 30-day history shows a recent downward trend \u2014 should increase forecast by 3\u20138% for such cases.\n- Model fails to adjust for lagged price corrections \u2014 should add a 1\u20133 day lag correction for downward moves in the true outcome.",
+    "teaching_examples": 3,
+    "teaching_dates": [
+      "2022-08-30 00:00:00",
+      "2023-02-14 00:00:00",
+      "2023-02-15 00:00:00"
+    ]
+  }
+}

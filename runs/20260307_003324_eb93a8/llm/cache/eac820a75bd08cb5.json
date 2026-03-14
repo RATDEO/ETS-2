@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 5d change is negative\", \"Cap 20d vol at 1.30 to prevent overshoot\", \"Hold h30 forecast unchanged if anchor error exceeds 5%\", \"Use h1 as primary anchor if true price is within 0.5% of forecast\", \"Ignore h20 if anchor error exceeds 3% and 5d change is volatile\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 20d vol is low\", \"Hold 20d horizon unchanged if 20d pct change is near zero\", \"Cap 5d pct change overshoot at -5% to prevent overreaction\", \"Use base anchors as reference if 5d pct change is negative and 20d vol is low\", \"Keep 30d anchor unchanged if 20d vol is below 1.20\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 20d vol is low\", \"Hold 30d horizon unchanged if anchor error exceeds \u00b15%\", \"Flag high 5d pct change with low vol as potential overfit\", \"Use h1/h5 error to detect short-term bias\", \"Keep h20 forecast near true if vol < 1.2\"]}"}

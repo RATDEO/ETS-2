@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h1 anchor near spot with minimal overshoot\", \"Avoid large 5d pct swings when vol is low\", \"Hold h20 anchor steady if change_20d_pct is near zero\", \"Match h30 anchor to spot if error pct is small\", \"If anchor error pct exceeds 5%, adjust horizon bias downward\"]}"}

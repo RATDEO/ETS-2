@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if change_20d_pct is near zero\", \"Avoid large positive change_5d_pct when vol_20d is low\", \"H1 anchor should not overshoot current_price by more than 0.5%\", \"If h30 anchor is significantly below spot, maintain it unless volatility spikes\", \"Do not adjust h1 if anchor_error_pct exceeds 1.5%\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Overforecast long horizons when volatility is high.\", \"Underforecast sharp price drops with high 5d change.\", \"Bias toward higher prices in volatile periods.\", \"Mean reversion evident in short-term errors.\", \"Anchor-horizon mismatch: h1 overestimates, h30 underestimates.\", \"Lag in volatility response to price shifts.\"]}"}

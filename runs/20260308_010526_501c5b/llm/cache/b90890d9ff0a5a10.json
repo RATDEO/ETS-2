@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 51.52 with no significant change\", \"Avoid large 5d pct swings; current -0.74 is within stable range\", \"H30 anchor should not overshoot spot by >0.92% as seen in examples\", \"If vol_20d is low (0.62), avoid aggressive price adjustments\", \"Match h1 anchor to spot within \u00b10.31% as in example 1\"]}"}

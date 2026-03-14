@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, so avoid over-optimistic 5d forecasts\", \"20d vol is low, so 20d anchor should stay near current price\", \"h5 anchor matches spot, so keep h5 unchanged\", \"h20 anchor is 2.73% above, but 20d change is flat, so avoid overshoot\", \"If 5d change is large, keep 20d anchor stable to prevent lag\"]}"}

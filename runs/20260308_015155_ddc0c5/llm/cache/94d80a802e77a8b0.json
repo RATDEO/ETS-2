@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.67 with near-zero change\", \"Avoid overshoot on h1 due to recent +1.37% 5d change\", \"Match h5 anchor to spot with minimal error\", \"Hold h30 anchor steady at 56.62 if 20d vol is low\", \"Do not adjust h20 if 20d change is flat\"]}"}

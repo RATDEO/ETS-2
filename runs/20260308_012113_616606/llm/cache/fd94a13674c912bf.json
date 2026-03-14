@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when change_20d_pct is flat.\", \"Keep 5d change near zero if vol_20d is low.\", \"Hold 20d anchor if error_pct exceeds \u00b13%.\", \"Match 5d change to anchor error_pct if both are positive.\", \"If 30d anchor error_pct > 2%, defer adjustment.\"]}"}

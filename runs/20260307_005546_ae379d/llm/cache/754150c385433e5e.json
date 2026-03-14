@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h5 anchor near spot with minimal overshoot\", \"Avoid large 5d pct changes when vol_20d is low\", \"Hold h20 anchor if change_20d_pct is near zero\", \"Match h30 anchor error to current price volatility\", \"If anchors diverge, prioritize h1 stability over h30\"]}"}

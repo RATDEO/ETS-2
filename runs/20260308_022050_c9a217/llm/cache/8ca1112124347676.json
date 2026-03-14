@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes if 20d pct is flat\", \"Keep 20d vol near 1.25 if 5d pct is rising\", \"Hold anchor h20 if h5 and h30 show divergent trends\", \"Do not adjust h1 if error is <0.5%\", \"If h30 error >10%, defer 5d pct adjustment\"]}"}

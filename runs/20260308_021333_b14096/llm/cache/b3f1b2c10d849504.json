@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h1 due to small error margin\", \"Hold h20 unchanged when change_20d_pct is flat\", \"Limit h30 adjustment if vol_20d is low\", \"Prioritize mean reversion if change_5d_pct is negative\", \"Keep h5 stable if anchor_error_pct exceeds 5%\"]}"}

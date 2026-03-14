@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 1.0 when anchors show minimal drift\", \"Hold 30d anchor if 20d anchor is stable\", \"Do not adjust 5d pct if 20d pct is zero\", \"If 20d vol is low, defer anchor updates\"]}"}

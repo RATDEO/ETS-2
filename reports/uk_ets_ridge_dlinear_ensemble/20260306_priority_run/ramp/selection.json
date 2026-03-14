@@ -1,0 +1,8 @@
+{
+  "schedule": "ramp",
+  "selected_w": 1.0,
+  "val_mse_path": 16.321888684838488,
+  "test_mse_path": 27.055177849182034,
+  "ridge_test_mse_path": 22.419955242336467,
+  "tsm_test_mse_path": 29.593332290649414
+}

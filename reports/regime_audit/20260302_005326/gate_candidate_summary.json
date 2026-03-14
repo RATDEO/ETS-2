@@ -1,0 +1,163 @@
+{
+  "families": [
+    {
+      "regime_family": "sentiment_alignment_5d",
+      "values": [
+        {
+          "regime_value": "aligned",
+          "best_model": "35B raw guarded HDELTA",
+          "best_path_mse": 16.393057975323284,
+          "n_samples": 24,
+          "runner_up_model": "Raw tsm",
+          "margin_to_runner_up": 0.2766033170774307
+        },
+        {
+          "regime_value": "divergent",
+          "best_model": "4B raw HDELTA",
+          "best_path_mse": 36.00096331225688,
+          "n_samples": 28,
+          "runner_up_model": "Raw tsm",
+          "margin_to_runner_up": 0.45704771532197697
+        },
+        {
+          "regime_value": "neutral",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 19.37239067123385,
+          "n_samples": 330,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.22005675700823346
+        }
+      ],
+      "candidate": true,
+      "distinct_winners": [
+        "35B raw guarded HDELTA",
+        "4B raw HDELTA",
+        "Baseline paper CoT-SENT"
+      ]
+    },
+    {
+      "regime_family": "trend_regime_20d",
+      "values": [
+        {
+          "regime_value": "down",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 19.689593730490575,
+          "n_samples": 136,
+          "runner_up_model": "Raw tsm",
+          "margin_to_runner_up": 0.2986672650888025
+        },
+        {
+          "regime_value": "flat",
+          "best_model": "35B raw guarded HDELTA",
+          "best_path_mse": 29.639062833750714,
+          "n_samples": 18,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.016557821230314573
+        },
+        {
+          "regime_value": "up",
+          "best_model": "4B raw HDELTA",
+          "best_path_mse": 20.266884678317318,
+          "n_samples": 228,
+          "runner_up_model": "Baseline paper CoT-SENT",
+          "margin_to_runner_up": 0.015270578990072892
+        }
+      ],
+      "candidate": false,
+      "distinct_winners": [
+        "35B raw guarded HDELTA",
+        "4B raw HDELTA",
+        "Baseline paper CoT-SENT"
+      ]
+    },
+    {
+      "regime_family": "trend_vol_regime",
+      "values": [
+        {
+          "regime_value": "down__high_vol",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 28.872135493610845,
+          "n_samples": 77,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.20899690992434117
+        },
+        {
+          "regime_value": "down__low_vol",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 7.705598548113279,
+          "n_samples": 59,
+          "runner_up_model": "35B raw guarded HDELTA",
+          "margin_to_runner_up": 0.2699878618414999
+        },
+        {
+          "regime_value": "flat__high_vol",
+          "best_model": "4B raw HDELTA",
+          "best_path_mse": 34.4405929880453,
+          "n_samples": 12,
+          "runner_up_model": "Raw tsm",
+          "margin_to_runner_up": 0.07463812392640534
+        },
+        {
+          "regime_value": "flat__low_vol",
+          "best_model": "35B raw guarded HDELTA",
+          "best_path_mse": 18.96256479751347,
+          "n_samples": 6,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 1.123111191338996
+        },
+        {
+          "regime_value": "up__high_vol",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 22.731910432242238,
+          "n_samples": 102,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.1692138909798686
+        },
+        {
+          "regime_value": "up__low_vol",
+          "best_model": "35B raw guarded HDELTA",
+          "best_path_mse": 17.944180898128216,
+          "n_samples": 126,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.1902240676471294
+        }
+      ],
+      "candidate": true,
+      "distinct_winners": [
+        "35B raw guarded HDELTA",
+        "4B raw HDELTA",
+        "Baseline paper CoT-SENT"
+      ]
+    },
+    {
+      "regime_family": "volatility_regime",
+      "values": [
+        {
+          "regime_value": "high_vol",
+          "best_model": "Baseline paper CoT-SENT",
+          "best_path_mse": 26.054459738112943,
+          "n_samples": 191,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.06307425087872431
+        },
+        {
+          "regime_value": "low_vol",
+          "best_model": "35B raw guarded HDELTA",
+          "best_path_mse": 14.896867958830194,
+          "n_samples": 191,
+          "runner_up_model": "4B raw HDELTA",
+          "margin_to_runner_up": 0.2217649754189459
+        }
+      ],
+      "candidate": false,
+      "distinct_winners": [
+        "35B raw guarded HDELTA",
+        "Baseline paper CoT-SENT"
+      ]
+    }
+  ],
+  "recommended_families": [
+    "sentiment_alignment_5d",
+    "trend_vol_regime"
+  ]
+}

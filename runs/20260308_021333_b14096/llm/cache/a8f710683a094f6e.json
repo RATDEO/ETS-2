@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with near-zero 20d_pct shifts.\", \"Hold 20d_vol near 2.32 if 20d_pct change is flat.\", \"Keep h20 anchor close to spot if 20d_pct change is zero.\", \"If h30 anchor is below spot, avoid sharp downward moves.\", \"If 5d_pct is negative, ensure h1 anchor is not significantly above spot.\"]}"}

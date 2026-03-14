@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct gains with low 20d vol\", \"Hold 20d anchor if 20d pct change is near zero\", \"Cap 5d pct change at +10% to prevent overshoot\", \"Keep 30d anchor unchanged if 20d vol is low\", \"Use 20d anchor as primary if 5d pct is high and 20d pct is flat\"]}"}

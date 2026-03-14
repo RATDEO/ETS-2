@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic long-horizon forecasts\", \"Adjust forecasts downward when volatility is low\", \"Reduce forecast gap when 5d change is positive\", \"Anchor forecasts to recent price trends for short horizons\", \"Correct for mean reversion in high-volatility periods\", \"Use volatility as a signal for horizon-specific error calibration\"]}"}

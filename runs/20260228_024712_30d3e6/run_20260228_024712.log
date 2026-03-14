@@ -1,0 +1,512 @@
+2026-02-28 02:47:12 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:47:12 | INFO     | src.data.panel | Building panel dataset
+2026-02-28 02:47:12 | INFO     | src.data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-02-28 02:47:12 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:47:12 | INFO     | src.data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-02-28 02:47:12 | INFO     | src.data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data AUTO.csv
+2026-02-28 02:47:12 | INFO     | src.data.load_eua_futures | Loaded EUA futures: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_eua_futures | Combined EUA futures data: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_eua_futures | EUA futures target series: 4334 records, price range: 2.75 - 100.29 EUR
+2026-02-28 02:47:13 | INFO     | src.data.panel | EUA Futures loaded: 4334 records
+2026-02-28 02:47:13 | INFO     | src.data.panel | Master calendar: 4334 days from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.panel | Target coverage: 4334 / 4334 days
+2026-02-28 02:47:13 | INFO     | src.data.panel | Adding EUA futures OHLC and volume features...
+2026-02-28 02:47:13 | INFO     | src.data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-02-28 02:47:13 | INFO     | src.data.panel | Adding ICAP secondary market as exogenous feature...
+2026-02-28 02:47:13 | INFO     | src.data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_icap | Loaded ICAP file: 1555 records from 2019-01-07 00:00:00 to 2025-12-15 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_icap | Combined ICAP data: 5036 records from 2005-03-09 00:00:00 to 2025-12-15 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_icap | ICAP target series: 2918 daily prices
+2026-02-28 02:47:13 | INFO     | src.data.panel | Added ICAP secondary market feature
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[2/7] Loading FX rates...
+2026-02-28 02:47:13 | INFO     | src.data.fx | Loaded EUR/USD FX rates: 6953 observations from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[3/7] Loading energy benchmarks...
+2026-02-28 02:47:13 | WARNING  | src.data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-02-28 02:47:13 | INFO     | src.data.load_energy | Loaded Brent crude: 9836 records from 1987-05-20 00:00:00 to 2026-02-23 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-02-28 02:47:13 | WARNING  | src.data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 6885 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 3677 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[4/7] Loading carbon indices...
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded KEUA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded KRBN: 1400 records from 2020-07-31 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded GRN: 1619 records from 2019-09-18 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded KCCA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded KSET: 488 records from 2022-04-20 00:00:00 to 2024-03-28 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.load_indices | Loaded 5 carbon market indices
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 1103 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 1400 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 1619 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 1103 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.fx | Converted 488 prices from USD to EUR
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[5/7] Loading auction data...
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-02-28 02:47:13 | WARNING  | src.data.load_auctions | Could not parse emission-spot-primary-market-auction-report-2026-data.xlsx: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-02-28 02:47:13 | INFO     | src.data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[6/7] Loading VSTOXX...
+2026-02-28 02:47:13 | INFO     | src.data.load_vstoxx | Loaded VSTOXX: 6912 records from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:47:13 | INFO     | src.data.panel | 
+[7/7] Creating target features...
+2026-02-28 02:47:13 | INFO     | src.data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260228_024712_30d3e6/data
+2026-02-28 02:47:13 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:47:13 | INFO     | src.data.panel | Panel built: 4334 rows, 44 columns
+2026-02-28 02:47:13 | INFO     | src.data.panel | Target coverage: 100.0%
+2026-02-28 02:47:13 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:47:13 | INFO     | src.frontend_live_bundle | Generating contamination-safe archive for 21 origins.
+2026-02-28 02:47:13 | INFO     | src.frontend_live_bundle | [1/21] Origin 2021-02-25
+2026-02-28 02:47:13 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:47:13 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:47:20 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.002249, Val: 1.137234
+2026-02-28 02:47:25 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.992878, Val: 1.142444
+2026-02-28 02:47:30 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.996149, Val: 1.142625
+2026-02-28 02:47:35 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.993236, Val: 1.134607
+2026-02-28 02:47:39 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.995573, Val: 1.144217
+2026-02-28 02:47:44 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.996281, Val: 1.142645
+2026-02-28 02:47:49 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.992016, Val: 1.139849
+2026-02-28 02:47:54 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.990401, Val: 1.137545
+2026-02-28 02:47:58 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.985981, Val: 1.142976
+2026-02-28 02:48:03 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.983461, Val: 1.145957
+2026-02-28 02:48:08 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.987542, Val: 1.159835
+2026-02-28 02:48:13 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.992290, Val: 1.147939
+2026-02-28 02:48:17 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992796, Val: 1.132028
+2026-02-28 02:48:22 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.992639, Val: 1.158395
+2026-02-28 02:48:27 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.988764, Val: 1.149387
+2026-02-28 02:48:32 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.984375, Val: 1.142518
+2026-02-28 02:48:37 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.985043, Val: 1.150409
+2026-02-28 02:48:42 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.988548, Val: 1.153151
+2026-02-28 02:48:47 | INFO     | src.models.tsm | Epoch 19/100 - Train: 0.986617, Val: 1.146539
+2026-02-28 02:48:52 | INFO     | src.models.tsm | Epoch 20/100 - Train: 0.979321, Val: 1.140392
+2026-02-28 02:48:56 | INFO     | src.models.tsm | Epoch 21/100 - Train: 0.985433, Val: 1.151524
+2026-02-28 02:49:02 | INFO     | src.models.tsm | Epoch 22/100 - Train: 1.006280, Val: 1.155222
+2026-02-28 02:49:07 | INFO     | src.models.tsm | Epoch 23/100 - Train: 0.978563, Val: 1.172141
+2026-02-28 02:49:07 | INFO     | src.models.tsm | Early stopping at epoch 23
+2026-02-28 02:49:16 | INFO     | src.frontend_live_bundle | [2/21] Origin 2021-05-26
+2026-02-28 02:49:16 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:49:16 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:49:23 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.033603, Val: 0.736214
+2026-02-28 02:49:28 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.028262, Val: 0.735146
+2026-02-28 02:49:33 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.026881, Val: 0.734987
+2026-02-28 02:49:38 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.056314, Val: 0.735493
+2026-02-28 02:49:43 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.028034, Val: 0.735463
+2026-02-28 02:49:48 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.031348, Val: 0.735809
+2026-02-28 02:49:53 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.034883, Val: 0.736198
+2026-02-28 02:49:58 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.022167, Val: 0.733888
+2026-02-28 02:50:03 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.024400, Val: 0.734766
+2026-02-28 02:50:08 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.024615, Val: 0.739526
+2026-02-28 02:50:13 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.028741, Val: 0.742284
+2026-02-28 02:50:18 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.021690, Val: 0.734663
+2026-02-28 02:50:24 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.023570, Val: 0.735625
+2026-02-28 02:50:29 | INFO     | src.models.tsm | Epoch 14/100 - Train: 1.042313, Val: 0.741387
+2026-02-28 02:50:34 | INFO     | src.models.tsm | Epoch 15/100 - Train: 1.024526, Val: 0.742124
+2026-02-28 02:50:39 | INFO     | src.models.tsm | Epoch 16/100 - Train: 1.020961, Val: 0.738077
+2026-02-28 02:50:45 | INFO     | src.models.tsm | Epoch 17/100 - Train: 1.015117, Val: 0.739753
+2026-02-28 02:50:50 | INFO     | src.models.tsm | Epoch 18/100 - Train: 1.024835, Val: 0.740981
+2026-02-28 02:50:50 | INFO     | src.models.tsm | Early stopping at epoch 18
+2026-02-28 02:50:59 | INFO     | src.frontend_live_bundle | [3/21] Origin 2021-08-23
+2026-02-28 02:51:00 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:51:00 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:51:05 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.026511, Val: 0.654531
+2026-02-28 02:51:11 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.016655, Val: 0.653373
+2026-02-28 02:51:16 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.015002, Val: 0.651164
+2026-02-28 02:51:21 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.019726, Val: 0.651442
+2026-02-28 02:51:26 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.009830, Val: 0.657677
+2026-02-28 02:51:31 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.013466, Val: 0.654253
+2026-02-28 02:51:37 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.016013, Val: 0.651395
+2026-02-28 02:51:42 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.014636, Val: 0.656040
+2026-02-28 02:51:47 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.014428, Val: 0.651412
+2026-02-28 02:51:52 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.010705, Val: 0.654392
+2026-02-28 02:51:57 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.013653, Val: 0.654523
+2026-02-28 02:52:01 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.009354, Val: 0.655440
+2026-02-28 02:52:06 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.012556, Val: 0.652808
+2026-02-28 02:52:06 | INFO     | src.models.tsm | Early stopping at epoch 13
+2026-02-28 02:52:15 | INFO     | src.frontend_live_bundle | [4/21] Origin 2021-11-18
+2026-02-28 02:52:15 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:52:15 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:52:21 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.025695, Val: 0.594422
+2026-02-28 02:52:26 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.018585, Val: 0.594716
+2026-02-28 02:52:31 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.001985, Val: 0.591592
+2026-02-28 02:52:36 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.019190, Val: 0.592105
+2026-02-28 02:52:41 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.010147, Val: 0.591699
+2026-02-28 02:52:46 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.010779, Val: 0.590779
+2026-02-28 02:52:51 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.010570, Val: 0.590959
+2026-02-28 02:52:56 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.002302, Val: 0.591483
+2026-02-28 02:53:02 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.005943, Val: 0.594807
+2026-02-28 02:53:07 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.022426, Val: 0.592022
+2026-02-28 02:53:12 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.001521, Val: 0.620391
+2026-02-28 02:53:17 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.010552, Val: 0.594542
+2026-02-28 02:53:22 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.019424, Val: 0.600724
+2026-02-28 02:53:27 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.997709, Val: 0.607245
+2026-02-28 02:53:32 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.993320, Val: 0.605475
+2026-02-28 02:53:37 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.991602, Val: 0.628846
+2026-02-28 02:53:37 | INFO     | src.models.tsm | Early stopping at epoch 16
+2026-02-28 02:53:46 | INFO     | src.frontend_live_bundle | [5/21] Origin 2022-02-15
+2026-02-28 02:53:47 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:53:47 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:53:52 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.008302, Val: 0.778767
+2026-02-28 02:53:58 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.045418, Val: 0.779491
+2026-02-28 02:54:03 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.000715, Val: 0.773415
+2026-02-28 02:54:08 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.001982, Val: 0.773149
+2026-02-28 02:54:13 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.002508, Val: 0.774514
+2026-02-28 02:54:19 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.024853, Val: 0.775288
+2026-02-28 02:54:24 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.007374, Val: 0.782155
+2026-02-28 02:54:29 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.999851, Val: 0.776264
+2026-02-28 02:54:35 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.993651, Val: 0.778777
+2026-02-28 02:54:40 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.992186, Val: 0.800690
+2026-02-28 02:54:46 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.995921, Val: 0.790774
+2026-02-28 02:54:51 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.995867, Val: 0.797803
+2026-02-28 02:54:57 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992418, Val: 0.790054
+2026-02-28 02:55:02 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.998521, Val: 0.786129
+2026-02-28 02:55:02 | INFO     | src.models.tsm | Early stopping at epoch 14
+2026-02-28 02:55:12 | INFO     | src.frontend_live_bundle | [6/21] Origin 2022-05-17
+2026-02-28 02:55:12 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:55:12 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:55:18 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.002247, Val: 1.186425
+2026-02-28 02:55:23 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.000606, Val: 1.182837
+2026-02-28 02:55:29 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.000086, Val: 1.182783
+2026-02-28 02:55:35 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.000395, Val: 1.186157
+2026-02-28 02:55:41 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.999049, Val: 1.184931
+2026-02-28 02:55:46 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.998648, Val: 1.189961
+2026-02-28 02:55:52 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.999302, Val: 1.188403
+2026-02-28 02:55:58 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.996706, Val: 1.213459
+2026-02-28 02:56:04 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.996498, Val: 1.224786
+2026-02-28 02:56:09 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.995893, Val: 1.196957
+2026-02-28 02:56:15 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.994510, Val: 1.207106
+2026-02-28 02:56:20 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.994451, Val: 1.182048
+2026-02-28 02:56:26 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.993760, Val: 1.191562
+2026-02-28 02:56:32 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.991629, Val: 1.195995
+2026-02-28 02:56:38 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.991212, Val: 1.195041
+2026-02-28 02:56:43 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.989899, Val: 1.200385
+2026-02-28 02:56:49 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.990260, Val: 1.300918
+2026-02-28 02:56:55 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.988333, Val: 1.273331
+2026-02-28 02:57:00 | INFO     | src.models.tsm | Epoch 19/100 - Train: 0.987624, Val: 1.263999
+2026-02-28 02:57:06 | INFO     | src.models.tsm | Epoch 20/100 - Train: 0.989059, Val: 1.233945
+2026-02-28 02:57:11 | INFO     | src.models.tsm | Epoch 21/100 - Train: 0.984968, Val: 1.307590
+2026-02-28 02:57:17 | INFO     | src.models.tsm | Epoch 22/100 - Train: 0.984231, Val: 1.353968
+2026-02-28 02:57:17 | INFO     | src.models.tsm | Early stopping at epoch 22
+2026-02-28 02:57:28 | INFO     | src.frontend_live_bundle | [7/21] Origin 2022-08-12
+2026-02-28 02:57:28 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:57:28 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:57:34 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.003718, Val: 1.234776
+2026-02-28 02:57:40 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.002252, Val: 1.217239
+2026-02-28 02:57:45 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.002075, Val: 1.215404
+2026-02-28 02:57:51 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.000762, Val: 1.215952
+2026-02-28 02:57:56 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.999487, Val: 1.216669
+2026-02-28 02:58:02 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.999754, Val: 1.223143
+2026-02-28 02:58:08 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.998781, Val: 1.236157
+2026-02-28 02:58:13 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.996787, Val: 1.232841
+2026-02-28 02:58:19 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.996530, Val: 1.220380
+2026-02-28 02:58:25 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.995500, Val: 1.251725
+2026-02-28 02:58:31 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.995111, Val: 1.236118
+2026-02-28 02:58:36 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.993493, Val: 1.274735
+2026-02-28 02:58:42 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.993904, Val: 1.225531
+2026-02-28 02:58:42 | INFO     | src.models.tsm | Early stopping at epoch 13
+2026-02-28 02:58:52 | INFO     | src.frontend_live_bundle | [8/21] Origin 2022-11-09
+2026-02-28 02:58:52 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:58:52 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:58:58 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.006589, Val: 1.313383
+2026-02-28 02:59:03 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.005520, Val: 1.323873
+2026-02-28 02:59:09 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.004083, Val: 1.317230
+2026-02-28 02:59:14 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.003551, Val: 1.318500
+2026-02-28 02:59:21 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.003973, Val: 1.329697
+2026-02-28 02:59:27 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.002320, Val: 1.319961
+2026-02-28 02:59:32 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.001573, Val: 1.317610
+2026-02-28 02:59:39 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.000054, Val: 1.314501
+2026-02-28 02:59:45 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.003735, Val: 1.317304
+2026-02-28 02:59:50 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.000426, Val: 1.314564
+2026-02-28 02:59:56 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.998465, Val: 1.318868
+2026-02-28 02:59:56 | INFO     | src.models.tsm | Early stopping at epoch 11
+2026-02-28 03:00:05 | INFO     | src.frontend_live_bundle | [9/21] Origin 2023-02-07
+2026-02-28 03:00:05 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:00:05 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:00:11 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.018601, Val: 1.144779
+2026-02-28 03:00:17 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.017474, Val: 1.151399
+2026-02-28 03:00:23 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.016778, Val: 1.150429
+2026-02-28 03:00:28 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.016249, Val: 1.143737
+2026-02-28 03:00:34 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.014844, Val: 1.146056
+2026-02-28 03:00:40 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.014773, Val: 1.151696
+2026-02-28 03:00:45 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.014302, Val: 1.148917
+2026-02-28 03:00:51 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.013748, Val: 1.145814
+2026-02-28 03:00:57 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.012421, Val: 1.145417
+2026-02-28 03:01:03 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.010978, Val: 1.139698
+2026-02-28 03:01:08 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.010963, Val: 1.143926
+2026-02-28 03:01:15 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.011093, Val: 1.145733
+2026-02-28 03:01:22 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.011203, Val: 1.148614
+2026-02-28 03:01:27 | INFO     | src.models.tsm | Epoch 14/100 - Train: 1.009915, Val: 1.148188
+2026-02-28 03:01:34 | INFO     | src.models.tsm | Epoch 15/100 - Train: 1.011991, Val: 1.145226
+2026-02-28 03:01:41 | INFO     | src.models.tsm | Epoch 16/100 - Train: 1.008949, Val: 1.145912
+2026-02-28 03:01:47 | INFO     | src.models.tsm | Epoch 17/100 - Train: 1.008381, Val: 1.146275
+2026-02-28 03:01:52 | INFO     | src.models.tsm | Epoch 18/100 - Train: 1.007442, Val: 1.146169
+2026-02-28 03:01:58 | INFO     | src.models.tsm | Epoch 19/100 - Train: 1.006554, Val: 1.159571
+2026-02-28 03:02:04 | INFO     | src.models.tsm | Epoch 20/100 - Train: 1.007407, Val: 1.146223
+2026-02-28 03:02:04 | INFO     | src.models.tsm | Early stopping at epoch 20
+2026-02-28 03:02:15 | INFO     | src.frontend_live_bundle | [10/21] Origin 2023-05-09
+2026-02-28 03:02:15 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:02:15 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:02:22 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.034978, Val: 0.764271
+2026-02-28 03:02:28 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.032983, Val: 0.762789
+2026-02-28 03:02:34 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.032922, Val: 0.761569
+2026-02-28 03:02:41 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.032147, Val: 0.762054
+2026-02-28 03:02:46 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.030623, Val: 0.761358
+2026-02-28 03:02:52 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.030603, Val: 0.760900
+2026-02-28 03:02:58 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.028716, Val: 0.761225
+2026-02-28 03:03:04 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.029059, Val: 0.760607
+2026-02-28 03:03:09 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.026508, Val: 0.761395
+2026-02-28 03:03:16 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.027392, Val: 0.761763
+2026-02-28 03:03:22 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.025874, Val: 0.761053
+2026-02-28 03:03:28 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.024971, Val: 0.759396
+2026-02-28 03:03:34 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.024250, Val: 0.761535
+2026-02-28 03:03:40 | INFO     | src.models.tsm | Epoch 14/100 - Train: 1.023561, Val: 0.761397
+2026-02-28 03:03:46 | INFO     | src.models.tsm | Epoch 15/100 - Train: 1.024966, Val: 0.761863
+2026-02-28 03:03:52 | INFO     | src.models.tsm | Epoch 16/100 - Train: 1.024171, Val: 0.760424
+2026-02-28 03:03:58 | INFO     | src.models.tsm | Epoch 17/100 - Train: 1.022767, Val: 0.762513
+2026-02-28 03:04:04 | INFO     | src.models.tsm | Epoch 18/100 - Train: 1.021472, Val: 0.761396
+2026-02-28 03:04:10 | INFO     | src.models.tsm | Epoch 19/100 - Train: 1.020591, Val: 0.763296
+2026-02-28 03:04:17 | INFO     | src.models.tsm | Epoch 20/100 - Train: 1.020510, Val: 0.764210
+2026-02-28 03:04:24 | INFO     | src.models.tsm | Epoch 21/100 - Train: 1.021995, Val: 0.761042
+2026-02-28 03:04:30 | INFO     | src.models.tsm | Epoch 22/100 - Train: 1.019058, Val: 0.761830
+2026-02-28 03:04:30 | INFO     | src.models.tsm | Early stopping at epoch 22
+2026-02-28 03:04:40 | INFO     | src.frontend_live_bundle | [11/21] Origin 2023-08-04
+2026-02-28 03:04:40 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:04:40 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:04:47 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.014406, Val: 0.664092
+2026-02-28 03:04:53 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.012576, Val: 0.662558
+2026-02-28 03:05:00 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.013069, Val: 0.664307
+2026-02-28 03:05:07 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.011308, Val: 0.664712
+2026-02-28 03:05:14 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.010359, Val: 0.664365
+2026-02-28 03:05:21 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.010109, Val: 0.664948
+2026-02-28 03:05:27 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.008980, Val: 0.667062
+2026-02-28 03:05:34 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.009911, Val: 0.666905
+2026-02-28 03:05:40 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.009162, Val: 0.666204
+2026-02-28 03:05:46 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.008062, Val: 0.666333
+2026-02-28 03:05:52 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.007615, Val: 0.668801
+2026-02-28 03:05:58 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.006595, Val: 0.666799
+2026-02-28 03:05:58 | INFO     | src.models.tsm | Early stopping at epoch 12
+2026-02-28 03:06:08 | INFO     | src.frontend_live_bundle | [12/21] Origin 2023-11-01
+2026-02-28 03:06:08 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:06:08 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:06:15 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.011021, Val: 0.476009
+2026-02-28 03:06:21 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.009635, Val: 0.476436
+2026-02-28 03:06:27 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.008312, Val: 0.476134
+2026-02-28 03:06:33 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.008254, Val: 0.476041
+2026-02-28 03:06:39 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.007717, Val: 0.475547
+2026-02-28 03:06:45 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.006891, Val: 0.476943
+2026-02-28 03:06:51 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.006714, Val: 0.475802
+2026-02-28 03:06:56 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.004672, Val: 0.477705
+2026-02-28 03:07:02 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.005814, Val: 0.477092
+2026-02-28 03:07:09 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.004289, Val: 0.475602
+2026-02-28 03:07:15 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.003297, Val: 0.477692
+2026-02-28 03:07:21 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.002887, Val: 0.476671
+2026-02-28 03:07:27 | INFO     | src.models.tsm | Epoch 13/100 - Train: 1.000742, Val: 0.478970
+2026-02-28 03:07:33 | INFO     | src.models.tsm | Epoch 14/100 - Train: 1.003022, Val: 0.476626
+2026-02-28 03:07:39 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.999900, Val: 0.476715
+2026-02-28 03:07:39 | INFO     | src.models.tsm | Early stopping at epoch 15
+2026-02-28 03:07:48 | INFO     | src.frontend_live_bundle | [13/21] Origin 2024-02-01
+2026-02-28 03:07:49 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:07:49 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:07:55 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.008087, Val: 0.431591
+2026-02-28 03:08:02 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.007392, Val: 0.432163
+2026-02-28 03:08:08 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.005880, Val: 0.431648
+2026-02-28 03:08:14 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.005127, Val: 0.435009
+2026-02-28 03:08:20 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.004637, Val: 0.433204
+2026-02-28 03:08:28 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.003411, Val: 0.432974
+2026-02-28 03:08:35 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.003292, Val: 0.432528
+2026-02-28 03:08:41 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.003998, Val: 0.434207
+2026-02-28 03:08:47 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.003087, Val: 0.432222
+2026-02-28 03:08:53 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.002526, Val: 0.433248
+2026-02-28 03:09:00 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.000140, Val: 0.434136
+2026-02-28 03:09:00 | INFO     | src.models.tsm | Early stopping at epoch 11
+2026-02-28 03:09:09 | INFO     | src.frontend_live_bundle | [14/21] Origin 2024-05-02
+2026-02-28 03:09:09 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:09:09 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:09:15 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.003255, Val: 0.506283
+2026-02-28 03:09:22 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.003198, Val: 0.506879
+2026-02-28 03:09:28 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.002902, Val: 0.505719
+2026-02-28 03:09:34 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.002610, Val: 0.506301
+2026-02-28 03:09:40 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.000284, Val: 0.509075
+2026-02-28 03:09:46 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.000563, Val: 0.507794
+2026-02-28 03:09:53 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.001281, Val: 0.511304
+2026-02-28 03:09:59 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.999691, Val: 0.508330
+2026-02-28 03:10:05 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.999214, Val: 0.509116
+2026-02-28 03:10:12 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.998530, Val: 0.510232
+2026-02-28 03:10:18 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.996435, Val: 0.510772
+2026-02-28 03:10:24 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.997653, Val: 0.510113
+2026-02-28 03:10:30 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.996420, Val: 0.512158
+2026-02-28 03:10:30 | INFO     | src.models.tsm | Early stopping at epoch 13
+2026-02-28 03:10:39 | INFO     | src.frontend_live_bundle | [15/21] Origin 2024-07-30
+2026-02-28 03:10:39 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:10:39 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:10:46 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.000219, Val: 0.554423
+2026-02-28 03:10:52 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.998943, Val: 0.554460
+2026-02-28 03:10:59 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.997758, Val: 0.555155
+2026-02-28 03:11:06 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.998209, Val: 0.555613
+2026-02-28 03:11:12 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.997226, Val: 0.557921
+2026-02-28 03:11:20 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.997116, Val: 0.557491
+2026-02-28 03:11:26 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.995004, Val: 0.556816
+2026-02-28 03:11:33 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.996141, Val: 0.557075
+2026-02-28 03:11:39 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.994198, Val: 0.557296
+2026-02-28 03:11:45 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.994740, Val: 0.556058
+2026-02-28 03:11:52 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.993728, Val: 0.558314
+2026-02-28 03:11:52 | INFO     | src.models.tsm | Early stopping at epoch 11
+2026-02-28 03:12:01 | INFO     | src.frontend_live_bundle | [16/21] Origin 2024-10-25
+2026-02-28 03:12:01 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:12:01 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:12:08 | INFO     | src.models.tsm | Epoch 1/100 - Train: 0.997314, Val: 0.574973
+2026-02-28 03:12:15 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.996135, Val: 0.574455
+2026-02-28 03:12:21 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.994655, Val: 0.576156
+2026-02-28 03:12:27 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.993784, Val: 0.577076
+2026-02-28 03:12:34 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.993805, Val: 0.575744
+2026-02-28 03:12:41 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.995233, Val: 0.576020
+2026-02-28 03:12:48 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.992754, Val: 0.575735
+2026-02-28 03:12:54 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.992775, Val: 0.576271
+2026-02-28 03:13:02 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.991587, Val: 0.575680
+2026-02-28 03:13:09 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.992730, Val: 0.576486
+2026-02-28 03:13:15 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.990921, Val: 0.575262
+2026-02-28 03:13:22 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.991010, Val: 0.576010
+2026-02-28 03:13:22 | INFO     | src.models.tsm | Early stopping at epoch 12
+2026-02-28 03:13:33 | INFO     | src.frontend_live_bundle | [17/21] Origin 2025-01-27
+2026-02-28 03:13:33 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:13:33 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:13:41 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.001946, Val: 0.553992
+2026-02-28 03:13:47 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.999144, Val: 0.554150
+2026-02-28 03:13:54 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.999545, Val: 0.554931
+2026-02-28 03:14:01 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.998519, Val: 0.555023
+2026-02-28 03:14:08 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.998499, Val: 0.555464
+2026-02-28 03:14:14 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.997410, Val: 0.556922
+2026-02-28 03:14:21 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.996158, Val: 0.555527
+2026-02-28 03:14:28 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.998768, Val: 0.555601
+2026-02-28 03:14:34 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.995421, Val: 0.557302
+2026-02-28 03:14:41 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.992835, Val: 0.557534
+2026-02-28 03:14:47 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.994811, Val: 0.555522
+2026-02-28 03:14:47 | INFO     | src.models.tsm | Early stopping at epoch 11
+2026-02-28 03:14:57 | INFO     | src.frontend_live_bundle | [18/21] Origin 2025-04-28
+2026-02-28 03:14:57 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:14:57 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:15:04 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.007469, Val: 0.438907
+2026-02-28 03:15:11 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.007273, Val: 0.438865
+2026-02-28 03:15:18 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.007363, Val: 0.438331
+2026-02-28 03:15:24 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.005218, Val: 0.437889
+2026-02-28 03:15:31 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.005240, Val: 0.438225
+2026-02-28 03:15:38 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.005173, Val: 0.439534
+2026-02-28 03:15:45 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.003659, Val: 0.439731
+2026-02-28 03:15:51 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.004005, Val: 0.442129
+2026-02-28 03:15:58 | INFO     | src.models.tsm | Epoch 9/100 - Train: 1.003125, Val: 0.439267
+2026-02-28 03:16:05 | INFO     | src.models.tsm | Epoch 10/100 - Train: 1.006845, Val: 0.439094
+2026-02-28 03:16:11 | INFO     | src.models.tsm | Epoch 11/100 - Train: 1.002870, Val: 0.440096
+2026-02-28 03:16:18 | INFO     | src.models.tsm | Epoch 12/100 - Train: 1.000761, Val: 0.440464
+2026-02-28 03:16:25 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.999888, Val: 0.443123
+2026-02-28 03:16:31 | INFO     | src.models.tsm | Epoch 14/100 - Train: 1.003904, Val: 0.440285
+2026-02-28 03:16:31 | INFO     | src.models.tsm | Early stopping at epoch 14
+2026-02-28 03:16:42 | INFO     | src.frontend_live_bundle | [19/21] Origin 2025-07-24
+2026-02-28 03:16:42 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:16:42 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:16:48 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.004890, Val: 0.363972
+2026-02-28 03:16:55 | INFO     | src.models.tsm | Epoch 2/100 - Train: 1.003527, Val: 0.363368
+2026-02-28 03:17:01 | INFO     | src.models.tsm | Epoch 3/100 - Train: 1.004088, Val: 0.363145
+2026-02-28 03:17:08 | INFO     | src.models.tsm | Epoch 4/100 - Train: 1.003034, Val: 0.363313
+2026-02-28 03:17:14 | INFO     | src.models.tsm | Epoch 5/100 - Train: 1.005596, Val: 0.363554
+2026-02-28 03:17:21 | INFO     | src.models.tsm | Epoch 6/100 - Train: 1.001480, Val: 0.363399
+2026-02-28 03:17:27 | INFO     | src.models.tsm | Epoch 7/100 - Train: 1.000830, Val: 0.364096
+2026-02-28 03:17:34 | INFO     | src.models.tsm | Epoch 8/100 - Train: 1.001295, Val: 0.363593
+2026-02-28 03:17:40 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.999416, Val: 0.363479
+2026-02-28 03:17:47 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.997152, Val: 0.363723
+2026-02-28 03:17:53 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.997085, Val: 0.363716
+2026-02-28 03:18:00 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.994515, Val: 0.363580
+2026-02-28 03:18:06 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.995518, Val: 0.363560
+2026-02-28 03:18:06 | INFO     | src.models.tsm | Early stopping at epoch 13
+2026-02-28 03:18:16 | INFO     | src.frontend_live_bundle | [20/21] Origin 2025-10-21
+2026-02-28 03:18:16 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:18:16 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:18:23 | INFO     | src.models.tsm | Epoch 1/100 - Train: 1.000240, Val: 0.326877
+2026-02-28 03:18:30 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.995296, Val: 0.326910
+2026-02-28 03:18:36 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.996988, Val: 0.326731
+2026-02-28 03:18:43 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.995651, Val: 0.326776
+2026-02-28 03:18:49 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.996290, Val: 0.326894
+2026-02-28 03:18:56 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.994580, Val: 0.326565
+2026-02-28 03:19:03 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.995225, Val: 0.326424
+2026-02-28 03:19:09 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.992280, Val: 0.327138
+2026-02-28 03:19:16 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.994953, Val: 0.326630
+2026-02-28 03:19:23 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.992734, Val: 0.326393
+2026-02-28 03:19:30 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.991028, Val: 0.326550
+2026-02-28 03:19:37 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.992025, Val: 0.326278
+2026-02-28 03:19:44 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992347, Val: 0.326424
+2026-02-28 03:19:51 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.990530, Val: 0.326375
+2026-02-28 03:19:58 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.991382, Val: 0.326432
+2026-02-28 03:20:05 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.988303, Val: 0.326347
+2026-02-28 03:20:12 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.991798, Val: 0.326288
+2026-02-28 03:20:19 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.986747, Val: 0.326315
+2026-02-28 03:20:25 | INFO     | src.models.tsm | Epoch 19/100 - Train: 0.985847, Val: 0.326414
+2026-02-28 03:20:32 | INFO     | src.models.tsm | Epoch 20/100 - Train: 0.985208, Val: 0.326403
+2026-02-28 03:20:39 | INFO     | src.models.tsm | Epoch 21/100 - Train: 0.984085, Val: 0.326478
+2026-02-28 03:20:46 | INFO     | src.models.tsm | Epoch 22/100 - Train: 0.987228, Val: 0.326487
+2026-02-28 03:20:46 | INFO     | src.models.tsm | Early stopping at epoch 22
+2026-02-28 03:20:56 | INFO     | src.frontend_live_bundle | [21/21] Origin 2025-12-22
+2026-02-28 03:20:57 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:20:57 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:21:03 | INFO     | src.models.tsm | Epoch 1/100 - Train: 0.998996, Val: 0.286600
+2026-02-28 03:21:10 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.998006, Val: 0.286204
+2026-02-28 03:21:17 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.996854, Val: 0.286310
+2026-02-28 03:21:24 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.996576, Val: 0.286172
+2026-02-28 03:21:30 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.995759, Val: 0.286734
+2026-02-28 03:21:37 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.994836, Val: 0.286457
+2026-02-28 03:21:44 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.994209, Val: 0.286643
+2026-02-28 03:21:50 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.994382, Val: 0.286385
+2026-02-28 03:21:57 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.996396, Val: 0.286001
+2026-02-28 03:22:03 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.993589, Val: 0.286113
+2026-02-28 03:22:10 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.992868, Val: 0.286137
+2026-02-28 03:22:17 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.992881, Val: 0.285984
+2026-02-28 03:22:23 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992348, Val: 0.286374
+2026-02-28 03:22:30 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.991326, Val: 0.286116
+2026-02-28 03:22:37 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.990388, Val: 0.286593
+2026-02-28 03:22:44 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.988832, Val: 0.285967
+2026-02-28 03:22:51 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.989842, Val: 0.286396
+2026-02-28 03:22:58 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.988114, Val: 0.286334
+2026-02-28 03:23:06 | INFO     | src.models.tsm | Epoch 19/100 - Train: 0.989030, Val: 0.286316
+2026-02-28 03:23:13 | INFO     | src.models.tsm | Epoch 20/100 - Train: 0.987837, Val: 0.286870
+2026-02-28 03:23:19 | INFO     | src.models.tsm | Epoch 21/100 - Train: 0.985903, Val: 0.285835
+2026-02-28 03:23:26 | INFO     | src.models.tsm | Epoch 22/100 - Train: 0.988124, Val: 0.286056
+2026-02-28 03:23:33 | INFO     | src.models.tsm | Epoch 23/100 - Train: 0.986794, Val: 0.286504
+2026-02-28 03:23:40 | INFO     | src.models.tsm | Epoch 24/100 - Train: 0.984724, Val: 0.286531
+2026-02-28 03:23:48 | INFO     | src.models.tsm | Epoch 25/100 - Train: 0.984494, Val: 0.287008
+2026-02-28 03:23:55 | INFO     | src.models.tsm | Epoch 26/100 - Train: 0.983905, Val: 0.286233
+2026-02-28 03:24:03 | INFO     | src.models.tsm | Epoch 27/100 - Train: 0.982736, Val: 0.286678
+2026-02-28 03:24:10 | INFO     | src.models.tsm | Epoch 28/100 - Train: 0.983288, Val: 0.286682
+2026-02-28 03:24:17 | INFO     | src.models.tsm | Epoch 29/100 - Train: 0.982677, Val: 0.286713
+2026-02-28 03:24:24 | INFO     | src.models.tsm | Epoch 30/100 - Train: 0.981747, Val: 0.286812
+2026-02-28 03:24:31 | INFO     | src.models.tsm | Epoch 31/100 - Train: 0.980058, Val: 0.286863
+2026-02-28 03:24:31 | INFO     | src.models.tsm | Early stopping at epoch 31
+2026-02-28 03:24:41 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 03:24:41 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 03:24:48 | INFO     | src.models.tsm | Epoch 1/100 - Train: 0.998854, Val: 0.288908
+2026-02-28 03:24:55 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.997957, Val: 0.289085
+2026-02-28 03:25:02 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.997882, Val: 0.288905
+2026-02-28 03:25:09 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.996248, Val: 0.289181
+2026-02-28 03:25:16 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.995990, Val: 0.288979
+2026-02-28 03:25:24 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.995486, Val: 0.288937
+2026-02-28 03:25:31 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.995830, Val: 0.289189
+2026-02-28 03:25:39 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.994839, Val: 0.288790
+2026-02-28 03:25:47 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.994248, Val: 0.289017
+2026-02-28 03:25:55 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.993239, Val: 0.288862
+2026-02-28 03:26:03 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.992785, Val: 0.289668
+2026-02-28 03:26:11 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.993486, Val: 0.289165
+2026-02-28 03:26:18 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992162, Val: 0.289014
+2026-02-28 03:26:25 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.991741, Val: 0.288876
+2026-02-28 03:26:33 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.991285, Val: 0.289268
+2026-02-28 03:26:40 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.990158, Val: 0.289166
+2026-02-28 03:26:48 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.989991, Val: 0.289152
+2026-02-28 03:26:55 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.989477, Val: 0.289084
+2026-02-28 03:26:55 | INFO     | src.models.tsm | Early stopping at epoch 18

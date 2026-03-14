@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor deviations when 20d change is flat\", \"Cap 5d pct change at -5% to prevent overshoot\", \"Hold 20d vol near 1.9 if 20d pct change is zero\", \"Anchor h20 should stay near spot if 20d pct change is zero\", \"If h30 error > 8%, keep h30 unchanged despite spot drift\"]}"}

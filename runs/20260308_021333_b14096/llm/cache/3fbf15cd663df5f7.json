@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 20d change when 5d change is negative\", \"Keep 20d vol near 1.20 if 5d change is volatile\", \"Hold 20d anchor unchanged if 20d pct change is zero\", \"Do not overshoot 5d anchor by more than 0.5% if 5d change is negative\", \"If 5d change is negative, avoid 20d anchor increase beyond 1.5%\"]}"}

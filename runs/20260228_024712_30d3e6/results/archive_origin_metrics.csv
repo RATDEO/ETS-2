@@ -1,0 +1,43 @@
+origin_date,model,display_name,path_mse
+2021-02-25,tsm,Base TSM,3.183061804481669
+2021-02-25,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,16.854250140612148
+2021-05-26,tsm,Base TSM,6.237680212828857
+2021-05-26,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,6.237682903104071
+2021-08-23,tsm,Base TSM,28.64172339944905
+2021-08-23,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,34.101798832058634
+2021-11-18,tsm,Base TSM,186.30740573004425
+2021-11-18,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,186.30779485287798
+2022-02-15,tsm,Base TSM,92.29108609375662
+2022-02-15,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,198.54163390337257
+2022-05-17,tsm,Base TSM,135.12698205516168
+2022-05-17,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,135.13065174872318
+2022-08-12,tsm,Base TSM,248.32924017081157
+2022-08-12,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,248.3319974577486
+2022-11-09,tsm,Base TSM,139.78768300307604
+2022-11-09,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,96.23905081506223
+2023-02-07,tsm,Base TSM,83.29745195429068
+2023-02-07,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,109.8227734101286
+2023-05-09,tsm,Base TSM,23.206030189839005
+2023-05-09,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,23.204507731562543
+2023-08-04,tsm,Base TSM,10.6579447025813
+2023-08-04,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,10.741528646372679
+2023-11-01,tsm,Base TSM,48.42761788870783
+2023-11-01,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,62.40537906877691
+2024-02-01,tsm,Base TSM,39.79423441325245
+2024-02-01,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,43.10495441944237
+2024-05-02,tsm,Base TSM,4.934940305398394
+2024-05-02,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,32.37881789818151
+2024-07-30,tsm,Base TSM,8.46552507237072
+2024-07-30,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,8.953717850716979
+2024-10-25,tsm,Base TSM,2.1588674310194955
+2024-10-25,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,3.2955842038619965
+2025-01-27,tsm,Base TSM,48.41567899494041
+2025-01-27,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,44.79208194755394
+2025-04-28,tsm,Base TSM,32.79696098209655
+2025-04-28,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,29.146909951250503
+2025-07-24,tsm,Base TSM,2.2841298699411166
+2025-07-24,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,2.2838822295718013
+2025-10-21,tsm,Base TSM,1.6755639065306538
+2025-10-21,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,1.6750541489979154
+2025-12-22,tsm,Base TSM,166.30753074097672
+2025-12-22,TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base,TSM + CoT Ramp Final Blend,116.66485018205866

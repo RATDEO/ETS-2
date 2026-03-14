@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 5d change is negative\", \"Hold 20d horizon unchanged if 20d pct change is near zero\", \"Cap 30d anchor overshoot if 5d pct change is below -5%\", \"Use 5d change to signal mean reversion if 20d vol is low\", \"Keep h1 anchor close to spot if 5d pct change is volatile\"]}"}

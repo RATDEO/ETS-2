@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with near-zero 20d_pct shifts\", \"Hold 20d_vol near 1.0 for stable price anchoring\", \"Keep h20 anchor error below 0.1% to avoid mean reversion bias\", \"If h30 anchor exceeds +1% vs spot, pause adjustment\", \"Match h1 anchor error to within 0.5% of spot to prevent lag\"]}"}

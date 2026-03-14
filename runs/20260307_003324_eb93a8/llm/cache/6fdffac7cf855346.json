@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive errors in h1 when vol_20d is low\", \"Cap h30 forecast if h20 error exceeds +3.0%\", \"Hold h5 forecast if change_5d_pct < -10% and vol_20d < 3.0\", \"Use mean reversion for h20 if anchor_error_pct > +5.0%\", \"Keep h1 unchanged if anchor_error_pct < -2.0% and vol_20d > 4.0\"]}"}

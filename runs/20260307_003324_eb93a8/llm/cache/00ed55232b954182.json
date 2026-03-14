@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d_pct changes with high vol_20d\", \"Keep h30 forecast near zero error when h1 error is negative\", \"If h20 error > +3.0, reduce forecast by 0.5\", \"Hold h5 forecast if h1 error is within \u00b11.0\", \"If h30 error < -3.0, maintain h30 unchanged\"]}"}

@@ -1,0 +1,14 @@
+{
+  "candidate": "paper_event90_proxy_hprice_guarded_35b",
+  "n_samples": 20,
+  "mse_path": 28.21963781521294,
+  "h1_mse": 1.306140099951881,
+  "h5_mse": 9.200770794761718,
+  "h20_mse": 37.28211637025661,
+  "h30_mse": 57.2211864920141,
+  "paper_d10_acc": 0.5,
+  "paper_d20_acc": 0.2,
+  "paper_d30_acc": 0.25,
+  "test_sample_cap": 20,
+  "test_full_split": false
+}

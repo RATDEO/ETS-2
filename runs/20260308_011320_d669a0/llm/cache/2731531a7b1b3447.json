@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when change_20d_pct is flat.\", \"Keep 5d change near zero if 20d volatility is low.\", \"Hold 30d anchor if 5d change is positive and 20d vol is low.\", \"Do not adjust 1d anchor if 5d change is small and 20d vol is low.\", \"If 20d vol is low, defer anchor updates until 5d change stabilizes.\"]}"}

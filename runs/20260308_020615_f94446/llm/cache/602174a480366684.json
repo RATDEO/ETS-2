@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 1.2\u20131.3 to signal stability\", \"Hold 30d anchor close to spot if 20d anchor diverges\", \"If 5d pct is positive, ensure 20d pct remains near zero\", \"Do not adjust 20d anchor if 5d pct is small and 20d vol is low\"]}"}

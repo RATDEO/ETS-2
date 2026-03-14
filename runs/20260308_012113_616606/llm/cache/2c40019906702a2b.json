@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.35 with no significant change\", \"Avoid overshoot on h1 as it shows high error in past examples\", \"Match h5 to 50.17 to align with historical anchor behavior\", \"Hold h30 at 50.37 to prevent divergence from recent trend\", \"Use 5d change as signal but cap at +5.84 to avoid overreaction\"]}"}

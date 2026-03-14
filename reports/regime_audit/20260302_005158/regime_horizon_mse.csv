@@ -1,0 +1,225 @@
+regime_family,regime_value,model,horizon,n_samples,mse
+sentiment_alignment_5d,aligned,4B raw HDELTA,1,24,1.586093897111704
+sentiment_alignment_5d,aligned,Raw tsm,1,24,1.6318784806717304
+sentiment_alignment_5d,aligned,35B raw guarded HDELTA,1,24,1.6318784806717304
+sentiment_alignment_5d,aligned,Baseline paper CoT-SENT,1,24,1.6466263995002703
+sentiment_alignment_5d,aligned,Raw tsm,5,24,5.723392191107753
+sentiment_alignment_5d,aligned,35B raw guarded HDELTA,5,24,5.74102387276103
+sentiment_alignment_5d,aligned,4B raw HDELTA,5,24,5.7727779833994814
+sentiment_alignment_5d,aligned,Baseline paper CoT-SENT,5,24,6.131515493538924
+sentiment_alignment_5d,aligned,Raw tsm,20,24,17.142439363965725
+sentiment_alignment_5d,aligned,35B raw guarded HDELTA,20,24,17.14884406756386
+sentiment_alignment_5d,aligned,4B raw HDELTA,20,24,17.630400992729637
+sentiment_alignment_5d,aligned,Baseline paper CoT-SENT,20,24,17.8450217374352
+sentiment_alignment_5d,aligned,35B raw guarded HDELTA,30,24,28.259815002989075
+sentiment_alignment_5d,aligned,4B raw HDELTA,30,24,28.852584282976323
+sentiment_alignment_5d,aligned,Raw tsm,30,24,29.31918622977537
+sentiment_alignment_5d,aligned,Baseline paper CoT-SENT,30,24,29.746560144312514
+sentiment_alignment_5d,divergent,Raw tsm,1,28,1.356368824308447
+sentiment_alignment_5d,divergent,35B raw guarded HDELTA,1,28,1.356368824308447
+sentiment_alignment_5d,divergent,Baseline paper CoT-SENT,1,28,1.3598415495904095
+sentiment_alignment_5d,divergent,4B raw HDELTA,1,28,1.374315629570727
+sentiment_alignment_5d,divergent,4B raw HDELTA,5,28,10.27225747037539
+sentiment_alignment_5d,divergent,Raw tsm,5,28,10.312449469918127
+sentiment_alignment_5d,divergent,Baseline paper CoT-SENT,5,28,10.634850182899111
+sentiment_alignment_5d,divergent,35B raw guarded HDELTA,5,28,10.635327587233304
+sentiment_alignment_5d,divergent,4B raw HDELTA,20,28,39.43459183796147
+sentiment_alignment_5d,divergent,Raw tsm,20,28,40.22913830749011
+sentiment_alignment_5d,divergent,35B raw guarded HDELTA,20,28,40.56802989599146
+sentiment_alignment_5d,divergent,Baseline paper CoT-SENT,20,28,41.781195534093065
+sentiment_alignment_5d,divergent,4B raw HDELTA,30,28,74.17561604477014
+sentiment_alignment_5d,divergent,Raw tsm,30,28,74.38784390212562
+sentiment_alignment_5d,divergent,35B raw guarded HDELTA,30,28,75.02201027529466
+sentiment_alignment_5d,divergent,Baseline paper CoT-SENT,30,28,77.9552071719759
+sentiment_alignment_5d,neutral,Raw tsm,1,330,1.368952043594221
+sentiment_alignment_5d,neutral,35B raw guarded HDELTA,1,330,1.368952043594221
+sentiment_alignment_5d,neutral,4B raw HDELTA,1,330,1.3838109719270097
+sentiment_alignment_5d,neutral,Baseline paper CoT-SENT,1,330,1.4246371550453771
+sentiment_alignment_5d,neutral,Raw tsm,5,330,6.1068861805388055
+sentiment_alignment_5d,neutral,4B raw HDELTA,5,330,6.109517167822603
+sentiment_alignment_5d,neutral,Baseline paper CoT-SENT,5,330,6.124208951549063
+sentiment_alignment_5d,neutral,35B raw guarded HDELTA,5,330,6.344317461421377
+sentiment_alignment_5d,neutral,Baseline paper CoT-SENT,20,330,25.0140546906207
+sentiment_alignment_5d,neutral,4B raw HDELTA,20,330,25.377995595309702
+sentiment_alignment_5d,neutral,Raw tsm,20,330,25.51929009651706
+sentiment_alignment_5d,neutral,35B raw guarded HDELTA,20,330,25.780069760930665
+sentiment_alignment_5d,neutral,Baseline paper CoT-SENT,30,330,38.784356472671156
+sentiment_alignment_5d,neutral,35B raw guarded HDELTA,30,330,38.88342175145038
+sentiment_alignment_5d,neutral,4B raw HDELTA,30,330,39.06644123739997
+sentiment_alignment_5d,neutral,Raw tsm,30,330,39.337359694133085
+trend_regime_20d,down,Raw tsm,1,136,1.6299758513719365
+trend_regime_20d,down,35B raw guarded HDELTA,1,136,1.6299758513719365
+trend_regime_20d,down,Baseline paper CoT-SENT,1,136,1.6423921052263175
+trend_regime_20d,down,4B raw HDELTA,1,136,1.6489909180883353
+trend_regime_20d,down,35B raw guarded HDELTA,5,136,7.975556056606258
+trend_regime_20d,down,Baseline paper CoT-SENT,5,136,8.002666355772389
+trend_regime_20d,down,Raw tsm,5,136,8.022812195698327
+trend_regime_20d,down,4B raw HDELTA,5,136,8.0258467870067
+trend_regime_20d,down,Baseline paper CoT-SENT,20,136,24.6284856537425
+trend_regime_20d,down,4B raw HDELTA,20,136,25.10762923181277
+trend_regime_20d,down,Raw tsm,20,136,25.1360881154177
+trend_regime_20d,down,35B raw guarded HDELTA,20,136,25.347340206355632
+trend_regime_20d,down,Baseline paper CoT-SENT,30,136,35.22346097619927
+trend_regime_20d,down,Raw tsm,30,136,35.66960497220648
+trend_regime_20d,down,4B raw HDELTA,30,136,35.863837819654194
+trend_regime_20d,down,35B raw guarded HDELTA,30,136,36.4417270821732
+trend_regime_20d,flat,4B raw HDELTA,1,18,1.2319824941843234
+trend_regime_20d,flat,Baseline paper CoT-SENT,1,18,1.2881285843022714
+trend_regime_20d,flat,Raw tsm,1,18,1.3019225883286305
+trend_regime_20d,flat,35B raw guarded HDELTA,1,18,1.3019225883286305
+trend_regime_20d,flat,4B raw HDELTA,5,18,12.02613994696194
+trend_regime_20d,flat,Raw tsm,5,18,12.05098280908957
+trend_regime_20d,flat,35B raw guarded HDELTA,5,18,12.659602036556654
+trend_regime_20d,flat,Baseline paper CoT-SENT,5,18,12.827680095771017
+trend_regime_20d,flat,4B raw HDELTA,20,18,30.0500253041338
+trend_regime_20d,flat,35B raw guarded HDELTA,20,18,30.496602454492447
+trend_regime_20d,flat,Raw tsm,20,18,30.805547530361864
+trend_regime_20d,flat,Baseline paper CoT-SENT,20,18,32.420361882196026
+trend_regime_20d,flat,35B raw guarded HDELTA,30,18,44.70402213122523
+trend_regime_20d,flat,Raw tsm,30,18,45.480428524688854
+trend_regime_20d,flat,4B raw HDELTA,30,18,46.081053021322234
+trend_regime_20d,flat,Baseline paper CoT-SENT,30,18,47.56371203851647
+trend_regime_20d,up,Raw tsm,1,228,1.2446765904664572
+trend_regime_20d,up,35B raw guarded HDELTA,1,228,1.2446765904664572
+trend_regime_20d,up,4B raw HDELTA,1,228,1.25774676376861
+trend_regime_20d,up,Baseline paper CoT-SENT,1,228,1.3209351636547908
+trend_regime_20d,up,Raw tsm,5,228,4.970887228699627
+trend_regime_20d,up,4B raw HDELTA,5,228,4.975109052961981
+trend_regime_20d,up,Baseline paper CoT-SENT,5,228,5.029211688019196
+trend_regime_20d,up,35B raw guarded HDELTA,5,228,5.336184417988512
+trend_regime_20d,up,Baseline paper CoT-SENT,20,228,25.963822288462158
+trend_regime_20d,up,4B raw HDELTA,20,228,26.0811346962267
+trend_regime_20d,up,Raw tsm,20,228,26.255229429614957
+trend_regime_20d,up,35B raw guarded HDELTA,20,228,26.57334650689115
+trend_regime_20d,up,35B raw guarded HDELTA,30,228,43.20014800096931
+trend_regime_20d,up,4B raw HDELTA,30,228,43.659491151448314
+trend_regime_20d,up,Baseline paper CoT-SENT,30,228,44.07440074913996
+trend_regime_20d,up,Raw tsm,30,228,44.29006494812966
+trend_vol_regime,down__high_vol,Raw tsm,1,77,2.0566165006810997
+trend_vol_regime,down__high_vol,35B raw guarded HDELTA,1,77,2.0566165006810997
+trend_vol_regime,down__high_vol,4B raw HDELTA,1,77,2.0569079409807447
+trend_vol_regime,down__high_vol,Baseline paper CoT-SENT,1,77,2.0663522851461193
+trend_vol_regime,down__high_vol,35B raw guarded HDELTA,5,77,10.141348276523782
+trend_vol_regime,down__high_vol,4B raw HDELTA,5,77,10.148401583178805
+trend_vol_regime,down__high_vol,Baseline paper CoT-SENT,5,77,10.160299407770973
+trend_vol_regime,down__high_vol,Raw tsm,5,77,10.174195034251595
+trend_vol_regime,down__high_vol,Baseline paper CoT-SENT,20,77,36.8081297616243
+trend_vol_regime,down__high_vol,4B raw HDELTA,20,77,37.337484652726204
+trend_vol_regime,down__high_vol,Raw tsm,20,77,37.45733584351944
+trend_vol_regime,down__high_vol,35B raw guarded HDELTA,20,77,38.075911877428126
+trend_vol_regime,down__high_vol,Baseline paper CoT-SENT,30,77,54.09108651492942
+trend_vol_regime,down__high_vol,Raw tsm,30,77,54.34293179838542
+trend_vol_regime,down__high_vol,4B raw HDELTA,30,77,54.46931249612149
+trend_vol_regime,down__high_vol,35B raw guarded HDELTA,30,77,55.28363892128082
+trend_vol_regime,down__low_vol,Raw tsm,1,59,1.0731736480362488
+trend_vol_regime,down__low_vol,35B raw guarded HDELTA,1,59,1.0731736480362488
+trend_vol_regime,down__low_vol,Baseline paper CoT-SENT,1,59,1.0890881416021694
+trend_vol_regime,down__low_vol,4B raw HDELTA,1,59,1.1166246339745125
+trend_vol_regime,down__low_vol,35B raw guarded HDELTA,5,59,5.149013667900333
+trend_vol_regime,down__low_vol,Baseline paper CoT-SENT,5,59,5.186772372655594
+trend_vol_regime,down__low_vol,Raw tsm,5,59,5.215075270806772
+trend_vol_regime,down__low_vol,4B raw HDELTA,5,59,5.255732900477001
+trend_vol_regime,down__low_vol,Baseline paper CoT-SENT,20,59,8.73301791972727
+trend_vol_regime,down__low_vol,35B raw guarded HDELTA,20,59,8.735475483091527
+trend_vol_regime,down__low_vol,Raw tsm,20,59,9.055815656708655
+trend_vol_regime,down__low_vol,4B raw HDELTA,20,59,9.146631479095237
+trend_vol_regime,down__low_vol,Baseline paper CoT-SENT,30,59,10.59961069683956
+trend_vol_regime,down__low_vol,Raw tsm,30,59,11.299330978718698
+trend_vol_regime,down__low_vol,4B raw HDELTA,30,59,11.582116631722323
+trend_vol_regime,down__low_vol,35B raw guarded HDELTA,30,59,11.851435359948004
+trend_vol_regime,flat__high_vol,Baseline paper CoT-SENT,1,12,1.6883930097103
+trend_vol_regime,flat__high_vol,4B raw HDELTA,1,12,1.6891275913325636
+trend_vol_regime,flat__high_vol,Raw tsm,1,12,1.6931248824948852
+trend_vol_regime,flat__high_vol,35B raw guarded HDELTA,1,12,1.6931248824948852
+trend_vol_regime,flat__high_vol,Raw tsm,5,12,14.232739920234357
+trend_vol_regime,flat__high_vol,4B raw HDELTA,5,12,14.28831408728869
+trend_vol_regime,flat__high_vol,35B raw guarded HDELTA,5,12,15.004702565565246
+trend_vol_regime,flat__high_vol,Baseline paper CoT-SENT,5,12,15.19728744813244
+trend_vol_regime,flat__high_vol,4B raw HDELTA,20,12,37.490790080419636
+trend_vol_regime,flat__high_vol,Raw tsm,20,12,37.97313732698967
+trend_vol_regime,flat__high_vol,35B raw guarded HDELTA,20,12,38.31086907434931
+trend_vol_regime,flat__high_vol,Baseline paper CoT-SENT,20,12,39.683537874358414
+trend_vol_regime,flat__high_vol,Raw tsm,30,12,50.805116798870586
+trend_vol_regime,flat__high_vol,4B raw HDELTA,30,12,51.380922400790816
+trend_vol_regime,flat__high_vol,35B raw guarded HDELTA,30,12,51.60482045282158
+trend_vol_regime,flat__high_vol,Baseline paper CoT-SENT,30,12,51.832662820447645
+trend_vol_regime,flat__low_vol,4B raw HDELTA,1,6,0.31769229988784353
+trend_vol_regime,flat__low_vol,Baseline paper CoT-SENT,1,6,0.4875997334862145
+trend_vol_regime,flat__low_vol,Raw tsm,1,6,0.5195179999961207
+trend_vol_regime,flat__low_vol,35B raw guarded HDELTA,1,6,0.5195179999961207
+trend_vol_regime,flat__low_vol,4B raw HDELTA,5,6,7.501791666308441
+trend_vol_regime,flat__low_vol,Raw tsm,5,6,7.687468586799999
+trend_vol_regime,flat__low_vol,35B raw guarded HDELTA,5,6,7.9694009785394675
+trend_vol_regime,flat__low_vol,Baseline paper CoT-SENT,5,6,8.088465391048171
+trend_vol_regime,flat__low_vol,35B raw guarded HDELTA,20,6,14.868069214778714
+trend_vol_regime,flat__low_vol,4B raw HDELTA,20,6,15.16849575156212
+trend_vol_regime,flat__low_vol,Raw tsm,20,6,16.47036793710625
+trend_vol_regime,flat__low_vol,Baseline paper CoT-SENT,20,6,17.894009897871264
+trend_vol_regime,flat__low_vol,35B raw guarded HDELTA,30,6,30.902425488032517
+trend_vol_regime,flat__low_vol,Raw tsm,30,6,34.8310519763254
+trend_vol_regime,flat__low_vol,4B raw HDELTA,30,6,35.48131426238508
+trend_vol_regime,flat__low_vol,Baseline paper CoT-SENT,30,6,39.02581047465412
+trend_vol_regime,up__high_vol,Baseline paper CoT-SENT,1,102,1.7216758074752754
+trend_vol_regime,up__high_vol,4B raw HDELTA,1,102,1.7527371197845945
+trend_vol_regime,up__high_vol,Raw tsm,1,102,1.756917980148037
+trend_vol_regime,up__high_vol,35B raw guarded HDELTA,1,102,1.756917980148037
+trend_vol_regime,up__high_vol,4B raw HDELTA,5,102,6.147108232780632
+trend_vol_regime,up__high_vol,Baseline paper CoT-SENT,5,102,6.156938206016884
+trend_vol_regime,up__high_vol,Raw tsm,5,102,6.17849111183365
+trend_vol_regime,up__high_vol,35B raw guarded HDELTA,5,102,6.60152022486705
+trend_vol_regime,up__high_vol,Baseline paper CoT-SENT,20,102,32.72221383515852
+trend_vol_regime,up__high_vol,4B raw HDELTA,20,102,32.75208556837752
+trend_vol_regime,up__high_vol,Raw tsm,20,102,33.12915628333476
+trend_vol_regime,up__high_vol,35B raw guarded HDELTA,20,102,34.298023092803355
+trend_vol_regime,up__high_vol,Baseline paper CoT-SENT,30,102,39.1405829965156
+trend_vol_regime,up__high_vol,4B raw HDELTA,30,102,39.54829398129658
+trend_vol_regime,up__high_vol,Raw tsm,30,102,40.11864214238534
+trend_vol_regime,up__high_vol,35B raw guarded HDELTA,30,102,40.224290567790966
+trend_vol_regime,up__low_vol,Raw tsm,1,126,0.8300049892956546
+trend_vol_regime,up__low_vol,35B raw guarded HDELTA,1,126,0.8300049892956546
+trend_vol_regime,up__low_vol,4B raw HDELTA,1,126,0.8570402850890033
+trend_vol_regime,up__low_vol,Baseline paper CoT-SENT,1,126,0.9965260710382079
+trend_vol_regime,up__low_vol,Raw tsm,5,126,3.9933031328292268
+trend_vol_regime,up__low_vol,4B raw HDELTA,5,126,4.026347812156407
+trend_vol_regime,up__low_vol,Baseline paper CoT-SENT,5,126,4.116290221068689
+trend_vol_regime,up__low_vol,35B raw guarded HDELTA,5,126,4.311864955277317
+trend_vol_regime,up__low_vol,35B raw guarded HDELTA,20,126,20.320036889724125
+trend_vol_regime,up__low_vol,Baseline paper CoT-SENT,20,126,20.492743417327016
+trend_vol_regime,up__low_vol,4B raw HDELTA,20,126,20.680841133057005
+trend_vol_regime,up__low_vol,Raw tsm,20,126,20.690621976603687
+trend_vol_regime,up__low_vol,35B raw guarded HDELTA,30,126,45.6091754468756
+trend_vol_regime,up__low_vol,4B raw HDELTA,30,126,46.98760314633305
+trend_vol_regime,up__low_vol,Raw tsm,30,126,47.6669310289703
+trend_vol_regime,up__low_vol,Baseline paper CoT-SENT,30,126,48.06844369174062
+volatility_regime,high_vol,Baseline paper CoT-SENT,1,191,1.8585380860484444
+volatility_regime,high_vol,4B raw HDELTA,1,191,1.871364548531606
+volatility_regime,high_vol,Raw tsm,1,191,1.873730906374257
+volatility_regime,high_vol,35B raw guarded HDELTA,1,191,1.873730906374257
+volatility_regime,high_vol,4B raw HDELTA,5,191,8.271684453905008
+volatility_regime,high_vol,Raw tsm,5,191,8.295350733440928
+volatility_regime,high_vol,Baseline paper CoT-SENT,5,191,8.338838747589929
+volatility_regime,high_vol,35B raw guarded HDELTA,5,191,8.556519952961011
+volatility_regime,high_vol,Baseline paper CoT-SENT,20,191,34.80677621635362
+volatility_regime,high_vol,4B raw HDELTA,20,191,34.89836925235319
+volatility_regime,high_vol,Raw tsm,20,191,35.17835837054983
+volatility_regime,high_vol,35B raw guarded HDELTA,20,191,36.07316229801099
+volatility_regime,high_vol,Baseline paper CoT-SENT,30,191,45.96515749287711
+volatility_regime,high_vol,4B raw HDELTA,30,191,46.30698490629892
+volatility_regime,high_vol,Raw tsm,30,191,46.52444318631115
+volatility_regime,high_vol,35B raw guarded HDELTA,30,191,47.010343875849
+volatility_regime,low_vol,Raw tsm,1,191,0.8953663973055911
+volatility_regime,low_vol,35B raw guarded HDELTA,1,191,0.8953663973055911
+volatility_regime,low_vol,4B raw HDELTA,1,191,0.9202831577227104
+volatility_regime,low_vol,Baseline paper CoT-SENT,1,191,1.0091313283050234
+volatility_regime,low_vol,Raw tsm,5,191,4.486756268245457
+volatility_regime,low_vol,4B raw HDELTA,5,191,4.515281756323041
+volatility_regime,low_vol,Baseline paper CoT-SENT,5,191,4.571743089987559
+volatility_regime,low_vol,35B raw guarded HDELTA,5,191,4.685357050483237
+volatility_regime,low_vol,35B raw guarded HDELTA,20,191,16.57029380573986
+volatility_regime,low_vol,Baseline paper CoT-SENT,20,191,16.778522446253092
+volatility_regime,low_vol,4B raw HDELTA,20,191,16.944755049953795
+volatility_regime,low_vol,Raw tsm,20,191,16.96405078754195
+volatility_regime,low_vol,35B raw guarded HDELTA,30,191,34.71939971451022
+volatility_regime,low_vol,4B raw HDELTA,30,191,35.68937572399943
+volatility_regime,low_vol,Raw tsm,30,191,36.02973900132258
+volatility_regime,low_vol,Baseline paper CoT-SENT,30,191,36.210239785972654

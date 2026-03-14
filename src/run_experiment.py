@@ -22,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Sequence
 import logging
 import json
 import copy
@@ -34,7 +34,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 
 from config import load_config
-from data import build_panel
+from data import build_panel, select_feature_columns
 from data.windows import make_windows, split_windows, StandardScaler, save_datasets, WindowConfig
 from data.panel import get_coverage_report, plot_coverage_heatmap
 from models.baselines import NaivePersistence, SeasonalNaive, LinearBaseline
@@ -52,6 +52,44 @@ from utils import setup_logging, set_seed
 
 logger = logging.getLogger(__name__)
 
+RULE_GATE_DEFAULT_CANDIDATES = (
+    "none",
+    "h5_pos_h20_neg",
+    "h5_pos_h30_neg",
+    "h20_neg_h30_zero",
+    "mixed_long_signs",
+    "conflict_any",
+    "conflict_any_nonhigh_conf",
+    "conflict_any_low_match",
+    "conflict_any_low_match_or_nonhigh_conf",
+    "h30_negative",
+    "abs_h30_ge_0_25",
+    "abs_h30_ge_0_40",
+    "conflict_any_or_abs_h30_ge_0_25",
+    "conflict_any_or_abs_h30_ge_0_40",
+)
+
+DEFAULT_EXOGENOUS_FEATURE_PRIORITY = (
+    "target_range_pct",
+    "target_volume",
+    "is_auction_day",
+    "uk_icap_primary_print_day",
+    "uk_icap_secondary_print_day",
+    "uk_icap_primary_secondary_spread_pct",
+    "uk_icap_spread_z20",
+    "uk_icap_primary_secondary_spread",
+    "uk_icap_primary",
+    "uk_icap_secondary",
+    "y_vol_20d",
+    "y_ma_5d",
+    "y_momentum_5d",
+    "y_momentum_20d",
+    "auction_volume",
+    "vstoxx",
+    "brent_return",
+    "coal_return",
+)
+
 
 def returns_to_prices(returns: np.ndarray, last_price: np.ndarray) -> np.ndarray:
     """Convert log returns to price paths."""
@@ -59,29 +97,75 @@ def returns_to_prices(returns: np.ndarray, last_price: np.ndarray) -> np.ndarray
     return last_price * np.exp(np.cumsum(returns, axis=1))
 
 
+def parse_name_list(value: object) -> list[str]:
+    """Normalize a config value into a flat list of non-empty strings."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(",") if item.strip()]
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        items: list[str] = []
+        for item in value:
+            if item is None:
+                continue
+            text = str(item).strip()
+            if text:
+                items.append(text)
+        return items
+    text = str(value).strip()
+    return [text] if text else []
+
+
+def resolve_exogenous_feature_names(
+    feature_cols: list[str],
+    target_col: str,
+    preferred_features: Optional[Sequence[str]] = None,
+    include_features: Optional[Sequence[str]] = None,
+    max_features: Optional[int] = None,
+) -> list[str]:
+    """Resolve a stable, UK-aware feature order for prompt context and retrieval."""
+    feature_idx = {name: i for i, name in enumerate(feature_cols)}
+    requested = parse_name_list(include_features)
+    preferred = parse_name_list(preferred_features) or list(DEFAULT_EXOGENOUS_FEATURE_PRIORITY)
+
+    ordered: list[str] = []
+    seed_names = requested if requested else preferred + [
+        name for name in feature_cols if name.startswith("idx_")
+    ]
+    for name in seed_names:
+        if name == target_col or name not in feature_idx or name in ordered:
+            continue
+        ordered.append(name)
+
+    if not requested:
+        for name in feature_cols:
+            if name != target_col and name not in ordered:
+                ordered.append(name)
+
+    if max_features is not None:
+        ordered = ordered[: int(max_features)]
+    return ordered
+
+
 def build_exogenous_summary(
     window: np.ndarray,
     feature_cols: list,
     target_col: str,
-    max_features: int = 6
+    max_features: int = 6,
+    preferred_features: Optional[Sequence[str]] = None,
+    include_features: Optional[Sequence[str]] = None,
 ) -> dict:
     """Summarize recent exogenous signals for LLM prompts."""
     summary = {}
     eps = 1e-8
     feature_idx = {name: i for i, name in enumerate(feature_cols)}
-    preferred = [
-        "is_auction_day",
-        "auction_volume",
-        "vstoxx",
-        "brent_return",
-        "coal_return",
-    ]
-    preferred += [name for name in feature_cols if name.startswith("idx_")]
-    
-    ordered = [name for name in preferred if name in feature_idx and name != target_col]
-    for name in feature_cols:
-        if name != target_col and name not in ordered:
-            ordered.append(name)
+    ordered = resolve_exogenous_feature_names(
+        feature_cols,
+        target_col,
+        preferred_features=preferred_features,
+        include_features=include_features,
+        max_features=max_features,
+    )
     
     for name in ordered:
         idx = feature_idx.get(name)
@@ -118,6 +202,54 @@ def build_exogenous_summary(
         if len(summary) >= max_features:
             break
     return summary
+
+
+def build_retrieval_feature_vector(
+    window: np.ndarray,
+    feature_cols: list[str],
+    target_col: str,
+    feature_window: int = 20,
+    preferred_features: Optional[Sequence[str]] = None,
+    include_features: Optional[Sequence[str]] = None,
+    max_features: int = 6,
+) -> np.ndarray:
+    """Encode recent exogenous state into a compact numeric vector for retrieval."""
+    selected = resolve_exogenous_feature_names(
+        feature_cols,
+        target_col,
+        preferred_features=preferred_features,
+        include_features=include_features,
+        max_features=max_features,
+    )
+    if not selected:
+        return np.zeros(0, dtype=float)
+
+    feature_idx = {name: i for i, name in enumerate(feature_cols)}
+    recent = window[-feature_window:] if len(window) >= feature_window else window
+    eps = 1e-8
+    values: list[float] = []
+    for name in selected:
+        idx = feature_idx.get(name)
+        if idx is None:
+            values.extend((0.0, 0.0))
+            continue
+        series = np.asarray(recent[:, idx], dtype=float)
+        if series.size == 0:
+            values.extend((0.0, 0.0))
+            continue
+        last = float(series[-1])
+        unique_recent = np.unique(series)
+        rounded = set(np.round(unique_recent, 6).tolist())
+        if unique_recent.size <= 2 and rounded.issubset({0.0, 1.0}):
+            values.extend((last, float(np.mean(series))))
+            continue
+        base = float(series[0])
+        if abs(base) > eps:
+            change = float((series[-1] / base - 1.0) * 100.0)
+        else:
+            change = 0.0
+        values.extend((last, change))
+    return np.asarray(values, dtype=float)
 
 
 def compute_history_volatility(history: np.ndarray, window: int = 20) -> float:
@@ -287,6 +419,67 @@ def fit_blend_weights(
     return weights
 
 
+def fit_delta_calibration_scales(
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    horizons: Sequence[int],
+    target_horizons: Optional[Sequence[int]] = None,
+    min_scale: float = 0.0,
+    max_scale: float = 1.0,
+    shared: bool = False,
+) -> dict[int, float]:
+    """Fit validation-trained delta scales for selected horizons."""
+    all_horizons = [int(h) for h in horizons]
+    selected = [int(h) for h in (target_horizons or all_horizons) if int(h) in all_horizons]
+    scales = {int(h): 1.0 for h in all_horizons}
+    if not selected:
+        return scales
+
+    if not shared:
+        fitted = fit_blend_weights(
+            y_true,
+            base_pred,
+            llm_pred,
+            selected,
+            min_weight=min_scale,
+            max_weight=max_scale,
+        )
+        scales.update({int(h): float(v) for h, v in fitted.items()})
+        return scales
+
+    idx = [int(h) - 1 for h in selected]
+    y = np.asarray(y_true[:, idx], dtype=float).reshape(-1)
+    base = np.asarray(base_pred[:, idx], dtype=float).reshape(-1)
+    llm = np.asarray(llm_pred[:, idx], dtype=float).reshape(-1)
+    diff = llm - base
+    denom = float(np.sum(diff * diff))
+    if denom < 1e-12:
+        scale = 0.0
+    else:
+        scale = float(np.sum(diff * (y - base)) / denom)
+    scale = float(np.clip(scale, min_scale, max_scale))
+    for h in selected:
+        scales[int(h)] = scale
+    return scales
+
+
+def apply_delta_calibration(
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    scales: dict[int, float],
+    pred_len: int,
+    default_scale: float = 1.0,
+) -> np.ndarray:
+    """Apply horizon-specific scales to the LLM delta relative to the base forecast."""
+    adjusted = llm_pred.copy()
+    for h in range(1, int(pred_len) + 1):
+        idx = h - 1
+        scale = float(scales.get(int(h), default_scale))
+        adjusted[:, idx] = base_pred[:, idx] + scale * (llm_pred[:, idx] - base_pred[:, idx])
+    return adjusted
+
+
 def apply_blend_weights(
     base_pred: np.ndarray,
     llm_pred: np.ndarray,
@@ -372,6 +565,900 @@ def select_eval_indices(
         return np.asarray(chosen, dtype=int)
 
     raise ValueError(f"Unknown subset strategy: {strategy}")
+
+
+def restrict_to_recent_tail(
+    eligible_idx: np.ndarray,
+    tail_fraction: float = 1.0,
+    min_samples: int = 0,
+) -> np.ndarray:
+    """Keep only the most recent tail of an already time-ordered index array."""
+    eligible_idx = np.asarray(eligible_idx, dtype=int)
+    if eligible_idx.size == 0:
+        return np.array([], dtype=int)
+
+    tail_fraction = float(tail_fraction)
+    if not 0.0 < tail_fraction <= 1.0:
+        raise ValueError(f"tail_fraction must be in (0, 1], got {tail_fraction}")
+
+    min_samples = int(max(0, min_samples))
+    tail_n = int(np.ceil(eligible_idx.size * tail_fraction))
+    tail_n = max(tail_n, min_samples, 1)
+    tail_n = min(tail_n, eligible_idx.size)
+    return np.asarray(eligible_idx[-tail_n:], dtype=int)
+
+
+def _error_profile(forecast: np.ndarray, truth: np.ndarray) -> np.ndarray:
+    """Signed error profile at key horizons for example stratification."""
+    horizon_idx = [0, 4, 19, 29]
+    horizon_idx = [idx for idx in horizon_idx if idx < len(forecast) and idx < len(truth)]
+    errs = np.asarray(forecast, dtype=float)[horizon_idx] - np.asarray(truth, dtype=float)[horizon_idx]
+    if len(errs) < 4:
+        errs = np.pad(errs, (0, 4 - len(errs)))
+    return errs.astype(float)
+
+
+def select_error_stratified_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_error_profiles: np.ndarray,
+    k_examples: int,
+) -> np.ndarray:
+    """Pick a small but diverse set of teaching examples across error modes."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    cand_profiles = np.asarray(pool_error_profiles[candidate_indices], dtype=float)
+    center = np.mean(cand_profiles, axis=0, keepdims=True)
+    scale = np.std(cand_profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    norm_profiles = (cand_profiles - center) / scale
+    norms = np.linalg.norm(norm_profiles, axis=1)
+
+    selected_pos = [int(np.argmin(norms))]
+    while len(selected_pos) < int(k_examples):
+        remaining = [i for i in range(len(candidate_indices)) if i not in selected_pos]
+        if not remaining:
+            break
+        scored = []
+        for pos in remaining:
+            min_dist = min(
+                float(np.linalg.norm(norm_profiles[pos] - norm_profiles[sel]))
+                for sel in selected_pos
+            )
+            recency = float(candidate_indices[pos])
+            scored.append((min_dist, recency, pos))
+        scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
+        selected_pos.append(int(scored[0][2]))
+
+    selected = candidate_indices[np.asarray(selected_pos, dtype=int)]
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def _case_profile_features(
+    history: np.ndarray,
+    forecast: np.ndarray | None = None,
+    feature_window: int = 20,
+) -> np.ndarray:
+    """Compact regime features for example matching."""
+    hist = np.asarray(history, dtype=float)
+    fc = None if forecast is None else np.asarray(forecast, dtype=float)
+    if hist.size == 0:
+        return np.zeros(7, dtype=float)
+
+    window = hist[-feature_window:] if hist.size >= feature_window else hist
+    last_price = float(window[-1])
+    change_5 = 0.0
+    change_20 = 0.0
+    if window.size >= 5 and abs(window[-5]) > 1e-8:
+        change_5 = float((window[-1] / window[-5] - 1.0) * 100.0)
+    if window.size >= 20 and abs(window[-20]) > 1e-8:
+        change_20 = float((window[-1] / window[-20] - 1.0) * 100.0)
+    vol_20 = float(np.std(window[-20:])) if window.size else 0.0
+
+    fc_h5 = 0.0
+    fc_h20 = 0.0
+    fc_h30 = 0.0
+    if fc is not None and fc.size:
+        if fc.size >= 5 and abs(last_price) > 1e-8:
+            fc_h5 = float((fc[4] / last_price - 1.0) * 100.0)
+        if fc.size >= 20 and abs(last_price) > 1e-8:
+            fc_h20 = float((fc[19] / last_price - 1.0) * 100.0)
+        if fc.size >= 30 and abs(last_price) > 1e-8:
+            fc_h30 = float((fc[29] / last_price - 1.0) * 100.0)
+
+    return np.array(
+        [last_price, change_5, change_20, vol_20, fc_h5, fc_h20, fc_h30],
+        dtype=float,
+    )
+
+
+def select_similarity_error_hybrid_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    pool_error_profiles: np.ndarray,
+    reference_profile: np.ndarray,
+    k_examples: int,
+    n_similarity: int = 3,
+) -> np.ndarray:
+    """Mix nearest-regime examples with diverse error modes."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    k_examples = int(min(k_examples, candidate_indices.size))
+    n_similarity = int(max(1, min(n_similarity, k_examples)))
+
+    cand_profiles = np.asarray(pool_case_profiles[candidate_indices], dtype=float)
+    ref_profile = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    center = np.mean(cand_profiles, axis=0, keepdims=True)
+    scale = np.std(cand_profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    distances = np.linalg.norm((cand_profiles - ref_profile) / scale, axis=1)
+    sim_order = np.argsort(distances)
+    selected = list(candidate_indices[sim_order[:n_similarity]])
+
+    remaining = np.asarray([idx for idx in candidate_indices if idx not in set(selected)], dtype=int)
+    n_remaining = k_examples - len(selected)
+    if n_remaining > 0 and remaining.size > 0:
+        diverse = select_error_stratified_indices(
+            candidate_indices=remaining,
+            pool_dates=pool_dates,
+            pool_error_profiles=pool_error_profiles,
+            k_examples=n_remaining,
+        )
+        selected.extend(int(idx) for idx in diverse.tolist())
+
+    selected_arr = np.asarray(sorted(set(selected)), dtype=int)
+    if selected_arr.size > k_examples:
+        selected_arr = selected_arr[:k_examples]
+    return selected_arr[np.argsort(pool_dates[selected_arr])]
+
+
+def _minmax_scale(values: np.ndarray) -> np.ndarray:
+    """Scale a vector into [0, 1] with a safe constant fallback."""
+    arr = np.asarray(values, dtype=float)
+    if arr.size == 0:
+        return arr
+    lo = float(np.min(arr))
+    hi = float(np.max(arr))
+    if hi - lo < 1e-8:
+        return np.full(arr.shape, 0.5, dtype=float)
+    return (arr - lo) / (hi - lo)
+
+
+def _sign_bucket(value: float, tol: float) -> str:
+    """Map a signed scalar into a coarse bucket."""
+    if value >= tol:
+        return "pos"
+    if value <= -tol:
+        return "neg"
+    return "flat"
+
+
+def _profile_regime_tag(profile: np.ndarray) -> str:
+    """Compact regime tag used for retrieval filtering and prompt attribute marking."""
+    profile = np.asarray(profile, dtype=float)
+    if profile.size < 7:
+        return "trend5=flat|trend20=flat|drift20=flat|drift30=flat|vol=normal"
+    last_price = max(abs(float(profile[0])), 1e-8)
+    vol_pct = float(abs(profile[3]) / last_price * 100.0)
+    if vol_pct < 1.0:
+        vol_bucket = "calm"
+    elif vol_pct < 2.5:
+        vol_bucket = "normal"
+    else:
+        vol_bucket = "elevated"
+    return (
+        f"trend5={_sign_bucket(float(profile[1]), 0.75)}|"
+        f"trend20={_sign_bucket(float(profile[2]), 1.50)}|"
+        f"drift20={_sign_bucket(float(profile[5]), 0.75)}|"
+        f"drift30={_sign_bucket(float(profile[6]), 1.00)}|"
+        f"vol={vol_bucket}"
+    )
+
+
+def _regime_match_score(candidate_profile: np.ndarray, reference_profile: np.ndarray) -> float:
+    """Score coarse regime compatibility between a candidate and the current case."""
+    cand = np.asarray(candidate_profile, dtype=float)
+    ref = np.asarray(reference_profile, dtype=float)
+    if cand.size < 7 or ref.size < 7:
+        return 0.0
+    cand_vol = _profile_regime_tag(cand).split("|")[-1]
+    ref_vol = _profile_regime_tag(ref).split("|")[-1]
+    score = 0.0
+    if _sign_bucket(float(cand[1]), 0.75) == _sign_bucket(float(ref[1]), 0.75):
+        score += 1.0
+    if _sign_bucket(float(cand[2]), 1.50) == _sign_bucket(float(ref[2]), 1.50):
+        score += 1.0
+    if _sign_bucket(float(cand[5]), 0.75) == _sign_bucket(float(ref[5]), 0.75):
+        score += 1.5
+    if _sign_bucket(float(cand[6]), 1.00) == _sign_bucket(float(ref[6]), 1.00):
+        score += 2.0
+    if cand_vol == ref_vol:
+        score += 0.5
+    return score
+
+
+def select_utility_score_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    pool_path_mse: np.ndarray,
+    reference_profile: np.ndarray,
+    k_examples: int,
+    similarity_weight: float = 0.45,
+    error_weight: float = 0.35,
+    recency_weight: float = 0.20,
+    regime_scores: np.ndarray | None = None,
+    regime_weight: float = 0.0,
+) -> np.ndarray:
+    """Rank examples by a utility score combining similarity, correction value, and recency."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    cand_profiles = np.asarray(pool_case_profiles[candidate_indices], dtype=float)
+    ref_profile = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    center = np.mean(cand_profiles, axis=0, keepdims=True)
+    scale = np.std(cand_profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    distances = np.linalg.norm((cand_profiles - ref_profile) / scale, axis=1)
+    sim_score = 1.0 - _minmax_scale(distances)
+    err_score = _minmax_scale(pool_path_mse[candidate_indices])
+    recency_score = _minmax_scale(candidate_indices.astype(float))
+    total = (
+        float(similarity_weight) * sim_score
+        + float(error_weight) * err_score
+        + float(recency_weight) * recency_score
+    )
+    if regime_scores is not None:
+        total = total + float(regime_weight) * _minmax_scale(np.asarray(regime_scores, dtype=float))
+
+    order = np.argsort(total)[-int(k_examples):]
+    selected = candidate_indices[np.asarray(order, dtype=int)]
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def select_utility_mmr_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    pool_path_mse: np.ndarray,
+    reference_profile: np.ndarray,
+    k_examples: int,
+    similarity_weight: float = 0.45,
+    error_weight: float = 0.35,
+    recency_weight: float = 0.20,
+    mmr_lambda: float = 0.75,
+    regime_scores: np.ndarray | None = None,
+    regime_weight: float = 0.0,
+) -> np.ndarray:
+    """Greedy MMR selection over utility-scored candidates to reduce redundancy."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    cand_profiles = np.asarray(pool_case_profiles[candidate_indices], dtype=float)
+    ref_profile = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    center = np.mean(cand_profiles, axis=0, keepdims=True)
+    scale = np.std(cand_profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    norm_profiles = (cand_profiles - center) / scale
+    profile_norms = np.linalg.norm(norm_profiles, axis=1, keepdims=True)
+    profile_norms[profile_norms < 1e-6] = 1.0
+    unit_profiles = norm_profiles / profile_norms
+
+    distances = np.linalg.norm((cand_profiles - ref_profile) / scale, axis=1)
+    sim_score = 1.0 - _minmax_scale(distances)
+    err_score = _minmax_scale(pool_path_mse[candidate_indices])
+    recency_score = _minmax_scale(candidate_indices.astype(float))
+    utility = (
+        float(similarity_weight) * sim_score
+        + float(error_weight) * err_score
+        + float(recency_weight) * recency_score
+    )
+    if regime_scores is not None:
+        utility = utility + float(regime_weight) * _minmax_scale(np.asarray(regime_scores, dtype=float))
+
+    selected_pos: list[int] = [int(np.argmax(utility))]
+    while len(selected_pos) < int(min(k_examples, candidate_indices.size)):
+        remaining = [pos for pos in range(candidate_indices.size) if pos not in selected_pos]
+        if not remaining:
+            break
+        scored = []
+        for pos in remaining:
+            redundancy = max(
+                float(np.dot(unit_profiles[pos], unit_profiles[sel]))
+                for sel in selected_pos
+            )
+            score = float(mmr_lambda) * float(utility[pos]) - (1.0 - float(mmr_lambda)) * redundancy
+            scored.append((score, float(utility[pos]), float(candidate_indices[pos]), pos))
+        scored.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
+        selected_pos.append(int(scored[0][3]))
+
+    selected = candidate_indices[np.asarray(selected_pos, dtype=int)]
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def select_top_score_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    scores: np.ndarray,
+    k_examples: int,
+) -> np.ndarray:
+    """Select the highest-scoring examples, breaking ties by recency."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+    scored = [(float(scores[idx]), float(idx), int(idx)) for idx in candidate_indices]
+    scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    selected = np.asarray([idx for _, _, idx in scored[: int(k_examples)]], dtype=int)
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def select_balanced_long_horizon_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    h20_scores: np.ndarray,
+    h30_scores: np.ndarray,
+    k_examples: int,
+) -> np.ndarray:
+    """Balance teaching examples across h20 and h30 error modes."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    target_k = int(min(k_examples, candidate_indices.size))
+    h20_k = max(1, int(np.ceil(target_k / 2.0)))
+    h30_k = max(1, target_k - h20_k)
+    selected: list[int] = []
+
+    for idx in select_top_score_indices(candidate_indices, pool_dates, h20_scores, h20_k):
+        if int(idx) not in selected:
+            selected.append(int(idx))
+
+    remaining = np.asarray([idx for idx in candidate_indices if int(idx) not in selected], dtype=int)
+    if remaining.size > 0:
+        for idx in select_top_score_indices(remaining, pool_dates, h30_scores, h30_k):
+            if int(idx) not in selected:
+                selected.append(int(idx))
+
+    if len(selected) < target_k:
+        remaining = np.asarray([idx for idx in candidate_indices if int(idx) not in selected], dtype=int)
+        combined = np.asarray(h20_scores, dtype=float) + np.asarray(h30_scores, dtype=float)
+        for idx in select_top_score_indices(remaining, pool_dates, combined, target_k - len(selected)):
+            if int(idx) not in selected:
+                selected.append(int(idx))
+
+    selected_arr = np.asarray(selected[:target_k], dtype=int)
+    return selected_arr[np.argsort(pool_dates[selected_arr])]
+
+
+def select_prototype_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    scores: np.ndarray,
+    k_examples: int,
+    top_pool_size: int,
+) -> np.ndarray:
+    """Pick diverse prototypes from the top-scoring candidate pool."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    top_pool = select_top_score_indices(
+        candidate_indices,
+        pool_dates,
+        scores,
+        min(int(top_pool_size), candidate_indices.size),
+    )
+    if top_pool.size <= int(k_examples):
+        return top_pool[np.argsort(pool_dates[top_pool])]
+
+    profiles = np.asarray(pool_case_profiles[top_pool], dtype=float)
+    center = np.mean(profiles, axis=0, keepdims=True)
+    scale = np.std(profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    norm_profiles = (profiles - center) / scale
+
+    selected_pos = [0]
+    while len(selected_pos) < int(k_examples):
+        remaining = [i for i in range(len(top_pool)) if i not in selected_pos]
+        if not remaining:
+            break
+        best_pos = remaining[0]
+        best_tuple = None
+        for pos in remaining:
+            min_dist = min(
+                float(np.linalg.norm(norm_profiles[pos] - norm_profiles[sel]))
+                for sel in selected_pos
+            )
+            score = float(scores[int(top_pool[pos])])
+            recency = float(top_pool[pos])
+            candidate_tuple = (min_dist, score, recency)
+            if best_tuple is None or candidate_tuple > best_tuple:
+                best_tuple = candidate_tuple
+                best_pos = pos
+        selected_pos.append(int(best_pos))
+
+    selected = top_pool[np.asarray(selected_pos, dtype=int)]
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def _tag_component_overlap(tag_a: str, tag_b: str) -> int:
+    """Count exact overlaps between two compact regime tags."""
+    left = {part.strip() for part in str(tag_a or "").split("|") if part.strip()}
+    right = {part.strip() for part in str(tag_b or "").split("|") if part.strip()}
+    return int(len(left.intersection(right)))
+
+
+def select_skill_tag_recent_high_error_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_tags: np.ndarray,
+    pool_error_scores: np.ndarray,
+    reference_tag: str,
+    k_examples: int,
+    min_overlap: int = 3,
+) -> np.ndarray:
+    """Prioritize recent hard cases that share the same coarse regime tag."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    if candidate_indices.size <= int(k_examples):
+        return candidate_indices[np.argsort(pool_dates[candidate_indices])]
+
+    overlaps = np.asarray(
+        [_tag_component_overlap(pool_tags[idx], reference_tag) for idx in candidate_indices],
+        dtype=int,
+    )
+    keep_mask = overlaps >= int(min_overlap)
+    filtered = candidate_indices[keep_mask]
+    if filtered.size == 0:
+        best_overlap = int(np.max(overlaps)) if overlaps.size else 0
+        filtered = candidate_indices[overlaps == best_overlap]
+    return select_top_score_indices(filtered, pool_dates, pool_error_scores, k_examples)
+
+
+def select_counterexample_index(
+    candidate_indices: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    reference_profile: np.ndarray,
+    pool_metric: np.ndarray,
+    exclude_indices: Sequence[int],
+    quantile: float = 0.35,
+) -> Optional[int]:
+    """Pick a similar low-error or low-gain counterexample for contrastive prompting."""
+    candidate_indices = np.asarray(candidate_indices, dtype=int)
+    exclude = {int(x) for x in exclude_indices}
+    remaining = np.asarray([idx for idx in candidate_indices if int(idx) not in exclude], dtype=int)
+    if remaining.size == 0:
+        return None
+
+    metric_values = np.asarray(pool_metric[remaining], dtype=float)
+    cutoff = float(np.quantile(metric_values, float(quantile)))
+    filtered = remaining[metric_values <= cutoff]
+    if filtered.size == 0:
+        order = np.argsort(metric_values)
+        filtered = remaining[order[: max(1, min(3, remaining.size))]]
+
+    profiles = np.asarray(pool_case_profiles[filtered], dtype=float)
+    ref = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    center = np.mean(profiles, axis=0, keepdims=True)
+    scale = np.std(profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    distances = np.linalg.norm((profiles - ref) / scale, axis=1)
+    return int(filtered[int(np.argmin(distances))])
+
+
+def summarize_hindsight_feedback(
+    anchor_error_pct: dict[int, float],
+    mode: str = "standard",
+) -> str:
+    """Compress historical base-model mistakes into one short feedback sentence."""
+    if not anchor_error_pct:
+        return ""
+
+    mode_key = str(mode or "standard").strip().lower()
+
+    if mode_key == "compact_tags":
+        tags: list[str] = []
+        err5 = float(anchor_error_pct.get(5, 0.0))
+        err20 = float(anchor_error_pct.get(20, 0.0))
+        err30 = float(anchor_error_pct.get(30, 0.0))
+        if err20 > 0.0 and err30 > 0.0:
+            tags.append("long_tail=overshoot")
+        elif err20 < 0.0 and err30 < 0.0:
+            tags.append("long_tail=undershoot")
+        elif 20 in anchor_error_pct or 30 in anchor_error_pct:
+            tags.append("long_tail=mixed")
+        if abs(err5) > 0.0:
+            tags.append("h5=" + ("overshoot" if err5 > 0.0 else "undershoot"))
+        dominant_h, dominant_err = max(
+            ((int(h), float(v)) for h, v in anchor_error_pct.items()),
+            key=lambda item: abs(item[1]),
+        )
+        tags.append(f"dominant=h{dominant_h}")
+        if dominant_err == 0.0:
+            tags.append("action=freeze")
+        else:
+            tags.append("action=" + ("down" if dominant_err > 0.0 else "up"))
+        return "; ".join(tags)
+
+    if mode_key == "long_horizon_only":
+        long_only = {int(h): float(v) for h, v in anchor_error_pct.items() if int(h) >= 20}
+        if long_only:
+            anchor_error_pct = long_only
+
+    if 20 in anchor_error_pct and 30 in anchor_error_pct:
+        err20 = float(anchor_error_pct[20])
+        err30 = float(anchor_error_pct[30])
+        if err20 > 0.0 and err30 > 0.0:
+            return "Base overshot the long horizon; downward h20/h30 correction would have helped."
+        if err20 < 0.0 and err30 < 0.0:
+            return "Base undershot the long horizon; upward h20/h30 correction would have helped."
+        return "Long-horizon error signs split; avoid forcing one tail direction across h20 and h30."
+
+    horizon, err = max(
+        ((int(h), float(v)) for h, v in anchor_error_pct.items()),
+        key=lambda item: abs(item[1]),
+    )
+    if err > 0.0:
+        return f"Base overshot most at h{horizon}; a bounded downward correction was warranted."
+    if err < 0.0:
+        return f"Base undershot most at h{horizon}; a bounded upward correction was warranted."
+    return f"Base was already aligned at h{horizon}; freeze was acceptable."
+
+
+def build_aux_teacher_case_summary(
+    base_forecast: np.ndarray,
+    aux_forecast: np.ndarray,
+    teacher_name: str = "linear_ridge",
+    truth: Optional[np.ndarray] = None,
+    horizons: Sequence[int] = (5, 20, 30),
+) -> dict[str, str]:
+    """Summarize what an auxiliary teacher implies relative to the base forecast."""
+    base_arr = np.asarray(base_forecast, dtype=float)
+    aux_arr = np.asarray(aux_forecast, dtype=float)
+    if base_arr.size == 0 or aux_arr.size == 0:
+        return {}
+
+    label = str(teacher_name).replace("_", " ")
+    delta_parts: list[str] = []
+    for horizon in horizons:
+        idx = int(horizon) - 1
+        if idx < 0 or idx >= base_arr.size or idx >= aux_arr.size:
+            continue
+        base_val = float(base_arr[idx])
+        aux_val = float(aux_arr[idx])
+        delta_pct = 0.0 if abs(base_val) < 1e-8 else float((aux_val - base_val) / base_val * 100.0)
+        delta_parts.append(f"h{int(horizon)}={delta_pct:+.2f}%")
+
+    summary: dict[str, str] = {}
+    if delta_parts:
+        summary[f"{label}_delta_pct"] = "; ".join(delta_parts)
+
+    if truth is not None:
+        truth_arr = np.asarray(truth, dtype=float)
+        usable = [int(h) for h in horizons if 0 <= int(h) - 1 < truth_arr.size]
+        if usable:
+            idx = [int(h) - 1 for h in usable]
+            base_mse = float(np.mean((base_arr[idx] - truth_arr[idx]) ** 2))
+            aux_mse = float(np.mean((aux_arr[idx] - truth_arr[idx]) ** 2))
+            gain = base_mse - aux_mse
+            summary[f"{label}_gain_long"] = f"{gain:+.3f} MSE vs base on h{usable[0]}-h{usable[-1]}"
+    return summary
+
+
+def augment_exogenous_summary_with_teacher(
+    exogenous_summary: Optional[dict],
+    base_forecast: np.ndarray,
+    aux_forecast: np.ndarray,
+    teacher_name: str = "linear_ridge",
+    horizons: Sequence[int] = (5, 20, 30),
+) -> dict:
+    """Append auxiliary-teacher hints to the current-case context block."""
+    merged = dict(exogenous_summary or {})
+    merged.update(
+        build_aux_teacher_case_summary(
+            base_forecast=base_forecast,
+            aux_forecast=aux_forecast,
+            teacher_name=teacher_name,
+            truth=None,
+            horizons=horizons,
+        )
+    )
+    return merged
+
+
+def normalize_selection_bundle(selection: object) -> dict[str, object]:
+    """Normalize a selection result into indices plus optional per-example roles."""
+    if isinstance(selection, dict):
+        indices = np.asarray(selection.get("indices", []), dtype=int)
+        roles = {
+            int(k): str(v)
+            for k, v in (selection.get("roles") or {}).items()
+            if str(v).strip()
+        }
+        return {"indices": indices, "roles": roles}
+    return {"indices": np.asarray(selection, dtype=int), "roles": {}}
+
+
+LLM_BASE_MODEL_ALIASES = {
+    "tsm": "tsm",
+    "ridge": "linear_ridge",
+    "linear": "linear_ridge",
+    "linear_ridge": "linear_ridge",
+    "linear-ridge": "linear_ridge",
+    "lasso": "linear_lasso",
+    "linear_lasso": "linear_lasso",
+    "linear-lasso": "linear_lasso",
+    "naive": "naive_persistence",
+    "naive_persistence": "naive_persistence",
+    "seasonal": "seasonal_naive",
+    "seasonal_naive": "seasonal_naive",
+    "seasonal-naive": "seasonal_naive",
+}
+
+
+def normalize_llm_base_model_name(base_model: str | None) -> str:
+    """Normalize the configured LLM base model name to an internal model key."""
+    raw = str(base_model or "tsm").strip().lower().replace("-", "_")
+    return LLM_BASE_MODEL_ALIASES.get(raw, raw)
+
+
+def llm_method_requires_base_forecast(method: str | None) -> bool:
+    """Whether an LLM method requires an existing quantitative forecast path."""
+    return str(method or "").upper().startswith("TSM+")
+
+
+def llm_result_name(method: str, base_model: str | None = None) -> str:
+    """Map an internal LLM method name to the reported model name."""
+    method = str(method)
+    model_name = normalize_llm_base_model_name(base_model)
+    if model_name == "tsm" or not llm_method_requires_base_forecast(method):
+        return method
+    if method.startswith("TSM"):
+        return f"{model_name}{method[len('TSM'):]}"
+    return f"{model_name}_{method}"
+
+
+def infer_llm_market_name(target_cfg: dict) -> str:
+    """Infer a human-readable market label for prompt context."""
+    instrument = str((target_cfg or {}).get("instrument", "")).upper()
+    if "UKA" in instrument:
+        return "UK ETS carbon allowance market"
+    if "EUA" in instrument:
+        return "EU ETS carbon allowance market"
+    if instrument:
+        return f"{instrument} carbon allowance market"
+    return "carbon allowance market"
+
+
+def build_llm_refiner_config(config) -> dict:
+    """Merge llm config with top-level method-specific subconfigs for the refiner."""
+    llm_refiner_config = copy.deepcopy(config.llm)
+    llm_refiner_config.setdefault("currency", config.target.get("currency", "EUR"))
+    llm_refiner_config.setdefault("market_name", infer_llm_market_name(config.target))
+    for key in ("delta", "hdelta", "hprice", "norm_delta", "news_drift"):
+        section = None
+        raw_cfg = getattr(config, "raw", None)
+        if isinstance(raw_cfg, dict):
+            section = raw_cfg.get(key)
+        if section is None:
+            section = getattr(config, key, None)
+        if section is not None:
+            llm_refiner_config[key] = copy.deepcopy(section)
+    return llm_refiner_config
+
+
+def _rule_gate_confidence_rank(value: object) -> int:
+    """Map structured-guidance confidence labels to an ordinal rank."""
+    return {"low": 0, "medium": 1, "high": 2}.get(str(value or "").strip().lower(), -1)
+
+
+def _rule_gate_adjustment_pct(base_value: float, llm_value: float) -> float:
+    """Compute percentage adjustment from base to LLM forecast at a horizon."""
+    base = float(base_value)
+    llm = float(llm_value)
+    if not np.isfinite(base) or abs(base) < 1e-8:
+        return 0.0
+    return float((llm / base - 1.0) * 100.0)
+
+
+def _rule_gate_sign(value: float, eps: float = 1e-12) -> int:
+    """Return the signed direction of an adjustment."""
+    if value > eps:
+        return 1
+    if value < -eps:
+        return -1
+    return 0
+
+
+def build_rule_gate_feature_frame(
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    metadata: Sequence[dict],
+    key_horizons: Sequence[int] = (1, 5, 20, 30),
+) -> pd.DataFrame:
+    """Extract auditable per-sample gate features from structured HDELTA outputs."""
+    base_arr = np.asarray(base_pred, dtype=float)
+    llm_arr = np.asarray(llm_pred, dtype=float)
+    if base_arr.shape != llm_arr.shape:
+        raise ValueError(f"Shape mismatch: base_pred={base_arr.shape}, llm_pred={llm_arr.shape}")
+    if base_arr.shape[0] != len(metadata):
+        raise ValueError(
+            f"Metadata length mismatch: {len(metadata)} rows for {base_arr.shape[0]} predictions"
+        )
+
+    rows: list[dict] = []
+    for row_idx, meta in enumerate(metadata):
+        payload = meta or {}
+        guidance = payload.get("structured_horizon_guidance") or {}
+        matched_dates = payload.get("matched_teaching_dates") or []
+        dynamic_frozen = payload.get("dynamic_frozen_horizons") or []
+        row: dict[str, object] = {
+            "row_idx": int(row_idx),
+            "success": bool(payload.get("success", False)),
+            "fallback": bool(payload.get("fallback", False)),
+            "matched_teaching_count": int(len(matched_dates)),
+            "dynamic_frozen_count": int(len(dynamic_frozen)),
+        }
+        for raw_h in key_horizons:
+            horizon = int(raw_h)
+            col_idx = horizon - 1
+            if col_idx < 0 or col_idx >= base_arr.shape[1]:
+                continue
+            delta_pct = _rule_gate_adjustment_pct(base_arr[row_idx, col_idx], llm_arr[row_idx, col_idx])
+            guidance_payload = guidance.get(horizon) or {}
+            confidence = str(guidance_payload.get("confidence", "")).strip().lower()
+            row[f"h{horizon}_delta_pct"] = float(delta_pct)
+            row[f"h{horizon}_sign"] = int(_rule_gate_sign(delta_pct))
+            row[f"h{horizon}_mode"] = str(guidance_payload.get("mode", "")).strip().lower()
+            row[f"h{horizon}_confidence"] = confidence
+            row[f"h{horizon}_confidence_rank"] = int(_rule_gate_confidence_rank(confidence))
+            row[f"h{horizon}_magnitude"] = str(guidance_payload.get("magnitude", "")).strip().lower()
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def build_rule_gate_candidate_masks(
+    feature_df: pd.DataFrame,
+    candidates: Optional[Sequence[str]] = None,
+    low_match_threshold: int = 2,
+    abs_h30_thresholds_pct: Sequence[float] = (0.25, 0.40),
+) -> dict[str, np.ndarray]:
+    """Build a family of sample-level reject masks for validation-based gate selection."""
+    if feature_df.empty:
+        return {"none": np.zeros(0, dtype=bool)}
+
+    h5_sign = feature_df.get("h5_sign", pd.Series(0, index=feature_df.index)).to_numpy(dtype=int)
+    h20_sign = feature_df.get("h20_sign", pd.Series(0, index=feature_df.index)).to_numpy(dtype=int)
+    h30_sign = feature_df.get("h30_sign", pd.Series(0, index=feature_df.index)).to_numpy(dtype=int)
+    h30_abs = np.abs(
+        feature_df.get("h30_delta_pct", pd.Series(0.0, index=feature_df.index)).to_numpy(dtype=float)
+    )
+    matched_count = feature_df.get(
+        "matched_teaching_count",
+        pd.Series(0, index=feature_df.index),
+    ).to_numpy(dtype=int)
+    h20_conf = feature_df.get(
+        "h20_confidence_rank",
+        pd.Series(-1, index=feature_df.index),
+    ).to_numpy(dtype=int)
+    h30_conf = feature_df.get(
+        "h30_confidence_rank",
+        pd.Series(-1, index=feature_df.index),
+    ).to_numpy(dtype=int)
+
+    h5_pos = h5_sign > 0
+    h20_neg = h20_sign < 0
+    h30_neg = h30_sign < 0
+    h30_zero = h30_sign == 0
+    mixed_long_signs = (h20_sign != 0) & (h30_sign != 0) & (h20_sign != h30_sign)
+    conflict_any = (h5_pos & (h20_neg | h30_neg)) | (h20_neg & h30_zero) | mixed_long_signs
+    nonhigh_long_conf = (h20_conf < 2) | (h30_conf < 2)
+    low_match = matched_count <= int(low_match_threshold)
+
+    masks: dict[str, np.ndarray] = {
+        "none": np.zeros(len(feature_df), dtype=bool),
+        "h5_pos_h20_neg": h5_pos & h20_neg,
+        "h5_pos_h30_neg": h5_pos & h30_neg,
+        "h20_neg_h30_zero": h20_neg & h30_zero,
+        "mixed_long_signs": mixed_long_signs,
+        "conflict_any": conflict_any,
+        "conflict_any_nonhigh_conf": conflict_any & nonhigh_long_conf,
+        "conflict_any_low_match": conflict_any & low_match,
+        "conflict_any_low_match_or_nonhigh_conf": conflict_any & (low_match | nonhigh_long_conf),
+        "h30_negative": h30_neg,
+    }
+    for raw_threshold in abs_h30_thresholds_pct:
+        threshold = float(raw_threshold)
+        name = f"abs_h30_ge_{threshold:.2f}".replace(".", "_")
+        conflict_name = f"conflict_any_or_abs_h30_ge_{threshold:.2f}".replace(".", "_")
+        over_threshold = h30_abs >= threshold
+        masks[name] = over_threshold
+        masks[conflict_name] = conflict_any | over_threshold
+
+    if candidates is None:
+        ordered_names = list(RULE_GATE_DEFAULT_CANDIDATES)
+    else:
+        ordered_names = [str(name) for name in candidates]
+    selected = {
+        name: np.asarray(masks[name], dtype=bool)
+        for name in ordered_names
+        if name in masks
+    }
+    if not selected:
+        selected["none"] = np.zeros(len(feature_df), dtype=bool)
+    return selected
+
+
+def apply_rule_gate(
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    reject_mask: np.ndarray,
+) -> np.ndarray:
+    """Fallback flagged samples to the base forecast while keeping accepted LLM outputs."""
+    base_arr = np.asarray(base_pred, dtype=float)
+    llm_arr = np.asarray(llm_pred, dtype=float)
+    mask = np.asarray(reject_mask, dtype=bool).reshape(-1)
+    if base_arr.shape != llm_arr.shape:
+        raise ValueError(f"Shape mismatch: base_pred={base_arr.shape}, llm_pred={llm_arr.shape}")
+    if base_arr.shape[0] != mask.shape[0]:
+        raise ValueError(
+            f"Reject-mask length mismatch: {mask.shape[0]} rows for {base_arr.shape[0]} predictions"
+        )
+    gated = np.array(llm_arr, copy=True)
+    gated[mask] = base_arr[mask]
+    return gated
+
+
+def evaluate_rule_gate_candidates(
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    feature_df: pd.DataFrame,
+    candidates: Optional[Sequence[str]] = None,
+    low_match_threshold: int = 2,
+    abs_h30_thresholds_pct: Sequence[float] = (0.25, 0.40),
+    horizons: Sequence[int] = (1, 5, 20, 30),
+) -> tuple[pd.DataFrame, dict[str, np.ndarray]]:
+    """Evaluate rule-gate candidates by replacing rejected samples with the base forecast."""
+    candidate_masks = build_rule_gate_candidate_masks(
+        feature_df,
+        candidates=candidates,
+        low_match_threshold=low_match_threshold,
+        abs_h30_thresholds_pct=abs_h30_thresholds_pct,
+    )
+
+    rows: list[dict] = []
+    gated_predictions: dict[str, np.ndarray] = {}
+    for name, reject_mask in candidate_masks.items():
+        gated = apply_rule_gate(base_pred, llm_pred, reject_mask)
+        gated_predictions[name] = gated
+        path_metrics = compute_path_metrics(y_true, gated)
+        row = {
+            "candidate": name,
+            "flagged_count": int(np.sum(reject_mask)),
+            "flagged_share": float(np.mean(reject_mask)) if len(reject_mask) else 0.0,
+            **path_metrics,
+        }
+        by_horizon = compute_metrics_by_horizon(y_true, gated, list(horizons))
+        for horizon in horizons:
+            if int(horizon) in by_horizon.index:
+                row[f"h{int(horizon)}_mse"] = float(by_horizon.loc[int(horizon), "mse"])
+        rows.append(row)
+
+    summary_df = pd.DataFrame(rows)
+    if not summary_df.empty and "mse_path" in summary_df.columns:
+        summary_df = summary_df.sort_values(
+            by=["mse_path", "flagged_count", "candidate"],
+            ascending=[True, True, True],
+        ).reset_index(drop=True)
+    return summary_df, gated_predictions
 
 
 def evaluate_blend_grid(
@@ -640,7 +1727,11 @@ def select_features_via_lasso(
     return selected
 
 
-def run_experiment(config_path: str = None, overrides: dict = None):
+def run_experiment(
+    config_path: str = None,
+    overrides: dict = None,
+    data_dir: Optional[str] = None,
+):
     """
     Run the full experiment pipeline.
     
@@ -678,10 +1769,15 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     logger.info("STEP 2: Building data panel")
     logger.info("=" * 70)
     
-    data_dir = Path(__file__).parent.parent / "Data"
+    if data_dir:
+        resolved_data_dir = Path(data_dir).expanduser()
+    else:
+        resolved_data_dir = Path(__file__).parent.parent / "Data"
+
+    logger.info(f"Using data directory: {resolved_data_dir.resolve()}")
     
     panel, schema = build_panel(
-        data_dir=data_dir,
+        data_dir=resolved_data_dir,
         config=config.raw,
         save_path=run_dir / "data"
     )
@@ -705,12 +1801,12 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     target_mode = config.target.get("mode", "price")
     target_col = "y_return" if target_mode == "returns" else "y"
     
-    feature_candidates = [c for c in panel.columns if c not in ["date", target_col]]
-    if "y" in feature_candidates:
-        feature_candidates.remove("y")
-        feature_candidates = ["y"] + feature_candidates
-    
-    feature_cols = [target_col] + feature_candidates[:10]
+    feature_cols = select_feature_columns(
+        panel,
+        target_col=target_col,
+        max_exogenous_features=(config.features or {}).get("max_exogenous_features_model", 10),
+        preferred_feature_order=(config.features or {}).get("preferred_feature_order"),
+    )
     
     window_config = WindowConfig(
         seq_len=config.seq_len,
@@ -724,13 +1820,19 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     if target_mode == "returns" and price_idx is None:
         raise ValueError("Returns target requires price feature 'y' in window features.")
     
-    X_enc, X_dec, y, dates = make_windows(panel, window_config, mode='MS')
+    X_enc, X_dec, y, dates, window_meta = make_windows(
+        panel,
+        window_config,
+        mode='MS',
+        return_metadata=True,
+    )
     
     # Split data
     splits = split_windows(
         X_enc, X_dec, y, dates,
         train_end=config.split.get('train_end', '2022-12-31'),
-        val_end=config.split.get('val_end', '2023-12-31')
+        val_end=config.split.get('val_end', '2023-12-31'),
+        window_meta=window_meta,
     )
     
     # Fit scaler on training data
@@ -831,6 +1933,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
 
     # Evaluate baselines
     baseline_results = {}
+    llm_base_predictions = {}
     
     # Naive persistence
     naive = NaivePersistence(config.pred_len)
@@ -842,6 +1945,11 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         'metrics': compute_metrics_by_horizon(y_test_future, naive_pred, horizons),
         'path_metrics': compute_path_metrics(y_test_future, naive_pred),
         'errors': get_per_sample_errors(y_test_future, naive_pred, horizons)
+    }
+    llm_base_predictions['naive_persistence'] = {
+        'train': naive.predict(y_train_hist),
+        'val': naive.predict(y_val_hist),
+        'test': naive_pred,
     }
     
     # Seasonal naive
@@ -855,11 +1963,18 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         'path_metrics': compute_path_metrics(y_test_future, seasonal_pred),
         'errors': get_per_sample_errors(y_test_future, seasonal_pred, horizons)
     }
+    llm_base_predictions['seasonal_naive'] = {
+        'train': seasonal.predict(y_train_hist),
+        'val': seasonal.predict(y_val_hist),
+        'test': seasonal_pred,
+    }
 
     # Linear baselines (ridge + lasso)
     try:
         linear_ridge = LinearBaseline(config.pred_len, model_type="ridge")
         linear_ridge.fit(y_train_hist, y_train_future)
+        linear_ridge_train_pred = linear_ridge.predict(y_train_hist)
+        linear_ridge_val_pred = linear_ridge.predict(y_val_hist)
         linear_ridge_pred = linear_ridge.predict(y_test_hist)
         baseline_results['linear_ridge'] = {
             'predictions': linear_ridge_pred,
@@ -867,18 +1982,30 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             'path_metrics': compute_path_metrics(y_test_future, linear_ridge_pred),
             'errors': get_per_sample_errors(y_test_future, linear_ridge_pred, horizons)
         }
+        llm_base_predictions['linear_ridge'] = {
+            'train': linear_ridge_train_pred,
+            'val': linear_ridge_val_pred,
+            'test': linear_ridge_pred,
+        }
     except Exception as e:
         logger.warning(f"Linear ridge baseline failed: {e}")
 
     try:
         linear_lasso = LinearBaseline(config.pred_len, model_type="lasso")
         linear_lasso.fit(y_train_hist, y_train_future)
+        linear_lasso_train_pred = linear_lasso.predict(y_train_hist)
+        linear_lasso_val_pred = linear_lasso.predict(y_val_hist)
         linear_lasso_pred = linear_lasso.predict(y_test_hist)
         baseline_results['linear_lasso'] = {
             'predictions': linear_lasso_pred,
             'metrics': compute_metrics_by_horizon(y_test_future, linear_lasso_pred, horizons),
             'path_metrics': compute_path_metrics(y_test_future, linear_lasso_pred),
             'errors': get_per_sample_errors(y_test_future, linear_lasso_pred, horizons)
+        }
+        llm_base_predictions['linear_lasso'] = {
+            'train': linear_lasso_train_pred,
+            'val': linear_lasso_val_pred,
+            'test': linear_lasso_pred,
         }
     except Exception as e:
         logger.warning(f"Linear lasso baseline failed: {e}")
@@ -962,6 +2089,8 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     
     tsm_pred_eval = None
     tsm_pred_returns = None
+    tsm_pred_train_eval = None
+    tsm_pred_val_eval = None
     
     try:
         import torch
@@ -985,6 +2114,10 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         ):
             local_scaler = StandardScaler()
             local_scaler.fit(X_enc_train)
+            batch_size = int(config_override.get("model", {}).get("batch_size", 32))
+            compute_cfg = config_override.get("compute", {}) or {}
+            num_workers = int(compute_cfg.get("num_workers", 0))
+            pin_memory = bool(compute_cfg.get("pin_memory", False))
 
             train_dataset = TimeSeriesDataset(
                 local_scaler.transform(X_enc_train),
@@ -1004,9 +2137,25 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 (y_test - local_scaler.mean_[0]) / local_scaler.std_[0]
             )
 
-            train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-            val_loader = DataLoader(val_dataset, batch_size=32)
-            test_loader = DataLoader(test_dataset, batch_size=32)
+            train_loader = DataLoader(
+                train_dataset,
+                batch_size=batch_size,
+                shuffle=True,
+                num_workers=num_workers,
+                pin_memory=pin_memory,
+            )
+            val_loader = DataLoader(
+                val_dataset,
+                batch_size=batch_size,
+                num_workers=num_workers,
+                pin_memory=pin_memory,
+            )
+            test_loader = DataLoader(
+                test_dataset,
+                batch_size=batch_size,
+                num_workers=num_workers,
+                pin_memory=pin_memory,
+            )
 
             tsm_model = TSMForecaster(config_override)
             tsm_model.fit(
@@ -1057,8 +2206,21 @@ def run_experiment(config_path: str = None, overrides: dict = None):
         tsm_scaler = tsm_artifacts["scaler"]
         tsm_datasets = tsm_artifacts["datasets"]
 
-        train_loader_eval = DataLoader(tsm_datasets["train"], batch_size=32)
-        val_loader_eval = DataLoader(tsm_datasets["val"], batch_size=32)
+        eval_batch_size = int(tsm_config.get("model", {}).get("batch_size", 32))
+        eval_workers = int(tsm_config.get("compute", {}).get("num_workers", 0))
+        eval_pin_memory = bool(tsm_config.get("compute", {}).get("pin_memory", False))
+        train_loader_eval = DataLoader(
+            tsm_datasets["train"],
+            batch_size=eval_batch_size,
+            num_workers=eval_workers,
+            pin_memory=eval_pin_memory,
+        )
+        val_loader_eval = DataLoader(
+            tsm_datasets["val"],
+            batch_size=eval_batch_size,
+            num_workers=eval_workers,
+            pin_memory=eval_pin_memory,
+        )
 
         tsm_pred_train_scaled, _ = tsm_model.predict(train_loader_eval)
         tsm_pred_val_scaled, _ = tsm_model.predict(val_loader_eval)
@@ -1083,6 +2245,11 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             'path_metrics': compute_path_metrics(y_test_future, tsm_pred_eval),
             'errors': get_per_sample_errors(y_test_future, tsm_pred_eval, horizons)
         }
+        llm_base_predictions['tsm'] = {
+            'train': tsm_pred_train_eval,
+            'val': tsm_pred_val_eval,
+            'test': tsm_pred_eval,
+        }
         
         logger.info("\nTSM Results:")
         logger.info(baseline_results['tsm']['metrics'])
@@ -1099,6 +2266,14 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             pred_df[f'yhat_t_plus_{h+1}'] = tsm_pred_eval[:, h]
         
         pred_df.to_parquet(run_dir / "predictions" / "tsm_pred_test.parquet")
+
+        pred_val_df = pd.DataFrame({
+            'date': splits['val']['dates']
+        })
+        for h in range(config.pred_len):
+            pred_val_df[f'y_true_t_plus_{h+1}'] = y_val_future[:, h]
+            pred_val_df[f'yhat_t_plus_{h+1}'] = tsm_pred_val_eval[:, h]
+        pred_val_df.to_parquet(run_dir / "predictions" / "tsm_pred_val.parquet")
 
         # TSM + LASSO feature selection
         if lasso_cfg.get("enabled", False) and lasso_mode == "per_horizon_models":
@@ -1214,7 +2389,12 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 "No API key available (set llm.api_key in config or OPENAI_API_KEY) - skipping LLM refinement"
             )
         else:
-            from llm import LLMRefiner
+            from llm import (
+                LLMRefiner,
+                blend_mode_from_config,
+                method_supports_internal_blend,
+                method_uses_internal_blend,
+            )
 
             history_points = min(
                 int(config.llm.get("history_points", config.seq_len)),
@@ -1231,12 +2411,25 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 llm_return_histories = None
             
             max_exo = int(config.llm.get("max_exogenous_features", 6))
+            llm_cot_cfg = config.llm.get("cot_rf", {})
+            llm_exogenous_feature_priority = parse_name_list(
+                llm_cot_cfg.get("exogenous_feature_priority")
+            )
+            if not llm_exogenous_feature_priority:
+                llm_exogenous_feature_priority = parse_name_list(
+                    config.features.get("preferred_feature_order", [])
+                )
+            llm_retrieval_feature_columns = parse_name_list(
+                llm_cot_cfg.get("retrieval_feature_columns")
+            )
             exogenous_summaries = [
                 build_exogenous_summary(
                     splits["test"]["X_enc"][i, -history_points:, :],
                     feature_cols,
                     target_col,
-                    max_features=max_exo
+                    max_features=max_exo,
+                    preferred_features=llm_exogenous_feature_priority,
+                    include_features=llm_retrieval_feature_columns,
                 )
                 for i in range(len(llm_histories))
             ]
@@ -1340,11 +2533,41 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                     calib.get("n", 0),
                 )
 
+            llm_refiner_config = build_llm_refiner_config(config)
+
             refiner = LLMRefiner(
-                config.llm,
+                llm_refiner_config,
                 cache_dir=run_dir / "llm" / "cache",
                 log_dir=run_dir / "llm" / "logs"
             )
+
+            llm_base_model_name = normalize_llm_base_model_name(
+                config.llm.get("base_model", "tsm")
+            )
+            available_llm_base_models = sorted(
+                name
+                for name, preds in llm_base_predictions.items()
+                if preds.get("train") is not None
+                and preds.get("val") is not None
+                and preds.get("test") is not None
+            )
+            llm_base_bundle = llm_base_predictions.get(llm_base_model_name)
+            if llm_base_bundle is None or any(
+                llm_base_bundle.get(split) is None for split in ("train", "val", "test")
+            ):
+                logger.warning(
+                    "Configured llm.base_model=%s is unavailable. Available models: %s",
+                    llm_base_model_name,
+                    ", ".join(available_llm_base_models) if available_llm_base_models else "<none>",
+                )
+                llm_base_train_eval = None
+                llm_base_val_eval = None
+                llm_base_test_eval = None
+            else:
+                llm_base_train_eval = llm_base_bundle["train"]
+                llm_base_val_eval = llm_base_bundle["val"]
+                llm_base_test_eval = llm_base_bundle["test"]
+                logger.info("LLM base forecast model: %s", llm_base_model_name)
 
             calibrate_cfg = config.llm.get("calibrate_blend", {})
             calibrate_enabled = bool(calibrate_cfg.get("enabled", False))
@@ -1354,17 +2577,51 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             min_weight = float(calibrate_cfg.get("min_weight", 0.0))
             max_weight = float(calibrate_cfg.get("max_weight", 1.0))
 
+            delta_calib_cfg = config.llm.get("delta_calibration", {}) or {}
+            delta_calib_enabled = bool(delta_calib_cfg.get("enabled", False))
+            delta_calib_methods = delta_calib_cfg.get("methods")
+            if delta_calib_methods is None:
+                delta_calib_methods = config.llm.get("methods", ["TSM+LLM"])
+            delta_calib_target_horizons = [
+                int(x)
+                for x in _parse_float_list(
+                    delta_calib_cfg.get("target_horizons"),
+                    default=[20, 30],
+                )
+            ]
+            delta_calib_min_scale = float(delta_calib_cfg.get("min_scale", 0.0))
+            delta_calib_max_scale = float(delta_calib_cfg.get("max_scale", 1.0))
+            delta_calib_shared = bool(delta_calib_cfg.get("shared", False))
+            delta_calib_tune_scope = str(delta_calib_cfg.get("tune_scope", "full")).lower()
+            delta_calib_recent_tail_fraction = float(
+                delta_calib_cfg.get("recent_tail_fraction", 1.0)
+            )
+            delta_calib_recent_tail_min_samples = int(
+                delta_calib_cfg.get("recent_tail_min_samples", 0)
+            )
+
             subset_cfg = config.llm.get("subset", {}) or {}
             subset_strategy = str(subset_cfg.get("strategy", "first")).lower()
             subset_seed = int(subset_cfg.get("seed", config.seed))
+            subset_scope = str(subset_cfg.get("scope", "full")).lower()
+            subset_recent_tail_fraction = float(
+                subset_cfg.get("recent_tail_fraction", 1.0)
+            )
+            subset_recent_tail_min_samples = int(
+                subset_cfg.get("recent_tail_min_samples", 0)
+            )
             val_subset_strategy = str(subset_cfg.get("val_strategy", subset_strategy)).lower()
             val_subset_seed = int(subset_cfg.get("val_seed", subset_seed))
+            export_val_predictions = bool(config.llm.get("export_val_predictions", False))
 
             blend_grid_cfg = config.llm.get("blend_grid", {}) or {}
             blend_grid_enabled = bool(blend_grid_cfg.get("enabled", False))
             blend_grid_methods = blend_grid_cfg.get("methods")
             if blend_grid_methods is None:
                 blend_grid_methods = config.llm.get("methods", ["TSM+LLM"])
+            llm_blend_mode = blend_mode_from_config(config.llm)
+            llm_blend_cfg = config.llm.get("blend", {}) or {}
+            llm_blend_configured = bool(llm_blend_cfg)
             blend_grid_schedule = str(blend_grid_cfg.get("schedule", "ramp")).lower()
             blend_grid_weights = _parse_float_list(
                 blend_grid_cfg.get("weights"),
@@ -1381,6 +2638,34 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             blend_grid_power = float(blend_grid_cfg.get("power", 1.0))
             blend_grid_tune_split = str(blend_grid_cfg.get("tune_split", "val")).lower()
             blend_grid_metric = str(blend_grid_cfg.get("metric", "mse_path")).lower()
+            blend_grid_tune_scope = str(blend_grid_cfg.get("tune_scope", "full")).lower()
+            blend_grid_recent_tail_fraction = float(
+                blend_grid_cfg.get("recent_tail_fraction", 1.0)
+            )
+            blend_grid_recent_tail_min_samples = int(
+                blend_grid_cfg.get("recent_tail_min_samples", 0)
+            )
+
+            rule_gate_cfg = config.llm.get("rule_gate", {}) or {}
+            rule_gate_enabled = bool(rule_gate_cfg.get("enabled", False))
+            rule_gate_methods = rule_gate_cfg.get("methods")
+            if rule_gate_methods is None:
+                rule_gate_methods = config.llm.get("methods", ["TSM+LLM"])
+            rule_gate_tune_split = str(rule_gate_cfg.get("tune_split", "val")).lower()
+            rule_gate_metric = str(rule_gate_cfg.get("metric", "mse_path")).lower()
+            rule_gate_key_horizons = [
+                int(x)
+                for x in _parse_float_list(
+                    rule_gate_cfg.get("key_horizons"),
+                    default=[1, 5, 20, 30],
+                )
+            ]
+            rule_gate_low_match_threshold = int(rule_gate_cfg.get("low_match_threshold", 2))
+            rule_gate_abs_h30_thresholds = _parse_float_list(
+                rule_gate_cfg.get("abs_h30_thresholds_pct"),
+                default=[0.25, 0.40],
+            )
+            rule_gate_candidates = rule_gate_cfg.get("candidates")
 
             val_histories = None
             val_dates = None
@@ -1388,7 +2673,15 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             val_sentiment_histories = None
             val_eval_indices = None
             val_eval_indices_grid = None
-            if calibrate_enabled or blend_grid_enabled:
+            val_eval_indices_rule_gate = None
+            val_eval_indices_delta = None
+            if (
+                calibrate_enabled
+                or blend_grid_enabled
+                or rule_gate_enabled
+                or delta_calib_enabled
+                or export_val_predictions
+            ):
                 val_histories = y_val_hist[:, -history_points:]
                 val_dates = build_history_dates(
                     panel_dates,
@@ -1401,7 +2694,9 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         splits["val"]["X_enc"][i, -history_points:, :],
                         feature_cols,
                         target_col,
-                        max_features=max_exo
+                        max_features=max_exo,
+                        preferred_features=llm_exogenous_feature_priority,
+                        include_features=llm_retrieval_feature_columns,
                     )
                     for i in range(len(val_histories))
                 ]
@@ -1441,17 +2736,60 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                     grid_max = int(
                         blend_grid_cfg.get("max_samples", config.llm.get("max_samples", 50))
                     )
+                    blend_grid_candidates = eligible_val_idx
+                    if blend_grid_tune_scope in {"recent", "recent_tail", "tail"}:
+                        blend_grid_candidates = restrict_to_recent_tail(
+                            eligible_val_idx,
+                            tail_fraction=blend_grid_recent_tail_fraction,
+                            min_samples=blend_grid_recent_tail_min_samples,
+                        )
                     val_eval_indices_grid = select_eval_indices(
-                        eligible_val_idx,
+                        blend_grid_candidates,
                         grid_max,
+                        strategy=val_subset_strategy,
+                        seed=val_subset_seed,
+                    )
+
+                if rule_gate_enabled and rule_gate_tune_split == "val":
+                    gate_max = int(
+                        rule_gate_cfg.get("max_samples", config.llm.get("max_samples", 50))
+                    )
+                    val_eval_indices_rule_gate = select_eval_indices(
+                        eligible_val_idx,
+                        gate_max,
+                        strategy=val_subset_strategy,
+                        seed=val_subset_seed,
+                    )
+
+                if delta_calib_enabled:
+                    delta_max = int(
+                        delta_calib_cfg.get("max_samples", config.llm.get("max_samples", 50))
+                    )
+                    delta_candidates = eligible_val_idx
+                    if delta_calib_tune_scope in {"recent", "recent_tail", "tail"}:
+                        delta_candidates = restrict_to_recent_tail(
+                            eligible_val_idx,
+                            tail_fraction=delta_calib_recent_tail_fraction,
+                            min_samples=delta_calib_recent_tail_min_samples,
+                        )
+                    val_eval_indices_delta = select_eval_indices(
+                        delta_candidates,
+                        delta_max,
                         strategy=val_subset_strategy,
                         seed=val_subset_seed,
                     )
             
             # Run each method (limit samples for cost control)
-            max_samples = min(config.llm.get("max_samples", 50), len(eligible_idx))
+            llm_candidates = eligible_idx
+            if subset_scope in {"recent", "recent_tail", "tail"}:
+                llm_candidates = restrict_to_recent_tail(
+                    eligible_idx,
+                    tail_fraction=subset_recent_tail_fraction,
+                    min_samples=subset_recent_tail_min_samples,
+                )
+            max_samples = min(config.llm.get("max_samples", 50), len(llm_candidates))
             llm_eval_indices = select_eval_indices(
-                eligible_idx,
+                llm_candidates,
                 max_samples,
                 strategy=subset_strategy,
                 seed=subset_seed,
@@ -1466,104 +2804,602 @@ def run_experiment(config_path: str = None, overrides: dict = None):
             )
             
             for method in config.llm.get('methods', ['TSM+LLM']):
-                logger.info(f"Running method: {method}")
+                result_name = llm_result_name(method, llm_base_model_name)
+                result_slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", result_name)
+                checkpoint_dir = run_dir / "llm" / "checkpoints" / result_slug
+                resume_from_run_dir = config.llm.get("resume_from_run_dir")
+                resume_checkpoint_dir = None
+                if resume_from_run_dir:
+                    resume_checkpoint_dir = (
+                        Path(str(resume_from_run_dir)).expanduser().resolve()
+                        / "llm"
+                        / "checkpoints"
+                        / result_slug
+                    )
+                logger.info("Running method: %s", result_name)
                 val_teaching_examples_subset = None
+                val_teaching_examples_rule_gate = None
+                val_teaching_examples_export = None
+                teaching_examples_subset = None
+                method_supports_blend = method_supports_internal_blend(method)
+                method_uses_blend = method_uses_internal_blend(method, config.llm)
+                method_requires_base = llm_method_requires_base_forecast(method)
 
-                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
+                if method_requires_base and llm_base_test_eval is None:
+                    logger.warning(
+                        "Skipping %s because llm.base_model=%s has no test forecasts.",
+                        result_name,
+                        llm_base_model_name,
+                    )
+                    continue
+
+                if llm_blend_configured and not method_supports_blend and llm_blend_mode != "none":
+                    supported_blend_methods = "TSM+LLM-COT-SENT-RF-DELTA, TSM+LLM-NORM-DELTA"
+                    logger.info(
+                        "Method %s ignores llm.blend mode=%s; the blend config only applies to %s.",
+                        result_name,
+                        llm_blend_mode,
+                        supported_blend_methods,
+                    )
+                elif method_uses_blend:
+                    logger.info(
+                        "Method %s will use internal llm.blend mode=%s.",
+                        result_name,
+                        llm_blend_mode,
+                    )
+
+                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA", "TSM+LLM-COT-SENT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HPRICE"):
+                    if llm_base_train_eval is None or llm_base_val_eval is None:
+                        logger.warning(
+                            "Skipping %s because llm.base_model=%s has no train/val teaching pool forecasts.",
+                            result_name,
+                            llm_base_model_name,
+                        )
+                        continue
                     cot_cfg = config.llm.get("cot_rf", {})
                     k_examples = int(cot_cfg.get("k_examples", 5))
                     selection_mode = cot_cfg.get("example_selection", "recent")
                     feature_window = int(cot_cfg.get("feature_window", 20))
                     lookback_days = cot_cfg.get("lookback_days")
                     lookback_days = int(lookback_days) if lookback_days is not None else None
-
-                    all_dates = np.concatenate(
-                        [
-                            splits["train"]["dates"],
-                            splits["val"]["dates"],
-                            splits["test"]["dates"],
-                        ]
+                    retrieval_feature_columns = parse_name_list(cot_cfg.get("retrieval_feature_columns"))
+                    retrieval_max_features = int(
+                        cot_cfg.get("retrieval_max_features", max(len(retrieval_feature_columns), max_exo))
                     )
-                    all_dates = pd.to_datetime(all_dates).to_numpy()
-
-                    all_histories = np.concatenate(
-                        [y_train_hist, y_val_hist, y_test_hist]
+                    exogenous_feature_priority = parse_name_list(cot_cfg.get("exogenous_feature_priority"))
+                    if not exogenous_feature_priority:
+                        exogenous_feature_priority = parse_name_list(
+                            config.features.get("preferred_feature_order", [])
+                        )
+                    include_example_exogenous_summary = bool(
+                        cot_cfg.get("include_example_exogenous_summary", False)
                     )
-                    all_forecasts = np.concatenate(
-                        [tsm_pred_train_eval, tsm_pred_val_eval, tsm_pred_eval]
+                    augment_case_profiles_with_retrieval = bool(
+                        cot_cfg.get("augment_case_profiles_with_retrieval", False)
                     )
-                    all_truth = np.concatenate(
-                        [y_train_future, y_val_future, y_test_future]
+                    example_exogenous_max_features = int(
+                        cot_cfg.get("example_exogenous_max_features", max_exo)
+                    )
+                    include_hindsight_feedback = bool(
+                        cot_cfg.get("include_hindsight_feedback", False)
+                    )
+                    include_counterexample_freeze = bool(
+                        cot_cfg.get("include_counterexample_freeze", False)
+                    )
+                    counterexample_mode = str(
+                        cot_cfg.get("counterexample_mode", "low_error")
+                    ).strip().lower()
+                    counterexample_quantile = float(
+                        cot_cfg.get("counterexample_quantile", 0.35)
+                    )
+                    prototype_pool_multiplier = int(
+                        cot_cfg.get("prototype_pool_multiplier", 3)
+                    )
+                    skill_tag_min_overlap = int(
+                        cot_cfg.get("skill_tag_min_overlap", 3)
+                    )
+                    include_aux_teacher_summary = bool(
+                        cot_cfg.get("include_aux_teacher_summary", False)
+                    )
+                    include_current_aux_teacher_summary = bool(
+                        cot_cfg.get(
+                            "include_current_aux_teacher_summary",
+                            include_aux_teacher_summary,
+                        )
+                    )
+                    aux_teacher_model_name = normalize_llm_base_model_name(
+                        cot_cfg.get("aux_teacher_model", "linear_ridge")
+                    )
+                    aux_teacher_horizons = [
+                        int(x)
+                        for x in _parse_float_list(
+                            cot_cfg.get("aux_teacher_horizons"),
+                            default=[5, 20, 30],
+                        )
+                    ]
+                    aux_teacher_bundle = (
+                        llm_base_predictions.get(aux_teacher_model_name, {})
+                        if aux_teacher_model_name
+                        else {}
+                    )
+                    aux_teacher_train_eval = aux_teacher_bundle.get("train")
+                    aux_teacher_val_eval = aux_teacher_bundle.get("val")
+                    aux_teacher_test_eval = aux_teacher_bundle.get("test")
+                    aux_teacher_available = all(
+                        arr is not None
+                        for arr in (
+                            aux_teacher_train_eval,
+                            aux_teacher_val_eval,
+                            aux_teacher_test_eval,
+                        )
                     )
 
-                    # Pre-compute per-window TSM error so we can pick informative
-                    # "teaching examples" (if requested). If the model is already
-                    # accurate in the teaching set, the LLM learns that the best
-                    # correction is often “do nothing”.
-                    all_path_mse = np.mean((all_forecasts - all_truth) ** 2, axis=1)
-
-                    sorted_idx = np.argsort(all_dates)
-                    dates_sorted = all_dates[sorted_idx]
-                    if selection_mode == "similarity":
-                        def _history_features(hist: np.ndarray) -> np.ndarray:
-                            window = hist[-feature_window:] if len(hist) >= feature_window else hist
-                            mean = float(np.mean(window)) if len(window) else 0.0
-                            std = float(np.std(window)) if len(window) else 0.0
-                            if len(window) > 1:
-                                slope = float(np.polyfit(np.arange(len(window)), window, 1)[0])
-                            else:
-                                slope = 0.0
-                            return np.array([mean, std, slope], dtype=float)
-
-                        all_history_features = np.vstack([
-                            _history_features(hist) for hist in all_histories
-                        ])
-
-                    teaching_examples_subset = []
-                    val_teaching_examples_subset = []
-                    for sample_idx in llm_eval_indices:
-                        test_date = pd.Timestamp(splits["test"]["dates"][sample_idx]).to_datetime64()
-                        pos = np.searchsorted(dates_sorted, test_date, side="left")
-                        if selection_mode in ("high_error", "recent_high_error") and pos > 0:
-                            candidate_indices = sorted_idx[:pos]
-                            if selection_mode == "recent_high_error" and lookback_days is not None:
-                                cutoff = np.datetime64(
-                                    pd.Timestamp(test_date) - pd.Timedelta(days=lookback_days)
-                                )
-                                candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
-                                if candidate_indices.size == 0:
-                                    candidate_indices = sorted_idx[:pos]
-                            cand_errors = all_path_mse[candidate_indices]
-                            if len(candidate_indices) > k_examples:
-                                order = np.argsort(cand_errors)[-k_examples:]
-                                example_indices = candidate_indices[order]
-                            else:
-                                example_indices = candidate_indices
-                            # Keep examples in chronological order for readability
-                            example_indices = example_indices[np.argsort(all_dates[example_indices])]
-                        elif selection_mode == "similarity" and pos > 0:
-                            candidate_indices = sorted_idx[:pos]
-                            if lookback_days is not None:
-                                cutoff = np.datetime64(
-                                    pd.Timestamp(test_date) - pd.Timedelta(days=lookback_days)
-                                )
-                                candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
-                                if candidate_indices.size == 0:
-                                    candidate_indices = sorted_idx[:pos]
-                            sample_feat = _history_features(y_test_hist[sample_idx])
-                            cand_feats = all_history_features[candidate_indices]
-                            distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
-                            order = np.argsort(distances)[:k_examples]
-                            example_indices = candidate_indices[order]
+                    def _history_features(hist: np.ndarray) -> np.ndarray:
+                        window = hist[-feature_window:] if len(hist) >= feature_window else hist
+                        mean = float(np.mean(window)) if len(window) else 0.0
+                        std = float(np.std(window)) if len(window) else 0.0
+                        if len(window) > 1:
+                            slope = float(np.polyfit(np.arange(len(window)), window, 1)[0])
                         else:
-                            start = max(0, pos - k_examples)
-                            example_indices = sorted_idx[start:pos]
+                            slope = 0.0
+                        return np.array([mean, std, slope], dtype=float)
 
+                    def _prepare_example_pool(
+                        pool_dates: np.ndarray,
+                        pool_histories: np.ndarray,
+                        pool_forecasts: np.ndarray,
+                        pool_truth: np.ndarray,
+                        pool_windows: np.ndarray | None = None,
+                        pool_aux_forecasts: Optional[dict[str, np.ndarray]] = None,
+                    ) -> dict:
+                        dates_arr = pd.to_datetime(pool_dates).to_numpy()
+                        order = np.argsort(dates_arr)
+                        prepared = {
+                            "dates": dates_arr[order],
+                            "histories": pool_histories[order],
+                            "forecasts": pool_forecasts[order],
+                            "truth": pool_truth[order],
+                            "windows": None if pool_windows is None else pool_windows[order],
+                            "aux_forecasts": {},
+                        }
+                        for name, values in (pool_aux_forecasts or {}).items():
+                            if values is not None:
+                                prepared["aux_forecasts"][str(name)] = values[order]
+                        prepared["path_mse"] = np.mean(
+                            (prepared["forecasts"] - prepared["truth"]) ** 2,
+                            axis=1,
+                        )
+                        prepared["error_profiles"] = np.vstack(
+                            [
+                                _error_profile(fc, truth)
+                                for fc, truth in zip(prepared["forecasts"], prepared["truth"], strict=False)
+                            ]
+                        )
+
+                        def _anchor_sqerr(arr_idx: int, preds: np.ndarray) -> np.ndarray:
+                            if arr_idx >= preds.shape[1] or arr_idx >= prepared["truth"].shape[1]:
+                                return np.zeros(len(prepared["dates"]), dtype=float)
+                            return (preds[:, arr_idx] - prepared["truth"][:, arr_idx]) ** 2
+
+                        def _anchor_err_pct(arr_idx: int, preds: np.ndarray) -> np.ndarray:
+                            if arr_idx >= preds.shape[1] or arr_idx >= prepared["truth"].shape[1]:
+                                return np.zeros(len(prepared["dates"]), dtype=float)
+                            denom = np.where(
+                                np.abs(preds[:, arr_idx]) > 1e-8,
+                                preds[:, arr_idx],
+                                prepared["truth"][:, arr_idx],
+                            )
+                            denom = np.where(np.abs(denom) > 1e-8, denom, 1.0)
+                            return ((preds[:, arr_idx] - prepared["truth"][:, arr_idx]) / denom) * 100.0
+
+                        prepared["h5_mse"] = _anchor_sqerr(4, prepared["forecasts"])
+                        prepared["h20_mse"] = _anchor_sqerr(19, prepared["forecasts"])
+                        prepared["h30_mse"] = _anchor_sqerr(29, prepared["forecasts"])
+                        prepared["err_pct_h20"] = _anchor_err_pct(19, prepared["forecasts"])
+                        prepared["err_pct_h30"] = _anchor_err_pct(29, prepared["forecasts"])
+                        prepared["long_error_score"] = 0.5 * (
+                            prepared["h20_mse"] + prepared["h30_mse"]
+                        )
+                        prepared["long_error_consistent"] = (
+                            np.sign(prepared["err_pct_h20"]) == np.sign(prepared["err_pct_h30"])
+                        ) & (
+                            np.abs(prepared["err_pct_h20"]) >= 0.10
+                        ) & (
+                            np.abs(prepared["err_pct_h30"]) >= 0.10
+                        )
+                        if selection_mode == "similarity":
+                            prepared["history_features"] = np.vstack(
+                                [_history_features(hist) for hist in prepared["histories"]]
+                            )
+                        if selection_mode == "event_similarity":
+                            history_features = np.vstack(
+                                [_history_features(hist) for hist in prepared["histories"]]
+                            )
+                            prepared["history_features"] = history_features
+                            retrieval_names = resolve_exogenous_feature_names(
+                                feature_cols,
+                                target_col,
+                                preferred_features=exogenous_feature_priority,
+                                include_features=retrieval_feature_columns,
+                                max_features=retrieval_max_features,
+                            )
+                            prepared["retrieval_feature_names"] = np.asarray(retrieval_names, dtype=object)
+                            retrieval_width = len(retrieval_names) * 2
+                            prepared["retrieval_feature_width"] = retrieval_width
+                            if pool_windows is not None and retrieval_width > 0:
+                                retrieval_features = np.vstack(
+                                    [
+                                        build_retrieval_feature_vector(
+                                            window,
+                                            feature_cols,
+                                            target_col,
+                                            feature_window=feature_window,
+                                            preferred_features=exogenous_feature_priority,
+                                            include_features=retrieval_names,
+                                            max_features=len(retrieval_names),
+                                        )
+                                        for window in prepared["windows"]
+                                    ]
+                                )
+                            else:
+                                retrieval_features = np.zeros((len(prepared["dates"]), retrieval_width), dtype=float)
+                            combined = np.hstack([history_features, retrieval_features])
+                            means = combined.mean(axis=0)
+                            stds = combined.std(axis=0)
+                            stds = np.where(stds > 1e-8, stds, 1.0)
+                            prepared["event_similarity_features"] = (combined - means) / stds
+                            prepared["event_similarity_means"] = means
+                            prepared["event_similarity_stds"] = stds
+                        case_profiles = np.vstack(
+                            [
+                                _case_profile_features(hist, fc, feature_window=feature_window)
+                                for hist, fc in zip(prepared["histories"], prepared["forecasts"], strict=False)
+                            ]
+                        )
+                        if augment_case_profiles_with_retrieval and pool_windows is not None:
+                            retrieval_vectors = np.vstack(
+                                [
+                                    build_retrieval_feature_vector(
+                                        window,
+                                        feature_cols,
+                                        target_col,
+                                        feature_window=feature_window,
+                                        preferred_features=exogenous_feature_priority,
+                                        include_features=retrieval_feature_columns,
+                                        max_features=retrieval_max_features,
+                                    )
+                                    for window in prepared["windows"]
+                                ]
+                            )
+                            if retrieval_vectors.shape[1] > 0:
+                                case_profiles = np.hstack([case_profiles, retrieval_vectors])
+                        prepared["case_profiles"] = case_profiles
+                        prepared["retrieval_tags"] = np.array(
+                            [
+                                _profile_regime_tag(profile)
+                                for profile in prepared["case_profiles"]
+                            ],
+                            dtype=object,
+                        )
+                        if aux_teacher_available:
+                            teacher_forecasts = prepared["aux_forecasts"].get(aux_teacher_model_name)
+                            if teacher_forecasts is not None:
+                                prepared["aux_teacher_gain_long"] = prepared["long_error_score"] - 0.5 * (
+                                    _anchor_sqerr(19, teacher_forecasts) + _anchor_sqerr(29, teacher_forecasts)
+                                )
+                            else:
+                                prepared["aux_teacher_gain_long"] = np.zeros(
+                                    len(prepared["dates"]), dtype=float
+                                )
+                        else:
+                            prepared["aux_teacher_gain_long"] = np.zeros(
+                                len(prepared["dates"]), dtype=float
+                            )
+                        return prepared
+
+                    def _reference_case_profile(
+                        reference_history: np.ndarray,
+                        reference_forecast: np.ndarray | None = None,
+                        reference_window: np.ndarray | None = None,
+                    ) -> np.ndarray:
+                        reference_profile = _case_profile_features(
+                            reference_history,
+                            reference_forecast,
+                            feature_window=feature_window,
+                        )
+                        if augment_case_profiles_with_retrieval and reference_window is not None:
+                            retrieval_vector = build_retrieval_feature_vector(
+                                reference_window,
+                                feature_cols,
+                                target_col,
+                                feature_window=feature_window,
+                                preferred_features=exogenous_feature_priority,
+                                include_features=retrieval_feature_columns,
+                                max_features=retrieval_max_features,
+                            )
+                            if retrieval_vector.size:
+                                reference_profile = np.concatenate([reference_profile, retrieval_vector])
+                        return reference_profile
+
+                    def _select_example_indices(
+                        pool: dict,
+                        reference_date,
+                        reference_history: np.ndarray,
+                        reference_forecast: np.ndarray | None = None,
+                        reference_window: np.ndarray | None = None,
+                    ) -> dict[str, object]:
+                        reference_date = pd.Timestamp(reference_date).to_datetime64()
+                        pos = np.searchsorted(pool["dates"], reference_date, side="left")
+                        if pos <= 0:
+                            return {"indices": np.array([], dtype=int), "roles": {}}
+
+                        candidate_indices = np.arange(pos, dtype=int)
+                        if selection_mode in (
+                            "recent_high_error",
+                            "recent_long_error",
+                            "recent_consistent_long_error",
+                            "balanced_long_horizon",
+                            "prototype_recent_long_error",
+                            "skill_tag_recent_high_error",
+                            "ridge_gain",
+                            "similarity",
+                            "error_stratified",
+                            "similarity_error_hybrid",
+                            "utility_score",
+                            "utility_mmr",
+                            "regime_mmr",
+                        ) and lookback_days is not None:
+                            cutoff = np.datetime64(
+                                pd.Timestamp(reference_date) - pd.Timedelta(days=lookback_days)
+                            )
+                            candidate_indices = candidate_indices[pool["dates"][candidate_indices] >= cutoff]
+                            if candidate_indices.size == 0:
+                                candidate_indices = np.arange(pos, dtype=int)
+
+                        primary_k = int(k_examples)
+                        if include_counterexample_freeze and candidate_indices.size > 1:
+                            primary_k = max(1, primary_k - 1)
+                        roles: dict[int, str] = {}
+
+                        if selection_mode in ("high_error", "recent_high_error"):
+                            example_indices = select_top_score_indices(
+                                candidate_indices,
+                                pool["dates"],
+                                pool["path_mse"],
+                                primary_k,
+                            )
+                        elif selection_mode == "recent_long_error":
+                            example_indices = select_top_score_indices(
+                                candidate_indices,
+                                pool["dates"],
+                                pool["long_error_score"],
+                                primary_k,
+                            )
+                        elif selection_mode == "recent_consistent_long_error":
+                            consistent = candidate_indices[pool["long_error_consistent"][candidate_indices]]
+                            working = consistent if consistent.size >= max(2, primary_k) else candidate_indices
+                            example_indices = select_top_score_indices(
+                                working,
+                                pool["dates"],
+                                pool["long_error_score"],
+                                primary_k,
+                            )
+                        elif selection_mode == "balanced_long_horizon":
+                            example_indices = select_balanced_long_horizon_indices(
+                                candidate_indices,
+                                pool["dates"],
+                                pool["h20_mse"],
+                                pool["h30_mse"],
+                                primary_k,
+                            )
+                        elif selection_mode == "prototype_recent_long_error":
+                            example_indices = select_prototype_indices(
+                                candidate_indices,
+                                pool["dates"],
+                                pool["case_profiles"],
+                                pool["long_error_score"],
+                                primary_k,
+                                top_pool_size=max(primary_k * prototype_pool_multiplier, primary_k),
+                            )
+                        elif selection_mode == "skill_tag_recent_high_error":
+                            reference_tag = _profile_regime_tag(
+                                _reference_case_profile(
+                                    reference_history,
+                                    reference_forecast,
+                                    reference_window,
+                                )
+                            )
+                            example_indices = select_skill_tag_recent_high_error_indices(
+                                candidate_indices,
+                                pool["dates"],
+                                pool["retrieval_tags"],
+                                pool["path_mse"],
+                                reference_tag,
+                                primary_k,
+                                min_overlap=skill_tag_min_overlap,
+                            )
+                        elif selection_mode == "ridge_gain":
+                            gain_scores = pool.get("aux_teacher_gain_long")
+                            if gain_scores is None or not np.any(np.abs(gain_scores[candidate_indices]) > 1e-12):
+                                example_indices = select_top_score_indices(
+                                    candidate_indices,
+                                    pool["dates"],
+                                    pool["path_mse"],
+                                    primary_k,
+                                )
+                            else:
+                                example_indices = select_top_score_indices(
+                                    candidate_indices,
+                                    pool["dates"],
+                                    gain_scores,
+                                    primary_k,
+                                )
+                        elif selection_mode == "similarity":
+                            sample_feat = _history_features(reference_history)
+                            cand_feats = pool["history_features"][candidate_indices]
+                            distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
+                            order = np.argsort(distances)[:primary_k]
+                            example_indices = candidate_indices[order]
+                            example_indices = example_indices[np.argsort(pool["dates"][example_indices])]
+                        elif selection_mode == "event_similarity":
+                            retrieval_names = pool.get("retrieval_feature_names", np.array([], dtype=object))
+                            sample_retrieval = build_retrieval_feature_vector(
+                                reference_window if reference_window is not None else np.zeros((0, len(feature_cols))),
+                                feature_cols,
+                                target_col,
+                                feature_window=feature_window,
+                                preferred_features=exogenous_feature_priority,
+                                include_features=retrieval_names.tolist(),
+                                max_features=len(retrieval_names),
+                            )
+                            sample_feat = np.concatenate(
+                                [
+                                    _history_features(reference_history),
+                                    sample_retrieval,
+                                ]
+                            )
+                            sample_feat = (
+                                sample_feat - pool["event_similarity_means"]
+                            ) / pool["event_similarity_stds"]
+                            cand_feats = pool["event_similarity_features"][candidate_indices]
+                            distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
+                            order = np.argsort(distances)[:primary_k]
+                            example_indices = candidate_indices[order]
+                            example_indices = example_indices[np.argsort(pool["dates"][example_indices])]
+                        elif selection_mode == "error_stratified":
+                            example_indices = select_error_stratified_indices(
+                                candidate_indices=candidate_indices,
+                                pool_dates=pool["dates"],
+                                pool_error_profiles=pool["error_profiles"],
+                                k_examples=primary_k,
+                            )
+                        elif selection_mode == "similarity_error_hybrid":
+                            reference_profile = _reference_case_profile(
+                                reference_history,
+                                reference_forecast,
+                                reference_window,
+                            )
+                            example_indices = select_similarity_error_hybrid_indices(
+                                candidate_indices=candidate_indices,
+                                pool_dates=pool["dates"],
+                                pool_case_profiles=pool["case_profiles"],
+                                pool_error_profiles=pool["error_profiles"],
+                                reference_profile=reference_profile,
+                                k_examples=primary_k,
+                                n_similarity=int(cot_cfg.get("n_similarity_examples", min(3, primary_k))),
+                            )
+                        elif selection_mode in ("utility_score", "utility_mmr", "regime_mmr"):
+                            reference_profile = _reference_case_profile(
+                                reference_history,
+                                reference_forecast,
+                                reference_window,
+                            )
+                            regime_scores = None
+                            working_indices = candidate_indices
+                            if selection_mode == "regime_mmr":
+                                all_regime_scores = np.asarray(
+                                    [
+                                        _regime_match_score(
+                                            pool["case_profiles"][idx],
+                                            reference_profile,
+                                        )
+                                        for idx in candidate_indices
+                                    ],
+                                    dtype=float,
+                                )
+                                min_candidates = int(
+                                    cot_cfg.get(
+                                        "regime_filter_min_candidates",
+                                        max(primary_k, min(len(candidate_indices), primary_k * 2)),
+                                    )
+                                )
+                                if all_regime_scores.size:
+                                    best_regime = float(np.max(all_regime_scores))
+                                    keep_mask = all_regime_scores >= (best_regime - 0.5)
+                                    filtered = candidate_indices[keep_mask]
+                                    filtered_scores = all_regime_scores[keep_mask]
+                                    if filtered.size < min_candidates:
+                                        order = np.argsort(all_regime_scores)[-min_candidates:]
+                                        filtered = candidate_indices[order]
+                                        filtered_scores = all_regime_scores[order]
+                                    working_indices = filtered
+                                    regime_scores = filtered_scores
+                            if selection_mode == "utility_score":
+                                example_indices = select_utility_score_indices(
+                                    candidate_indices=working_indices,
+                                    pool_dates=pool["dates"],
+                                    pool_case_profiles=pool["case_profiles"],
+                                    pool_path_mse=pool["path_mse"],
+                                    reference_profile=reference_profile,
+                                    k_examples=primary_k,
+                                    similarity_weight=float(cot_cfg.get("utility_similarity_weight", 0.45)),
+                                    error_weight=float(cot_cfg.get("utility_error_weight", 0.35)),
+                                    recency_weight=float(cot_cfg.get("utility_recency_weight", 0.20)),
+                                    regime_scores=regime_scores,
+                                    regime_weight=float(cot_cfg.get("utility_regime_weight", 0.0)),
+                                )
+                            else:
+                                example_indices = select_utility_mmr_indices(
+                                    candidate_indices=working_indices,
+                                    pool_dates=pool["dates"],
+                                    pool_case_profiles=pool["case_profiles"],
+                                    pool_path_mse=pool["path_mse"],
+                                    reference_profile=reference_profile,
+                                    k_examples=primary_k,
+                                    similarity_weight=float(cot_cfg.get("utility_similarity_weight", 0.45)),
+                                    error_weight=float(cot_cfg.get("utility_error_weight", 0.35)),
+                                    recency_weight=float(cot_cfg.get("utility_recency_weight", 0.20)),
+                                    mmr_lambda=float(cot_cfg.get("mmr_lambda", 0.75)),
+                                    regime_scores=regime_scores,
+                                    regime_weight=float(cot_cfg.get("utility_regime_weight", 0.15)),
+                                )
+                        else:
+                            start = max(0, pos - primary_k)
+                            example_indices = np.arange(start, pos, dtype=int)
+
+                        for idx in np.asarray(example_indices, dtype=int):
+                            roles[int(idx)] = "support"
+
+                        if include_counterexample_freeze and candidate_indices.size > len(example_indices):
+                            reference_profile = _reference_case_profile(
+                                reference_history,
+                                reference_forecast,
+                                reference_window,
+                            )
+                            counter_metric = (
+                                pool.get("aux_teacher_gain_long", pool["path_mse"])
+                                if counterexample_mode == "low_gain"
+                                else pool["path_mse"]
+                            )
+                            counter_idx = select_counterexample_index(
+                                candidate_indices=candidate_indices,
+                                pool_case_profiles=pool["case_profiles"],
+                                reference_profile=reference_profile,
+                                pool_metric=counter_metric,
+                                exclude_indices=example_indices,
+                                quantile=counterexample_quantile,
+                            )
+                            if counter_idx is not None:
+                                example_indices = np.asarray(
+                                    list(np.asarray(example_indices, dtype=int)) + [int(counter_idx)],
+                                    dtype=int,
+                                )
+                                roles[int(counter_idx)] = "freeze_counterexample"
+
+                        return {
+                            "indices": np.asarray(example_indices, dtype=int),
+                            "roles": roles,
+                        }
+
+                    def _build_examples(pool: dict, selection_bundle: object) -> list[dict]:
+                        bundle = normalize_selection_bundle(selection_bundle)
+                        example_indices = bundle["indices"]
+                        example_roles = bundle["roles"]
                         examples = []
                         for idx in example_indices:
                             sent_hist = None
                             if sentiment_map:
-                                ex_date = pd.Timestamp(all_dates[idx])
+                                ex_date = pd.Timestamp(pool["dates"][idx])
                                 ex_dates = build_history_dates(
                                     panel_dates,
                                     date_to_idx,
@@ -1575,86 +3411,174 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                                     sentiment_map,
                                     sentiment_points
                                 )[0]
+                            exogenous_summary = None
+                            if include_example_exogenous_summary and pool.get("windows") is not None:
+                                exogenous_summary = build_exogenous_summary(
+                                    pool["windows"][idx],
+                                    feature_cols,
+                                    target_col,
+                                    max_features=example_exogenous_max_features,
+                                    preferred_features=exogenous_feature_priority,
+                                    include_features=retrieval_feature_columns,
+                                )
+                            example_case_summary: dict[str, str] = {}
+                            role = example_roles.get(int(idx))
+                            if role:
+                                example_case_summary["selection_role"] = role
+
+                            anchor_error_pct = {}
+                            for horizon in (1, 5, 20, 30):
+                                arr_idx = int(horizon) - 1
+                                if arr_idx >= pool["forecasts"].shape[1] or arr_idx >= pool["truth"].shape[1]:
+                                    continue
+                                base_val = float(pool["forecasts"][idx][arr_idx])
+                                truth_val = float(pool["truth"][idx][arr_idx])
+                                denom = base_val if abs(base_val) > 1e-8 else truth_val
+                                anchor_error_pct[int(horizon)] = (
+                                    0.0
+                                    if abs(float(denom)) < 1e-8
+                                    else float((base_val - truth_val) / denom * 100.0)
+                                )
+
+                            if include_hindsight_feedback:
+                                hindsight = summarize_hindsight_feedback(
+                                    anchor_error_pct,
+                                    mode=str(cot_cfg.get("feedback_mode", "standard")),
+                                )
+                                if hindsight:
+                                    example_case_summary["hindsight_feedback"] = hindsight
+
+                            if include_aux_teacher_summary and aux_teacher_available:
+                                teacher_forecasts = pool["aux_forecasts"].get(aux_teacher_model_name)
+                                if teacher_forecasts is not None:
+                                    example_case_summary.update(
+                                        build_aux_teacher_case_summary(
+                                            base_forecast=pool["forecasts"][idx],
+                                            aux_forecast=teacher_forecasts[idx],
+                                            teacher_name=aux_teacher_model_name,
+                                            truth=pool["truth"][idx],
+                                            horizons=aux_teacher_horizons,
+                                        )
+                                    )
                             examples.append(
                                 {
-                                    "history": all_histories[idx],
-                                    "forecast": all_forecasts[idx],
-                                    "truth": all_truth[idx],
-                                    "date": str(pd.Timestamp(all_dates[idx])),
+                                    "history": pool["histories"][idx],
+                                    "forecast": pool["forecasts"][idx],
+                                    "truth": pool["truth"][idx],
+                                    "date": str(pd.Timestamp(pool["dates"][idx])),
                                     "sentiment_history": sent_hist if sent_hist is not None else [],
+                                    "exogenous_summary": exogenous_summary,
+                                    "case_summary": example_case_summary,
+                                    "retrieval_tag": (
+                                        str(pool["retrieval_tags"][idx])
+                                        if "retrieval_tags" in pool
+                                        else None
+                                    ),
                                 }
                             )
-                        teaching_examples_subset.append(examples)
+                        return examples
+
+                    # Strict non-leaking pools:
+                    # - validation examples may only use training truths
+                    # - test examples may only use training + validation truths
+                    val_aux_forecasts = (
+                        {aux_teacher_model_name: aux_teacher_train_eval}
+                        if aux_teacher_available
+                        else None
+                    )
+                    val_pool = _prepare_example_pool(
+                        splits["train"]["dates"],
+                        y_train_hist,
+                        llm_base_train_eval,
+                        y_train_future,
+                        splits["train"]["X_enc"][:, -history_points:, :],
+                        val_aux_forecasts,
+                    )
+                    test_aux_forecasts = (
+                        {
+                            aux_teacher_model_name: np.concatenate(
+                                [aux_teacher_train_eval, aux_teacher_val_eval]
+                            )
+                        }
+                        if aux_teacher_available
+                        else None
+                    )
+                    test_pool = _prepare_example_pool(
+                        np.concatenate([splits["train"]["dates"], splits["val"]["dates"]]),
+                        np.concatenate([y_train_hist, y_val_hist]),
+                        np.concatenate([llm_base_train_eval, llm_base_val_eval]),
+                        np.concatenate([y_train_future, y_val_future]),
+                        np.concatenate(
+                            [
+                                splits["train"]["X_enc"][:, -history_points:, :],
+                                splits["val"]["X_enc"][:, -history_points:, :],
+                            ]
+                        ),
+                        test_aux_forecasts,
+                    )
+
+                    teaching_examples_subset = []
+                    val_teaching_examples_subset = []
+                    val_teaching_examples_rule_gate = []
+                    val_teaching_examples_delta = []
+                    for sample_idx in llm_eval_indices:
+                        example_indices = _select_example_indices(
+                            test_pool,
+                            splits["test"]["dates"][sample_idx],
+                            y_test_hist[sample_idx],
+                            llm_base_test_eval[sample_idx],
+                            splits["test"]["X_enc"][sample_idx, -history_points:, :],
+                        )
+                        teaching_examples_subset.append(
+                            _build_examples(test_pool, example_indices)
+                        )
+
+                    val_needed = []
+                    if val_eval_indices_grid is not None and len(val_eval_indices_grid) > 0:
+                        val_needed.extend(int(x) for x in np.asarray(val_eval_indices_grid, dtype=int))
+                    if val_eval_indices_rule_gate is not None and len(val_eval_indices_rule_gate) > 0:
+                        val_needed.extend(int(x) for x in np.asarray(val_eval_indices_rule_gate, dtype=int))
+                    if val_eval_indices_delta is not None and len(val_eval_indices_delta) > 0:
+                        val_needed.extend(int(x) for x in np.asarray(val_eval_indices_delta, dtype=int))
+                    if export_val_predictions:
+                        val_needed.extend(range(len(y_val_hist)))
+                    val_example_map: dict[int, list[dict]] = {}
+                    for sample_idx in sorted(set(val_needed)):
+                        example_indices = _select_example_indices(
+                            val_pool,
+                            splits["val"]["dates"][sample_idx],
+                            y_val_hist[sample_idx],
+                            llm_base_val_eval[sample_idx],
+                            splits["val"]["X_enc"][sample_idx, -history_points:, :],
+                        )
+                        val_example_map[int(sample_idx)] = _build_examples(val_pool, example_indices)
 
                     if val_eval_indices_grid is not None and len(val_eval_indices_grid) > 0:
                         for sample_idx in val_eval_indices_grid:
-                            val_date = pd.Timestamp(splits["val"]["dates"][sample_idx]).to_datetime64()
-                            pos = np.searchsorted(dates_sorted, val_date, side="left")
-                            if selection_mode in ("high_error", "recent_high_error") and pos > 0:
-                                candidate_indices = sorted_idx[:pos]
-                                if selection_mode == "recent_high_error" and lookback_days is not None:
-                                    cutoff = np.datetime64(
-                                        pd.Timestamp(val_date) - pd.Timedelta(days=lookback_days)
-                                    )
-                                    candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
-                                    if candidate_indices.size == 0:
-                                        candidate_indices = sorted_idx[:pos]
-                                cand_errors = all_path_mse[candidate_indices]
-                                if len(candidate_indices) > k_examples:
-                                    order = np.argsort(cand_errors)[-k_examples:]
-                                    example_indices = candidate_indices[order]
-                                else:
-                                    example_indices = candidate_indices
-                                example_indices = example_indices[np.argsort(all_dates[example_indices])]
-                            elif selection_mode == "similarity" and pos > 0:
-                                candidate_indices = sorted_idx[:pos]
-                                if lookback_days is not None:
-                                    cutoff = np.datetime64(
-                                        pd.Timestamp(val_date) - pd.Timedelta(days=lookback_days)
-                                    )
-                                    candidate_indices = candidate_indices[all_dates[candidate_indices] >= cutoff]
-                                    if candidate_indices.size == 0:
-                                        candidate_indices = sorted_idx[:pos]
-                                sample_feat = _history_features(y_val_hist[sample_idx])
-                                cand_feats = all_history_features[candidate_indices]
-                                distances = np.linalg.norm(cand_feats - sample_feat, axis=1)
-                                order = np.argsort(distances)[:k_examples]
-                                example_indices = candidate_indices[order]
-                            else:
-                                start = max(0, pos - k_examples)
-                                example_indices = sorted_idx[start:pos]
+                            val_teaching_examples_subset.append(
+                                val_example_map[int(sample_idx)]
+                            )
 
-                            examples = []
-                            for idx in example_indices:
-                                sent_hist = None
-                                if sentiment_map:
-                                    ex_date = pd.Timestamp(all_dates[idx])
-                                    ex_dates = build_history_dates(
-                                        panel_dates,
-                                        date_to_idx,
-                                        np.array([ex_date]),
-                                        history_points
-                                    )[0]
-                                    sent_hist = build_sentiment_histories(
-                                        [ex_dates],
-                                        sentiment_map,
-                                        sentiment_points
-                                    )[0]
-                                examples.append(
-                                    {
-                                        "history": all_histories[idx],
-                                        "forecast": all_forecasts[idx],
-                                        "truth": all_truth[idx],
-                                        "date": str(pd.Timestamp(all_dates[idx])),
-                                        "sentiment_history": sent_hist if sent_hist is not None else [],
-                                    }
-                                )
-                            val_teaching_examples_subset.append(examples)
+                    if val_eval_indices_rule_gate is not None and len(val_eval_indices_rule_gate) > 0:
+                        for sample_idx in val_eval_indices_rule_gate:
+                            val_teaching_examples_rule_gate.append(
+                                val_example_map[int(sample_idx)]
+                            )
+                    if val_eval_indices_delta is not None and len(val_eval_indices_delta) > 0:
+                        for sample_idx in val_eval_indices_delta:
+                            val_teaching_examples_delta.append(
+                                val_example_map[int(sample_idx)]
+                            )
+                    if export_val_predictions:
+                        val_teaching_examples_export = [
+                            val_example_map[int(sample_idx)]
+                            for sample_idx in range(len(y_val_hist))
+                        ]
                     exogenous_subset = [None for _ in llm_eval_indices]
                 
-                tsm_forecast = (
-                    tsm_pred_eval[llm_eval_indices]
-                    if tsm_pred_eval is not None
+                base_forecast = (
+                    llm_base_test_eval[llm_eval_indices]
+                    if llm_base_test_eval is not None
                     else None
                 )
                 price_bases = (
@@ -1669,10 +3593,25 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 )
 
                 try:
-                    method_tsm_forecast = tsm_forecast
+                    method_tsm_forecast = base_forecast
                     method_exogenous = exogenous_subset
                     method_price_bases = price_bases
                     method_sentiment = sentiment_subset
+                    if (
+                        include_current_aux_teacher_summary
+                        and aux_teacher_available
+                        and base_forecast is not None
+                    ):
+                        method_exogenous = [
+                            augment_exogenous_summary_with_teacher(
+                                exogenous_summary=exogenous_summaries[i],
+                                base_forecast=base_forecast[row_pos],
+                                aux_forecast=aux_teacher_test_eval[i],
+                                teacher_name=aux_teacher_model_name,
+                                horizons=aux_teacher_horizons,
+                            )
+                            for row_pos, i in enumerate(llm_eval_indices)
+                        ]
                     if method == "NEWS-SENTIMENT-ONLY":
                         method_tsm_forecast = None
 
@@ -1686,13 +3625,16 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         price_bases=method_price_bases,
                         teaching_examples=(
                             teaching_examples_subset
-                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA")
+                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA", "TSM+LLM-COT-SENT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HPRICE")
                             else None
                         ),
-                        sentiment_histories=method_sentiment
+                        sentiment_histories=method_sentiment,
+                        checkpoint_dir=checkpoint_dir,
+                        resume_checkpoint_dir=resume_checkpoint_dir,
+                        sample_keys=[str(int(i)) for i in llm_eval_indices],
                     )
                     
-                    llm_results[method] = {
+                    llm_results[result_name] = {
                         'predictions': predictions,
                         'metrics': compute_metrics_by_horizon(
                             y_test_future[llm_eval_indices], predictions, horizons
@@ -1703,54 +3645,378 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         'errors': get_per_sample_errors(
                             y_test_future[llm_eval_indices], predictions, horizons
                         ),
-                        'eval_indices': llm_eval_indices
+                        'eval_indices': llm_eval_indices,
+                        'base_model': llm_base_model_name if method_requires_base else None,
+                        'method_template': method,
+                        'blend_semantics': {
+                            'llm_blend_mode': llm_blend_mode,
+                            'llm_blend_configured': llm_blend_configured,
+                            'method_supports_internal_blend': method_supports_blend,
+                            'method_uses_internal_blend': method_uses_blend,
+                        },
                     }
 
-                    # Persist subset predictions so we can debug deltas vs TSM and
-                    # produce paper-style plots without re-running the LLM.
+                    # Persist subset predictions so we can debug deltas vs the
+                    # configured base forecast and reproduce paper-style plots
+                    # without re-running the LLM.
                     try:
-                        out_path = run_dir / "predictions" / f"{method}_pred_test_subset.npz"
+                        out_path = run_dir / "predictions" / f"{result_name}_pred_test_subset.npz"
                         np.savez_compressed(
                             out_path,
                             method=np.array([method]),
+                            result_name=np.array([result_name]),
+                            base_model=np.array([llm_base_model_name]),
                             eval_indices=np.asarray(llm_eval_indices, dtype=int),
                             dates=np.asarray(
                                 [str(splits["test"]["dates"][i]) for i in llm_eval_indices],
                                 dtype="U",
                             ),
                             y_true=np.asarray(y_test_future[llm_eval_indices], dtype=float),
-                            tsm_pred=np.asarray(tsm_pred_eval[llm_eval_indices], dtype=float)
-                            if tsm_pred_eval is not None
+                            base_pred=np.asarray(base_forecast, dtype=float)
+                            if base_forecast is not None
+                            else np.empty((0, 0), dtype=float),
+                            tsm_pred=np.asarray(base_forecast, dtype=float)
+                            if llm_base_model_name == "tsm" and base_forecast is not None
                             else np.empty((0, 0), dtype=float),
                             yhat=np.asarray(predictions, dtype=float),
                         )
                     except Exception as e:
                         logger.warning("Failed to save LLM subset predictions: %s", e)
                     
-                    logger.info(f"\n{method} Results:")
-                    logger.info(llm_results[method]['metrics'])
-                    method_path_mse = (llm_results[method].get("path_metrics") or {}).get("mse_path")
+                    logger.info("\n%s Results:", result_name)
+                    logger.info(llm_results[result_name]['metrics'])
+                    method_path_mse = (llm_results[result_name].get("path_metrics") or {}).get("mse_path")
                     if method_path_mse is not None:
                         logger.info(
                             "%s Path MSE (avg over %dd): %.6f",
-                            method,
+                            result_name,
                             config.pred_len,
                             float(method_path_mse),
                         )
+
+                    val_llm_cache: dict[tuple[int, ...], tuple[np.ndarray, list[dict]]] = {}
+
+                    def _run_val_llm_for_indices(
+                        eval_indices: np.ndarray,
+                        val_teaching: Optional[list[list[dict]]],
+                    ) -> tuple[np.ndarray, list[dict]]:
+                        cache_key = tuple(int(x) for x in np.asarray(eval_indices, dtype=int))
+                        cached = val_llm_cache.get(cache_key)
+                        if cached is not None:
+                            return cached
+                        val_method_exogenous = (
+                            [val_exogenous_summaries[i] for i in eval_indices]
+                            if val_exogenous_summaries is not None
+                            else None
+                        )
+                        if (
+                            include_current_aux_teacher_summary
+                            and aux_teacher_available
+                            and val_method_exogenous is not None
+                        ):
+                            val_method_exogenous = [
+                                augment_exogenous_summary_with_teacher(
+                                    exogenous_summary=val_exogenous_summaries[i],
+                                    base_forecast=llm_base_val_eval[i],
+                                    aux_forecast=aux_teacher_val_eval[i],
+                                    teacher_name=aux_teacher_model_name,
+                                    horizons=aux_teacher_horizons,
+                                )
+                                for i in eval_indices
+                            ]
+                        if method in (
+                            "TSM+LLM-COT-RF",
+                            "TSM+LLM-COT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF",
+                            "TSM+LLM-COT-SENT-RF-DELTA",
+                            "TSM+LLM-COT-SENT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF-HPRICE",
+                        ):
+                            val_method_exogenous = [None for _ in eval_indices]
+
+                        val_method_sentiment = (
+                            [val_sentiment_histories[i] for i in eval_indices]
+                            if val_sentiment_histories is not None
+                            else None
+                        )
+                        val_pred, val_meta = refiner.refine_batch(
+                            method=method,
+                            histories=val_histories[eval_indices],
+                            date_arrays=[val_dates[i] for i in eval_indices],
+                            tsm_forecasts=llm_base_val_eval[eval_indices],
+                            pred_len=config.pred_len,
+                            exogenous_summaries=val_method_exogenous,
+                            price_bases=None,
+                            teaching_examples=val_teaching,
+                            sentiment_histories=val_method_sentiment,
+                        )
+                        val_llm_cache[cache_key] = (val_pred, val_meta)
+                        return val_pred, val_meta
+
+                    if export_val_predictions and val_histories is not None and val_dates is not None:
+                        full_val_indices = np.arange(len(val_histories), dtype=int)
+                        full_val_pred, full_val_meta = _run_val_llm_for_indices(
+                            full_val_indices,
+                            val_teaching_examples_export,
+                        )
+                        try:
+                            out_path = run_dir / "predictions" / f"{result_name}_pred_val_full.npz"
+                            np.savez_compressed(
+                                out_path,
+                                method=np.array([method]),
+                                result_name=np.array([result_name]),
+                                base_model=np.array([llm_base_model_name]),
+                                eval_indices=full_val_indices,
+                                dates=np.asarray(
+                                    [str(splits["val"]["dates"][i]) for i in full_val_indices],
+                                    dtype="U",
+                                ),
+                                y_true=np.asarray(y_val_future[full_val_indices], dtype=float),
+                                base_pred=np.asarray(llm_base_val_eval[full_val_indices], dtype=float)
+                                if llm_base_val_eval is not None
+                                else np.empty((0, 0), dtype=float),
+                                yhat=np.asarray(full_val_pred, dtype=float),
+                            )
+                            meta_path = run_dir / "llm" / f"{result_slug}_val_metadata.json"
+                            with meta_path.open("w", encoding="utf-8") as f:
+                                json.dump(
+                                    {
+                                        "n_samples": int(len(full_val_indices)),
+                                        "export_val_predictions": True,
+                                        "method": method,
+                                        "result_name": result_name,
+                                    },
+                                    f,
+                                    indent=2,
+                                )
+                        except Exception as e:
+                            logger.warning("Failed to save validation LLM predictions: %s", e)
+
+                    if rule_gate_enabled and method in rule_gate_methods:
+                        if method == "NEWS-SENTIMENT-ONLY":
+                            logger.warning("Rule gate skipped for NEWS-SENTIMENT-ONLY.")
+                        elif llm_base_test_eval is None or llm_base_val_eval is None:
+                            logger.warning(
+                                "Rule gate skipped for %s (missing %s predictions).",
+                                result_name,
+                                llm_base_model_name,
+                            )
+                        elif rule_gate_tune_split != "val":
+                            logger.warning(
+                                "Rule gate skipped (unsupported tune_split=%s).",
+                                rule_gate_tune_split,
+                            )
+                        elif val_eval_indices_rule_gate is None or len(val_eval_indices_rule_gate) == 0:
+                            logger.warning("Rule gate skipped (no validation samples).")
+                        else:
+                            val_llm_pred, val_llm_meta = _run_val_llm_for_indices(
+                                val_eval_indices_rule_gate,
+                                val_teaching_examples_rule_gate,
+                            )
+                            val_feature_df = build_rule_gate_feature_frame(
+                                llm_base_val_eval[val_eval_indices_rule_gate],
+                                val_llm_pred,
+                                val_llm_meta,
+                                key_horizons=rule_gate_key_horizons,
+                            )
+                            test_feature_df = build_rule_gate_feature_frame(
+                                llm_base_test_eval[llm_eval_indices],
+                                predictions,
+                                metadata,
+                                key_horizons=rule_gate_key_horizons,
+                            )
+                            val_summary, _ = evaluate_rule_gate_candidates(
+                                y_true=y_val_future[val_eval_indices_rule_gate],
+                                base_pred=llm_base_val_eval[val_eval_indices_rule_gate],
+                                llm_pred=val_llm_pred,
+                                feature_df=val_feature_df,
+                                candidates=rule_gate_candidates,
+                                low_match_threshold=rule_gate_low_match_threshold,
+                                abs_h30_thresholds_pct=rule_gate_abs_h30_thresholds,
+                                horizons=horizons,
+                            )
+                            test_summary, test_gated_predictions = evaluate_rule_gate_candidates(
+                                y_true=y_test_future[llm_eval_indices],
+                                base_pred=llm_base_test_eval[llm_eval_indices],
+                                llm_pred=predictions,
+                                feature_df=test_feature_df,
+                                candidates=rule_gate_candidates,
+                                low_match_threshold=rule_gate_low_match_threshold,
+                                abs_h30_thresholds_pct=rule_gate_abs_h30_thresholds,
+                                horizons=horizons,
+                            )
+
+                            out_root = run_dir / "results" / "rule_gate" / result_slug
+                            (out_root / "val").mkdir(parents=True, exist_ok=True)
+                            (out_root / "test").mkdir(parents=True, exist_ok=True)
+                            val_summary.to_csv(out_root / "val" / "rule_gate_summary.csv", index=False)
+                            test_summary.to_csv(out_root / "test" / "rule_gate_summary.csv", index=False)
+                            val_feature_df.to_csv(out_root / "val" / "rule_gate_features.csv", index=False)
+                            test_feature_df.to_csv(out_root / "test" / "rule_gate_features.csv", index=False)
+
+                            metric_col = "mse_path"
+                            if rule_gate_metric != "mse_path" and rule_gate_metric in val_summary.columns:
+                                metric_col = rule_gate_metric
+                            best_candidate = str(
+                                val_summary.loc[val_summary[metric_col].idxmin(), "candidate"]
+                            )
+                            gated_predictions = test_gated_predictions[best_candidate]
+                            selection_payload = {
+                                "method": result_name,
+                                "method_template": method,
+                                "base_model": llm_base_model_name,
+                                "selected_candidate": best_candidate,
+                                "tune_split": rule_gate_tune_split,
+                                "metric": metric_col,
+                                "key_horizons": rule_gate_key_horizons,
+                                "low_match_threshold": rule_gate_low_match_threshold,
+                                "abs_h30_thresholds_pct": rule_gate_abs_h30_thresholds,
+                                "n_val": int(len(val_eval_indices_rule_gate)),
+                                "n_test": int(len(llm_eval_indices)),
+                                "val_flagged_count": int(
+                                    val_summary.loc[
+                                        val_summary["candidate"] == best_candidate,
+                                        "flagged_count",
+                                    ].iloc[0]
+                                ),
+                                "test_flagged_count": int(
+                                    test_summary.loc[
+                                        test_summary["candidate"] == best_candidate,
+                                        "flagged_count",
+                                    ].iloc[0]
+                                ),
+                            }
+                            with (run_dir / "llm" / f"rule_gate_selection_{result_slug}.json").open("w") as f:
+                                json.dump(selection_payload, f, indent=2)
+
+                            gated_name = f"{result_name}_rulegate_bestval"
+                            llm_results[gated_name] = {
+                                "predictions": gated_predictions,
+                                "metrics": compute_metrics_by_horizon(
+                                    y_test_future[llm_eval_indices], gated_predictions, horizons
+                                ),
+                                "path_metrics": compute_path_metrics(
+                                    y_test_future[llm_eval_indices], gated_predictions
+                                ),
+                                "errors": get_per_sample_errors(
+                                    y_test_future[llm_eval_indices], gated_predictions, horizons
+                                ),
+                                "eval_indices": llm_eval_indices,
+                                "rule_gate": selection_payload,
+                            }
+                            logger.info(
+                                "Rule gate (val): best %s candidate=%s",
+                                metric_col,
+                                best_candidate,
+                            )
+                            logger.info("\n%s Results:", gated_name)
+                            logger.info(llm_results[gated_name]["metrics"])
+                            gated_path_mse = (
+                                llm_results[gated_name].get("path_metrics") or {}
+                            ).get("mse_path")
+                            if gated_path_mse is not None:
+                                logger.info(
+                                    "%s Path MSE (avg over %dd): %.6f",
+                                    gated_name,
+                                    config.pred_len,
+                                    float(gated_path_mse),
+                                )
+
+                    if delta_calib_enabled and method in delta_calib_methods:
+                        if val_eval_indices_delta is None or len(val_eval_indices_delta) == 0:
+                            logger.warning("Delta calibration skipped (no validation samples).")
+                        elif llm_base_val_eval is None or llm_base_test_eval is None:
+                            logger.warning(
+                                "Delta calibration skipped for %s (missing %s validation/test forecasts).",
+                                result_name,
+                                llm_base_model_name,
+                            )
+                        else:
+                            val_llm_pred, _ = _run_val_llm_for_indices(
+                                val_eval_indices_delta,
+                                val_teaching_examples_delta,
+                            )
+                            scales = fit_delta_calibration_scales(
+                                y_true=y_val_future[val_eval_indices_delta],
+                                base_pred=llm_base_val_eval[val_eval_indices_delta],
+                                llm_pred=val_llm_pred,
+                                horizons=horizons,
+                                target_horizons=delta_calib_target_horizons,
+                                min_scale=delta_calib_min_scale,
+                                max_scale=delta_calib_max_scale,
+                                shared=delta_calib_shared,
+                            )
+                            calibrated = apply_delta_calibration(
+                                base_pred=llm_base_test_eval[llm_eval_indices],
+                                llm_pred=predictions,
+                                scales=scales,
+                                pred_len=config.pred_len,
+                            )
+                            calib_name = f"{result_name}_delta_calibrated"
+                            llm_results[calib_name] = {
+                                "predictions": calibrated,
+                                "metrics": compute_metrics_by_horizon(
+                                    y_test_future[llm_eval_indices], calibrated, horizons
+                                ),
+                                "path_metrics": compute_path_metrics(
+                                    y_test_future[llm_eval_indices], calibrated
+                                ),
+                                "errors": get_per_sample_errors(
+                                    y_test_future[llm_eval_indices], calibrated, horizons
+                                ),
+                                "eval_indices": llm_eval_indices,
+                                "delta_calibration": {
+                                    "target_horizons": delta_calib_target_horizons,
+                                    "min_scale": delta_calib_min_scale,
+                                    "max_scale": delta_calib_max_scale,
+                                    "shared": delta_calib_shared,
+                                    "tune_scope": delta_calib_tune_scope,
+                                    "recent_tail_fraction": delta_calib_recent_tail_fraction,
+                                    "recent_tail_min_samples": delta_calib_recent_tail_min_samples,
+                                    "scales": {str(k): float(v) for k, v in scales.items()},
+                                },
+                            }
+                            logger.info("\n%s Results:", calib_name)
+                            logger.info(llm_results[calib_name]["metrics"])
+                            calib_path_mse = (
+                                llm_results[calib_name].get("path_metrics") or {}
+                            ).get("mse_path")
+                            if calib_path_mse is not None:
+                                logger.info(
+                                    "%s Path MSE (avg over %dd): %.6f",
+                                    calib_name,
+                                    config.pred_len,
+                                    float(calib_path_mse),
+                                )
+                            with (run_dir / "llm" / f"delta_calibration_{result_slug}.json").open("w") as f:
+                                json.dump(llm_results[calib_name]["delta_calibration"], f, indent=2)
 
                     if calibrate_enabled and method in calibrate_methods:
                         if val_eval_indices is None or len(val_eval_indices) == 0:
                             logger.warning("Blend calibration skipped (no validation samples).")
                         elif method == "NEWS-SENTIMENT-ONLY":
                             logger.warning("Blend calibration skipped for NEWS-SENTIMENT-ONLY.")
-                        elif method == "TSM+LLM-COT-RF":
-                            logger.warning("Blend calibration skipped for CoT-RF.")
+                        elif method in (
+                            "TSM+LLM-COT-RF",
+                            "TSM+LLM-COT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF",
+                            "TSM+LLM-COT-SENT-RF-DELTA",
+                            "TSM+LLM-COT-SENT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF-HPRICE",
+                        ):
+                            logger.warning("Blend calibration skipped for %s.", result_name)
+                        elif llm_base_val_eval is None or llm_base_test_eval is None:
+                            logger.warning(
+                                "Blend calibration skipped for %s (missing %s validation/test forecasts).",
+                                result_name,
+                                llm_base_model_name,
+                            )
                         else:
                             val_predictions, _ = refiner.refine_batch(
                                 method=method,
                                 histories=val_histories[val_eval_indices],
                                 date_arrays=[val_dates[i] for i in val_eval_indices],
-                                tsm_forecasts=tsm_pred_val_eval[val_eval_indices],
+                                tsm_forecasts=llm_base_val_eval[val_eval_indices],
                                 pred_len=config.pred_len,
                                 exogenous_summaries=(
                                     [val_exogenous_summaries[i] for i in val_eval_indices]
@@ -1768,19 +4034,19 @@ def run_experiment(config_path: str = None, overrides: dict = None):
 
                             weights = fit_blend_weights(
                                 y_val_future[val_eval_indices],
-                                tsm_pred_val_eval[val_eval_indices],
+                                llm_base_val_eval[val_eval_indices],
                                 val_predictions,
                                 horizons,
                                 min_weight=min_weight,
                                 max_weight=max_weight
                             )
                             blended = apply_blend_weights(
-                                tsm_pred_eval[llm_eval_indices],
+                                llm_base_test_eval[llm_eval_indices],
                                 predictions,
                                 weights,
                                 config.pred_len
                             )
-                            blend_name = f"{method}_calibrated"
+                            blend_name = f"{result_name}_calibrated"
                             llm_results[blend_name] = {
                                 'predictions': blended,
                                 'metrics': compute_metrics_by_horizon(
@@ -1815,8 +4081,18 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                     if blend_grid_enabled and method in blend_grid_methods:
                         if method == "NEWS-SENTIMENT-ONLY":
                             logger.warning("Blend grid skipped for NEWS-SENTIMENT-ONLY.")
-                        elif tsm_pred_eval is None or tsm_pred_val_eval is None:
-                            logger.warning("Blend grid skipped (missing TSM predictions).")
+                        elif method_uses_blend:
+                            logger.warning(
+                                "Blend grid skipped for %s because it already uses internal llm.blend mode=%s.",
+                                result_name,
+                                llm_blend_mode,
+                            )
+                        elif llm_base_test_eval is None or llm_base_val_eval is None:
+                            logger.warning(
+                                "Blend grid skipped for %s (missing %s predictions).",
+                                result_name,
+                                llm_base_model_name,
+                            )
                         elif blend_grid_tune_split != "val":
                             logger.warning(
                                 "Blend grid skipped (unsupported tune_split=%s).",
@@ -1825,47 +4101,16 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                         elif val_eval_indices_grid is None or len(val_eval_indices_grid) == 0:
                             logger.warning("Blend grid skipped (no validation samples).")
                         else:
-                            method_slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", method)
-                            out_root = run_dir / "results" / f"blend_grid_{blend_grid_schedule}" / method_slug
-
-                            # 1) Get LLM predictions on the validation subset
-                            val_method_exogenous = (
-                                [val_exogenous_summaries[i] for i in val_eval_indices_grid]
-                                if val_exogenous_summaries is not None
-                                else None
-                            )
-                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA"):
-                                # These methods don't consume exogenous summaries in prompts.
-                                val_method_exogenous = [None for _ in val_eval_indices_grid]
-
-                            val_method_sentiment = (
-                                [val_sentiment_histories[i] for i in val_eval_indices_grid]
-                                if val_sentiment_histories is not None
-                                else None
-                            )
-
-                            val_teaching = (
-                                val_teaching_examples_subset
-                                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA")
-                                else None
-                            )
-
-                            val_llm_pred, _ = refiner.refine_batch(
-                                method=method,
-                                histories=val_histories[val_eval_indices_grid],
-                                date_arrays=[val_dates[i] for i in val_eval_indices_grid],
-                                tsm_forecasts=tsm_pred_val_eval[val_eval_indices_grid],
-                                pred_len=config.pred_len,
-                                exogenous_summaries=val_method_exogenous,
-                                price_bases=None,
-                                teaching_examples=val_teaching,
-                                sentiment_histories=val_method_sentiment,
+                            out_root = run_dir / "results" / f"blend_grid_{blend_grid_schedule}" / result_slug
+                            val_llm_pred, _ = _run_val_llm_for_indices(
+                                val_eval_indices_grid,
+                                val_teaching_examples_subset,
                             )
 
                             # 2) Evaluate blend grid on validation (selection split)
                             val_summary, val_mse_by_h, val_best_by_h = evaluate_blend_grid(
                                 y_true=y_val_future[val_eval_indices_grid],
-                                base_pred=tsm_pred_val_eval[val_eval_indices_grid],
+                                base_pred=llm_base_val_eval[val_eval_indices_grid],
                                 llm_pred=val_llm_pred,
                                 weights=blend_grid_weights,
                                 schedule=blend_grid_schedule,
@@ -1883,7 +4128,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                             # 3) Evaluate blend grid on test (reporting split)
                             test_summary, test_mse_by_h, test_best_by_h = evaluate_blend_grid(
                                 y_true=y_test_future[llm_eval_indices],
-                                base_pred=tsm_pred_eval[llm_eval_indices],
+                                base_pred=llm_base_test_eval[llm_eval_indices],
                                 llm_pred=predictions,
                                 weights=blend_grid_weights,
                                 schedule=blend_grid_schedule,
@@ -1915,31 +4160,44 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                                     )
 
                             selection_payload = {
-                                "method": method,
+                                "method": result_name,
+                                "method_template": method,
+                                "base_model": llm_base_model_name,
                                 "schedule": blend_grid_schedule,
                                 "weights": blend_grid_weights,
                                 "tune_split": blend_grid_tune_split,
                                 "metric": metric_col,
                                 "min_weight": blend_grid_min_weight,
                                 "power": blend_grid_power,
+                                "tune_scope": blend_grid_tune_scope,
+                                "recent_tail_fraction": blend_grid_recent_tail_fraction,
+                                "recent_tail_min_samples": blend_grid_recent_tail_min_samples,
                                 "best_w_path": best_w_path,
                                 "best_w_by_horizon": best_w_by_horizon,
                                 "n_val": int(len(val_eval_indices_grid)),
                                 "n_test": int(len(llm_eval_indices)),
                             }
-                            with (run_dir / "llm" / f"blend_grid_selection_{method_slug}.json").open("w") as f:
+                            with (run_dir / "llm" / f"blend_grid_selection_{result_slug}.json").open("w") as f:
                                 json.dump(selection_payload, f, indent=2)
 
                             logger.info(
-                                "Blend grid (val): best %s at w=%.2f",
+                                "Blend grid (%s): best %s at w=%.2f",
+                                blend_grid_tune_scope,
                                 metric_col,
                                 best_w_path,
                             )
 
                             # 5) Register best-on-val blended variants as first-class models
-                            def _register_blend(name_suffix: str, w: float) -> None:
+                            base_pred_subset = llm_base_test_eval[llm_eval_indices]
+                            y_test_subset = y_test_future[llm_eval_indices]
+
+                            def _register_blend(
+                                name_suffix: str,
+                                w: float,
+                                h1_base_override: bool = False,
+                            ) -> None:
                                 blended_pred = blend_forecasts(
-                                    base_pred=tsm_pred_eval[llm_eval_indices],
+                                    base_pred=base_pred_subset,
                                     llm_pred=predictions,
                                     strength=float(w),
                                     schedule=blend_grid_schedule,
@@ -1947,36 +4205,53 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                                     min_weight=blend_grid_min_weight,
                                     power=blend_grid_power,
                                 )
-                                model_name = f"{method}_blend_{blend_grid_schedule}_{name_suffix}"
+                                model_name = f"{result_name}_blend_{blend_grid_schedule}_{name_suffix}"
+                                blend_meta = {
+                                    "schedule": blend_grid_schedule,
+                                    "w": float(w),
+                                    "min_weight": blend_grid_min_weight,
+                                    "power": blend_grid_power,
+                                    "selected_on": "val",
+                                    "metric": metric_col,
+                                    "base_model": llm_base_model_name,
+                                    "method_template": method,
+                                }
+                                if h1_base_override and blended_pred.shape[1] > 0:
+                                    blended_pred = blended_pred.copy()
+                                    blended_pred[:, 0] = base_pred_subset[:, 0]
+                                    model_name = f"{model_name}_h1base"
+                                    blend_meta["h1_override_model"] = llm_base_model_name
+
                                 llm_results[model_name] = {
                                     "predictions": blended_pred,
                                     "metrics": compute_metrics_by_horizon(
-                                        y_test_future[llm_eval_indices], blended_pred, horizons
+                                        y_test_subset, blended_pred, horizons
                                     ),
                                     "path_metrics": compute_path_metrics(
-                                        y_test_future[llm_eval_indices], blended_pred
+                                        y_test_subset, blended_pred
                                     ),
                                     "errors": get_per_sample_errors(
-                                        y_test_future[llm_eval_indices], blended_pred, horizons
+                                        y_test_subset, blended_pred, horizons
                                     ),
                                     "eval_indices": llm_eval_indices,
-                                    "blend": {
-                                        "schedule": blend_grid_schedule,
-                                        "w": float(w),
-                                        "min_weight": blend_grid_min_weight,
-                                        "power": blend_grid_power,
-                                        "selected_on": "val",
-                                        "metric": metric_col,
-                                    },
+                                    "blend": blend_meta,
                                 }
                                 logger.info("Added blended model: %s (w=%.2f)", model_name, float(w))
 
                             _register_blend("bestval_path", best_w_path)
+                            _register_blend("bestval_path", best_w_path, h1_base_override=True)
                             for h, w in best_w_by_horizon.items():
                                 _register_blend(f"bestval_h{int(h)}", float(w))
 
-                    if method == "TSM+LLM-COT-RF":
-                        rules_path = run_dir / "llm" / "cot_rf_rules.jsonl"
+                    if method in (
+                        "TSM+LLM-COT-RF",
+                        "TSM+LLM-COT-RF-HDELTA",
+                        "TSM+LLM-COT-SENT-RF",
+                        "TSM+LLM-COT-SENT-RF-DELTA",
+                        "TSM+LLM-COT-SENT-RF-HDELTA",
+                        "TSM+LLM-COT-SENT-RF-HPRICE",
+                    ):
+                        rules_path = run_dir / "llm" / f"{result_slug}_rules.jsonl"
                         with rules_path.open("w") as f:
                             for idx, meta in zip(llm_eval_indices, metadata):
                                 record = {
@@ -1988,7 +4263,7 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                                 f.write(json.dumps(record) + "\n")
                 
                 except Exception as e:
-                    logger.error(f"LLM method {method} failed: {e}")
+                    logger.error("LLM method %s failed: %s", result_name, e)
             
             if llm_eval_indices is not None and len(llm_eval_indices) > 0:
                 for name, result in baseline_results.items():
@@ -2145,6 +4420,8 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     return_cfg = config.evaluation.get("return_metrics", {})
     return_metrics_list = return_cfg.get("metrics", ["mse", "rmse", "mae", "mape"])
     signal_threshold = float(return_cfg.get("signal_threshold", 0.0))
+    average_non_overlap_offsets = bool(return_cfg.get("average_non_overlap_offsets", True))
+    transaction_cost_bps = float(return_cfg.get("transaction_cost_bps", 0.0))
 
     drift_rows = []
     portfolio_rows = []
@@ -2196,7 +4473,9 @@ def run_experiment(config_path: str = None, overrides: dict = None):
                 preds,
                 base_prices,
                 horizons,
-                signal_threshold=signal_threshold
+                signal_threshold=signal_threshold,
+                average_non_overlap_offsets=average_non_overlap_offsets,
+                transaction_cost_bps=transaction_cost_bps,
             )
             portfolio_df = portfolio_df.copy()
             portfolio_df["model"] = name
@@ -2378,9 +4657,12 @@ def run_experiment(config_path: str = None, overrides: dict = None):
     paper_snapshot_path = _build_paper(run_dir / "paper_snapshot")
     logger.info(f"Paper snapshot saved to: {paper_snapshot_path}")
 
-    paper_root = Path(__file__).parent.parent / config.output.get("paper_dir", "paper")
-    paper_root_path = _build_paper(paper_root)
-    logger.info(f"Paper saved to: {paper_root_path}")
+    if config.output.get("write_project_paper", True):
+        paper_root = Path(__file__).parent.parent / config.output.get("paper_dir", "paper")
+        paper_root_path = _build_paper(paper_root)
+        logger.info(f"Paper saved to: {paper_root_path}")
+    else:
+        logger.info("Skipping shared project paper write (output.write_project_paper=false)")
     
     # =========================================================================
     # Complete
@@ -2410,6 +4692,12 @@ def main():
         default=None,
         help="Random seed override"
     )
+    parser.add_argument(
+        "--data-dir",
+        type=str,
+        default=None,
+        help="Path to data directory (default: ./Data)",
+    )
     
     args = parser.parse_args()
     
@@ -2417,7 +4705,7 @@ def main():
     if args.seed:
         overrides["reproducibility"] = {"seed": args.seed}
     
-    run_experiment(args.config, overrides)
+    run_experiment(args.config, overrides, data_dir=args.data_dir)
 
 
 if __name__ == "__main__":

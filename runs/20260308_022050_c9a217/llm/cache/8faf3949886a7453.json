@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 35.66 with near-zero change_20d_pct.\", \"Avoid overshoot on h5 anchor; cap forecast at 36.71.\", \"Match h1 anchor to spot with minimal error.\", \"Ignore volatility spike if change_20d_pct is flat.\", \"Hold h30 anchor steady if anchor_error_pct exceeds 5%.\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 5d change is negative\", \"Hold 30d forecast unchanged if anchor error exceeds \u00b12.0%\", \"Reduce 20d volatility weight if 5d change is below -3.0%\", \"Flag h5 forecast if true value deviates >5% from forecast\", \"Keep h1 forecast if anchor error is within \u00b11.0% of true value\"]}"}

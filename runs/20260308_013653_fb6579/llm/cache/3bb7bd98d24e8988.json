@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with low volatility\", \"Hold 20d change near zero when anchors show weak divergence\", \"Cap 20d volatility at 0.80 to prevent overshoot\", \"Keep h20 anchor unchanged if 20d change is flat\", \"Use h1 anchor as baseline if 5d change is strong\"]}"}

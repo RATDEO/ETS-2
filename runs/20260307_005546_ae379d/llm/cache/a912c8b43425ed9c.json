@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, so avoid large overshoots\", \"20d vol is low, so anchor h20 should stay near spot\", \"h1 anchor error is small, keep it unchanged\", \"h5 anchor is slightly above spot, align with 5d momentum\", \"h30 anchor is high, but 20d change is flat, hold steady\"]}"}

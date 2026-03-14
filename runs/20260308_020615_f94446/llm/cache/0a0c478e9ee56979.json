@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.18 with weak vol signal\", \"Avoid overshoot on h30 as it shows +1.24% vs spot\", \"Match h5 anchor to 50.60 for +0.54% vs spot\", \"Hold h1 anchor at 50.24 for -0.17% vs spot\", \"Ignore 20d vol spike; no mean reversion needed\"]}"}

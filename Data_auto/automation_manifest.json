@@ -1,0 +1,316 @@
+{
+  "generated_at_utc": "2026-02-26T15:53:28.980545+00:00",
+  "data_root": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto",
+  "sources": [
+    {
+      "name": "eua_futures",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/eua-futures/European Union Allowance (EUA) Yearly Futures Historical Data AUTO.csv",
+      "source_url": "https://www.investing.com/commodities/european-union-allowance-eua-year-futures-historical-data",
+      "rows": 4334,
+      "min_date": "2009-04-01",
+      "max_date": "2026-02-25",
+      "note": "Seeded from 1 baseline file(s). Incremental rows from Investing: 23. Incremental window from Investing page payload: 2026-01-26T00:00:00.000Z -> 2026-02-26T15:53:18.380Z"
+    },
+    {
+      "name": "icap_system_33",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/icap-allowance-price-explorer-secondary-market/icap-graph-price-data-2005-03-09-2018-12-28.csv",
+      "source_url": "https://allowancepriceexplorer.icapcarbonaction.com/systems/reports/price/download",
+      "rows": 3481,
+      "min_date": "2005-03-09",
+      "max_date": "2018-12-28",
+      "note": null
+    },
+    {
+      "name": "icap_system_35",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/icap-allowance-price-explorer-secondary-market/icap-graph-price-data-2019-01-07-2025-12-15.csv",
+      "source_url": "https://allowancepriceexplorer.icapcarbonaction.com/systems/reports/price/download",
+      "rows": 1555,
+      "min_date": "2019-01-07",
+      "max_date": "2025-12-15",
+      "note": null
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_seed_csv_emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv",
+      "source_url": "/Users/davidwilkinson/Desktop/ETS 2/Data/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Copied from baseline seed directory."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2017-data.xls",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2017-data.xls",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2017-data.xls",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2018-data.xls",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2018-data.xls",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2018-data.xls",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2019-data.xls",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2019-data.xls",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2019-data.xls",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2020-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2020-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2020-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2021-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2021-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2021-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2022-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2022-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2022-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2023-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2023-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2023-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2024-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2024-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2024-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2025-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2025-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2025-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "eex_auction_file_emission-spot-primary-market-auction-report-2026-data.xlsx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/emission-spot-primary-market-auction/emission-spot-primary-market-auction-report-2026-data.xlsx",
+      "source_url": "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2026-data.xlsx",
+      "rows": null,
+      "min_date": null,
+      "max_date": null,
+      "note": "Raw source file (Excel)."
+    },
+    {
+      "name": "ecb_eurusd",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/usd.xml",
+      "source_url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml",
+      "rows": 6953,
+      "min_date": "1999-01-04",
+      "max_date": "2026-02-26",
+      "note": null
+    },
+    {
+      "name": "fred_brent",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/energy-benchmarks/eu-brent-spot-usd.csv",
+      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU",
+      "rows": 9836,
+      "min_date": "1987-05-20",
+      "max_date": "2026-02-23",
+      "note": null
+    },
+    {
+      "name": "coal_api2_ara",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/energy-benchmarks/rotterdam-coal-futures-usd.csv",
+      "source_url": "https://finance.yahoo.com/quote/MTF=F",
+      "rows": 3677,
+      "min_date": "2010-12-17",
+      "max_date": "2025-12-26",
+      "note": "Symbol MTF=F (Coal API2 CIF ARA)."
+    },
+    {
+      "name": "index_GRN",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/carbon-market-indices/GRN_history.csv",
+      "source_url": "https://finance.yahoo.com/quote/GRN",
+      "rows": 1619,
+      "min_date": "2019-09-18",
+      "max_date": "2026-02-26",
+      "note": null
+    },
+    {
+      "name": "index_KCCA",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/carbon-market-indices/KCCA_history.csv",
+      "source_url": "https://finance.yahoo.com/quote/KCCA",
+      "rows": 1103,
+      "min_date": "2021-10-05",
+      "max_date": "2026-02-26",
+      "note": null
+    },
+    {
+      "name": "index_KEUA",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/carbon-market-indices/KEUA_history.csv",
+      "source_url": "https://finance.yahoo.com/quote/KEUA",
+      "rows": 1103,
+      "min_date": "2021-10-05",
+      "max_date": "2026-02-26",
+      "note": null
+    },
+    {
+      "name": "index_KRBN",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/carbon-market-indices/KRBN_history.csv",
+      "source_url": "https://finance.yahoo.com/quote/KRBN",
+      "rows": 1400,
+      "min_date": "2020-07-31",
+      "max_date": "2026-02-26",
+      "note": null
+    },
+    {
+      "name": "index_KSET",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/carbon-market-indices/KSET_history.csv",
+      "source_url": "https://finance.yahoo.com/quote/KSET",
+      "rows": 488,
+      "min_date": "2022-04-20",
+      "max_date": "2024-03-28",
+      "note": null
+    },
+    {
+      "name": "vstoxx",
+      "ok": true,
+      "path": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto/volatility-proxy/vstoxx-index.txt",
+      "source_url": "https://stoxx.com/index/v2tx/",
+      "rows": 6912,
+      "min_date": "1999-01-04",
+      "max_date": "2026-02-26",
+      "note": "Parsed from embedded window.chart_data on STOXX index page."
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot due to low volatility and minimal change.\", \"H20 anchor must remain stable as 20d change is flat.\", \"Avoid overshoot in H30 as error is high and volatility is low.\", \"H5 anchor should not drift far from spot given recent stability.\", \"Hold H1 anchor unchanged if 5d change is negative and volatility is low.\"]}"}

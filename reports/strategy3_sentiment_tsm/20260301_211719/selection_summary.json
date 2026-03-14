@@ -1,0 +1,114 @@
+{
+  "strategy": "strategy3_sentiment_tsm",
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/reports/strategy3_sentiment_tsm/20260301_211719/base_run",
+  "sentiment_path": "data/news/daily_sentiment_qwen_votes3_daily3.csv",
+  "best_tsm_candidate": "af_s90_l30_m64_ff128_do030_lr5e4_wd1e2",
+  "best_tsm_val_path_mse": 38.56367492675781,
+  "four_option_results": [
+    {
+      "name": "hdelta_35b_guarded_on_tsm_sent",
+      "path_mse": 20.810390390652106,
+      "h1_mse": 1.4189474974814618,
+      "h5_mse": 6.89339602153478,
+      "h20_mse": 25.99252631394625,
+      "h30_mse": 40.25288866841998,
+      "split": "test",
+      "n_samples": 382,
+      "candidate": "hdelta_35b_guarded_on_tsm_sent",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": false,
+        "strict_json_prompt": true,
+        "strict_json_response_format": true,
+        "rules_text": "- Correct for severe underestimation of volatility: The model consistently predicts a smooth, monotonic trend (either flat or slowly rising) while true outcomes exhibit high-amplitude spikes (e.g., rising to 76+) followed by sharp mean reversion. Apply a volatility multiplier to forecast ranges to capture these excursions.\n- Implement aggressive mean reversion after sentiment spikes: When sentiment history shows consecutive high values (1.00) followed by a price spike, the model fails to anticipate the subsequent rapid decline. Adjust forecasts downward immediately after a 3-5 day upward surge, regardless of the model's long-term upward bias.\n- Reduce lag in trend reversal: The model exhibits a significant lag in recognizing trend changes, often continuing to forecast increases while the market has already peaked and begun falling. Shift the forecast trajectory to align with the most recent 3-day price momentum rather than the 18-day history average.\n- Adjust for sentiment decay: High sentiment scores (1.00) in the history do not correlate with sustained price increases in the model's logic. When sentiment drops from 1.00 to 0.33 or 0.00, immediately reduce the forecast slope to negative to reflect the observed market correction.\n- Horizon-specific correction: For the 10-15 day horizon, the model systematically overestimates prices by 2-4 EUR during recovery phases. Apply a fixed downward bias correction of 3.0 EUR for forecasts falling in this window following a price dip.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2024-05-07 00:00:00",
+          "2024-05-08 00:00:00",
+          "2024-05-09 00:00:00",
+          "2024-05-16 00:00:00",
+          "2024-05-17 00:00:00"
+        ]
+      }
+    },
+    {
+      "name": "paper_cot_sent_4b_on_tsm_sent",
+      "path_mse": 20.862739328771006,
+      "h1_mse": 1.379624443004753,
+      "h5_mse": 6.524652461463502,
+      "h20_mse": 25.952307316954652,
+      "h30_mse": 41.72407251644192,
+      "split": "test",
+      "n_samples": 382,
+      "candidate": "paper_cot_sent_4b_on_tsm_sent",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF",
+        "model": "qwen3-vl-4b-gpu",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "- When sentiment is consistently positive (\u22650.67) over recent days, model tends to overestimate prices; reduce forecast by 1\u20133% for next period.\n- After sharp price spikes (e.g., >75% from prior 30d mean), model often overshoots; cap forecast at +5% above prior peak or use 20d moving average as ceiling.\n- If sentiment is negative (\u22640.33) and prices are trending down, model underestimates; add 1\u20132% to forecast to avoid premature bottoming.\n- Model exhibits strong mean reversion bias: if 30d forecast is >75% above 18d mean, adjust downward by 1\u20132% per day until convergence.\n- When sentiment flips from negative to positive (or vice versa), model lags by 1\u20132 days; shift forecast 1\u20132 days ahead if sentiment turns bullish, or delay 1 day if bearish.\n- For 30d horizon, if true outcome deviates >5% from 18d mean, apply sentiment-weighted correction: +1.5% for bullish sentiment, -1.5% for bearish.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2024-05-07 00:00:00",
+          "2024-05-08 00:00:00",
+          "2024-05-09 00:00:00",
+          "2024-05-16 00:00:00",
+          "2024-05-17 00:00:00"
+        ]
+      }
+    },
+    {
+      "name": "hdelta_4b_on_tsm_sent",
+      "path_mse": 21.084306268695236,
+      "h1_mse": 1.405320654728563,
+      "h5_mse": 6.768652151816654,
+      "h20_mse": 26.28249893551285,
+      "h30_mse": 41.451702557528044,
+      "split": "test",
+      "n_samples": 382,
+      "candidate": "hdelta_4b_on_tsm_sent",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3-vl-4b-gpu",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "- If sentiment is consistently bullish (\u22650.67) in recent days, model tends to overestimate prices; reduce forecast by 1\u20133% for next period.\n- If sentiment is bearish (\u22640.33) and prices are trending down, model often underestimates; adjust upward by 1\u20132% to avoid missing sharp reversals.\n- After a sharp price spike (e.g., >5% from prior period), model frequently overcorrects and forecasts a prolonged flat or downward trend \u2014 reduce forecast slope or add a ceiling to prevent overshoot.\n- When sentiment shifts from bullish to bearish (or vice versa) within 3\u20135 days, model often lags the sentiment change \u2014 adjust forecast 1\u20132 days ahead to align with sentiment pivot.\n- If model forecast is consistently above true outcome (especially in early days of forecast horizon), consider mean reversion bias \u2014 reduce forecast by 2\u20135% for the first 3\u20135 days of the 30d window.\n- If sentiment is neutral (0.00\u20130.33) and prices are volatile, model often fails to capture volatility \u2014 increase forecast variance or add a \u00b11\u20132% buffer around mean.\n- If true outcome shows a sharp drop after a spike, model often fails to recognize the \u201crebound\u201d \u2014 adjust forecast to include a 1\u20132 day lagged correction after peak.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2024-05-07 00:00:00",
+          "2024-05-08 00:00:00",
+          "2024-05-09 00:00:00",
+          "2024-05-16 00:00:00",
+          "2024-05-17 00:00:00"
+        ]
+      }
+    },
+    {
+      "name": "base_tsm_sent",
+      "path_mse": 21.26490020751953,
+      "h1_mse": 1.4189475774765015,
+      "h5_mse": 6.7373247146606445,
+      "h20_mse": 26.505558013916016,
+      "h30_mse": 41.99406051635742,
+      "split": "test",
+      "n_samples": 382,
+      "candidate": NaN,
+      "metadata_sample": NaN
+    }
+  ]
+}

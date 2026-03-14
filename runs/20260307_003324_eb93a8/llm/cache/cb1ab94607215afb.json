@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when vol_20d is low\", \"Cap h30 forecast if err exceeds -8.0%\", \"Hold h20 forecast if anchor_error_pct > 5% and vol_20d < 1.0\", \"Use last_price as baseline if change_5d_pct < -3% and vol_20d < 1.2\", \"Keep h1 forecast unchanged if err < -0.5% and vol_20d > 0.95\"]}"}

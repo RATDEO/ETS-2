@@ -1,0 +1,57 @@
+{
+  "config": "uk_ets/config/uk_ets_tuned.yaml",
+  "data_dir": "uk_ets/Data_auto_uk",
+  "search_results": "reports/uk_ets_dlinear_tune/20260306_priority_run/tsm_search_results.csv",
+  "candidate": "dlinear_resid_s20_l10_k25_ind_a01",
+  "candidate_row": {
+    "name": "dlinear_resid_s20_l10_k25_ind_a01",
+    "tsm_type": "dlinear",
+    "target_mode": "returns",
+    "seq_len": 20,
+    "label_len": 10,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "max_epochs": 40,
+    "patience": 8,
+    "d_model": 32,
+    "n_heads": 2,
+    "e_layers": 1,
+    "d_ff": 64,
+    "dropout": 0.3,
+    "weight_decay": 0.01,
+    "grad_clip": 0.5,
+    "dlinear_individual": true,
+    "kernel_size": 25,
+    "use_residual_wrapper": true,
+    "residual_alpha": 0.1,
+    "n_features": 13,
+    "best_val_loss": 0.5924112051725388,
+    "epochs_ran": 40,
+    "val_path_mse": 16.63988494873047,
+    "test_path_mse": 29.593332290649418,
+    "h1_mse": 1.1399154663085938,
+    "h5_mse": 5.518514633178711,
+    "h20_mse": 39.96670913696289,
+    "h30_mse": 72.67554473876953
+  },
+  "weights": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "schedules": [
+    "uniform",
+    "ramp"
+  ],
+  "key_horizons": [
+    1,
+    5,
+    20,
+    30
+  ],
+  "min_weight": 0.0,
+  "power": 1.0,
+  "seed": 42
+}

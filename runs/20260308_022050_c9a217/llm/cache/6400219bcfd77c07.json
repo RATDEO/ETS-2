@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct gains without volume confirmation\", \"Keep 20d pct change near zero when volatility is low\", \"Hold 20d anchor unchanged if 20d pct change is flat\", \"Limit 5d pct overshoot when 20d vol is below 5.0\", \"Anchor 30d horizon if 20d pct change is zero and 5d pct is high\"]}"}

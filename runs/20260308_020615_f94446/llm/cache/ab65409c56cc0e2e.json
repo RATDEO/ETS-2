@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when vol is low and change_20d_pct is flat\", \"Keep h20 anchor near current price if vol_20d < 1.0\", \"Do not adjust h1 if change_5d_pct is small and anchor error is low\", \"Hold h30 unchanged if anchor error exceeds 1% and vol_20d is low\", \"If match_rank is low, defer anchor updates until vol_20d stabilizes\"]}"}

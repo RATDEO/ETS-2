@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor overshoots when 5d change is negative.\", \"Hold 20d vol near zero if 20d change is flat.\", \"Keep h30 anchor unchanged if 5d change is below -5%.\", \"Do not adjust h1 if 5d change is above -6%.\", \"If 20d vol is high, defer anchor updates until volatility stabilizes.\"]}"}

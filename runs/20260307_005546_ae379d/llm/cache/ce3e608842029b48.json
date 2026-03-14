@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 20d vol is low\", \"Hold 5d change near zero if 20d change is flat\", \"Keep 20d anchor error below 3% to avoid overshoot\", \"If 5d change is negative, avoid anchoring above 57.00 GBP\", \"Match 20d anchor to spot if 5d change is stable\"]}"}

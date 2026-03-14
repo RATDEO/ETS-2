@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor shifts if 20d vol is low\", \"Hold 5d change near zero if 20d change is flat\", \"Keep 20d anchor error below 1.5% to avoid overshoot\", \"If 5d change is negative, anchor h1 should not exceed spot by >0.5%\", \"Match 20d anchor to spot if 20d vol <1.3\"]}"}

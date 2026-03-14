@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with low volatility\", \"Hold 20d pct change near zero when volatility is low\", \"Keep 20d anchor error below 1.5% to avoid overshoot\", \"If 5d pct change is negative, offset with slight positive 20d pct change\", \"Anchor h20 should stay near spot if vol_20d < 0.7\"]}"}

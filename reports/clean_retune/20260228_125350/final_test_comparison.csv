@@ -1,0 +1,4 @@
+model,selection_basis,path_mse,h1_mse,h5_mse,h20_mse,h30_mse,run_dir,notes
+tsm_retuned_clean,validation,20.99062728881836,1.3883248567581177,6.432294845581055,26.41064453125,41.79466247558594,runs/20260228_133323_5e482d,Selected by validation-only retune.
+TSM+LLM-COT-RF_retuned_clean_raw,test_report_only,23.44191026514217,1.5141013593808377,6.63129228919577,29.401695046227946,49.21828480770807,runs/20260228_133323_5e482d,Raw CoT test metric from saved subset artifact before validation blend-grid rerun was intentionally stopped.
+TSM+LLM-COT-RF_blend_ramp_tuned_clean,validation,20.99062728881836,1.3883248567581177,6.432294845581055,26.41064453125,41.79466247558594,runs/20260228_133323_5e482d,"Validation tuning selected best_w=0.0, so the tuned blend collapses to base TSM."

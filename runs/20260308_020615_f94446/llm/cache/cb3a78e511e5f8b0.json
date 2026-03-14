@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct gains without volume confirmation\", \"Hold 20d vol near 1.57 to prevent overreaction\", \"Keep 20d pct change near zero if anchors show weak trend\", \"If 5d pct > 5%, check if 20d pct is stable before adjusting\", \"Anchor error pct > 5% suggests horizon mismatch \u2014 keep current price unchanged\"]}"}

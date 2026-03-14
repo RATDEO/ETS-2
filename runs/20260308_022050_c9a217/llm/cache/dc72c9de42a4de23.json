@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d change is flat.\", \"Avoid large 5d pct drops; current -3.16% suggests mean reversion.\", \"H1 anchor should stay near spot if 5d change is negative.\", \"H30 anchor may overshoot; cap at +11.48% vs spot.\", \"If vol_20d is low, avoid aggressive anchor shifts.\"]}"}

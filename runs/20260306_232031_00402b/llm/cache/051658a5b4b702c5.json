@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic long-horizon forecasts\", \"Adjust forecasts downward when 5d change is positive\", \"Reduce forecast gap when 20d vol is low\", \"Anchor h30 forecasts to recent true values\", \"Correct for mean reversion in h5 when h1 is close\", \"Avoid lagging h20 when h30 error is large\"]}"}

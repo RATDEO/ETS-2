@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near +5% as recent momentum is strong\", \"Hold 20d change near 0% when volatility is low\", \"Anchor h1 should stay close to spot price if error is small\", \"Avoid large anchor errors if vol_20d is below 2.5\", \"If h20 error is large, keep it unchanged unless volatility spikes\"]}"}

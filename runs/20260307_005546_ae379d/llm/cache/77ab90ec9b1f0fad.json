@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d vol is low and change is near zero\", \"Avoid large overshoots in h1 if 5d change is negative\", \"H30 anchor should not deviate more than 5% from spot if 20d vol is low\", \"If 5d change is negative, h5 should not show positive growth\", \"Hold h20 anchor steady if 20d vol is below 2.5 and change is flat\"]}"}

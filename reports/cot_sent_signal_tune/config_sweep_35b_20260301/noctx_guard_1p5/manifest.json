@@ -1,0 +1,37 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+  "cot_strict_json_prompt": false,
+  "retain_context_override": "false",
+  "hdelta_freeze_horizons": [
+    1
+  ],
+  "hdelta_sentiment_secondary": true,
+  "hdelta_max_adjustment_pct": 1.5,
+  "example_selection_override": null,
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": false,
+    "strict_json_prompt": false
+  },
+  "val_subset_samples": 60,
+  "top_k_full_val": 2,
+  "signals": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path": "data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "date_col": "seendate",
+      "source_path": null,
+      "transform": null
+    }
+  ]
+}

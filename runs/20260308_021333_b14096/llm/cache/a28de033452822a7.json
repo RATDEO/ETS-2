@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 1.23 to avoid overshoot\", \"Hold 30d anchor unchanged if 20d anchor shows weak trend\", \"Use h20 anchor as baseline if h1 and h5 diverge\", \"If 5d pct rises sharply, cap 20d anchor change at \u00b10.5%\"]}"}

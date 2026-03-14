@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d change is near zero\", \"Avoid large 5d pct overshoot without volume confirmation\", \"H30 anchor should not deviate more than \u00b11% from spot if 20d vol is low\", \"If h1 error exceeds \u00b11%, adjust anchor to match spot volatility\", \"Hold h5 anchor if 5d pct change is high and 20d pct is flat\"]}"}

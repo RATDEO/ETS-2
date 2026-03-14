@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h1 due to small positive 5d change\", \"Hold h20 unchanged as 20d change is flat\", \"Keep h30 stable as anchor error is large and volatile\", \"Do not overreact to small 5d gain; mean revert if 20d vol is low\", \"Anchor h5 only if 5d change exceeds 0.5% threshold\"]}"}

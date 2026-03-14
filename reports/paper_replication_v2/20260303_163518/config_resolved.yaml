@@ -1,0 +1,326 @@
+paper_replication_v2:
+  base_run: runs/20260228_145058_40d91f
+  outer_folds: 3
+  max_samples_per_fold: 12
+  test_max_samples: 0
+  timeout_seconds: 60
+  max_retries: 1
+  default_profile: simplified_4b_hprice
+  profiles:
+    simplified_4b_hprice:
+    - paper_event90_proxy_hprice_guarded
+    compare_hprice_4b_vs_35b:
+    - paper_event90_proxy_hprice_guarded
+    - paper_event90_proxy_hprice_guarded_35b
+    compare_hprice_4b_official_ctx:
+    - paper_event90_proxy_hprice_guarded
+    - paper_event90_proxy_hprice_guarded_official_ctx
+    legacy_paper_4b_fullpath:
+    - paper_baseline
+    - paper_event90_proxy
+  candidates:
+  - name: paper_baseline
+    method: TSM+LLM-COT-SENT-RF
+    sentiment_path: data/news/daily_sentiment.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: false
+    strict_json_response_format: true
+  - name: paper_event90_proxy
+    method: TSM+LLM-COT-SENT-RF
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: false
+    strict_json_response_format: true
+  - name: paper_event90_proxy_strictjson
+    method: TSM+LLM-COT-SENT-RF
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: true
+    strict_json_response_format: true
+  - name: paper_event90_proxy_ud4b
+    method: TSM+LLM-COT-SENT-RF
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9878/v1
+    model: qwen3.5-4b-ud-q4-k-xl
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: false
+    strict_json_response_format: true
+  - name: paper_event90_proxy_ud4b_strictjson
+    method: TSM+LLM-COT-SENT-RF
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9878/v1
+    model: qwen3.5-4b-ud-q4-k-xl
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: true
+    strict_json_response_format: true
+  - name: paper_event90_proxy_hdelta_raw
+    method: TSM+LLM-COT-SENT-RF-HDELTA
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: false
+    strict_json_response_format: true
+    hdelta_max_adjustment_pct: 3.0
+    hdelta_freeze_horizons: []
+    hdelta_sentiment_secondary: false
+  - name: paper_event90_proxy_hdelta_guarded
+    method: TSM+LLM-COT-SENT-RF-HDELTA
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hdelta_max_adjustment_pct: 1.0
+    hdelta_freeze_horizons:
+    - 1
+    hdelta_sentiment_secondary: true
+  - name: paper_event90_proxy_hdelta_paperh_raw
+    method: TSM+LLM-COT-SENT-RF-HDELTA
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: true
+    strict_json_prompt: false
+    strict_json_response_format: true
+    hdelta_key_horizons:
+    - 1
+    - 10
+    - 20
+    - 30
+    hdelta_max_adjustment_pct: 3.0
+    hdelta_freeze_horizons: []
+    hdelta_sentiment_secondary: false
+  - name: paper_event90_proxy_hdelta_paperh_guarded
+    method: TSM+LLM-COT-SENT-RF-HDELTA
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hdelta_key_horizons:
+    - 1
+    - 10
+    - 20
+    - 30
+    hdelta_max_adjustment_pct: 1.0
+    hdelta_freeze_horizons:
+    - 1
+    hdelta_sentiment_secondary: true
+  - name: paper_event90_proxy_hprice_guarded
+    method: TSM+LLM-COT-SENT-RF-HPRICE
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hprice_key_horizons:
+    - 1
+    - 10
+    - 20
+    - 30
+    hprice_max_adjustment_pct: 1.0
+    hprice_freeze_horizons:
+    - 1
+    hprice_sentiment_secondary: true
+  - name: paper_event90_proxy_hprice_guarded_official_ctx
+    method: TSM+LLM-COT-SENT-RF-HPRICE
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    official_event_path: data/news/official/official_event_records_v1.csv
+    official_event_lookback_days: 30
+    official_event_max_titles: 2
+    base_url: http://192.168.1.140:9877/v1
+    model: qwen3-vl-4b-gpu
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hprice_key_horizons: &id001
+    - 1
+    - 10
+    - 20
+    - 30
+    hprice_max_adjustment_pct: 1.0
+    hprice_freeze_horizons: &id002
+    - 1
+    hprice_sentiment_secondary: true
+  - name: paper_event90_proxy_hprice_guarded_ud4b
+    method: TSM+LLM-COT-SENT-RF-HPRICE
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9878/v1
+    model: qwen3.5-4b-ud-q4-k-xl
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hprice_key_horizons:
+    - 1
+    - 10
+    - 20
+    - 30
+    hprice_max_adjustment_pct: 1.0
+    hprice_freeze_horizons:
+    - 1
+    hprice_sentiment_secondary: true
+  - name: paper_event90_proxy_hprice_guarded_35b
+    method: TSM+LLM-COT-SENT-RF-HPRICE
+    sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+    base_url: http://192.168.1.140:9881/v1
+    model: qwen3.5-35b-a3b-ud-q4-k-xl
+    history_points: 18
+    prompt_history_points: 18
+    prompt_sentiment_points: 18
+    sentiment_points: 18
+    k_examples: 5
+    example_selection: similarity
+    feature_window: 18
+    lookback_days: 365
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    hprice_key_horizons:
+    - 1
+    - 10
+    - 20
+    - 30
+    hprice_max_adjustment_pct: 1.0
+    hprice_freeze_horizons:
+    - 1
+    hprice_sentiment_secondary: true
+base_run: /Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f
+selected_profile: null
+candidates:
+- name: paper_event90_proxy_hprice_guarded_official_ctx
+  method: TSM+LLM-COT-SENT-RF-HPRICE
+  sentiment_path: data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy.csv
+  base_url: http://192.168.1.140:9877/v1
+  model: qwen3-vl-4b-gpu
+  history_points: 18
+  prompt_history_points: 18
+  prompt_sentiment_points: 18
+  sentiment_points: 18
+  k_examples: 5
+  example_selection: similarity
+  feature_window: 18
+  lookback_days: 365
+  retain_context: false
+  strict_json_prompt: true
+  strict_json_response_format: true
+  hdelta_max_adjustment_pct: null
+  hdelta_key_horizons:
+  - 1
+  - 5
+  - 20
+  - 30
+  hdelta_freeze_horizons: []
+  hdelta_sentiment_secondary: false
+  hprice_max_adjustment_pct: 1.0
+  hprice_key_horizons: *id001
+  hprice_freeze_horizons: *id002
+  hprice_sentiment_secondary: true
+  official_event_path: data/news/official/official_event_records_v1.csv
+  official_event_lookback_days: 30
+  official_event_max_titles: 2

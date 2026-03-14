@@ -1,0 +1,24 @@
+{
+  "name": "qwen_votes3_daily3",
+  "path_mse": 20.769153070925373,
+  "h1_mse": 1.3899358320450763,
+  "h5_mse": 6.37107953588389,
+  "h20_mse": 26.083160049771823,
+  "h30_mse": 41.49931473235842,
+  "split": "test",
+  "n_samples": 382,
+  "candidate": "qwen_votes3_daily3",
+  "candidate_config": {
+    "name": "qwen_votes3_daily3",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

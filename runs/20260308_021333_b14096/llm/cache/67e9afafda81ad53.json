@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d_pct changes with low vol_20d\", \"Keep h20 anchor near current price if change_20d_pct is flat\", \"Do not overshoot h1 anchor by more than 0.5% when 5d_pct is small\", \"Hold h30 anchor if base_anchors show minimal divergence\", \"If anchor_error_pct exceeds 3%, reset horizon to match spot volatility\"]}"}

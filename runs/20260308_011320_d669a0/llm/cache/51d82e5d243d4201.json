@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 20d change near zero if vol_20d is low\", \"Avoid large 5d pct changes when anchors show high error\", \"Hold 20d anchor unchanged if match_rank is low\", \"Use h1 anchor if 5d pct is high and vol is low\", \"Ignore h30 if anchor_error_pct exceeds 2%\"]}"}

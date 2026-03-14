@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal overshoot\", \"H5 and H20 anchors show high error; avoid large positive deviations\", \"H30 anchor should not drift far from spot if 20d vol is low\", \"If 20d change is flat, keep H20 anchor unchanged\", \"Avoid anchoring H30 when 5d change is high and 20d vol is low\"]}"}

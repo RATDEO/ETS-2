@@ -1,0 +1,36 @@
+{
+  "source_archive_csv": "/Users/davidwilkinson/Desktop/ETS 2/reports/regime_gate_validation/20260303_135303/benchmark_archive_predictions.csv",
+  "regime_thresholds": {
+    "volatility_median": 0.022162314677306522,
+    "sentiment_abs_median": 0.05,
+    "return_abs_median": 0.03458138325533011,
+    "trend_threshold_multiplier": 0.25,
+    "volatility_window": 20,
+    "trend_window": 20,
+    "return_window": 5,
+    "sentiment_window": 3,
+    "sentiment_fill_limit": 5,
+    "official_event_abs_median": 16.231416041659436,
+    "official_supply_abs_median": 16.231416041659436
+  },
+  "gates": {
+    "gate_official_event_alignment_5d": [
+      "official_event_alignment_5d",
+      {
+        "aligned": "35B raw guarded HDELTA",
+        "divergent": "4B raw HDELTA",
+        "neutral": "4B guarded HPRICE"
+      },
+      "4B guarded HPRICE"
+    ],
+    "gate_official_supply_regime_30d": [
+      "official_supply_regime_30d",
+      {
+        "bearish_supply": "35B raw guarded HDELTA",
+        "bullish_supply": "4B raw HDELTA",
+        "neutral_supply": "4B guarded HPRICE"
+      },
+      "4B guarded HPRICE"
+    ]
+  }
+}

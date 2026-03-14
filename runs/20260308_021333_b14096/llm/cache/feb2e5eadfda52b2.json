@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on short-term horizon due to high 5d change.\", \"Hold 20d horizon near zero if change_20d_pct is flat.\", \"Keep base anchors stable if vol_20d is low.\", \"Do not adjust h30 if error_pct exceeds 5%.\", \"Match h1 anchor if 5d change is positive and small.\"]}"}

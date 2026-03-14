@@ -1,0 +1,3 @@
+metric,baseline_paper_event90_proxy,paper_event90_proxy_official_ctx,official_ctx_delta
+validation_path_mse,38.583099121060705,38.09642500564096,-0.4866741154197456
+cap40_path_mse_baseline_saved,21.29188935190329,,

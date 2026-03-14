@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d change is flat.\", \"Avoid overshoot on h1 as 5d change is modest.\", \"Hedge against 5d volatility with low vol_20d.\", \"Match h30 anchor to spot if 30d change is negative.\", \"Hold h5 anchor if 5d change is small and vol is low.\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal overshoot\", \"H20 anchor must avoid large vol swings\", \"H30 anchor should not deviate more than \u00b11.5% from spot\", \"Ignore 5d change if vol is low\", \"Hold 20d change near zero if anchors show weak trend\"]}"}

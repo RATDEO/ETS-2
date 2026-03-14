@@ -1,0 +1,56 @@
+{
+  "config": "/Users/davidwilkinson/Desktop/ETS 2/uk_ets/config/uk_ets_tuned.yaml",
+  "data_dir": "/Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk",
+  "n_experiments": 10,
+  "feature_orders": {
+    "current": [
+      "target_range_pct",
+      "target_volume",
+      "is_auction_day",
+      "uk_icap_primary_print_day",
+      "uk_icap_secondary_print_day",
+      "uk_icap_primary_days_since_print",
+      "uk_icap_secondary_days_since_print",
+      "y_vol_20d",
+      "y_ma_5d",
+      "y_momentum_5d",
+      "y_momentum_20d"
+    ],
+    "tech_first": [
+      "target_range_pct",
+      "target_volume",
+      "y_vol_20d",
+      "y_ma_5d",
+      "y_momentum_5d",
+      "y_momentum_20d",
+      "is_auction_day",
+      "uk_icap_primary_print_day",
+      "uk_icap_secondary_print_day",
+      "uk_icap_primary_days_since_print",
+      "uk_icap_secondary_days_since_print"
+    ],
+    "no_days_since": [
+      "target_range_pct",
+      "target_volume",
+      "is_auction_day",
+      "uk_icap_primary_print_day",
+      "uk_icap_secondary_print_day",
+      "y_vol_20d",
+      "y_ma_5d",
+      "y_momentum_5d",
+      "y_momentum_20d"
+    ],
+    "primary_only": [
+      "target_range_pct",
+      "target_volume",
+      "is_auction_day",
+      "uk_icap_primary_print_day",
+      "uk_icap_primary_days_since_print",
+      "y_vol_20d",
+      "y_ma_5d",
+      "y_momentum_5d",
+      "y_momentum_20d"
+    ]
+  },
+  "note": "Focused UK recovery sweep around exogenous-aware DLinear with horizon-specific residual mixer."
+}

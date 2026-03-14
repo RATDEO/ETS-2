@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 58.24 with near-zero change\", \"Avoid large 5d pct overshoots like +5.23 without strong volatility support\", \"Match h1 and h5 anchors to current spot within \u00b10.5% error margin\", \"Hold h30 anchor at 58.13 if 5d change exceeds +4.0%\", \"If vol_20d < 1.20, suppress anchor adjustments to prevent lag\"]}"}

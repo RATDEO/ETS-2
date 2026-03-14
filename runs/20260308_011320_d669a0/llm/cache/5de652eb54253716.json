@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d change is flat.\", \"Avoid overshoot on h1 if 5d change is positive.\", \"H30 anchor should not drift if 20d vol is low.\", \"Match h5 anchor to spot if 5d change is small.\", \"Hold h1 anchor if 5d change is high and 20d vol is low.\"]}"}

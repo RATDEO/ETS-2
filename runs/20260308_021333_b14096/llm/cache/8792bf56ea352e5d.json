@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h5 if 20d change is flat\", \"Hold h20 unchanged if 20d vol is low\", \"Keep h30 stable if 5d change is small\", \"Do not adjust h1 if anchor error is under 1%\"]}"}

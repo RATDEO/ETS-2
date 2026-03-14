@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic short-term forecasts with high error margins.\", \"Hold horizon 20d near zero if vol_20d is low.\", \"If anchor_error_pct is large, adjust forecast for h5/h30 to match recent trend.\", \"Keep h1 forecast close to last_price if change_5d_pct is volatile.\", \"If anchors disagree, maintain h30 unchanged to avoid overshoot.\"]}"}

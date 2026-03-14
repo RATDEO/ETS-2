@@ -1,0 +1,2 @@
+date,gate_sentiment_alignment_5d__regime_value,gate_sentiment_alignment_5d__selected_model,close_eur,sent_score,sent_score_3d_ma,log_ret_1d,hist_vol_20d,ret_5d,ret_20d,trend_regime_20d,trend_threshold_20d,volatility_regime,sentiment_alignment_5d,trend_vol_regime
+2025-12-22,neutral,Baseline paper CoT-SENT,87.48,0.0,0.0,0.004927529594369595,0.011711647811772611,0.0022914757103575933,0.08522515816896181,up,0.2455156649461093,high_vol,neutral,up__high_vol

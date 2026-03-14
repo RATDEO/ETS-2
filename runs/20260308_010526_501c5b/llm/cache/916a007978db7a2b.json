@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d change with near-zero 20d change\", \"Hold 20d anchor if 20d vol is low and change is flat\", \"Cap 5d change at -1.0% if 20d change is zero\", \"Keep 30d anchor unchanged if 5d change is negative\", \"If 20d vol is low, avoid anchor drift beyond \u00b10.5%\"]}"}

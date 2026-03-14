@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor near spot if vol_20d is low\", \"Avoid large positive change_5d_pct when h20 anchor is far below spot\", \"If h30 anchor is significantly below spot, hold current_price unchanged\", \"Match h1 anchor error to spot deviation if change_5d_pct is high\", \"If change_20d_pct is flat, anchor h20 near current_price\"]}"}

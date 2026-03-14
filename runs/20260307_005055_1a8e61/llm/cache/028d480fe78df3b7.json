@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change if 20d change is flat\", \"Keep 20d vol near 1.0 if anchors show weak divergence\", \"Hold h20 anchor if 20d pct change is zero\", \"Do not adjust h30 if 5d pct change is high and 20d is flat\", \"If 5d change is +4% and 20d is 0%, keep h20 unchanged\"]}"}

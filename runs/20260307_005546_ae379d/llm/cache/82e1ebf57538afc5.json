@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is strong, keep it near zero if 20d change is flat\", \"h20 anchor overshoots, cap at +5.34% to avoid lag\", \"h30 anchor close to h20, maintain consistency\", \"vol_20d low, avoid sharp moves\", \"if anchor error > 5%, reset horizon to match spot\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive errors in h5 and h20 when volatility is low.\", \"Cap h30 forecast if h5 error exceeds +3.0%.\", \"Hold h1 forecast unchanged if h5 error is within \u00b11.0%.\", \"Do not adjust h20 if vol_20d < 1.10.\", \"Keep h30 unchanged if h5 error is negative and > -4.0%.\"]}"}

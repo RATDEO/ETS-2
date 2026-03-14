@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 1.80 to avoid volatility drift\", \"Hold 30d anchor if 20d anchor shows minimal deviation\", \"If 5d pct is high, cap 20d anchor change to prevent overshoot\", \"If 20d vol is low, maintain 20d anchor unchanged to avoid lag\"]}"}

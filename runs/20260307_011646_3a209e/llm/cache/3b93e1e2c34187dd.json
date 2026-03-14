@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 5d change is minimal.\", \"Hold 20d vol near 0.90 if 20d change is flat.\", \"Keep h20 anchor unchanged if 20d change is zero.\", \"Do not overreact to small 5d gains when 20d change is stagnant.\", \"If 5d change is +0.04, avoid pushing h1 above +0.5% vs spot.\"]}"}

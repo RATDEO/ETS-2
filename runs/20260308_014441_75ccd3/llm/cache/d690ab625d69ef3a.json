@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 5d change when volatility is low\", \"Hold 20d anchor unchanged if change_20d_pct is flat\", \"Bias toward mean reversion if anchor error_pct exceeds +2.0%\", \"Keep h1 anchor near spot if change_5d_pct is high\", \"Ignore horizon shifts if vol_20d is below 2.20\"]}"}

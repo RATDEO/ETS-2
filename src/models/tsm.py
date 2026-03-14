@@ -41,13 +41,15 @@ if TORCH_AVAILABLE:
             pred_len: int,
             enc_in: int,
             individual: bool = True,
-            kernel_size: int = 25
+            kernel_size: int = 25,
+            channel_mixer: str = "target_only",
         ):
             super().__init__()
             self.seq_len = seq_len
             self.pred_len = pred_len
             self.individual = individual
             self.channels = enc_in
+            self.channel_mixer = str(channel_mixer or "target_only").lower()
             
             # Moving average for decomposition
             self.kernel_size = kernel_size
@@ -66,6 +68,25 @@ if TORCH_AVAILABLE:
                 # Shared linear layers
                 self.Linear_Trend = nn.Linear(seq_len, pred_len)
                 self.Linear_Seasonal = nn.Linear(seq_len, pred_len)
+
+            if self.channel_mixer == "linear":
+                self.channel_projection = nn.Linear(enc_in, 1)
+                with torch.no_grad():
+                    self.channel_projection.weight.zero_()
+                    self.channel_projection.bias.zero_()
+                    self.channel_projection.weight[0, 0] = 1.0
+            elif self.channel_mixer == "residual_linear":
+                self.channel_projection = nn.Linear(enc_in, 1)
+                self.channel_gate = nn.Parameter(torch.tensor(-2.0))
+                with torch.no_grad():
+                    self.channel_projection.weight.zero_()
+                    self.channel_projection.bias.zero_()
+            elif self.channel_mixer == "residual_horizon_linear":
+                self.channel_projection = nn.Parameter(torch.zeros(pred_len, enc_in))
+                self.channel_bias = nn.Parameter(torch.zeros(pred_len, 1))
+                self.channel_gate = nn.Parameter(torch.full((pred_len, 1), -2.0))
+            elif self.channel_mixer != "target_only":
+                raise ValueError(f"Unknown DLinear channel_mixer: {self.channel_mixer}")
         
         def forward(self, x_enc, x_dec=None):
             """
@@ -76,7 +97,7 @@ if TORCH_AVAILABLE:
                 x_dec: ignored (for API compatibility)
                 
             Returns:
-                (batch, pred_len, 1) - only target channel
+                (batch, pred_len, 1) - target forecast
             """
             # Decompose: trend and seasonal
             x = x_enc.permute(0, 2, 1)  # (batch, channels, seq_len)
@@ -99,8 +120,27 @@ if TORCH_AVAILABLE:
                 seasonal_out = self.Linear_Seasonal(seasonal.permute(0, 2, 1)).permute(0, 2, 1)
             
             output = trend_out + seasonal_out
-            
-            # Return only target channel (first channel)
+
+            if self.channel_mixer == "linear":
+                # Learn how exogenous channels should contribute to the target forecast.
+                return self.channel_projection(output)
+            if self.channel_mixer == "residual_linear":
+                # Start from the proven target-only forecast and learn a bounded
+                # multivariate correction rather than a full mixed replacement.
+                target_only = output[:, :, :1]
+                correction = self.channel_projection(output)
+                gate = torch.sigmoid(self.channel_gate)
+                return target_only + gate * correction
+            if self.channel_mixer == "residual_horizon_linear":
+                # Learn a separate exogenous correction per forecast horizon so
+                # short- and long-dated steps can use different channel mixes.
+                target_only = output[:, :, :1]
+                correction = torch.einsum("bpc,pc->bp", output, self.channel_projection).unsqueeze(-1)
+                correction = correction + self.channel_bias.unsqueeze(0)
+                gate = torch.sigmoid(self.channel_gate).unsqueeze(0)
+                return target_only + gate * correction
+
+            # Legacy behavior: only target channel contributes.
             return output[:, :, :1]
     
     
@@ -111,17 +151,35 @@ if TORCH_AVAILABLE:
         Ensures model can at worst match naive baseline.
         """
         
-        def __init__(self, base_model: nn.Module, pred_len: int, alpha_init: float = 0.1):
+        def __init__(
+            self,
+            base_model: nn.Module,
+            pred_len: int,
+            alpha_init: float = 0.1,
+            baseline_strategy: str = "last_value",
+        ):
             super().__init__()
             self.base_model = base_model
             self.pred_len = pred_len
+            self.baseline_strategy = baseline_strategy
             # Learnable blending weight (starts conservative)
             self.alpha = nn.Parameter(torch.tensor(alpha_init))
         
         def forward(self, x_enc, x_dec):
-            # Naive prediction: repeat last known value
-            last_value = x_enc[:, -1:, 0:1]  # (batch, 1, 1)
-            naive_pred = last_value.expand(-1, self.pred_len, -1)  # (batch, pred_len, 1)
+            if self.baseline_strategy == "zero":
+                # In returns mode, naive persistence is a flat price path,
+                # which corresponds to zero future returns.
+                naive_pred = torch.zeros(
+                    x_enc.shape[0],
+                    self.pred_len,
+                    1,
+                    device=x_enc.device,
+                    dtype=x_enc.dtype,
+                )
+            else:
+                # In price mode, naive persistence repeats the last known value.
+                last_value = x_enc[:, -1:, 0:1]  # (batch, 1, 1)
+                naive_pred = last_value.expand(-1, self.pred_len, -1)  # (batch, pred_len, 1)
             
             # Model residual prediction
             residual = self.base_model(x_enc, x_dec)
@@ -366,6 +424,7 @@ if TORCH_AVAILABLE:
             pred_len = ts_config.get("pred_len", 30)
             enc_in = model_config.get("enc_in", 10)
             use_residual = model_config.get("use_residual_wrapper", False)
+            target_mode = str(self.config.get("target", {}).get("mode", "price")).lower()
             
             logger.info(f"Building TSM model: type={tsm_type}, seq_len={seq_len}, pred_len={pred_len}")
             
@@ -376,9 +435,14 @@ if TORCH_AVAILABLE:
                     pred_len=pred_len,
                     enc_in=enc_in,
                     individual=model_config.get("dlinear_individual", True),
-                    kernel_size=model_config.get("kernel_size", 25)
+                    kernel_size=model_config.get("kernel_size", 25),
+                    channel_mixer=model_config.get("dlinear_channel_mixer", "target_only"),
                 )
-                logger.info(f"Built DLinear model with {sum(p.numel() for p in base_model.parameters())} parameters")
+                logger.info(
+                    "Built DLinear model with %d parameters (channel_mixer=%s)",
+                    sum(p.numel() for p in base_model.parameters()),
+                    model_config.get("dlinear_channel_mixer", "target_only"),
+                )
                 
             else:  # autoformer or default
                 base_model = SimpleAutoformer(
@@ -398,12 +462,17 @@ if TORCH_AVAILABLE:
             
             # Optionally wrap with residual connection to naive baseline
             if use_residual:
+                baseline_strategy = "zero" if target_mode == "returns" else "last_value"
                 base_model = ResidualWrapper(
                     base_model, 
                     pred_len=pred_len,
-                    alpha_init=model_config.get("residual_alpha", 0.1)
+                    alpha_init=model_config.get("residual_alpha", 0.1),
+                    baseline_strategy=baseline_strategy,
                 )
-                logger.info("Wrapped model with residual connection to naive baseline")
+                logger.info(
+                    "Wrapped model with residual connection to naive baseline (%s strategy)",
+                    baseline_strategy,
+                )
             
             return base_model
         

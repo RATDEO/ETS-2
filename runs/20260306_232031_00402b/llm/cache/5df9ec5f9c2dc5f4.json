@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Overestimate long-term forecasts when volatility is low.\", \"Underestimate sharp downward moves in high-volatility periods.\", \"Bias toward recent price trends in short-term horizons.\", \"Correct for mean reversion in medium-term forecasts.\", \"Avoid over-optimism in high-forecast-error horizons.\"]}"}

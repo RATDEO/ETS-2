@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 20d change if vol is low\", \"Hold 5d change near zero if anchors show weak trend\", \"Keep 20d anchor unchanged if error exceeds 5%\", \"Use h1 anchor if 5d change is negative and vol is low\", \"Ignore h30 if 20d change is flat and vol is low\"]}"}

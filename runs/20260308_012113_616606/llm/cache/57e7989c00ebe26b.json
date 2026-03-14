@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 20d change near zero when vol is low\", \"Avoid large 5d pct changes if anchors show weak trend\", \"Hold 20d anchor unchanged if error exceeds 1%\", \"Use 5d pct as signal only if 20d pct is stable\", \"Match 20d anchor to spot if vol < 1.0\"]}"}

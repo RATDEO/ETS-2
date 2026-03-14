@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.68 due to weak vol signal\", \"Avoid large negative 5d pct shifts if vol is low\", \"H1 should not overshoot spot by more than 1.5% if 5d pct is negative\", \"H30 anchor should not deviate more than 4% from spot if 20d pct is flat\", \"If 20d vol is high, allow h1 to drift within \u00b12% of spot\"]}"}

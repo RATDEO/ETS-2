@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Underweight volatility in long-horizon forecasts.\", \"Overestimate short-term price stability.\", \"Undercorrect for mean reversion in h20+h30.\", \"Bias toward lower prices in volatile periods.\", \"Ignore recent price momentum in h1 forecasts.\", \"Adjust h20+h30 anchors upward when vol_20d > 1.0.\"]}"}

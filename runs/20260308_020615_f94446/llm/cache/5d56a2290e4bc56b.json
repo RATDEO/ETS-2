@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct shifts with low vol_20d\", \"Hold 20d_pct near zero when change_20d_pct is flat\", \"Anchor h20 at 49.32 if 20d vol is low\", \"Ignore h30 if error_pct exceeds -1.5%\", \"Keep h1 unchanged if 5d_pct is below -2.5%\"]}"}

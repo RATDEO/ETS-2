@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 33.45 with no recent volatility signal.\", \"Avoid overshoot on h5 if 5d change is flat.\", \"Match h1 to spot if 5d change is positive.\", \"Hold h30 near 32.91 if 20d vol is low.\", \"If 20d change is zero, defer anchor adjustment until volatility confirms trend.\"]}"}

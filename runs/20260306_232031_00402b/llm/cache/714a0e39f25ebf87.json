@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overestimating long-term prices when volatility is low.\", \"Underweight recent price changes in horizon forecasts.\", \"Correct for mean reversion in h20+h30 when err > -5.0.\", \"Reduce forecast overshoot when vol_20d < 1.0.\", \"Anchor h30 forecasts to h1 if err > +3.0.\", \"Adjust h5 forecasts downward if h20 err < -5.0.\"]}"}

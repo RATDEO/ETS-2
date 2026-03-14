@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h20 anchor when vol_20d is low.\", \"Hold h20 anchor unchanged if change_20d_pct is flat.\", \"Bias toward h1 anchor if anchor_error_pct is small.\", \"Lag h30 anchor if vol_20d is below 1.0.\", \"Mean revert h20 if anchor_error_pct exceeds 3%.\"]}"}

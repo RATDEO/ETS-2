@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with low vol_20d\", \"Hold h20 anchor if change_20d_pct is near zero\", \"Keep h30 anchor unchanged if base_anchors show weak divergence\", \"Use h5 anchor if 5d_pct change is volatile\", \"Prioritize h1 anchor if vol_20d is low and 5d_pct is negative\"]}"}

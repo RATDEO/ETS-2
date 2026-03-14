@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, so avoid large overshoot\", \"20d vol is low, so keep 20d horizon near zero\", \"h1 anchor is close, so don\u2019t drift far from spot\", \"h30 anchor is far below, so don\u2019t chase it\", \"if 20d change is flat, hold current price\"]}"}

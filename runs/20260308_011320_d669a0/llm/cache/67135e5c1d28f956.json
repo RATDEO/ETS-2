@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 55.84 with near-zero change\", \"Avoid overshoot on h30 as it shows +0.69% vs spot\", \"Match h1 anchor to 55.88 with +0.28% vs spot\", \"Hold 5d change near +2.43% as it\u2019s strong and recent\", \"Ignore vol_20d=1.03 as it\u2019s low and doesn\u2019t signal trend shift\"]}"}

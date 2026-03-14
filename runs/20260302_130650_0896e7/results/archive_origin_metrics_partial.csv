@@ -1,0 +1,6 @@
+origin_date,model,path_mse,selected_underlying_model,gate_regime_value
+2025-12-22,Raw tsm,158.7455191971098,,
+2025-12-22,Baseline paper CoT-SENT,138.19572999999997,,
+2025-12-22,4B raw HDELTA,155.85283216043402,,
+2025-12-22,35B raw guarded HDELTA,146.5915992566923,,
+2025-12-22,gate_sentiment_alignment_5d,138.19572999999997,Baseline paper CoT-SENT,neutral

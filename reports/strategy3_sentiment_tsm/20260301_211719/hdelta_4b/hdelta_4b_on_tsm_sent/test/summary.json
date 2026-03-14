@@ -1,0 +1,24 @@
+{
+  "name": "hdelta_4b_on_tsm_sent",
+  "path_mse": 21.084306268695236,
+  "h1_mse": 1.405320654728563,
+  "h5_mse": 6.768652151816654,
+  "h20_mse": 26.28249893551285,
+  "h30_mse": 41.451702557528044,
+  "split": "test",
+  "n_samples": 382,
+  "candidate": "hdelta_4b_on_tsm_sent",
+  "candidate_config": {
+    "name": "hdelta_4b_on_tsm_sent",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

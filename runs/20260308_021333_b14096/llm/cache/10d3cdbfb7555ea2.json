@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with no 20d_pct movement\", \"Hold 20d vol near 2.20 when anchors show weak divergence\", \"Keep h20 anchor unchanged if 20d_pct is flat\", \"Do not overreact to small 5d_pct swings without volume confirmation\", \"If h1/h5 anchors show high error, defer adjustment until volatility stabilizes\"]}"}

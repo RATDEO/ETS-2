@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 1.0 if anchors show weak divergence\", \"Keep h20 anchor error below 1% to avoid mean reversion bias\", \"If 5d pct rises sharply, cap h30 anchor drift to prevent overshoot\", \"Anchor h1 should match spot within 0.5% to avoid lag error\"]}"}

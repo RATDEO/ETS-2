@@ -1,0 +1,24 @@
+{
+  "method": "TSM+LLM-COT-RF",
+  "schedule": "ramp",
+  "weights": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "tune_split": "val",
+  "metric": "mse_path",
+  "min_weight": 0.0,
+  "power": 1.0,
+  "best_w_path": 0.5,
+  "best_w_by_horizon": {
+    "1": 0.0,
+    "5": 1.0,
+    "20": 0.5,
+    "30": 0.25
+  },
+  "n_val": 228,
+  "n_test": 144
+}

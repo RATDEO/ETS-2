@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 35.32273556513785,
+      "h1_mse": 3.578665589031814,
+      "h5_mse": 14.066242980285605,
+      "h20_mse": 42.61672004293099,
+      "h30_mse": 67.19066906695731,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3-vl-4b-gpu",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "- If sentiment is consistently neutral or negative (0.00), model tends to overestimate prices; apply downward bias correction.\n- After sharp price spikes (e.g., >10% from prior peak), model often overshoots and fails to correct; reduce forecast slope or add early mean-reversion term.\n- When sentiment shows minor positive signals (e.g., 0.20\u20130.33), model should not overreact; cap forecast growth to avoid overestimating bullish momentum.\n- If history shows strong mean reversion (e.g., 3\u20135 consecutive days of decline), model should not assume continuation; adjust forecast toward historical mean or recent 7-day average.\n- For 30-day forecasts, if true outcome deviates >15% from 14-day moving average, consider adding sentiment-weighted smoothing or lagged sentiment correction.\n- If sentiment history includes multiple 0.20\u20130.40 spikes, model should not assume sustained rally; apply diminishing returns or exponential decay to forecast growth.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

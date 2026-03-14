@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d vol is low\", \"Keep 20d pct change near zero if 20d vol is low\", \"Anchor error pct should not exceed \u00b15% for h1-h5\", \"If h20 anchor error is high, hold current price unchanged\", \"Match 5d pct change with 20d pct change if vol_20d < 2.5\"]}"}

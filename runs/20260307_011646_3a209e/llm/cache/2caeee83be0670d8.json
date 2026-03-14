@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when vol_20d is low\", \"Hold 20d pct near zero if anchor error is high\", \"Keep h1 anchor close to spot if 5d pct is negative\", \"If h20 anchor error > 3%, defer adjustment\", \"Match h30 anchor if 5d pct is small and vol_20d is stable\"]}"}

@@ -1,0 +1,35 @@
+{
+  "candidate": "sim_k10_h18_ctx",
+  "raw_path_mse": 59.42276014921534,
+  "blend_path_mse": 39.22557939422483,
+  "blend_h1base_path_mse": 39.22557939422483,
+  "best_variant": "blend_ramp",
+  "best_variant_path_mse": 39.22557939422483,
+  "best_w": 0.0,
+  "n_val_samples": 40,
+  "metadata_sample": {
+    "method": "TSM+LLM-COT-RF",
+    "model": "qwen3-vl-4b-gpu",
+    "temperature": 0.0,
+    "success": true,
+    "reflect_attempts": 1,
+    "apply_attempts": 1,
+    "retain_context": true,
+    "strict_json_prompt": false,
+    "strict_json_response_format": true,
+    "rules_text": "- Model consistently overestimates prices, especially in early forecast periods (e.g., 2022-08-29 to 2023-05-11).\n- Forecasts show a strong upward trend bias, often peaking 1\u20132 days before true values drop or stabilize.\n- After sharp price spikes (e.g., 95+), model tends to overshoot and then gradually correct, but fails to capture immediate mean reversion.\n- In periods of high volatility (e.g., 2023-02-13\u201315), model underestimates the magnitude of price swings, especially downward moves.\n- Forecasts often lag behind true values by 1\u20133 days, particularly in the first 10\u201315 days of the forecast horizon.\n- Model exhibits poor sensitivity to recent low-price corrections; fails to adjust downward when true values dip below 70\u201380.\n- In late forecast periods (e.g., 2023-05-08\u201311), model shows diminishing accuracy, with forecasts drifting upward while true values show erratic, often downward, corrections.\n- Model tends to ignore or underweight the influence of recent low-price periods (e.g., 85\u201388 range) when forecasting future values.",
+    "teaching_examples": 10,
+    "teaching_dates": [
+      "2022-08-29 00:00:00",
+      "2022-08-30 00:00:00",
+      "2022-08-31 00:00:00",
+      "2023-02-13 00:00:00",
+      "2023-02-14 00:00:00",
+      "2023-02-15 00:00:00",
+      "2023-05-08 00:00:00",
+      "2023-05-09 00:00:00",
+      "2023-05-10 00:00:00",
+      "2023-05-11 00:00:00"
+    ]
+  }
+}

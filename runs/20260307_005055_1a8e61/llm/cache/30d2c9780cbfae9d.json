@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 59.09 with no significant change signal.\", \"Avoid overshoot on h5 anchor; cap at 57.09 if 5d change exceeds 5%.\", \"If 20d vol is low, prioritize mean reversion near h20 anchor.\", \"Do not adjust h1 anchor if 5d change is below 5%.\", \"Hold h30 anchor at 58.31 unless 5d change exceeds 3%.\"]}"}

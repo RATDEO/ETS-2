@@ -1,0 +1,30 @@
+{
+  "candidate": "sim_k5_h18_ctx",
+  "raw_path_mse": 48.70372199037134,
+  "blend_path_mse": 39.22557939422483,
+  "blend_h1base_path_mse": 39.22557939422483,
+  "best_variant": "blend_ramp",
+  "best_variant_path_mse": 39.22557939422483,
+  "best_w": 0.0,
+  "n_val_samples": 40,
+  "metadata_sample": {
+    "method": "TSM+LLM-COT-RF",
+    "model": "qwen3-vl-4b-gpu",
+    "temperature": 0.0,
+    "success": true,
+    "reflect_attempts": 1,
+    "apply_attempts": 1,
+    "retain_context": true,
+    "strict_json_prompt": false,
+    "strict_json_response_format": true,
+    "rules_text": "- Model consistently overestimates prices, especially in early forecast periods (first 5\u201310 days of forecast horizon).\n- Forecasts show a strong upward trend bias, often peaking too early and then declining too sharply \u2014 suggesting failure to capture mean reversion or volatility clustering.\n- After sharp price spikes (e.g., 90+), model tends to overshoot and then overcorrect, leading to overprediction in subsequent days.\n- Model underestimates volatility in low-price regimes (e.g., 70\u201380 range), failing to anticipate sudden drops or rebounds.\n- Forecast horizon 30d shows persistent bias toward higher values, suggesting model lacks adaptive response to recent price corrections or policy shocks.\n- Model fails to adjust for recent downward momentum \u2014 often ignores recent low prices and continues upward trend.\n- When true price drops sharply after a spike, model continues to trend upward, indicating poor lag correction or delayed response to market signals.\n- Model exhibits \u201coverfitting to recent highs\u201d \u2014 forecasts remain elevated even when historical data shows mean reversion or correction patterns.\n- In cases of prolonged price stability or consolidation, model fails to recognize it as a potential turning point, leading to continued overprediction.\n- Model does not adequately account for seasonal or policy-driven price adjustments (e.g., ETS auction cycles, regulatory changes) \u2014 leading to persistent bias in mid-to-late forecast horizon.",
+    "teaching_examples": 5,
+    "teaching_dates": [
+      "2022-08-30 00:00:00",
+      "2023-02-13 00:00:00",
+      "2023-02-14 00:00:00",
+      "2023-02-15 00:00:00",
+      "2023-05-09 00:00:00"
+    ]
+  }
+}

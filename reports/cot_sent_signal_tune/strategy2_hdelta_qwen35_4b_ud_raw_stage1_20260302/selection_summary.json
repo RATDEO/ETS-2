@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 38.48011939782123,
+      "h1_mse": 3.979803539435828,
+      "h5_mse": 15.83007157737854,
+      "h20_mse": 45.434317285028676,
+      "h30_mse": 74.81681199472929,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-4b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "1. When sentiment is consistently zero (0.00) and recent history shows a clear downtrend or consolidation, the model exhibits a severe upward bias; apply a negative correction of approximately 5-8% to forecasted values to account for mean reversion pressure absent in the model's logic.\n2. In periods of high volatility with mixed sentiment (values > 0.20), the model fails to capture immediate upside spikes, resulting in significant under-prediction during short-term surges; increase forecast weights by 10-15% when sentiment history indicates active market attention or positive news flow.\n3. The model systematically overestimates the duration of upward trends following a spike (e.g., Example 2 and 4), failing to recognize that volatility often reverses quickly once momentum breaks; apply a mean-reversion correction factor of -0.15 to projected highs if the last 5 days show a sharp increase followed by a sentiment drop or neutralization.\n4. When recent history is characterized by high variance (standard deviation > 3) and sentiment is low, the model defaults to a linear extrapolation that ignores range-bound behavior; reduce forecast volatility by 20% and flatten the slope of the projection curve to match historical intraday noise levels.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

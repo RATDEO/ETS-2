@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 20d change near zero when volatility is low\", \"Avoid large anchor errors when 5d change is positive\", \"Hold 30d anchor unchanged if 20d volatility is minimal\", \"Prioritize small anchor deviations when 5d change is modest\", \"Match 20d anchor to spot if 20d change is flat\"]}"}

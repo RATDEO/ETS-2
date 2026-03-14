@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near zero if vol is low\", \"Hold 20d change at zero if anchors show no trend\", \"Avoid large anchor overshoots when vol is below 1.0\", \"Match 5d change to anchor error if vol < 0.8\", \"If 20d vol is low, anchor horizons should stay unchanged\"]}"}

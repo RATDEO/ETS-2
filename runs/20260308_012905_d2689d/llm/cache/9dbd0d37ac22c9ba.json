@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near zero if 20d vol is low\", \"Hold 20d anchor if 20d change is flat\", \"Avoid large 5d overshoot when 20d vol is low\", \"Anchor 30d if 30d error is large\", \"Match 5d change to 20d if 20d vol is low\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with no 20d pct movement\", \"Hold 20d vol near 2.20 when anchors show minimal divergence\", \"Keep h20 anchor unchanged if 20d pct change is zero\", \"Do not adjust h1 if 5d pct change is below -5%\", \"Ignore h30 if 20d vol is low and 20d pct change is flat\"]}"}

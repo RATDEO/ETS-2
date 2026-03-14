@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 1.63 if anchors show minimal drift\", \"Keep h20 anchor unchanged if 20d pct change is zero\", \"Do not chase h30 anchor if it\u2019s 0.68% below spot\", \"If 5d pct is high, cap h1 anchor error below 1%\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with low volatility.\", \"Hold 20d_pct near zero when vol_20d is low.\", \"Anchor h20 should not overshoot spot by >4%.\", \"If h30 error is large, keep current_price unchanged.\", \"Match h1 error to spot deviation within \u00b11%.\"]}"}

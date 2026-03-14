@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large anchor errors when vol_20d is low\", \"Keep h20 anchor close to spot if change_20d_pct is near zero\", \"Do not overreact to short-term price drops without volume confirmation\", \"Hold h1 anchor if change_5d_pct is negative and vol_20d is stable\", \"Match h30 anchor to spot if error_pct exceeds 1.0%\"]}"}

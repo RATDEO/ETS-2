@@ -1,0 +1,36 @@
+{
+  "config": "/Users/davidwilkinson/Desktop/ETS 2/src/config/paper_llm_cot_sent_rf_qwen_k5_h18_similarity_ctx_full.yaml",
+  "data_dir": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto",
+  "history_years": 5,
+  "origin_step": 63,
+  "n_origins": 1,
+  "origin_dates": [
+    "2025-12-22"
+  ],
+  "regime_thresholds": {
+    "volatility_median": 0.011711647811772611,
+    "sentiment_abs_median": 0.05,
+    "return_abs_median": 0.0025,
+    "trend_threshold_multiplier": 0.25,
+    "volatility_window": 20,
+    "trend_window": 20,
+    "return_window": 5,
+    "sentiment_window": 3,
+    "sentiment_fill_limit": 5
+  },
+  "gates": {
+    "gate_sentiment_alignment_5d": {
+      "aligned": "35B raw guarded HDELTA",
+      "divergent": "4B raw HDELTA",
+      "neutral": "Baseline paper CoT-SENT"
+    },
+    "gate_trend_vol_regime": {
+      "down__high_vol": "Baseline paper CoT-SENT",
+      "down__low_vol": "Baseline paper CoT-SENT",
+      "up__high_vol": "Baseline paper CoT-SENT",
+      "up__low_vol": "35B raw guarded HDELTA",
+      "flat__high_vol": "4B raw HDELTA",
+      "flat__low_vol": "35B raw guarded HDELTA"
+    }
+  }
+}

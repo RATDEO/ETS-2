@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors for 20d horizon\", \"Keep 5d change near zero if 20d vol is low\", \"Hold 20d anchor unchanged if 20d change is flat\", \"Limit 30d anchor overshoot if 5d change is negative\", \"Use spot price as baseline for anchor validation\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h30 unchanged as anchor error is high and spot is volatile.\", \"Avoid large 5d pct changes if 20d pct is flat.\", \"H20 anchor should not drift far from spot if vol is low.\", \"Match h1 and h5 anchors to spot if 5d pct is strong.\", \"Hold h20 anchor near spot if 20d vol is low and 20d pct is flat.\"]}"}

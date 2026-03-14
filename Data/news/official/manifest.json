@@ -1,0 +1,31 @@
+{
+  "built_at_utc": "2026-03-03T17:29:22.005043+00:00",
+  "llm_base_url": "http://192.168.1.140:9877/v1",
+  "llm_model": "qwen3-vl-4b-gpu",
+  "dg_pages": 25,
+  "eex_report_year_min": 2021,
+  "dg_articles_total": 338,
+  "dg_articles_extracted": 16,
+  "dg_events_kept": 13,
+  "entsoe_articles_total": 20,
+  "entsoe_articles_extracted": 12,
+  "entsoe_events_kept": 0,
+  "eex_calendar_rows": 215,
+  "eex_report_rows": 1145,
+  "eex_event_rows": 1360,
+  "combined_event_rows": 1373,
+  "sources": {
+    "dg_clima_rss": "https://climate.ec.europa.eu/node/2/rss_en",
+    "dg_clima_news": "https://climate.ec.europa.eu/news-other-reads/news_en",
+    "entsoe_news_rss": "https://www.entsoe.eu/rss/news.xml",
+    "eex_calendar_url": "https://www.eex.com/fileadmin/EEX/Downloads/Trading/Calendar/Auction_Calendar/20251211-EEX_Auction_Calendar_2026.xlsx",
+    "eex_report_urls": [
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2021-data.xlsx",
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2022-data.xlsx",
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2023-data.xlsx",
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2024-data.xlsx",
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2025-data.xlsx",
+      "https://public.eex-group.com/eex/eua-auction-report/emission-spot-primary-market-auction-report-2026-data.xlsx"
+    ]
+  }
+}

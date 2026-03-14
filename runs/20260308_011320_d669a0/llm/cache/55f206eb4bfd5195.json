@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 20d change near zero if volatility is low\", \"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d anchor unchanged if error exceeds 3%\", \"Use 5d pct to signal momentum, not 20d if volatile\", \"Anchor 30d if 20d error is >2% and 5d is rising\"]}"}

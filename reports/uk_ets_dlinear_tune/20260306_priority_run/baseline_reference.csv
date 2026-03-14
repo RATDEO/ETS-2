@@ -1,0 +1,5 @@
+name,test_path_mse
+naive_persistence,32.011234283447266
+seasonal_naive,34.19218747489146
+linear_ridge,22.419955242336467
+linear_lasso,24.320129333238288

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change if 20d change is flat\", \"Keep 20d vol near 2.33 if anchors show weak divergence\", \"Hold 30d anchor if 20d anchor error exceeds 5%\", \"If 5d change is positive, ensure 20d anchor error stays below 3%\", \"Maintain h20 anchor if 5d change is small and 20d vol is stable\"]}"}

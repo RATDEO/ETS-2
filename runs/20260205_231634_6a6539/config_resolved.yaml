@@ -1,6 +1,6 @@
 run_id: 20260205_231634_6a6539
-git_hash: null
-timestamp: '2026-02-05T23:16:34.265403'
+git_hash: 136f060e
+timestamp: '2026-02-27T00:28:27.273646'
 project:
   name: EU_ETS_Forecasting
   version: 0.1.1
@@ -201,6 +201,7 @@ output:
   save_model_checkpoints: true
   generate_plots: true
   generate_paper: false
+  write_project_paper: false
 reproducibility:
   seed: 42
   deterministic: true

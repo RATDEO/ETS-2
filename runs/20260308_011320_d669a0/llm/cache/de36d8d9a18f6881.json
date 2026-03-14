@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with flat 20d change\", \"Hold 20d vol near 1.26 if anchors show minimal drift\", \"Keep h20 anchor unchanged if 20d pct change is zero\", \"Do not overshoot h1 anchor by more than 0.01% vs spot\", \"If h30 anchor is +0.97% vs spot, avoid aggressive mean reversion\"]}"}

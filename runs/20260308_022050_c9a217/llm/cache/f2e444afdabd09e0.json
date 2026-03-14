@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d vol is low and change is flat.\", \"Avoid overshoot on h5 as 5d change is positive but 20d is neutral.\", \"H1 anchor should stay near spot as 5d change is modest.\", \"If 20d vol is low, avoid large anchor shifts.\", \"Match h30 anchor to spot if 5d change is small and 20d is flat.\"]}"}

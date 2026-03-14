@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d change is near zero\", \"Avoid large 5d pct changes when vol is low\", \"H1 anchor should not overshoot spot by >1.5%\", \"H30 anchor should not drift >2.5% from spot\", \"If 20d vol is low, avoid aggressive anchor shifts\"]}"}

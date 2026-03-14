@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.42 with no significant drift.\", \"Avoid large 5d pct swings; current -2.27 suggests mean reversion.\", \"H30 anchor should stay near 55.99 to avoid overshoot.\", \"If vol_20d < 1.20, suppress anchor adjustments.\", \"Match h1 anchor to 56.15 to align with spot stability.\"]}"}

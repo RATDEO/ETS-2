@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when vol is low and change_20d_pct is flat\", \"Hold 5d change near zero if 20d change is stagnant\", \"Anchor 20d forecast to spot if vol is low and error is small\", \"Keep 30d anchor unchanged if 20d error is minimal\", \"Use spot as baseline if 5d change is positive and 20d is flat\"]}"}

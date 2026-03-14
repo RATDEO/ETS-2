@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on short-term horizon due to recent +4.86% gain.\", \"Hold 20d horizon near zero if change_20d_pct is flat.\", \"Anchor h20 at 53.89 if vol_20d is low and change_20d_pct is stagnant.\", \"Keep h1 near 55.42 if spot is rising.\", \"If anchor error_pct exceeds \u00b12%, reset horizon to match spot trend.\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d vol is low and 20d pct change is flat\", \"Avoid overshoot on h1 if 5d pct change is small\", \"Hold h30 anchor steady when 5d pct change is minimal\", \"If 20d pct change is zero, defer adjustment to h20\", \"Match h5 anchor to 5d pct change if volatility is low\"]}"}

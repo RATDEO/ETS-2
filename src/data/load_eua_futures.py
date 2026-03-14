@@ -1,13 +1,8 @@
 """
-Load EUA (European Union Allowance) Futures price data.
+Load daily carbon futures price data from Investing-style CSV exports.
 
-This is the primary target series - EUA Yearly Futures prices.
-Data format:
-- Date: DD/MM/YYYY format
-- Price: Closing price in EUR
-- Open, High, Low: OHLC data
-- Vol.: Volume (with K/M suffixes)
-- Change %: Daily percentage change
+The module name is legacy, but the loader is used for both EUA and UKA futures
+files because the upstream schema is the same.
 """
 
 import pandas as pd
@@ -18,6 +13,24 @@ import logging
 import re
 
 logger = logging.getLogger(__name__)
+
+
+def infer_futures_metadata(file_path: Union[str, Path]) -> dict[str, str]:
+    """Infer instrument/source/currency metadata from the futures filename."""
+    name = Path(file_path).name.lower()
+    if "uk emissions allowances" in name or "(uka)" in name or "uka" in name:
+        return {
+            "instrument": "UKA_FUTURES",
+            "source": "uka_futures",
+            "currency": "GBP",
+            "label": "UKA futures",
+        }
+    return {
+        "instrument": "EUA_FUTURES",
+        "source": "eua_futures",
+        "currency": "EUR",
+        "label": "EUA futures",
+    }
 
 
 def parse_volume(vol_str: str) -> Optional[float]:
@@ -73,24 +86,25 @@ def parse_change_pct(change_str: str) -> Optional[float]:
 
 def load_eua_futures_file(file_path: Union[str, Path]) -> pd.DataFrame:
     """
-    Load a single EUA futures price data file.
+    Load a single carbon futures price data file.
     
     Expected CSV format:
     "Date","Price","Open","High","Low","Vol.","Change %"
     "05/01/2026","87.25","88.09","88.78","87.05","27.80K","-1.20%"
     
     Args:
-        file_path: Path to the EUA futures CSV file
+        file_path: Path to the futures CSV file
         
     Returns:
-        DataFrame with parsed EUA futures data
+        DataFrame with parsed futures data
     """
     file_path = Path(file_path)
+    meta = infer_futures_metadata(file_path)
     
     if not file_path.exists():
-        raise FileNotFoundError(f"EUA futures file not found: {file_path}")
+        raise FileNotFoundError(f"Futures file not found: {file_path}")
     
-    logger.info(f"Loading EUA futures file: {file_path.name}")
+    logger.info("Loading %s file: %s", meta["label"], file_path.name)
     
     # Read CSV - handle quoted strings
     df = pd.read_csv(file_path, encoding='utf-8')
@@ -137,39 +151,45 @@ def load_eua_futures_file(file_path: Union[str, Path]) -> pd.DataFrame:
         df = df.drop(columns=["change_pct_raw"])
     
     # Add metadata
-    df["currency"] = "EUR"
-    df["source"] = "eua_futures"
-    df["instrument"] = "EUA_FUTURES"
+    df["currency"] = meta["currency"]
+    df["source"] = meta["source"]
+    df["instrument"] = meta["instrument"]
     
     # Sort by date (ascending - oldest first)
     df = df.sort_values("date", ascending=True).reset_index(drop=True)
     
-    logger.info(f"Loaded EUA futures: {len(df)} records from {df['date'].min()} to {df['date'].max()}")
+    logger.info(
+        "Loaded %s: %d records from %s to %s",
+        meta["label"],
+        len(df),
+        df["date"].min(),
+        df["date"].max(),
+    )
     
     return df
 
 
 def load_eua_futures_data(data_dir: Union[str, Path]) -> pd.DataFrame:
     """
-    Load and combine all EUA futures price data files.
+    Load and combine all carbon futures price data files.
     
     Args:
         data_dir: Path to Data/ directory
         
     Returns:
-        Combined DataFrame with EUA futures prices
+        Combined DataFrame with futures prices
     """
     data_dir = Path(data_dir)
     futures_dir = data_dir / "eua-futures"
     
     if not futures_dir.exists():
-        raise FileNotFoundError(f"EUA futures directory not found: {futures_dir}")
+        raise FileNotFoundError(f"Futures directory not found: {futures_dir}")
     
     # Find all CSV files in the directory
     csv_files = list(futures_dir.glob("*.csv"))
     
     if not csv_files:
-        raise FileNotFoundError(f"No EUA futures CSV files found in {futures_dir}")
+        raise FileNotFoundError(f"No futures CSV files found in {futures_dir}")
     
     dfs = []
     for file_path in csv_files:
@@ -181,14 +201,21 @@ def load_eua_futures_data(data_dir: Union[str, Path]) -> pd.DataFrame:
             logger.error(f"Error loading {file_path.name}: {e}")
     
     if not dfs:
-        raise ValueError("No EUA futures data could be loaded")
+        raise ValueError("No futures data could be loaded")
     
     # Combine and deduplicate
     combined = pd.concat(dfs, ignore_index=True)
     combined = combined.sort_values("date").drop_duplicates(subset=["date"], keep="last")
     combined = combined.reset_index(drop=True)
     
-    logger.info(f"Combined EUA futures data: {len(combined)} records from {combined['date'].min()} to {combined['date'].max()}")
+    instrument = str(combined["instrument"].iloc[0]) if "instrument" in combined.columns and not combined.empty else "FUTURES"
+    logger.info(
+        "Combined %s data: %d records from %s to %s",
+        instrument,
+        len(combined),
+        combined["date"].min(),
+        combined["date"].max(),
+    )
     
     return combined
 
@@ -198,7 +225,7 @@ def get_eua_futures_target_series(
     price_col: str = "close"
 ) -> pd.DataFrame:
     """
-    Extract the primary target price series from EUA futures data.
+    Extract the primary target price series from a futures DataFrame.
     
     Args:
         eua_df: DataFrame from load_eua_futures_data()
@@ -211,7 +238,7 @@ def get_eua_futures_target_series(
         return pd.DataFrame(columns=["date", "close_eur"])
     
     if price_col not in eua_df.columns:
-        raise ValueError(f"Price column '{price_col}' not found in EUA data")
+        raise ValueError(f"Price column '{price_col}' not found in futures data")
     
     # Extract target series
     target = eua_df[["date", price_col]].copy()
@@ -223,7 +250,16 @@ def get_eua_futures_target_series(
     # Sort by date
     target = target.sort_values("date").reset_index(drop=True)
     
-    logger.info(f"EUA futures target series: {len(target)} records, price range: {target['close_eur'].min():.2f} - {target['close_eur'].max():.2f} EUR")
+    instrument = str(eua_df["instrument"].iloc[0]) if "instrument" in eua_df.columns else "FUTURES"
+    currency = str(eua_df["currency"].iloc[0]) if "currency" in eua_df.columns else "native"
+    logger.info(
+        "%s target series: %d records, price range: %.2f - %.2f %s",
+        instrument,
+        len(target),
+        target["close_eur"].min(),
+        target["close_eur"].max(),
+        currency,
+    )
     
     return target
 

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when vol_20d is low\", \"Hold h20 anchor if change_20d_pct is near zero\", \"Cap h1 anchor if 5d pct change is negative and vol is low\", \"Ignore h30 if anchor_error_pct exceeds \u00b15%\", \"Keep h5 unchanged if 5d pct change is small and vol is low\"]}"}

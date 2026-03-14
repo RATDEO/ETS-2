@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor shifts if 20d vol is low\", \"Hold 20d change near zero when volatility is low\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not overreact to 5d negative change when 20d is stable\", \"Ignore h30 if 20d vol is below 1.10\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 5d change is low\", \"Hold 20d vol near 1.2\u20131.4 for stability\", \"If h30 error > 3.0, keep forecast unchanged\", \"Use h1 error as proxy for short-term bias\", \"If h5 error > 2.0, adjust forecast downward\"]}"}

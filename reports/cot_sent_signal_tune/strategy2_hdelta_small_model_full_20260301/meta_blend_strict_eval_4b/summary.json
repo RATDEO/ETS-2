@@ -1,0 +1,56 @@
+{
+  "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/reports/cot_sent_signal_tune/strategy2_hdelta_small_model_full_20260301",
+  "outer_cv_eval_samples": 169,
+  "outer_cv_results": {
+    "tsm": {
+      "name": "tsm",
+      "path_mse": 44.36319547321461,
+      "h1_mse": 3.1809924231210487,
+      "h5_mse": 17.426013969674795,
+      "h20_mse": 55.23821363173907,
+      "h30_mse": 85.50798793141335
+    },
+    "llm_hdelta": {
+      "name": "llm_hdelta",
+      "path_mse": 44.00471672142389,
+      "h1_mse": 3.256758345759883,
+      "h5_mse": 17.489983266663906,
+      "h20_mse": 55.07462574922137,
+      "h30_mse": 83.20491444572977
+    },
+    "meta_blend_outer_cv": {
+      "name": "meta_blend_outer_cv",
+      "path_mse": 57.966146012691105,
+      "h1_mse": 3.4395611443727834,
+      "h5_mse": 32.36073487108378,
+      "h20_mse": 68.02773244235283,
+      "h30_mse": 86.30122888676475
+    }
+  },
+  "test_results": {
+    "tsm": {
+      "name": "tsm",
+      "path_mse": 20.72566627959514,
+      "h1_mse": 1.384548651839924,
+      "h5_mse": 6.391053500843193,
+      "h20_mse": 26.07120457904589,
+      "h30_mse": 41.27709109381687
+    },
+    "llm_hdelta": {
+      "name": "llm_hdelta",
+      "path_mse": 20.618083461620405,
+      "h1_mse": 1.3958238531271585,
+      "h5_mse": 6.393483105114026,
+      "h20_mse": 25.92156215115349,
+      "h30_mse": 40.99818031514918
+    },
+    "meta_blend_fullval_fit": {
+      "name": "meta_blend_fullval_fit",
+      "path_mse": 20.688997287575365,
+      "h1_mse": 1.3828687346419875,
+      "h5_mse": 6.685940565724612,
+      "h20_mse": 26.095182136322855,
+      "h30_mse": 40.87498495328924
+    }
+  }
+}

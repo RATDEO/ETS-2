@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 58.33 due to near-zero change_20d_pct.\", \"Avoid overshoot on h5 anchor; cap at 58.71.\", \"Lag h1 anchor to 58.24 if change_5d_pct exceeds +2.5%.\", \"Mean-revert h30 anchor if vol_20d drops below 0.80.\", \"Hold h20 anchor steady if change_20d_pct remains flat.\"]}"}

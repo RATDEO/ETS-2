@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with low volatility\", \"Hold 20d vol near 2.5 if anchors show weak divergence\", \"Keep 20d pct change near zero when anchors are stable\", \"If 5d pct change is negative, avoid moving h1 anchor below -3% vs spot\", \"If h30 anchor error exceeds -5%, keep it unchanged\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if change_20d_pct is near zero\", \"Avoid overshoot on h5 if change_5d_pct is high\", \"Match h1 anchor error to current volatility if vol_20d is low\", \"Hold h30 anchor if base_anchors show weak divergence\", \"Use h5 as primary anchor if change_5d_pct exceeds 10%\"]}"}

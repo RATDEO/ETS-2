@@ -1,0 +1,3 @@
+horizon,folds,total_test_samples,total_non_overlap_trades,llm_mean_path_mse,tsm_mean_path_mse,llm_beats_tsm_path_folds,llm_mean_net_total_return,tsm_mean_net_total_return,llm_mean_net_sharpe,tsm_mean_net_sharpe,llm_beats_tsm_return_folds
+20,5,542,29,27.870350502917198,28.2041654586792,3,0.23757636122246809,0.246515003164589,1.1729909953453646,1.2203218828993625,2
+30,5,542,21,27.870350502917198,28.2041654586792,3,0.19193136450242684,0.19914557734023974,0.9329030499025219,1.0289654972787468,1

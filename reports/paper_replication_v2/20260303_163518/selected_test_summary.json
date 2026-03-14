@@ -1,0 +1,14 @@
+{
+  "candidate": "paper_event90_proxy_hprice_guarded_official_ctx",
+  "n_samples": 40,
+  "mse_path": 20.973929532976406,
+  "h1_mse": 1.2509389349466802,
+  "h5_mse": 7.926409998339551,
+  "h20_mse": 25.79489292016109,
+  "h30_mse": 38.418072948694615,
+  "paper_d10_acc": 0.6,
+  "paper_d20_acc": 0.45,
+  "paper_d30_acc": 0.475,
+  "test_sample_cap": 40,
+  "test_full_split": false
+}

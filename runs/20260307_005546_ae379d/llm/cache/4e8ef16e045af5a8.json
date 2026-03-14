@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 59.61 with no recent volatility signal.\", \"Avoid overshoot on h5 anchor; target 57.86 with minimal deviation.\", \"Match h1 anchor to 57.45 with tight error tolerance.\", \"Hold h30 anchor at 58.95 if 20d volatility remains low.\", \"Do not adjust anchors if 20d change is flat and volatility is low.\"]}"}

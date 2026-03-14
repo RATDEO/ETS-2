@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, keep 20d change near zero\", \"vol_20d low, anchor errors should stay small\", \"h20 anchor error near zero, avoid large swings\", \"h1 and h5 anchors close, maintain stability\", \"if 20d vol low, don\u2019t overreact to 5d momentum\"]}"}

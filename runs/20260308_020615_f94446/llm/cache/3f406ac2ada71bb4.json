@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when vol is low.\", \"Keep 20d change near zero if anchors show weak trend.\", \"Hold 5d change if 20d change is flat.\", \"Anchor h20 should not drift if vol is below 1.0.\", \"Match h1 and h5 anchors if 5d change is high.\"]}"}

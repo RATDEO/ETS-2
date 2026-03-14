@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as vol_20d is low and change_20d_pct is flat.\", \"Avoid large overshoots in h1/h5 if change_5d_pct is high.\", \"H30 anchor should not drift far from spot if h20 is stable.\", \"If h1 error is high, reduce forecast bias toward spot.\", \"Match h5/h20 error pct to current volatility if change_5d_pct is rising.\"]}"}

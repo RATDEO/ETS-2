@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-03-14T15:02:16.901806",
+  "source_forecast_json": "/Users/davidwilkinson/Desktop/ETS 2/reports/tmp_paper_trade_forecast.json",
+  "run_id": "smoke_run",
+  "origin_date": "2026-03-13",
+  "data_cutoff_date": "2026-03-13",
+  "model": "TSM+LLM-COT-RF-HDELTA",
+  "primary_horizon": 20,
+  "signal_threshold": 0.0,
+  "last_observed_price": 50.0,
+  "predicted_target_date": "2026-04-10",
+  "predicted_cumulative_return": 0.06000000000000005,
+  "signal": 1,
+  "execution_convention": "enter_next_session_close_hold_h_days",
+  "llm_cutoff_status": "post_cutoff_only",
+  "llm_cutoff_note": "All prediction-set dates are on or after 2025-01-01. Relative to the assumed LLM training cutoff around early 2025, this segment is the cleaner regime for assessing whether results could reflect memorized pretraining exposure."
+}

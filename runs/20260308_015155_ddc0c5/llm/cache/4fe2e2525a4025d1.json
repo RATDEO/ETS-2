@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h20 anchor due to high positive change_20d_pct\", \"Keep h5 anchor near spot if change_20d_pct is flat\", \"Use h1 anchor as baseline if change_5d_pct is positive\", \"Do not adjust h30 anchor if vol_20d is low\", \"Hold h20 anchor unchanged if match_rank is low\"]}"}

@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 41.38534555618301,
+      "h1_mse": 3.648681298759092,
+      "h5_mse": 15.10021967974232,
+      "h20_mse": 51.5674638878153,
+      "h30_mse": 79.76131666270102,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "1. **Correct for Mean Reversion Lag**: The model exhibits a persistent \"sticky\" bias, failing to react to sharp trend reversals. When history shows a peak followed by a decline (e.g., Example 1), the model continues forecasting a slow upward drift or flatline, ignoring the immediate downward momentum. Apply a negative correction factor proportional to the slope of the last 5 days of history to counteract this inertia.\n\n2. **Adjust for Overshoot After Spikes**: In scenarios where prices spike (e.g., Example 2 and 3 reaching ~100), the model forecasts a gradual, linear increase, missing the subsequent sharp volatility and drop. When the 30-day forecast exceeds the recent 18-day average by more than 5%, apply a non-linear decay curve to the forecast to anticipate the mean reversion drop that typically follows such spikes.\n\n3. **Incorporate Sentiment-Weighted Volatility**: The model treats all sentiment inputs as neutral (0.00) or ignores them, resulting in underestimation of volatility. When sentiment history contains non-zero values (e.g., 0.20, 0.33, 0.40), the true outcome often deviates significantly from the model's narrow range. Increase the forecast variance or apply a \"sentiment multiplier\" to the forecast slope when sentiment scores exceed 0.20 to capture the directional shifts driven by news.\n\n4. **Horizon-Specific Bias Correction**: The model systematically underestimates short-term peaks and overestimates long-term troughs. For the first 10 days of the forecast horizon, adjust the forecast downward if the immediate history is declining, and upward if the history is rising, to align with the observed \"lag\" in the model's reaction time.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

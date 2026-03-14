@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 38.92 with no significant change signal.\", \"Avoid large 5d pct shifts if vol_20d is low.\", \"Halt overshoot if h5 and h30 anchors show strong positive drift.\", \"Match h1 anchor to spot if 5d pct is small.\", \"Hold h20 anchor steady if 20d pct is flat.\"]}"}

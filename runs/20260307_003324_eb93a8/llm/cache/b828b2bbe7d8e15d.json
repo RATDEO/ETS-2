@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"h20 forecast should not overshoot by more than 5% above true\", \"h30 forecast error should stay under 5% when vol_20d < 1.10\", \"h1 error should be within \u00b10.2 of true when change_5d_pct > 0\", \"anchor_error_pct must be recalculated if h5 error exceeds 4%\", \"keep h20 unchanged if vol_20d is below 1.05 and h20 error is > -5%\"]}"}

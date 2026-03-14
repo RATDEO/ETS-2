@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d vol is low and change is flat.\", \"Avoid overshoot on h5 as 5d change is high but 20d is stagnant.\", \"H30 should stay near spot if 20d vol is low and 20d change is zero.\", \"H1 should not drift if 5d change is moderate and 20d vol is low.\", \"If 20d change is zero, avoid aggressive adjustments to any horizon.\"]}"}

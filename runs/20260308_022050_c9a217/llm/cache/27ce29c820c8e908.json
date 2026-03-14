@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near zero if 20d change is flat\", \"Avoid large anchor errors when 5d change is positive\", \"Hold 20d vol near 1.4 if 5d change is small\", \"If 30d anchor is high, cap 5d change to avoid overshoot\", \"Anchor error pct should stay below 3% for stable forecast\"]}"}

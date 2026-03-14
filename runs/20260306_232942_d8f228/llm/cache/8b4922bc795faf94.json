@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overestimating short-term price increases\", \"Underweight recent volatility in long-horizon forecasts\", \"Correct for mean reversion in high-volatility periods\", \"Adjust forecasts downward when 5d change is negative\", \"Anchor forecasts to recent true values for h1-h5\", \"Reduce horizon-specific bias when vol_20d < 2.0\"]}"}

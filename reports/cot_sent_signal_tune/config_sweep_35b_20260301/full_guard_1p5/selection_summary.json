@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": false,
+    "strict_json_prompt": true
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 37.64915239012861,
+      "h1_mse": 3.449483396699361,
+      "h5_mse": 14.812182635593555,
+      "h20_mse": 45.56257599866126,
+      "h30_mse": 72.88824371088045,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": false,
+        "strict_json_prompt": true,
+        "strict_json_response_format": true,
+        "rules_text": "- Correct for severe mean reversion bias: When history shows a sharp peak followed by a decline (e.g., Example 1), the model's flat or slightly rising forecast significantly overestimates future prices; apply a downward correction proportional to the recent drop magnitude.\n- Adjust for momentum lag in bull runs: When history shows a sustained upward trend (e.g., Examples 2, 3, 4), the model underestimates the immediate continuation of the spike; increase the forecast for the first 5-10 days to capture the overshoot before the eventual pullback.\n- Invert sentiment-weighted expectations: When sentiment history is zero but price action is volatile, the model fails to react to implied market stress; if prices are falling despite neutral sentiment, apply a steeper downward slope than the model's flat projection.\n- Account for post-spike volatility decay: After a price spike (e.g., Example 2's peak at 100.29), the model fails to predict the subsequent sharp drop; apply a non-linear decay factor in the forecast horizon 10-20 days out to align with the observed volatility clustering.\n- Calibrate for low-volatility stagnation: In periods of low sentiment and flat price history (e.g., Example 5 start), the model's slight upward drift is often incorrect; flatten the forecast or introduce a slight downward bias if the trend is already established as bearish.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

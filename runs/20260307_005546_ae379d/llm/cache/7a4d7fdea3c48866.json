@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near +3.73% as recent momentum is strong.\", \"Hold 20d change at +0.00% if volatility is low and no trend reversal.\", \"Anchor h20 at 61.63 if 20d vol is low and no significant drift.\", \"Avoid large anchor errors if 5d change is positive and 20d is flat.\", \"If 20d vol is low, keep h30 unchanged unless 5d change exceeds +5.0%.\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor shows slight overshoot; keep h1 unchanged\", \"H20 anchor shows strong mean reversion; align with spot\", \"H30 anchor shows moderate lag; adjust to match spot\", \"Avoid large volatility swings; cap vol_20d at 2.5\", \"H5 anchor shows weak signal; defer adjustment until 5d change stabilizes\"]}"}

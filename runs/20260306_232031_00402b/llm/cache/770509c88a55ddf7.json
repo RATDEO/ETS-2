@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overestimating short-term prices when volatility is low.\", \"Underweight recent price changes in long-horizon forecasts.\", \"Correct for consistent over- or under-forecasting by horizon.\", \"Adjust forecasts downward when 5d change is negative.\", \"Anchor forecasts to recent volatility trends for better accuracy.\"]}"}

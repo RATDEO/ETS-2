@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 5d change is negative\", \"Hold 20d horizon near zero if vol_20d is low\", \"Cap h1 anchor above current price if 5d change is steeply negative\", \"Ignore h30 if 20d change is flat\", \"Keep h20 unchanged if vol_20d is below 1.0\"]}"}

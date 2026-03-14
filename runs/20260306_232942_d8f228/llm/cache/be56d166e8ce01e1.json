@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid underestimating long-term price trends\", \"Adjust forecasts upward for horizon > 15d\", \"Reduce forecast lag by aligning with recent volatility\", \"Cap overshoots at 5% above recent 5d high\", \"Anchor forecasts to 20d volatility for stability\", \"Apply mean reversion for horizon > 30d\"]}"}

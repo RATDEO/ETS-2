@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 20d vol is low\", \"Cap h30 forecast if h20 error exceeds +3.0%\", \"Hold h1 forecast if h5 error is under +1.0%\", \"Ignore h30 if true price diverges >5% from h20\", \"Keep h20 unchanged if 5d change is <2.0%\"]}"}

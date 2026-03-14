@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.52 with no significant change\", \"Avoid large 5d pct overshoots; cap at +3.67\", \"Match h1 anchor to spot within 0.67% margin\", \"Ignore vol_20d if below 2.00 as signal is weak\", \"Hold h30 anchor steady at 56.44 if spot drift is minimal\"]}"}

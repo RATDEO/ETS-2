@@ -1,0 +1,24 @@
+{
+  "name": "feat4_train_linear_proxy",
+  "path_mse": 37.328854388138886,
+  "h1_mse": 2.798695144206424,
+  "h5_mse": 15.698185412839715,
+  "h20_mse": 45.81733710248673,
+  "h30_mse": 70.72077828969695,
+  "split": "val",
+  "n_samples": 226,
+  "candidate": "feat4_train_linear_proxy",
+  "candidate_config": {
+    "name": "feat4_train_linear_proxy",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

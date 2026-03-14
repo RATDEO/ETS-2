@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot in short-term forecasts\", \"Hold 5-day horizon near zero if error is large\", \"Use anchor error to adjust long-term bias\", \"Keep 20-day volume stable for signal reliability\", \"If anchors disagree, fix 30-day forecast to match true value\"]}"}

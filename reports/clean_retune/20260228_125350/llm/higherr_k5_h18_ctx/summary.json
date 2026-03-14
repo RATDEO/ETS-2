@@ -1,0 +1,30 @@
+{
+  "candidate": "higherr_k5_h18_ctx",
+  "raw_path_mse": 67.8587931855745,
+  "blend_path_mse": 39.22557939422483,
+  "blend_h1base_path_mse": 39.22557939422483,
+  "best_variant": "blend_ramp",
+  "best_variant_path_mse": 39.22557939422483,
+  "best_w": 0.0,
+  "n_val_samples": 40,
+  "metadata_sample": {
+    "method": "TSM+LLM-COT-RF",
+    "model": "qwen3-vl-4b-gpu",
+    "temperature": 0.0,
+    "success": true,
+    "reflect_attempts": 1,
+    "apply_attempts": 1,
+    "retain_context": true,
+    "strict_json_prompt": false,
+    "strict_json_response_format": true,
+    "rules_text": "- Model consistently overestimates prices, especially in early forecast periods (first 10\u201315 days of the 30-day window).\n- Forecasts show strong upward bias after recent price spikes (e.g., 95\u201398 range), failing to account for sharp downward corrections.\n- Model exhibits mean reversion bias: overestimates after high peaks, then underestimates as prices fall, suggesting it doesn\u2019t adjust for momentum or volatility clustering.\n- Forecast horizon-specific error: 30-day forecasts are overly optimistic in the short term (first 10 days) and then diverge sharply from reality, indicating poor lag adjustment.\n- Overshoot after spikes: model reacts too aggressively to recent price increases, leading to overestimation that doesn\u2019t reflect actual market correction.\n- Model fails to capture early downward momentum: true outcomes often show rapid decline within first 5\u201310 days after a spike, while forecasts remain flat or rising.\n- Correction heuristic: reduce forecast slope after recent spikes; apply downward bias adjustment for days 1\u20135 post-spike; use moving average of recent 7\u201310 days to anchor forecast baseline.",
+    "teaching_examples": 5,
+    "teaching_dates": [
+      "2022-08-18 00:00:00",
+      "2022-08-19 00:00:00",
+      "2022-08-22 00:00:00",
+      "2022-08-23 00:00:00",
+      "2022-08-29 00:00:00"
+    ]
+  }
+}

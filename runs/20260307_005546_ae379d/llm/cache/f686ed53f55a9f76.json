@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d change is flat.\", \"Avoid large 5d pct overshoots when vol is low.\", \"Halt if 5d pct > 7% and 20d pct is 0%.\", \"Anchor h1 if 5d pct is high and h1 error is small.\", \"Hold h30 if h20 error is >5% and 20d vol is <1.0.\"]}"}

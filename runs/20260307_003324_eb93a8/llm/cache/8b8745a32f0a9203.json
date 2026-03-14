@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive changes if 5d_pct is high\", \"Hold 20d_vol near 1.2 if recent volatility is low\", \"Keep h30_forecast unchanged if anchor_error_pct is unstable\", \"Use h1_forecast as baseline if h5_error is small\", \"Do not adjust h20_forecast if true_price is close to forecast\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 4.04 if anchors show weak divergence\", \"Keep h20 anchor unchanged if 20d pct change is zero\", \"Do not overreact to 5d pct gain without volume confirmation\", \"If 5d pct is positive, ensure h1 anchor is not below -1.5% vs spot\"]}"}

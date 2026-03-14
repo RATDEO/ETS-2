@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with zero 20d_pct shift\", \"Hold 20d_vol near 2.18 if anchors show weak divergence\", \"Keep h20_anchor close to spot if 20d_pct change is flat\", \"If h1_anchor error exceeds 1%, adjust forecast to match spot\", \"Do not override h30_anchor if 5d_pct change is small and stable\"]}"}

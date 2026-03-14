@@ -5,7 +5,12 @@ from .prompts import (
     ChainOfThoughtTemplate,
     RefinementTemplate
 )
-from .refine import LLMRefiner
+from .refine import (
+    LLMRefiner,
+    blend_mode_from_config,
+    method_supports_internal_blend,
+    method_uses_internal_blend,
+)
 from .cache import ResponseCache
 
 __all__ = [
@@ -14,5 +19,8 @@ __all__ = [
     "ChainOfThoughtTemplate",
     "RefinementTemplate",
     "LLMRefiner",
+    "blend_mode_from_config",
+    "method_supports_internal_blend",
+    "method_uses_internal_blend",
     "ResponseCache",
 ]

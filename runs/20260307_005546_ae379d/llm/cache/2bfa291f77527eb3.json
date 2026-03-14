@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d change is flat.\", \"Avoid overshoot on h5 anchor due to high error in examples.\", \"H1 anchor should stay near spot with minimal drift.\", \"H30 anchor should not deviate beyond \u00b10.5% from spot.\", \"If 5d change is small, avoid aggressive h1/h5 adjustments.\"]}"}

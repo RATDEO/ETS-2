@@ -1,0 +1,24 @@
+{
+  "name": "feat4_combo",
+  "path_mse": 38.046101121398216,
+  "h1_mse": 3.540201340497636,
+  "h5_mse": 17.50541817460485,
+  "h20_mse": 42.60959067262021,
+  "h30_mse": 66.47622666237649,
+  "split": "val",
+  "n_samples": 40,
+  "candidate": "feat4_combo",
+  "candidate_config": {
+    "name": "feat4_combo",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

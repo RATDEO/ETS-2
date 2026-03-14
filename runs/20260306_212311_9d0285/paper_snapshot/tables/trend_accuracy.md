@@ -1,0 +1,34 @@
+|    |   horizon |   accuracy |   accuracy_up |   accuracy_down |   accuracy_flat |   n_up |   n_down |   n_flat | model                        |
+|---:|----------:|-----------:|--------------:|----------------:|----------------:|-------:|---------:|---------:|:-----------------------------|
+|  0 |         1 |  0.395833  |     0         |       0         |       1         |     52 |       35 |       57 | naive_persistence            |
+|  1 |         5 |  0.236111  |     0         |       0         |       1         |     70 |       40 |       34 | naive_persistence            |
+|  2 |        20 |  0.118056  |     0         |       0         |       1         |     90 |       37 |       17 | naive_persistence            |
+|  3 |        30 |  0.0763889 |     0         |       0         |       1         |    100 |       33 |       11 | naive_persistence            |
+|  4 |         1 |  0.375     |     0.365385  |       0.628571  |       0.22807   |     52 |       35 |       57 | seasonal_naive               |
+|  5 |         5 |  0.236111  |     0         |       0         |       1         |     70 |       40 |       34 | seasonal_naive               |
+|  6 |        20 |  0.118056  |     0         |       0         |       1         |     90 |       37 |       17 | seasonal_naive               |
+|  7 |        30 |  0.0763889 |     0         |       0         |       1         |    100 |       33 |       11 | seasonal_naive               |
+|  8 |         1 |  0.430556  |     0.0576923 |       0.0857143 |       0.982456  |     52 |       35 |       57 | linear_ridge                 |
+|  9 |         5 |  0.451389  |     0.514286  |       0.125     |       0.705882  |     70 |       40 |       34 | linear_ridge                 |
+| 10 |        20 |  0.708333  |     0.955556  |       0.351351  |       0.176471  |     90 |       37 |       17 | linear_ridge                 |
+| 11 |        30 |  0.833333  |     0.99      |       0.606061  |       0.0909091 |    100 |       33 |       11 | linear_ridge                 |
+| 12 |         1 |  0.423611  |     0.288462  |       0.114286  |       0.736842  |     52 |       35 |       57 | linear_lasso                 |
+| 13 |         5 |  0.388889  |     0.414286  |       0.15      |       0.617647  |     70 |       40 |       34 | linear_lasso                 |
+| 14 |        20 |  0.708333  |     0.922222  |       0.459459  |       0.117647  |     90 |       37 |       17 | linear_lasso                 |
+| 15 |        30 |  0.736111  |     0.75      |       0.757576  |       0.545455  |    100 |       33 |       11 | linear_lasso                 |
+| 16 |         1 |  0.5       |     0         |       0         |       1         |      4 |        6 |       10 | naive_persistence_llm_subset |
+| 17 |         5 |  0.35      |     0         |       0         |       1         |     10 |        3 |        7 | naive_persistence_llm_subset |
+| 18 |        20 |  0.15      |     0         |       0         |       1         |     11 |        6 |        3 | naive_persistence_llm_subset |
+| 19 |        30 |  0         |     0         |       0         |     nan         |     16 |        4 |        0 | naive_persistence_llm_subset |
+| 20 |         1 |  0.35      |     0.25      |       0.5       |       0.3       |      4 |        6 |       10 | seasonal_naive_llm_subset    |
+| 21 |         5 |  0.35      |     0         |       0         |       1         |     10 |        3 |        7 | seasonal_naive_llm_subset    |
+| 22 |        20 |  0.15      |     0         |       0         |       1         |     11 |        6 |        3 | seasonal_naive_llm_subset    |
+| 23 |        30 |  0         |     0         |       0         |     nan         |     16 |        4 |        0 | seasonal_naive_llm_subset    |
+| 24 |         1 |  0.5       |     0         |       0         |       1         |      4 |        6 |       10 | linear_ridge_llm_subset      |
+| 25 |         5 |  0.4       |     0.5       |       0         |       0.428571  |     10 |        3 |        7 | linear_ridge_llm_subset      |
+| 26 |        20 |  0.65      |     1         |       0.333333  |       0         |     11 |        6 |        3 | linear_ridge_llm_subset      |
+| 27 |        30 |  0.9       |     1         |       0.5       |     nan         |     16 |        4 |        0 | linear_ridge_llm_subset      |
+| 28 |         1 |  0.4       |     0         |       0         |       0.8       |      4 |        6 |       10 | linear_lasso_llm_subset      |
+| 29 |         5 |  0.35      |     0.2       |       0         |       0.714286  |     10 |        3 |        7 | linear_lasso_llm_subset      |
+| 30 |        20 |  0.7       |     1         |       0.5       |       0         |     11 |        6 |        3 | linear_lasso_llm_subset      |
+| 31 |        30 |  0.65      |     0.6875    |       0.5       |     nan         |     16 |        4 |        0 | linear_lasso_llm_subset      |

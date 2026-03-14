@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with minimal volatility.\", \"Hold 20d_pct near zero when vol_20d is low.\", \"Anchor h20 should stay close to spot if h30 shows positive drift.\", \"If h1 error is small, keep current_price stable.\", \"Do not adjust h5 if 5d_pct is near zero and vol_20d is low.\"]}"}

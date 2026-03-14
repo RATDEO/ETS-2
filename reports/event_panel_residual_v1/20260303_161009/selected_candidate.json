@@ -1,0 +1,12 @@
+{
+  "candidate": "identity",
+  "estimator": "identity",
+  "feature_blocks": [
+    "base"
+  ],
+  "target_kind": "absolute",
+  "fit_fraction": 0.7,
+  "fit_samples": 158,
+  "selection_samples": 68,
+  "val_selection_path_mse": 33.471913155958006
+}

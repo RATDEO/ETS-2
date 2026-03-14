@@ -6,7 +6,7 @@ from .load_icap import load_icap_data, get_icap_target_series
 from .load_eua_futures import load_eua_futures_data, get_eua_futures_target_series
 from .load_vstoxx import load_vstoxx
 from .fx import load_eurusd_fx, convert_usd_to_eur
-from .panel import build_panel
+from .panel import build_panel, select_feature_columns, add_sentiment_features, load_daily_sentiment_features
 from .windows import make_windows, TimeSeriesDataset
 
 __all__ = [
@@ -21,6 +21,9 @@ __all__ = [
     "load_eurusd_fx",
     "convert_usd_to_eur",
     "build_panel",
+    "select_feature_columns",
+    "add_sentiment_features",
+    "load_daily_sentiment_features",
     "make_windows",
     "TimeSeriesDataset",
 ]

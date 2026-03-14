@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor shows slight overshoot; keep h1 unchanged\", \"H20 anchor near zero change; maintain h20 stability\", \"H30 anchor shows strong upward bias; hold h30 steady\", \"5d change is positive but small; avoid overreacting\", \"Volatility low; don\u2019t adjust anchors unless volatility spikes\"]}"}

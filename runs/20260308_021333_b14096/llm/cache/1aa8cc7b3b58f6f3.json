@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h20 anchor due to high error in example 2\", \"Keep h30 anchor stable if vol_20d is low\", \"Match h5 anchor change to spot if change_20d_pct is near zero\", \"Use h1 anchor as reference if change_5d_pct is high\", \"Hold h20 anchor if vol_20d is below 1.0\"]}"}

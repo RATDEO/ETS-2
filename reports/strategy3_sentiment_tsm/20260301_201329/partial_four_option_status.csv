@@ -1,0 +1,5 @@
+name,path_mse,status
+base_tsm_sent,20.99062728881836,completed
+paper_cot_sent_4b_on_tsm_sent,21.148469455265833,completed
+hdelta_4b_on_tsm_sent,,aborted_before_completion
+hdelta_35b_guarded_on_tsm_sent,,aborted_before_completion

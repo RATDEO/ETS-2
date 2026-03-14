@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on short-term horizon due to high 5d gain.\", \"Hold 20d horizon near zero if volatility is low.\", \"Keep 30d anchor unchanged if error exceeds 1%.\", \"Do not adjust h1 if 5d change is >10%.\", \"Match h20 to spot if vol_20d < 2.00.\"]}"}

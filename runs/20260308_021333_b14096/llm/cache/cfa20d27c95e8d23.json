@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d change with minimal volatility\", \"Hold 20d change near zero when volatility is low\", \"Anchor h20 price should not overshoot spot by >0.71%\", \"If 5d change is negative, keep h1 close to spot\", \"Do not adjust h30 if 20d vol is below 0.65\"]}"}

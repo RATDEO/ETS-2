@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h1 due to high error in example 1\", \"Hold h20 unchanged when change_20d_pct is near zero\", \"Use h30 as anchor if h1 error exceeds 5%\", \"Cap h5 forecast if 5d change exceeds 4%\", \"Ignore volatility if base anchors show no trend\"]}"}

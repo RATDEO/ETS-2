@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 2.07 to avoid volatility drift\", \"Keep h20 anchor error below 3% to prevent mean reversion bias\", \"If h1 anchor error exceeds 1%, reset to spot value\", \"Anchor h30 unchanged if 20d pct is zero\"]}"}

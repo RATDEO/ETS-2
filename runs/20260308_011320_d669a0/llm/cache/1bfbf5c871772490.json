@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when vol_20d is low\", \"Keep h20 anchor near spot if change_20d_pct is near zero\", \"Hold h1 anchor if 5d pct change is small and vol is moderate\", \"Do not adjust h30 if anchor error pct is small\", \"If multiple examples show similar patterns, match horizon behavior across cases\"]}"}

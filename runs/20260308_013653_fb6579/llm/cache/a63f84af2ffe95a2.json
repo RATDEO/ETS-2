@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes if 20d pct is flat\", \"Hold 20d vol near 1.0 if anchors show weak divergence\", \"Keep h20 anchor unchanged if 20d pct is zero\", \"Do not overshoot h5 anchor if 5d pct is small\", \"If h1 error is large, defer adjustment to next cycle\"]}"}

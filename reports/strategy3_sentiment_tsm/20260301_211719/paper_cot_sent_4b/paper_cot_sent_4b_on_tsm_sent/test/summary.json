@@ -1,0 +1,24 @@
+{
+  "name": "paper_cot_sent_4b_on_tsm_sent",
+  "path_mse": 20.862739328771006,
+  "h1_mse": 1.379624443004753,
+  "h5_mse": 6.524652461463502,
+  "h20_mse": 25.952307316954652,
+  "h30_mse": 41.72407251644192,
+  "split": "test",
+  "n_samples": 382,
+  "candidate": "paper_cot_sent_4b_on_tsm_sent",
+  "candidate_config": {
+    "name": "paper_cot_sent_4b_on_tsm_sent",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

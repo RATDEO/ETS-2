@@ -1,0 +1,161 @@
+2026-03-05 01:51:16 | INFO     | run_experiment | Run ID: 20260305_015116_976e21
+2026-03-05 01:51:16 | INFO     | run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260305_015116_976e21
+2026-03-05 01:51:16 | INFO     | run_experiment | 
+======================================================================
+2026-03-05 01:51:16 | INFO     | run_experiment | STEP 2: Building data panel
+2026-03-05 01:51:16 | INFO     | run_experiment | ======================================================================
+2026-03-05 01:51:16 | INFO     | run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk
+2026-03-05 01:51:16 | INFO     | data.panel | ============================================================
+2026-03-05 01:51:16 | INFO     | data.panel | Building panel dataset
+2026-03-05 01:51:16 | INFO     | data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-03-05 01:51:16 | INFO     | data.panel | ============================================================
+2026-03-05 01:51:16 | INFO     | data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-03-05 01:51:16 | INFO     | data.load_eua_futures | Loading EUA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-05 01:51:16 | INFO     | data.load_eua_futures | Loaded EUA futures: 348 records from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:16 | INFO     | data.load_eua_futures | Combined EUA futures data: 348 records from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:16 | INFO     | data.load_eua_futures | EUA futures target series: 348 records, price range: 31.20 - 95.96 EUR
+2026-03-05 01:51:16 | INFO     | data.panel | EUA Futures loaded: 348 records
+2026-03-05 01:51:16 | INFO     | data.panel | Master calendar: 348 days from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:16 | INFO     | data.panel | Target coverage: 348 / 348 days
+2026-03-05 01:51:16 | INFO     | data.panel | Adding EUA futures OHLC and volume features...
+2026-03-05 01:51:16 | INFO     | data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-05 01:51:16 | INFO     | data.panel | Adding ICAP secondary market as exogenous feature...
+2026-03-05 01:51:16 | INFO     | data.load_icap | Loaded ICAP file: 328 records from 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-05 01:51:16 | INFO     | data.load_icap | Combined ICAP data: 328 records from 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-05 01:51:16 | INFO     | data.load_icap | ICAP target series: 328 daily prices
+2026-03-05 01:51:16 | INFO     | data.panel | Added ICAP secondary market feature
+2026-03-05 01:51:16 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-03-05 01:51:17 | INFO     | data.fx | Loaded EUR/USD FX rates: 6957 observations from 1999-01-04 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-05 01:51:17 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-05 01:51:17 | INFO     | data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-05 01:51:17 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-05 01:51:17 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 6890 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-03-05 01:51:17 | INFO     | data.load_indices | Loaded KEUA: 1107 records from 2021-10-05 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.load_indices | Loaded KRBN: 1404 records from 2020-07-31 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.load_indices | Loaded GRN: 1623 records from 2019-09-18 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.load_indices | Loaded KCCA: 1107 records from 2021-10-05 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.load_indices | Loaded 4 carbon market indices
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 1107 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 1404 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 1623 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.fx | Converted 1107 prices from USD to EUR
+2026-03-05 01:51:17 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-03-05 01:51:17 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-05 01:51:17 | INFO     | data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-05 01:51:17 | INFO     | data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-05 01:51:17 | INFO     | data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-05 01:51:17 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-05 01:51:17 | INFO     | data.load_vstoxx | Loaded VSTOXX: 9109 records from 1990-01-02 00:00:00 to 2026-03-04 00:00:00
+2026-03-05 01:51:17 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-03-05 01:51:17 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260305_015116_976e21/data
+2026-03-05 01:51:17 | INFO     | data.panel | ============================================================
+2026-03-05 01:51:17 | INFO     | data.panel | Panel built: 348 rows, 60 columns
+2026-03-05 01:51:17 | INFO     | data.panel | Target coverage: 100.0%
+2026-03-05 01:51:17 | INFO     | data.panel | ============================================================
+2026-03-05 01:51:19 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260305_015116_976e21/paper_snapshot/fig_data_coverage.png
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+======================================================================
+2026-03-05 01:51:19 | INFO     | run_experiment | STEP 3: Creating windows and splitting data
+2026-03-05 01:51:19 | INFO     | run_experiment | ======================================================================
+2026-03-05 01:51:19 | INFO     | data.windows | Creating windows with 13 features, mode=MS
+2026-03-05 01:51:19 | INFO     | data.windows | Creating 199 windows
+2026-03-05 01:51:19 | INFO     | data.windows | Window shapes: X_enc=(199, 120, 13), X_dec=(199, 60, 13), y=(199, 30)
+2026-03-05 01:51:19 | INFO     | data.windows | train: 89 windows
+2026-03-05 01:51:19 | INFO     | data.windows | val: 48 windows
+2026-03-05 01:51:19 | INFO     | data.windows | test: 4 windows
+2026-03-05 01:51:19 | INFO     | data.windows | Dropped 58 boundary-crossing windows to prevent split leakage
+2026-03-05 01:51:19 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260305_015116_976e21/data/datasets
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+======================================================================
+2026-03-05 01:51:19 | INFO     | run_experiment | STEP 4: Training and evaluating baselines
+2026-03-05 01:51:19 | INFO     | run_experiment | ======================================================================
+2026-03-05 01:51:19 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-05 01:51:19 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+Baseline Results (MSE by horizon):
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+naive_persistence:
+2026-03-05 01:51:19 | INFO     | run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         3.198454  1.788422  1.500001   3.133756
+5        51.602718  7.183503  6.357500  11.606876
+20        5.671752  2.381544  2.060000   4.586048
+30       13.430525  3.664768  3.182500   7.311593
+2026-03-05 01:51:19 | INFO     | run_experiment | Path MSE (avg over 30d): 30.383854
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+seasonal_naive:
+2026-03-05 01:51:19 | INFO     | run_experiment |                mse      rmse     mae       mape
+horizon                                        
+1        18.236852  4.270463  3.5200   7.527395
+5        51.602720  7.183503  6.3575  11.606876
+20        5.671752  2.381544  2.0600   4.586048
+30       13.430526  3.664768  3.1825   7.311593
+2026-03-05 01:51:19 | INFO     | run_experiment | Path MSE (avg over 30d): 28.328791
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+linear_ridge:
+2026-03-05 01:51:19 | INFO     | run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         2.433385  1.559931  1.326574  2.789380
+5        32.611307  5.710631  5.183504  9.493248
+20        4.153632  2.038046  1.964865  4.329528
+30        2.950759  1.717777  1.457088  3.332880
+2026-03-05 01:51:19 | INFO     | run_experiment | Path MSE (avg over 30d): 18.909238
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+linear_lasso:
+2026-03-05 01:51:19 | INFO     | run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         3.289887  1.813805  1.621048   3.385474
+5        48.802553  6.985882  6.327671  11.578226
+20        0.639777  0.799861  0.791409   1.749175
+30        3.093231  1.758758  1.617328   3.643961
+2026-03-05 01:51:19 | INFO     | run_experiment | Path MSE (avg over 30d): 21.532584
+2026-03-05 01:51:19 | INFO     | run_experiment | 
+======================================================================
+2026-03-05 01:51:19 | INFO     | run_experiment | STEP 5: TSM model training
+2026-03-05 01:51:19 | INFO     | run_experiment | ======================================================================
+2026-03-05 01:51:19 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-03-05 01:51:19 | INFO     | models.tsm | Built Autoformer model with 9465857 parameters
+2026-03-05 01:51:20 | ERROR    | run_experiment | TSM training failed: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+        To fix this issue, refer to the "Safe importing of main module"
+        section in https://docs.python.org/3/library/multiprocessing.html
+        
+2026-03-05 01:51:20 | INFO     | run_experiment | 
+======================================================================
+2026-03-05 01:51:20 | INFO     | run_experiment | STEP 6: LLM refinement
+2026-03-05 01:51:20 | INFO     | run_experiment | ======================================================================
+2026-03-05 01:51:20 | INFO     | run_experiment | Running method: DP
+2026-03-05 01:51:56 | INFO     | run_experiment | 
+DP Results:
+2026-03-05 01:51:56 | INFO     | run_experiment |                 mse       rmse      mae       mape
+horizon                                           
+1          3.803852   1.950347   1.6200   3.451124
+5         13.041863   3.611352   2.9125   5.327539
+20       302.066500  17.380060  16.5400  36.785471
+30       596.698530  24.427413  23.3025  52.693719
+2026-03-05 01:51:56 | INFO     | run_experiment | DP Path MSE (avg over 30d): 190.559607
+2026-03-05 01:51:56 | INFO     | run_experiment | Running method: CoT

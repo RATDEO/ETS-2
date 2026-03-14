@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 2.0 if anchors show weak divergence\", \"Keep h20 anchor error below 1% to avoid overshoot\", \"If h30 anchor is 1.6% below spot, maintain current price\", \"Do not adjust h1 anchor if 5d pct is small and 20d pct is zero\"]}"}

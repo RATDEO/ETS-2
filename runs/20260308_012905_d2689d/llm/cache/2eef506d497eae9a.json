@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 5d change is negative.\", \"Keep 20d vol near 1.0 if 20d change is flat.\", \"Hold 20d anchor unchanged if 20d change is zero.\", \"Cap 30d anchor growth if 5d change is negative.\", \"Use spot as baseline if 20d change is zero and vol is low.\"]}"}

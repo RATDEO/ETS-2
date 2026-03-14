@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with high vol_20d\", \"Hold 20d pct change near zero when vol_20d is low\", \"Anchor h20 should not overshoot spot by >8.96% without strong trend\", \"If h30 anchor error >10%, keep current price unchanged\", \"Match h1 anchor error <2% to avoid lag in short-term bias\"]}"}

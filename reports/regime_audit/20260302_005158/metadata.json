@@ -1,0 +1,22 @@
+{
+  "paper_path": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f/predictions/TSM+LLM-COT-SENT-RF_pred_test_subset.npz",
+  "hdelta_4b_path": "/Users/davidwilkinson/Desktop/ETS 2/reports/cot_sent_signal_tune/strategy2_hdelta_small_model_full_20260301/meta_blend_strict_eval_4b/test_predictions.npz",
+  "hdelta_35b_path": "/Users/davidwilkinson/Desktop/ETS 2/reports/cot_sent_signal_tune/strategy2_hdelta_large_model_full_guard_1p0_20260301/meta_blend_strict_eval_35b/test_predictions.npz",
+  "data_dir": "/Users/davidwilkinson/Desktop/ETS 2/Data_auto",
+  "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+  "thresholds": {
+    "volatility_median": 0.016589285613269722,
+    "sentiment_abs_median": 0.05,
+    "return_abs_median": 0.02361650398974069,
+    "trend_threshold_multiplier": 0.25,
+    "volatility_window": 20,
+    "trend_window": 20,
+    "return_window": 5,
+    "sentiment_window": 3,
+    "sentiment_fill_limit": 5
+  },
+  "recommended_families": [
+    "sentiment_alignment_5d",
+    "trend_vol_regime"
+  ]
+}

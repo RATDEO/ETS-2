@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.01 with no significant change signal.\", \"Avoid overshoot on h5 anchor; cap at 55.25.\", \"Match h1 anchor to 55.00 to reflect minor spot drift.\", \"Hold h30 anchor at 55.76 unless volatility spikes.\", \"If 20d vol < 1.5, defer anchor adjustments until volatility stabilizes.\"]}"}

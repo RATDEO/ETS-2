@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-forecasting short-term gains with high volatility.\", \"Hold horizon 20d near zero when vol_20d is low.\", \"Keep h30 forecast unchanged if anchor error exceeds \u00b14.0%.\", \"Mean-revert h5 if change_5d_pct exceeds \u00b13.0%.\", \"Do not adjust h1 if anchor error is within \u00b11.0%.\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h5 anchor near spot with minimal error\", \"Avoid large 20d vol spikes without corresponding price change\", \"Hold h20 anchor if 20d pct change is near zero\", \"Do not overshoot h30 anchor by more than \u00b11.5% unless volatility supports it\", \"If h1 error exceeds \u00b10.5%, adjust anchor to match spot trend\"]}"}

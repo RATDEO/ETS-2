@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d vol near 1.00 when anchors show weak divergence\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not overreact to small 5d gain without volume support\", \"If h20 anchor is above spot, avoid overshoot unless 5d change is strong\"]}"}

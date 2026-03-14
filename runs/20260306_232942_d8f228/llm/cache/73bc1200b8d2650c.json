@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid underestimating long-term price drift\", \"Adjust forecasts upward when volatility rises\", \"Reduce horizon-specific bias for h5 and h20\", \"Anchor forecasts to recent price action\", \"Correct for mean reversion in h1 when err > -1.0\", \"Scale forecast error inversely with vol_20d\"]}"}

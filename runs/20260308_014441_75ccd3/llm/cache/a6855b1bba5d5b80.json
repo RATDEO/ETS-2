@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change if 20d change is flat\", \"Hold 20d anchor if vol_20d is low\", \"Keep h20 anchor unchanged if match_distance > 2.0\", \"Do not overshoot h30 anchor by >5% unless 5d change >2%\", \"If anchor_error_pct >5%, reset horizon to match spot volatility\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 56.52 with no significant trend\", \"Avoid overshoot on h1 as recent 5d gain is modest\", \"Match h30 anchor to 56.44 to align with recent volatility\", \"Hold 20d vol near 2.03 to reflect stable market\", \"Do not adjust h5 anchor unless 5d change exceeds 3%\"]}"}

@@ -1,0 +1,21 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_w_path": 0.5,
+  "blend_schedule": "ramp",
+  "blend_min_weight": 0.15,
+  "blend_power": 1.0,
+  "best_variant_on_val": "cot_sent_rf_blend_ramp_w0.50_h1base",
+  "val_results": {
+    "tsm": 36.93064498901367,
+    "cot_sent_rf_raw": 36.898244619504894,
+    "cot_sent_rf_blend_ramp_w0.50": 36.867806972164075,
+    "cot_sent_rf_blend_ramp_w0.50_h1base": 36.86778279199551
+  },
+  "test_results": {
+    "tsm": 20.94202414756456,
+    "cot_sent_rf_raw": 20.60442973689488,
+    "cot_sent_rf_blend_ramp_w0.50": 20.73912973723718,
+    "cot_sent_rf_blend_ramp_w0.50_h1base": 20.739025343626928
+  },
+  "selected_test_path_mse": 20.739025343626928
+}

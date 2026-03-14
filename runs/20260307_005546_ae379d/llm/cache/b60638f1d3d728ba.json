@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 2.0 for stability\", \"Hold 30d anchor if 20d pct is zero\", \"Do not overshoot 5d pct when 20d pct is unchanged\", \"Anchor 20d horizon if 5d pct is high and 20d pct is flat\"]}"}

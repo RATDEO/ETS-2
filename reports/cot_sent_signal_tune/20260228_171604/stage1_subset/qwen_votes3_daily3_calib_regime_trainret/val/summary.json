@@ -1,0 +1,24 @@
+{
+  "name": "qwen_votes3_daily3_calib_regime_trainret",
+  "path_mse": 38.36977732937043,
+  "h1_mse": 3.440856347440385,
+  "h5_mse": 17.50222317132421,
+  "h20_mse": 43.340561101544765,
+  "h30_mse": 68.06870013176734,
+  "split": "val",
+  "n_samples": 40,
+  "candidate": "qwen_votes3_daily3_calib_regime_trainret",
+  "candidate_config": {
+    "name": "qwen_votes3_daily3_calib_regime_trainret",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

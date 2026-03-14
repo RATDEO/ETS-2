@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic short-term forecasts when volatility is low.\", \"Hold horizon 30 unchanged if anchor errors are consistently high.\", \"Prioritize mean reversion for h20 when 5d change is small.\", \"Reduce forecast lag if vol_20d exceeds 1.8.\", \"Keep h1 near last_price if anchor error is under 1.0%.\"]}"}

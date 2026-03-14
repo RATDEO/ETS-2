@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 20d change when vol is low\", \"Hold 5d change near zero if 20d change is flat\", \"Keep h20 anchor unchanged if 20d vol is below 0.7\", \"Do not adjust h1 if 5d change is negative and below -2%\", \"If h30 anchor is high, reduce 20d change if 5d change is negative\"]}"}

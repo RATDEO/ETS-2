@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with low volatility\", \"Keep 20d change near zero when anchor error is small\", \"Hold 30d anchor if spot vs anchor error exceeds 3%\", \"If 5d change is high, limit 20d anchor deviation to \u00b11%\", \"Anchor error > 5% triggers horizon freeze\"]}"}

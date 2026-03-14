@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic forecasts for long horizons\", \"Adjust forecasts downward when volatility is low\", \"Reduce forecast spread for high volatility periods\", \"Correct for mean reversion in short-term errors\", \"Anchor forecasts to recent price trends for h1-h5\", \"Avoid lagging volatility signals in h20+h30\"]}"}

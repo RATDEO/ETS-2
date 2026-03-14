@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 5d change when volatility is low\", \"Hold 20d anchor unchanged if change_20d_pct is flat\", \"Prioritize h1 anchor if 5d change is strong and volatility is low\", \"Do not adjust h20 if anchor error is small and volatility is low\", \"Keep h30 unchanged if 5d change is moderate and volatility is low\"]}"}

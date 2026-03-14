@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 20d change when 5d change is negative\", \"Hold 20d vol near 1.70 if 5d change is below -2.5%\", \"Keep h20 anchor close to spot if 20d change is near zero\", \"If h30 anchor is >+5% vs spot, reduce h30 forecast by 0.5% unless 5d change >+3%\", \"If 5d change is negative, avoid h1 anchor overshoot by 0.5% above spot\"]}"}

@@ -245,6 +245,8 @@ def load_config(config_path: Optional[str] = None, overrides: Optional[Dict] = N
     # Apply overrides
     if overrides:
         raw_config = _deep_update(raw_config, overrides)
+
+    raw_config = enforce_split_test_end(raw_config)
     
     return Config(raw=raw_config, run_id=str(run_id) if run_id else "")
 
@@ -257,4 +259,33 @@ def _deep_update(base: Dict, updates: Dict) -> Dict:
             result[key] = _deep_update(result[key], value)
         else:
             result[key] = value
+    return result
+
+
+def enforce_split_test_end(raw_config: Dict[str, Any]) -> Dict[str, Any]:
+    """Cap target.max_date at split.test_end so evaluation never runs past the configured test boundary."""
+    split_cfg = raw_config.get("split", {}) or {}
+    test_end = split_cfg.get("test_end")
+    if not test_end:
+        return raw_config
+
+    try:
+        test_end_date = datetime.fromisoformat(str(test_end)).date()
+    except ValueError:
+        return raw_config
+
+    result = raw_config.copy()
+    target_cfg = dict(result.get("target", {}) or {})
+    existing = target_cfg.get("max_date")
+
+    if existing:
+        try:
+            existing_date = datetime.fromisoformat(str(existing)).date()
+        except ValueError:
+            existing_date = None
+        if existing_date is not None and existing_date <= test_end_date:
+            return result
+
+    target_cfg["max_date"] = test_end_date.isoformat()
+    result["target"] = target_cfg
     return result

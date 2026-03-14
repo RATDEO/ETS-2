@@ -1,0 +1,116 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  },
+  "best_signal": {
+    "name": "baseline_daily_sentiment",
+    "path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "date_col": "seendate",
+    "source_path": null,
+    "transform": null
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 35.79602009378847,
+      "h1_mse": 3.449483396699361,
+      "h5_mse": 14.026766624444038,
+      "h20_mse": 43.16780061178724,
+      "h30_mse": 68.91842874950525,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": false,
+        "reflect_attempts": 3,
+        "apply_attempts": 0,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "error": "Empty rules_text from reflection stage",
+        "fallback": true
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ],
+  "stage2_best": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 36.930645320459526,
+    "h1_mse": 2.7679753556429816,
+    "h5_mse": 15.744267548614275,
+    "h20_mse": 44.91726138649566,
+    "h30_mse": 69.67343128115047,
+    "split": "val",
+    "n_samples": 226,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF",
+      "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": false,
+      "reflect_attempts": 3,
+      "apply_attempts": 0,
+      "retain_context": true,
+      "strict_json_prompt": false,
+      "strict_json_response_format": true,
+      "error": "Empty rules_text from reflection stage",
+      "fallback": true
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  },
+  "baseline_test": {
+    "signal_name": "baseline_paper_signal",
+    "sentiment_path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "path_mse": 20.60442973689488
+  },
+  "best_signal_test": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 20.72566627959514,
+    "h1_mse": 1.384548651839924,
+    "h5_mse": 6.391053500843193,
+    "h20_mse": 26.07120457904589,
+    "h30_mse": 41.27709109381687,
+    "split": "test",
+    "n_samples": 382,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF",
+      "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": false,
+      "reflect_attempts": 3,
+      "apply_attempts": 0,
+      "retain_context": true,
+      "strict_json_prompt": false,
+      "strict_json_response_format": true,
+      "error": "Empty rules_text from reflection stage",
+      "fallback": true
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  }
+}

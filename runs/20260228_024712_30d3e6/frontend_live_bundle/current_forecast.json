@@ -1,0 +1,323 @@
+{
+  "artifact_version": 1,
+  "exported_at_utc": "2026-02-28T03:27:05.161119+00:00",
+  "run_id": "20260228_024712_30d3e6",
+  "forecast_kind": "live_forward_daily_close",
+  "origin_date": "2026-02-25",
+  "data_cutoff_date": "2026-02-25",
+  "last_observed_price": 72.58000183105469,
+  "models": [
+    {
+      "model": "tsm",
+      "display_name": "Base TSM",
+      "forecast": [
+        {
+          "horizon": 1,
+          "target_date": "2026-02-26",
+          "predicted_price": 72.44717407226562
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-02-27",
+          "predicted_price": 72.48273468017578
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-03-02",
+          "predicted_price": 72.5840072631836
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-03-03",
+          "predicted_price": 72.74760437011719
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-03-04",
+          "predicted_price": 72.90743255615234
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-03-05",
+          "predicted_price": 73.14842987060547
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-03-06",
+          "predicted_price": 73.3576889038086
+        },
+        {
+          "horizon": 8,
+          "target_date": "2026-03-09",
+          "predicted_price": 73.52716827392578
+        },
+        {
+          "horizon": 9,
+          "target_date": "2026-03-10",
+          "predicted_price": 73.6715316772461
+        },
+        {
+          "horizon": 10,
+          "target_date": "2026-03-11",
+          "predicted_price": 73.76387023925781
+        },
+        {
+          "horizon": 11,
+          "target_date": "2026-03-12",
+          "predicted_price": 73.92938232421875
+        },
+        {
+          "horizon": 12,
+          "target_date": "2026-03-13",
+          "predicted_price": 74.09735870361328
+        },
+        {
+          "horizon": 13,
+          "target_date": "2026-03-16",
+          "predicted_price": 74.19363403320312
+        },
+        {
+          "horizon": 14,
+          "target_date": "2026-03-17",
+          "predicted_price": 74.26567077636719
+        },
+        {
+          "horizon": 15,
+          "target_date": "2026-03-18",
+          "predicted_price": 74.31853485107422
+        },
+        {
+          "horizon": 16,
+          "target_date": "2026-03-19",
+          "predicted_price": 74.35591125488281
+        },
+        {
+          "horizon": 17,
+          "target_date": "2026-03-20",
+          "predicted_price": 74.38988494873047
+        },
+        {
+          "horizon": 18,
+          "target_date": "2026-03-23",
+          "predicted_price": 74.42436218261719
+        },
+        {
+          "horizon": 19,
+          "target_date": "2026-03-24",
+          "predicted_price": 74.46180725097656
+        },
+        {
+          "horizon": 20,
+          "target_date": "2026-03-25",
+          "predicted_price": 74.50165557861328
+        },
+        {
+          "horizon": 21,
+          "target_date": "2026-03-26",
+          "predicted_price": 74.54287719726562
+        },
+        {
+          "horizon": 22,
+          "target_date": "2026-03-27",
+          "predicted_price": 74.58496856689453
+        },
+        {
+          "horizon": 23,
+          "target_date": "2026-03-30",
+          "predicted_price": 74.62676239013672
+        },
+        {
+          "horizon": 24,
+          "target_date": "2026-03-31",
+          "predicted_price": 74.66947937011719
+        },
+        {
+          "horizon": 25,
+          "target_date": "2026-04-01",
+          "predicted_price": 74.71315002441406
+        },
+        {
+          "horizon": 26,
+          "target_date": "2026-04-02",
+          "predicted_price": 74.75684356689453
+        },
+        {
+          "horizon": 27,
+          "target_date": "2026-04-03",
+          "predicted_price": 74.80057525634766
+        },
+        {
+          "horizon": 28,
+          "target_date": "2026-04-06",
+          "predicted_price": 74.84432220458984
+        },
+        {
+          "horizon": 29,
+          "target_date": "2026-04-07",
+          "predicted_price": 74.88809204101562
+        },
+        {
+          "horizon": 30,
+          "target_date": "2026-04-08",
+          "predicted_price": 74.93190002441406
+        }
+      ]
+    },
+    {
+      "model": "TSM+LLM-COT-RF_blend_ramp_bestval_path_h1base",
+      "display_name": "TSM + CoT Ramp Final Blend",
+      "forecast": [
+        {
+          "horizon": 1,
+          "target_date": "2026-02-26",
+          "predicted_price": 72.44717407226562
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-02-27",
+          "predicted_price": 72.51794664580247
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-03-02",
+          "predicted_price": 72.61291289493956
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-03-03",
+          "predicted_price": 72.75736079775054
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-03-04",
+          "predicted_price": 72.89604506657041
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-03-05",
+          "predicted_price": 73.0961739323057
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-03-06",
+          "predicted_price": 73.26701326830634
+        },
+        {
+          "horizon": 8,
+          "target_date": "2026-03-09",
+          "predicted_price": 73.40355640279836
+        },
+        {
+          "horizon": 9,
+          "target_date": "2026-03-10",
+          "predicted_price": 73.51829197061473
+        },
+        {
+          "horizon": 10,
+          "target_date": "2026-03-11",
+          "predicted_price": 73.59217966013941
+        },
+        {
+          "horizon": 11,
+          "target_date": "2026-03-12",
+          "predicted_price": 73.7184115916285
+        },
+        {
+          "horizon": 12,
+          "target_date": "2026-03-13",
+          "predicted_price": 73.84362279431573
+        },
+        {
+          "horizon": 13,
+          "target_date": "2026-03-16",
+          "predicted_price": 73.91542468893117
+        },
+        {
+          "horizon": 14,
+          "target_date": "2026-03-17",
+          "predicted_price": 73.96930974499932
+        },
+        {
+          "horizon": 15,
+          "target_date": "2026-03-18",
+          "predicted_price": 74.00960563133503
+        },
+        {
+          "horizon": 16,
+          "target_date": "2026-03-19",
+          "predicted_price": 74.03947166705954
+        },
+        {
+          "horizon": 17,
+          "target_date": "2026-03-20",
+          "predicted_price": 74.06740718183846
+        },
+        {
+          "horizon": 18,
+          "target_date": "2026-03-23",
+          "predicted_price": 74.09605423499798
+        },
+        {
+          "horizon": 19,
+          "target_date": "2026-03-24",
+          "predicted_price": 74.12695389846276
+        },
+        {
+          "horizon": 20,
+          "target_date": "2026-03-25",
+          "predicted_price": 74.15964829017375
+        },
+        {
+          "horizon": 21,
+          "target_date": "2026-03-26",
+          "predicted_price": 74.19342353557718
+        },
+        {
+          "horizon": 22,
+          "target_date": "2026-03-27",
+          "predicted_price": 74.22792952438881
+        },
+        {
+          "horizon": 23,
+          "target_date": "2026-03-30",
+          "predicted_price": 74.26245250044198
+        },
+        {
+          "horizon": 24,
+          "target_date": "2026-03-31",
+          "predicted_price": 74.29770198427397
+        },
+        {
+          "horizon": 25,
+          "target_date": "2026-04-01",
+          "predicted_price": 74.33366165161132
+        },
+        {
+          "horizon": 26,
+          "target_date": "2026-04-02",
+          "predicted_price": 74.36978664529735
+        },
+        {
+          "horizon": 27,
+          "target_date": "2026-04-03",
+          "predicted_price": 74.40608431848986
+        },
+        {
+          "horizon": 28,
+          "target_date": "2026-04-06",
+          "predicted_price": 74.4425412934402
+        },
+        {
+          "horizon": 29,
+          "target_date": "2026-04-07",
+          "predicted_price": 74.47916092445111
+        },
+        {
+          "horizon": 30,
+          "target_date": "2026-04-08",
+          "predicted_price": 74.51595001220703
+        }
+      ]
+    }
+  ]
+}

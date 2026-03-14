@@ -1,0 +1,16 @@
+{
+  "strategy": "strategy3_structured_news_tsm_partial",
+  "status": "stopped_after_tsm_gate",
+  "reason": "best_structured_news_tsm_underperformed_existing_benchmarks_before_llm_overlay",
+  "sentiment_path": "data/news/daily_sentiment_qwen_votes3_daily3_gate_policy_shipping_event90_proxy_feat4.csv",
+  "best_tsm_candidate": "af_s60_l15_m32_ff64_do030_lr1e3_wd1e2",
+  "best_tsm_val_path_mse": 39.78775787353515,
+  "best_tsm_test_path_mse": 21.19025230407715,
+  "benchmarks": {
+    "baseline_paper_cot_sent": 20.60442973689488,
+    "4b_raw_hdelta": 20.618083461620405,
+    "raw_tsm": 20.72566627959514,
+    "best_strategy3_qwen_daily3": 20.810390390652106
+  },
+  "decision": "reject_branch_without_running_4b_or_35b_overlays"
+}

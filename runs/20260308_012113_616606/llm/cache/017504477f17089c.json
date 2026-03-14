@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 55.26 with no significant trend\", \"Avoid overshoot on h1 as it shows high error sensitivity\", \"Match h5 to spot with minimal drift\", \"Hold h30 stable if 55.45 shows weak volatility\", \"Use 20d vol as signal for mean reversion if below 2.10\"]}"}

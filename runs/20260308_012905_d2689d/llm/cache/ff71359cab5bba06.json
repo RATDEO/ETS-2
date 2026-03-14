@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal drift\", \"H20 anchor must remain stable if vol_20d is low\", \"Avoid large negative change_5d_pct unless anchored by strong H1 support\", \"H30 anchor should not deviate more than \u00b10.5% from spot\", \"If change_20d_pct is flat, keep H20 anchor unchanged\"]}"}

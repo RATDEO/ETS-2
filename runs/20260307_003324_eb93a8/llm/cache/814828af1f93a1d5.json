@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 5d change is small\", \"Hold 20d vol near 1.20 to avoid overreaction\", \"Keep h30 forecast close to h1 if anchor error is high\", \"If h5 error > 2.5%, defer h20 adjustment\", \"Anchor error pct > 3% triggers horizon lock\"]}"}

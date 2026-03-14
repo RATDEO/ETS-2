@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h1 anchor unchanged if 5d change is small\", \"Avoid large 20d vol shifts without strong anchor support\", \"Hold h20 anchor if 20d pct change is near zero\", \"Do not adjust h30 if 5d change is positive and 20d is flat\", \"If anchor error pct exceeds 5%, defer adjustment until volatility stabilizes\"]}"}

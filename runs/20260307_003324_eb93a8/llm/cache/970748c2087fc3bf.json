@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive errors in h5 when vol_20d > 1.5\", \"Cap h30 forecast if h1 error > -5% and vol_20d > 1.8\", \"Hold h20 forecast if h5 error > +3% and h30 error < -1%\", \"Use mean reversion for h1 if change_5d_pct < -1% and vol_20d < 1.2\", \"Keep h30 unchanged if h5 and h20 errors are both within \u00b12%\"]}"}

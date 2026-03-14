@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 55.84 with minimal volatility shift\", \"Avoid overshoot on h30 as error exceeds 0.69% vs spot\", \"Match h1 anchor to 55.88 with 0.28% spot deviation\", \"Hold 5d change near +2.43% as recent trend is strong\", \"Do not adjust 20d change if vol_20d remains low at 1.03\"]}"}

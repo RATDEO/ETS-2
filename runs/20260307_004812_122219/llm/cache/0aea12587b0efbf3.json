@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts for h30 when vol_20d > 1.8\", \"Cap h5 forecast if change_5d_pct > +8%\", \"Hold h20 forecast if anchor_error_pct > +3% for consecutive days\", \"Use last_price as baseline if vol_20d < 1.2\", \"Keep h1 forecast within \u00b10.5% of last_price when change_5d_pct < +2%\"]}"}

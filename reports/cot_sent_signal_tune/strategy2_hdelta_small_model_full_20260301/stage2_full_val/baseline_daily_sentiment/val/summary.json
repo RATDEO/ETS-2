@@ -1,0 +1,24 @@
+{
+  "name": "baseline_daily_sentiment",
+  "path_mse": 36.52243526144071,
+  "h1_mse": 2.822389464418389,
+  "h5_mse": 15.696954010890304,
+  "h20_mse": 44.691458199927695,
+  "h30_mse": 67.66143691252314,
+  "split": "val",
+  "n_samples": 226,
+  "candidate": "baseline_daily_sentiment",
+  "candidate_config": {
+    "name": "baseline_daily_sentiment",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  }
+}

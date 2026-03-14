@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic forecasts for short horizons when volatility is low.\", \"Cap long-horizon forecasts if recent 5d change is negative.\", \"Hold anchor forecasts unchanged if 20d volatility is below 1.20.\", \"Prioritize mean reversion for horizons with large error magnitudes.\", \"Keep h30 forecast stable if h1 error exceeds \u00b11.5%.\"]}"}

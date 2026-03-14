@@ -1,0 +1,15 @@
+{
+  "best_tsm": {
+    "name": "af_s90_l30_m64_ff128_do030_lr5e4_wd1e2",
+    "val_path_mse": 38.56367492675781,
+    "test_path_mse_snapshot": 20.99062728881836
+  },
+  "best_cot": {
+    "name": "sim_k5_h18_ctx",
+    "n_val_samples": 40,
+    "best_variant": "blend_ramp",
+    "best_variant_path_mse": 39.22557939422483,
+    "best_w": 0.0
+  },
+  "final_config_path": "reports/clean_retune/20260228_125350/best_clean_tuned_config.yaml"
+}

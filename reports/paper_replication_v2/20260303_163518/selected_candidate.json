@@ -1,0 +1,26 @@
+{
+  "selected_candidate": "paper_event90_proxy_hprice_guarded_official_ctx",
+  "selection_metric": "mse_path_mean",
+  "candidate_summary": {
+    "candidate": "paper_event90_proxy_hprice_guarded_official_ctx",
+    "n_folds": 3,
+    "n_samples_mean": 6.0,
+    "mse_path_mean": 41.44410200754844,
+    "h1_mse_mean": 4.905727742589887,
+    "h5_mse_mean": 25.84943829269871,
+    "h20_mse_mean": 48.72664307439096,
+    "h30_mse_mean": 67.2276758216184,
+    "paper_d10_acc_mean": 0.16666666666666666,
+    "paper_d20_acc_mean": 0.3333333333333333,
+    "paper_d30_acc_mean": 0.38888888888888884,
+    "n_samples_std": 0.0,
+    "mse_path_std": 8.876394486536471,
+    "h1_mse_std": 1.907928149686072,
+    "h5_mse_std": 9.482255015505597,
+    "h20_mse_std": 22.6265931203837,
+    "h30_mse_std": 29.96014091963359,
+    "paper_d10_acc_std": 0.13608276348795434,
+    "paper_d20_acc_std": 0.13608276348795434,
+    "paper_d30_acc_std": 0.15713484026367722
+  }
+}

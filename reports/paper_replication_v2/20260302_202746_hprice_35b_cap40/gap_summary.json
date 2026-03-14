@@ -1,0 +1,7 @@
+{
+  "selected_candidate": "paper_event90_proxy_hprice_guarded_35b",
+  "selected_test_mse_path": 20.868699522246978,
+  "gap_vs_target_20": 0.8686995222469776,
+  "gap_vs_repo_old_paper_sent_13_8262": 7.0424995222469775,
+  "gap_vs_repo_old_paper_cot_rf_12_5149": 8.353799522246977
+}

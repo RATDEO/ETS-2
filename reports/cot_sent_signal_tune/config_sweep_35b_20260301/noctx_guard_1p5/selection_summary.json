@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": false,
+    "strict_json_prompt": false
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 37.87570880606319,
+      "h1_mse": 3.449483396699361,
+      "h5_mse": 14.145619632524621,
+      "h20_mse": 46.38429414243288,
+      "h30_mse": 72.74988853952824,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-35b-a3b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": false,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "1. **Correct for Mean Reversion Lag**: The model exhibits a persistent \"sticky\" bias, failing to react to sharp trend reversals. When history shows a peak followed by a decline (e.g., Example 1), the model forecasts a slow, linear drift toward the mean rather than an immediate drop; apply a negative correction factor proportional to the recent slope of the last 5 days.\n\n2. **Adjust for Overshoot After Spikes**: In scenarios where prices spike above 95 (e.g., Examples 2, 3, 4), the model underestimates the magnitude of the subsequent rally and fails to capture the volatility ceiling, often predicting a flat line while the true outcome surges. If the 18-day history contains a value >95, increase the forecast by 3-5 EUR for the first 10 days of the horizon.\n\n3. **Sentiment-Weighted Volatility**: The model ignores sentiment signals (values >0.20) which correlate with increased volatility and trend continuation. When sentiment history shows values >0.20, the model's flat forecast is systematically too conservative; apply a volatility multiplier of 1.1 to the forecast range to account for the implied market momentum.\n\n4. **Horizon-Specific Decay Correction**: The model's 30-day forecast decays too slowly or rises too linearly regardless of the starting trend. For horizons beyond day 15, the model consistently overestimates prices in downtrends and underestimates them in uptrends. Apply a mean-reversion adjustment that pulls the long-term forecast (days 15-30) closer to the 18-day moving average of the history.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

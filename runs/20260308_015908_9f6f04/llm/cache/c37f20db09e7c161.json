@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on h5 if 20d vol is low\", \"Hold h20 unchanged if 20d pct change is flat\", \"Keep h30 near spot if 5d pct change is positive\", \"Do not adjust h1 if anchor error is small\", \"Ignore anchor error if vol_20d is below 1.20\"]}"}

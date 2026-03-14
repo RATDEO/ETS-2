@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with no 20d pct movement\", \"Hold 20d vol near 1.24 when anchors show weak divergence\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not overreact to small 5d pct swings without volume confirmation\", \"If h1 anchor error is >0.5%, defer adjustment until 5d trend stabilizes\"]}"}

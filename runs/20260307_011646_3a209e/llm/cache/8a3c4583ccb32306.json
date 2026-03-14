@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on short-term anchors with low volatility.\", \"Hold 20d horizon near zero if change_20d_pct is flat.\", \"Match 5d change if anchor error_pct is under 2%.\", \"Keep 30d anchor unchanged if 20d vol is low.\", \"If 5d change is positive, align h1 anchor with spot.\"]}"}

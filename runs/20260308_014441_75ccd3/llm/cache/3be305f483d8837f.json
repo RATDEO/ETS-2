@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 55.56 due to zero 20d pct change\", \"Avoid overshoot on h30 as vol_20d is low\", \"Match h1 to spot within 0.11% margin\", \"Ignore 5d pct change if vol_20d is near 1.0\", \"Hold h5 at 55.44 if 5d pct is negative and vol is low\"]}"}

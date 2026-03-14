@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal overshoot\", \"H5 anchor must match spot closely to avoid large error\", \"H20 anchor should not deviate more than \u00b13% from spot\", \"H30 anchor must not show significant lag or overshoot\", \"If 20d vol is low, keep all anchors stable\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 20d change is flat.\", \"Avoid overshoot on 5d change due to recent +6.84% surge.\", \"Hold h30 anchor steady as spot drift is minimal.\", \"If 20d vol is low, resist mean reversion pressure.\", \"Anchor h1 near spot if 5d change is volatile.\"]}"}

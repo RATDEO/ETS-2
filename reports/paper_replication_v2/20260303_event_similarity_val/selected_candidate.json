@@ -1,0 +1,26 @@
+{
+  "selected_candidate": "paper_event90_proxy",
+  "selection_metric": "mse_path_mean",
+  "candidate_summary": {
+    "candidate": "paper_event90_proxy",
+    "n_folds": 3,
+    "n_samples_mean": 6.0,
+    "mse_path_mean": 38.583099121060705,
+    "h1_mse_mean": 4.598265248456149,
+    "h5_mse_mean": 24.558621285175395,
+    "h20_mse_mean": 46.133454211442,
+    "h30_mse_mean": 60.526873967845056,
+    "paper_d10_acc_mean": 0.16666666666666666,
+    "paper_d20_acc_mean": 0.3333333333333333,
+    "paper_d30_acc_mean": 0.38888888888888884,
+    "n_samples_std": 0.0,
+    "mse_path_std": 8.476579162828502,
+    "h1_mse_std": 1.7323350995338112,
+    "h5_mse_std": 9.101686188854679,
+    "h20_mse_std": 23.580991052113138,
+    "h30_mse_std": 25.436556793923653,
+    "paper_d10_acc_std": 0.13608276348795434,
+    "paper_d20_acc_std": 0.13608276348795434,
+    "paper_d30_acc_std": 0.15713484026367722
+  }
+}

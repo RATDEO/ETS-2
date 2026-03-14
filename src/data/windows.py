@@ -36,11 +36,44 @@ class WindowConfig:
     date_col: str = "date"
 
 
+@dataclass
+class WindowMetadata:
+    """Per-window date metadata used for contamination-safe splitting."""
+    pred_start_dates: np.ndarray
+    pred_end_dates: np.ndarray
+    last_input_dates: np.ndarray
+
+
+def _fill_window_values(window: np.ndarray) -> np.ndarray:
+    """Forward-fill within a window and fall back to window means for leading NaNs."""
+    frame = pd.DataFrame(window).ffill()
+    if frame.isna().any().any():
+        col_mean = frame.mean(skipna=True).fillna(0.0)
+        frame = frame.fillna(col_mean)
+    return frame.values.astype(np.float32)
+
+
+def _future_fill_value(name: str, last_value: float, target_col: str) -> float:
+    """Choose a non-leaking placeholder for unknown future decoder features."""
+    lname = str(name).lower()
+    if name == target_col and lname.endswith("_return"):
+        return 0.0
+    if lname.endswith("_return") or lname.endswith("_pct"):
+        return 0.0
+    if lname.startswith("is_") or lname.endswith("_flag"):
+        return 0.0
+    return float(last_value)
+
+
 def make_windows(
     panel: pd.DataFrame,
     config: WindowConfig,
-    mode: str = "MS"
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    mode: str = "MS",
+    return_metadata: bool = False,
+) -> Union[
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, WindowMetadata],
+]:
     """
     Create sliding window datasets for time series forecasting.
     
@@ -50,7 +83,8 @@ def make_windows(
         mode: 'S' for univariate (target only) or 'MS' for multivariate
         
     Returns:
-        Tuple of (X_enc, X_dec, y, dates) where:
+        Tuple of (X_enc, X_dec, y, dates) or
+        (X_enc, X_dec, y, dates, metadata) where:
             - X_enc: Encoder input (batch, seq_len, features)
             - X_dec: Decoder input (batch, label_len + pred_len, features)
             - y: Target (batch, pred_len)
@@ -102,32 +136,28 @@ def make_windows(
     X_dec = np.zeros((n_windows, config.label_len + config.pred_len, len(feature_cols)), dtype=np.float32)
     y = np.zeros((n_windows, config.pred_len), dtype=np.float32)
     pred_dates = []
+    pred_end_dates = []
+    last_input_dates = []
     
     # Create windows
     for i in range(n_windows):
         # Encoder input: [i, i + seq_len)
         enc_start = i
         enc_end = i + config.seq_len
-        enc_window = data[enc_start:enc_end].copy()
-        if np.isnan(enc_window).any():
-            enc_df = pd.DataFrame(enc_window).ffill()
-            if enc_df.isna().any().any():
-                col_mean = enc_df.mean(skipna=True).fillna(0.0)
-                enc_df = enc_df.fillna(col_mean)
-            enc_window = enc_df.values.astype(np.float32)
+        enc_window = _fill_window_values(data[enc_start:enc_end].copy())
         X_enc[i] = enc_window
         
-        # Decoder input: [i + seq_len - label_len, i + seq_len + pred_len)
-        dec_start = i + config.seq_len - config.label_len
-        dec_end = i + config.seq_len + config.pred_len
-        dec_window = data[dec_start:dec_end].copy()
-        if np.isnan(dec_window).any():
-            dec_df = pd.DataFrame(dec_window).ffill()
-            if dec_df.isna().any().any():
-                col_mean = dec_df.mean(skipna=True).fillna(0.0)
-                dec_df = dec_df.fillna(col_mean)
-            dec_window = dec_df.values.astype(np.float32)
-        X_dec[i] = dec_window
+        # Decoder input is contamination-safe:
+        # - observed label context from the past
+        # - placeholder future slots instead of realized future rows
+        context_start = i + config.seq_len - config.label_len
+        context_end = i + config.seq_len
+        context_window = _fill_window_values(data[context_start:context_end].copy())
+        last_row = context_window[-1].copy()
+        future_block = np.repeat(last_row[None, :], config.pred_len, axis=0).astype(np.float32)
+        for j, name in enumerate(feature_cols):
+            future_block[:, j] = _future_fill_value(name, last_row[j], config.target_col)
+        X_dec[i] = np.concatenate([context_window, future_block], axis=0)
         
         # Target: [i + seq_len, i + seq_len + pred_len)
         y_start = i + config.seq_len
@@ -136,12 +166,24 @@ def make_windows(
         
         # Prediction start date
         pred_dates.append(dates[y_start])
+        pred_end_dates.append(dates[y_end - 1])
+        last_input_dates.append(dates[enc_end - 1])
     
     pred_dates = np.array(pred_dates)
+    pred_end_dates = np.array(pred_end_dates)
+    last_input_dates = np.array(last_input_dates)
     
     logger.info(f"Window shapes: X_enc={X_enc.shape}, X_dec={X_dec.shape}, y={y.shape}")
-    
-    return X_enc, X_dec, y, pred_dates
+
+    if not return_metadata:
+        return X_enc, X_dec, y, pred_dates
+
+    metadata = WindowMetadata(
+        pred_start_dates=pred_dates,
+        pred_end_dates=pred_end_dates,
+        last_input_dates=last_input_dates,
+    )
+    return X_enc, X_dec, y, pred_dates, metadata
 
 
 def split_windows(
@@ -150,7 +192,8 @@ def split_windows(
     y: np.ndarray,
     dates: np.ndarray,
     train_end: str,
-    val_end: str
+    val_end: str,
+    window_meta: Optional[WindowMetadata] = None,
 ) -> dict:
     """
     Split windowed data into train/val/test by date.
@@ -166,34 +209,74 @@ def split_windows(
     train_end = pd.Timestamp(train_end)
     val_end = pd.Timestamp(val_end)
     dates = pd.to_datetime(dates)
-    
-    train_mask = dates <= train_end
-    val_mask = (dates > train_end) & (dates <= val_end)
+    end_dates = (
+        pd.to_datetime(window_meta.pred_end_dates)
+        if window_meta is not None
+        else dates
+    )
+    last_input_dates = (
+        pd.to_datetime(window_meta.last_input_dates)
+        if window_meta is not None
+        else pd.to_datetime(dates) - pd.Timedelta(days=1)
+    )
+
+    # Contamination-safe split:
+    # - train labels must end within train period
+    # - val labels must be fully inside validation period
+    # - test labels start after validation period
+    train_mask = end_dates <= train_end
+    val_mask = (dates > train_end) & (end_dates <= val_end)
     test_mask = dates > val_end
+    dropped_mask = ~(train_mask | val_mask | test_mask)
+
+    if window_meta is None:
+        logger.warning(
+            "split_windows called without window metadata; using legacy boundary logic."
+        )
+    else:
+        train_violations = int(np.sum(end_dates[train_mask] > train_end))
+        val_start_violations = int(np.sum(dates[val_mask] <= train_end))
+        val_end_violations = int(np.sum(end_dates[val_mask] > val_end))
+        test_violations = int(np.sum(dates[test_mask] <= val_end))
+        if any((train_violations, val_start_violations, val_end_violations, test_violations)):
+            raise ValueError(
+                "Split leakage detected after applying contamination-safe boundary rules"
+            )
     
     splits = {
         "train": {
             "X_enc": X_enc[train_mask],
             "X_dec": X_dec[train_mask],
             "y": y[train_mask],
-            "dates": dates[train_mask]
+            "dates": dates[train_mask],
+            "end_dates": end_dates[train_mask],
+            "last_input_dates": last_input_dates[train_mask],
         },
         "val": {
             "X_enc": X_enc[val_mask],
             "X_dec": X_dec[val_mask],
             "y": y[val_mask],
-            "dates": dates[val_mask]
+            "dates": dates[val_mask],
+            "end_dates": end_dates[val_mask],
+            "last_input_dates": last_input_dates[val_mask],
         },
         "test": {
             "X_enc": X_enc[test_mask],
             "X_dec": X_dec[test_mask],
             "y": y[test_mask],
-            "dates": dates[test_mask]
+            "dates": dates[test_mask],
+            "end_dates": end_dates[test_mask],
+            "last_input_dates": last_input_dates[test_mask],
         }
     }
     
     for split_name, split_data in splits.items():
         logger.info(f"{split_name}: {len(split_data['y'])} windows")
+    if window_meta is not None and np.any(dropped_mask):
+        logger.info(
+            "Dropped %d boundary-crossing windows to prevent split leakage",
+            int(np.sum(dropped_mask)),
+        )
     
     return splits
 

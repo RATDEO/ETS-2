@@ -218,7 +218,12 @@ def main() -> int:
         feature_cols=feature_cols,
     )
 
-    X_enc, X_dec, y, dates = make_windows(panel, window_config, mode="MS")
+    X_enc, X_dec, y, dates, window_meta = make_windows(
+        panel,
+        window_config,
+        mode="MS",
+        return_metadata=True,
+    )
     splits = split_windows(
         X_enc,
         X_dec,
@@ -226,6 +231,7 @@ def main() -> int:
         dates,
         train_end=config.get("split", {}).get("train_end", "2022-12-31"),
         val_end=config.get("split", {}).get("val_end", "2023-12-31"),
+        window_meta=window_meta,
     )
 
     target_is_returns = target_mode == "returns"

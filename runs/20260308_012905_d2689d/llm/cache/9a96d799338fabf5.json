@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct shifts with low vol_20d\", \"Hold h20 anchor if change_20d_pct near zero\", \"Cap h1 deviation below -1% to prevent overshoot\", \"Keep h30 anchor stable if spot drifts\", \"If anchor_error_pct > 2%, reset horizon to match spot trend\"]}"}

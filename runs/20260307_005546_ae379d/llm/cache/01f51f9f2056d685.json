@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors for h20 and h30 when vol_20d is low.\", \"Hold h20 anchor unchanged if change_20d_pct is near zero.\", \"Limit h30 anchor overshoot when h20 error exceeds 10%.\", \"Use h1 anchor for short-term stability if change_5d_pct is negative.\", \"Keep h5 anchor within 2% error margin when vol_20d is above 1.0.\"]}"}

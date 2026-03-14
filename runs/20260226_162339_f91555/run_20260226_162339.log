@@ -1,0 +1,218 @@
+2026-02-26 16:23:39 | INFO     | src.run_experiment | Run ID: 20260226_162339_f91555
+2026-02-26 16:23:39 | INFO     | src.run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260226_162339_f91555
+2026-02-26 16:23:39 | INFO     | src.run_experiment | 
+======================================================================
+2026-02-26 16:23:39 | INFO     | src.run_experiment | STEP 2: Building data panel
+2026-02-26 16:23:39 | INFO     | src.run_experiment | ======================================================================
+2026-02-26 16:23:39 | INFO     | src.run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/Data_auto
+2026-02-26 16:23:39 | INFO     | data.panel | ============================================================
+2026-02-26 16:23:39 | INFO     | data.panel | Building panel dataset
+2026-02-26 16:23:39 | INFO     | data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-02-26 16:23:39 | INFO     | data.panel | ============================================================
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-02-26 16:23:39 | INFO     | data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data AUTO.csv
+2026-02-26 16:23:39 | INFO     | data.load_eua_futures | Loaded EUA futures: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_eua_futures | Combined EUA futures data: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_eua_futures | EUA futures target series: 4334 records, price range: 2.75 - 100.29 EUR
+2026-02-26 16:23:39 | INFO     | data.panel | EUA Futures loaded: 4334 records
+2026-02-26 16:23:39 | INFO     | data.panel | Master calendar: 4334 days from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-26 16:23:39 | INFO     | data.panel | Target coverage: 4334 / 4334 days
+2026-02-26 16:23:39 | INFO     | data.panel | Adding EUA futures OHLC and volume features...
+2026-02-26 16:23:39 | INFO     | data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-02-26 16:23:39 | INFO     | data.panel | Adding ICAP secondary market as exogenous feature...
+2026-02-26 16:23:39 | INFO     | data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_icap | Loaded ICAP file: 1555 records from 2019-01-07 00:00:00 to 2025-12-15 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_icap | Combined ICAP data: 5036 records from 2005-03-09 00:00:00 to 2025-12-15 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_icap | ICAP target series: 2918 daily prices
+2026-02-26 16:23:39 | INFO     | data.panel | Added ICAP secondary market feature
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-02-26 16:23:39 | INFO     | data.fx | Loaded EUR/USD FX rates: 6953 observations from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-02-26 16:23:39 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-02-26 16:23:39 | INFO     | data.load_energy | Loaded Brent crude: 9836 records from 1987-05-20 00:00:00 to 2026-02-23 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-02-26 16:23:39 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 6885 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded KEUA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded KRBN: 1400 records from 2020-07-31 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded GRN: 1619 records from 2019-09-18 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded KCCA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded KSET: 488 records from 2022-04-20 00:00:00 to 2024-03-28 00:00:00
+2026-02-26 16:23:39 | INFO     | data.load_indices | Loaded 5 carbon market indices
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 1103 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 1400 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 1619 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 1103 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.fx | Converted 488 prices from USD to EUR
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-02-26 16:23:39 | WARNING  | data.load_auctions | Could not parse emission-spot-primary-market-auction-report-2026-data.xlsx: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-02-26 16:23:39 | INFO     | data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-02-26 16:23:39 | INFO     | data.load_vstoxx | Loaded VSTOXX: 6912 records from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-26 16:23:39 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-02-26 16:23:39 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260226_162339_f91555/data
+2026-02-26 16:23:39 | INFO     | data.panel | ============================================================
+2026-02-26 16:23:39 | INFO     | data.panel | Panel built: 4334 rows, 44 columns
+2026-02-26 16:23:39 | INFO     | data.panel | Target coverage: 100.0%
+2026-02-26 16:23:39 | INFO     | data.panel | ============================================================
+2026-02-26 16:23:41 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260226_162339_f91555/paper_snapshot/fig_data_coverage.png
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+======================================================================
+2026-02-26 16:23:41 | INFO     | src.run_experiment | STEP 3: Creating windows and splitting data
+2026-02-26 16:23:41 | INFO     | src.run_experiment | ======================================================================
+2026-02-26 16:23:41 | INFO     | data.windows | Creating windows with 11 features, mode=MS
+2026-02-26 16:23:41 | INFO     | data.windows | Creating 4185 windows
+2026-02-26 16:23:41 | INFO     | data.windows | Window shapes: X_enc=(4185, 120, 11), X_dec=(4185, 60, 11), y=(4185, 30)
+2026-02-26 16:23:41 | INFO     | data.windows | train: 3548 windows
+2026-02-26 16:23:41 | INFO     | data.windows | val: 255 windows
+2026-02-26 16:23:41 | INFO     | data.windows | test: 382 windows
+2026-02-26 16:23:41 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260226_162339_f91555/data/datasets
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+======================================================================
+2026-02-26 16:23:41 | INFO     | src.run_experiment | STEP 4: Training and evaluating baselines
+2026-02-26 16:23:41 | INFO     | src.run_experiment | ======================================================================
+2026-02-26 16:23:41 | INFO     | models.baselines | Fitted 30 linear models
+2026-02-26 16:23:41 | INFO     | models.baselines | Fitted 30 linear models
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+Baseline Results (MSE by horizon):
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+naive_persistence:
+2026-02-26 16:23:41 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         1.390980  1.179398  0.947696  1.328757
+5         6.439699  2.537656  2.017356  2.835881
+20       26.393560  5.137466  4.049477  5.564092
+30       41.339493  6.429580  5.156152  7.071982
+2026-02-26 16:23:41 | INFO     | src.run_experiment | Path MSE (avg over 30d): 20.871922
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+seasonal_naive:
+2026-02-26 16:23:41 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         6.531477  2.555675  2.040236  2.870180
+5         6.439699  2.537656  2.017356  2.835881
+20       26.393557  5.137466  4.049476  5.564093
+30       41.339491  6.429579  5.156152  7.071981
+2026-02-26 16:23:41 | INFO     | src.run_experiment | Path MSE (avg over 30d): 23.114803
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+linear_ridge:
+2026-02-26 16:23:41 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         1.405413  1.185501  0.953819  1.336804
+5         6.650423  2.578841  2.047622  2.883034
+20       26.835393  5.180289  3.988280  5.597420
+30       39.763347  6.305819  4.961004  6.903188
+2026-02-26 16:23:41 | INFO     | src.run_experiment | Path MSE (avg over 30d): 20.891638
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+linear_lasso:
+2026-02-26 16:23:41 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         5.348456  2.312673  2.020529  2.774286
+5        10.403631  3.225466  2.693186  3.685621
+20       28.585286  5.346521  4.473653  6.084615
+30       39.992027  6.323925  5.217333  7.123470
+2026-02-26 16:23:41 | INFO     | src.run_experiment | Path MSE (avg over 30d): 23.273478
+2026-02-26 16:23:41 | INFO     | src.run_experiment | 
+======================================================================
+2026-02-26 16:23:41 | INFO     | src.run_experiment | STEP 5: TSM model training
+2026-02-26 16:23:41 | INFO     | src.run_experiment | ======================================================================
+2026-02-26 16:23:41 | INFO     | models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-26 16:23:41 | INFO     | models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-26 16:23:48 | INFO     | models.tsm | Epoch 1/100 - Train: 0.139063, Val: 0.055678
+2026-02-26 16:23:55 | INFO     | models.tsm | Epoch 2/100 - Train: 0.100096, Val: 0.056989
+2026-02-26 16:24:01 | INFO     | models.tsm | Epoch 3/100 - Train: 0.100725, Val: 0.056119
+2026-02-26 16:24:07 | INFO     | models.tsm | Epoch 4/100 - Train: 0.099824, Val: 0.056377
+2026-02-26 16:24:13 | INFO     | models.tsm | Epoch 5/100 - Train: 0.098547, Val: 0.055160
+2026-02-26 16:24:20 | INFO     | models.tsm | Epoch 6/100 - Train: 0.097256, Val: 0.055921
+2026-02-26 16:24:26 | INFO     | models.tsm | Epoch 7/100 - Train: 0.096864, Val: 0.056262
+2026-02-26 16:24:32 | INFO     | models.tsm | Epoch 8/100 - Train: 0.096512, Val: 0.055926
+2026-02-26 16:24:38 | INFO     | models.tsm | Epoch 9/100 - Train: 0.097601, Val: 0.057399
+2026-02-26 16:24:45 | INFO     | models.tsm | Epoch 10/100 - Train: 0.094999, Val: 0.056505
+2026-02-26 16:24:51 | INFO     | models.tsm | Epoch 11/100 - Train: 0.095238, Val: 0.055532
+2026-02-26 16:24:57 | INFO     | models.tsm | Epoch 12/100 - Train: 0.094835, Val: 0.056898
+2026-02-26 16:25:03 | INFO     | models.tsm | Epoch 13/100 - Train: 0.094835, Val: 0.056518
+2026-02-26 16:25:10 | INFO     | models.tsm | Epoch 14/100 - Train: 0.094387, Val: 0.055924
+2026-02-26 16:25:16 | INFO     | models.tsm | Epoch 15/100 - Train: 0.094100, Val: 0.056095
+2026-02-26 16:25:16 | INFO     | models.tsm | Early stopping at epoch 15
+2026-02-26 16:25:20 | INFO     | src.run_experiment | 
+TSM Results:
+2026-02-26 16:25:20 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         0.090856  0.301423  0.232685  0.324059
+5         1.772453  1.331335  1.017004  1.414100
+20       20.012070  4.473485  3.458063  4.776188
+30       45.426651  6.739930  5.227960  7.263163
+2026-02-26 16:25:20 | INFO     | src.run_experiment | TSM Path MSE (avg over 30d): 15.294339
+2026-02-26 16:25:20 | INFO     | src.run_experiment | 
+======================================================================
+2026-02-26 16:25:20 | INFO     | src.run_experiment | STEP 6: LLM refinement
+2026-02-26 16:25:20 | INFO     | src.run_experiment | ======================================================================
+2026-02-26 16:25:20 | INFO     | src.run_experiment | Running method: TSM+LLM-COT-RF
+2026-02-26 16:26:49 | INFO     | llm.refine | Processed 10/382 samples
+2026-02-26 16:28:20 | INFO     | llm.refine | Processed 20/382 samples
+2026-02-26 16:29:50 | INFO     | llm.refine | Processed 30/382 samples
+2026-02-26 16:31:20 | INFO     | llm.refine | Processed 40/382 samples
+2026-02-26 16:32:50 | INFO     | llm.refine | Processed 50/382 samples
+2026-02-26 16:34:21 | INFO     | llm.refine | Processed 60/382 samples
+2026-02-26 16:35:55 | INFO     | llm.refine | Processed 70/382 samples
+2026-02-26 16:37:51 | INFO     | llm.refine | Processed 80/382 samples
+2026-02-26 16:39:20 | INFO     | llm.refine | Processed 90/382 samples
+2026-02-26 16:40:47 | INFO     | llm.refine | Processed 100/382 samples
+2026-02-26 16:46:18 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.420072 seconds
+2026-02-26 16:47:12 | INFO     | llm.refine | Processed 110/382 samples
+2026-02-26 16:48:48 | INFO     | llm.refine | Processed 120/382 samples
+2026-02-26 16:50:17 | INFO     | llm.refine | Processed 130/382 samples
+2026-02-26 16:51:48 | INFO     | llm.refine | Processed 140/382 samples
+2026-02-26 16:53:14 | INFO     | llm.refine | Processed 150/382 samples
+2026-02-26 16:54:46 | INFO     | llm.refine | Processed 160/382 samples
+2026-02-26 16:56:16 | INFO     | llm.refine | Processed 170/382 samples
+2026-02-26 16:57:48 | INFO     | llm.refine | Processed 180/382 samples
+2026-02-26 16:59:16 | INFO     | llm.refine | Processed 190/382 samples
+2026-02-26 17:00:45 | INFO     | llm.refine | Processed 200/382 samples
+2026-02-26 17:02:14 | INFO     | llm.refine | Processed 210/382 samples
+2026-02-26 17:07:40 | INFO     | llm.refine | Processed 220/382 samples
+2026-02-26 17:13:44 | INFO     | llm.refine | Processed 230/382 samples
+2026-02-26 17:19:50 | INFO     | llm.refine | Processed 240/382 samples
+2026-02-26 17:25:51 | INFO     | llm.refine | Processed 250/382 samples
+2026-02-26 17:31:53 | INFO     | llm.refine | Processed 260/382 samples
+2026-02-26 17:38:16 | INFO     | llm.refine | Processed 270/382 samples
+2026-02-26 17:44:32 | INFO     | llm.refine | Processed 280/382 samples
+2026-02-26 17:50:40 | INFO     | llm.refine | Processed 290/382 samples
+2026-02-26 17:56:46 | INFO     | llm.refine | Processed 300/382 samples
+2026-02-26 18:02:48 | INFO     | llm.refine | Processed 310/382 samples
+2026-02-26 18:08:51 | INFO     | llm.refine | Processed 320/382 samples
+2026-02-26 18:14:51 | INFO     | llm.refine | Processed 330/382 samples
+2026-02-26 18:20:24 | INFO     | llm.refine | Processed 340/382 samples
+2026-02-26 18:26:15 | INFO     | llm.refine | Processed 350/382 samples
+2026-02-26 18:34:00 | INFO     | openai._base_client | Retrying request to /chat/completions in 0.496874 seconds
+2026-02-26 18:34:50 | INFO     | llm.refine | Processed 360/382 samples
+2026-02-26 18:36:21 | INFO     | llm.refine | Processed 370/382 samples
+2026-02-26 18:37:52 | INFO     | llm.refine | Processed 380/382 samples
+2026-02-26 18:38:10 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF Results:
+2026-02-26 18:38:10 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         0.919657  0.958988  0.695550  0.960132
+5         2.549415  1.596689  1.237068  1.719061
+20       16.594425  4.073625  3.209947  4.380747
+30       38.882804  6.235608  4.936492  6.778211
+2026-02-26 18:38:10 | INFO     | src.run_experiment | TSM+LLM-COT-RF Path MSE (avg over 30d): 13.377793
+2026-02-26 18:41:33 | INFO     | llm.refine | Processed 10/255 samples

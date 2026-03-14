@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 35.91 with no significant change\", \"Avoid large 5d pct overshoots like +6.47 without strong anchor support\", \"Match h30 anchor to 36.50 if 5d pct remains above +5%\", \"Hold h1 anchor near 34.86 if 5d pct is volatile\", \"If 20d vol is low, avoid drastic anchor shifts\"]}"}

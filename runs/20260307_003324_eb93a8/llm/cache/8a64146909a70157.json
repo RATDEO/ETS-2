@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when 5d change is negative\", \"Hold 20d vol near 1.25\u20131.30 to avoid overreaction\", \"If anchor error >3% for h20, keep forecast unchanged\", \"Do not adjust h30 if h1 error is >1.5% and 5d change is <0\", \"If 5d change >+5%, reduce forecast by 0.5\u20131.0 GBP to prevent overshoot\"]}"}

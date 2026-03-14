@@ -1,0 +1,950 @@
+{
+  "artifact_version": 2,
+  "exported_at_utc": "2026-03-02T13:13:01.340476+00:00",
+  "run_id": "20260302_130650_0896e7",
+  "strategy": "gate_sentiment_alignment_5d",
+  "origins": [
+    {
+      "origin_date": "2025-12-22",
+      "last_observed_price": 87.4800033569336,
+      "gate_regime_value": "neutral",
+      "gate_selected_model": "Baseline paper CoT-SENT",
+      "actual_path": [
+        {
+          "horizon": 1,
+          "target_date": "2025-12-23",
+          "actual_price": 88.54
+        },
+        {
+          "horizon": 2,
+          "target_date": "2025-12-24",
+          "actual_price": 88.01
+        },
+        {
+          "horizon": 3,
+          "target_date": "2025-12-29",
+          "actual_price": 87.46
+        },
+        {
+          "horizon": 4,
+          "target_date": "2025-12-30",
+          "actual_price": 87.28
+        },
+        {
+          "horizon": 5,
+          "target_date": "2025-12-31",
+          "actual_price": 87.37
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-01-02",
+          "actual_price": 88.31
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-01-05",
+          "actual_price": 87.25
+        },
+        {
+          "horizon": 8,
+          "target_date": "2026-01-26",
+          "actual_price": 87.13
+        },
+        {
+          "horizon": 9,
+          "target_date": "2026-01-27",
+          "actual_price": 88.37
+        },
+        {
+          "horizon": 10,
+          "target_date": "2026-01-28",
+          "actual_price": 86.54
+        },
+        {
+          "horizon": 11,
+          "target_date": "2026-01-29",
+          "actual_price": 83.98
+        },
+        {
+          "horizon": 12,
+          "target_date": "2026-01-30",
+          "actual_price": 81.26
+        },
+        {
+          "horizon": 13,
+          "target_date": "2026-02-02",
+          "actual_price": 83.28
+        },
+        {
+          "horizon": 14,
+          "target_date": "2026-02-03",
+          "actual_price": 83.11
+        },
+        {
+          "horizon": 15,
+          "target_date": "2026-02-04",
+          "actual_price": 82.92
+        },
+        {
+          "horizon": 16,
+          "target_date": "2026-02-05",
+          "actual_price": 78.2
+        },
+        {
+          "horizon": 17,
+          "target_date": "2026-02-06",
+          "actual_price": 78.73
+        },
+        {
+          "horizon": 18,
+          "target_date": "2026-02-09",
+          "actual_price": 81.35
+        },
+        {
+          "horizon": 19,
+          "target_date": "2026-02-10",
+          "actual_price": 78.86
+        },
+        {
+          "horizon": 20,
+          "target_date": "2026-02-11",
+          "actual_price": 78.45
+        },
+        {
+          "horizon": 21,
+          "target_date": "2026-02-12",
+          "actual_price": 72.54
+        },
+        {
+          "horizon": 22,
+          "target_date": "2026-02-13",
+          "actual_price": 70.68
+        },
+        {
+          "horizon": 23,
+          "target_date": "2026-02-16",
+          "actual_price": 69.18
+        },
+        {
+          "horizon": 24,
+          "target_date": "2026-02-17",
+          "actual_price": 70.08
+        },
+        {
+          "horizon": 25,
+          "target_date": "2026-02-18",
+          "actual_price": 71.57
+        },
+        {
+          "horizon": 26,
+          "target_date": "2026-02-19",
+          "actual_price": 71.34
+        },
+        {
+          "horizon": 27,
+          "target_date": "2026-02-20",
+          "actual_price": 73.78
+        },
+        {
+          "horizon": 28,
+          "target_date": "2026-02-23",
+          "actual_price": 71.38
+        },
+        {
+          "horizon": 29,
+          "target_date": "2026-02-24",
+          "actual_price": 70.67
+        },
+        {
+          "horizon": 30,
+          "target_date": "2026-02-25",
+          "actual_price": 72.58
+        }
+      ],
+      "models": [
+        {
+          "model": "35B raw guarded HDELTA",
+          "display_name": "35B Raw Guarded HDELTA",
+          "forecast": [
+            {
+              "horizon": 1,
+              "target_date": "2025-12-23",
+              "predicted_price": 87.83570861816406
+            },
+            {
+              "horizon": 2,
+              "target_date": "2025-12-24",
+              "predicted_price": 88.12922030639649
+            },
+            {
+              "horizon": 3,
+              "target_date": "2025-12-29",
+              "predicted_price": 88.4544656677246
+            },
+            {
+              "horizon": 4,
+              "target_date": "2025-12-30",
+              "predicted_price": 88.74778704833984
+            },
+            {
+              "horizon": 5,
+              "target_date": "2025-12-31",
+              "predicted_price": 89.00760626220703
+            },
+            {
+              "horizon": 6,
+              "target_date": "2026-01-02",
+              "predicted_price": 89.2019341023763
+            },
+            {
+              "horizon": 7,
+              "target_date": "2026-01-05",
+              "predicted_price": 89.39184643147787
+            },
+            {
+              "horizon": 8,
+              "target_date": "2026-01-26",
+              "predicted_price": 89.39889375
+            },
+            {
+              "horizon": 9,
+              "target_date": "2026-01-27",
+              "predicted_price": 89.38319019571941
+            },
+            {
+              "horizon": 10,
+              "target_date": "2026-01-28",
+              "predicted_price": 89.4151772257487
+            },
+            {
+              "horizon": 11,
+              "target_date": "2026-01-29",
+              "predicted_price": 89.4826853942871
+            },
+            {
+              "horizon": 12,
+              "target_date": "2026-01-30",
+              "predicted_price": 89.52616188151042
+            },
+            {
+              "horizon": 13,
+              "target_date": "2026-02-02",
+              "predicted_price": 89.56192857869466
+            },
+            {
+              "horizon": 14,
+              "target_date": "2026-02-03",
+              "predicted_price": 89.59621530761719
+            },
+            {
+              "horizon": 15,
+              "target_date": "2026-02-04",
+              "predicted_price": 89.6306526184082
+            },
+            {
+              "horizon": 16,
+              "target_date": "2026-02-05",
+              "predicted_price": 89.66630107421875
+            },
+            {
+              "horizon": 17,
+              "target_date": "2026-02-06",
+              "predicted_price": 89.70333388671875
+            },
+            {
+              "horizon": 18,
+              "target_date": "2026-02-09",
+              "predicted_price": 89.74243900553385
+            },
+            {
+              "horizon": 19,
+              "target_date": "2026-02-10",
+              "predicted_price": 89.78135875651041
+            },
+            {
+              "horizon": 20,
+              "target_date": "2026-02-11",
+              "predicted_price": 89.82037329101563
+            },
+            {
+              "horizon": 21,
+              "target_date": "2026-02-12",
+              "predicted_price": 89.90007839355468
+            },
+            {
+              "horizon": 22,
+              "target_date": "2026-02-13",
+              "predicted_price": 89.97803661804198
+            },
+            {
+              "horizon": 23,
+              "target_date": "2026-02-16",
+              "predicted_price": 90.05552671966554
+            },
+            {
+              "horizon": 24,
+              "target_date": "2026-02-17",
+              "predicted_price": 90.13307103881836
+            },
+            {
+              "horizon": 25,
+              "target_date": "2026-02-18",
+              "predicted_price": 90.2106544418335
+            },
+            {
+              "horizon": 26,
+              "target_date": "2026-02-19",
+              "predicted_price": 90.2883072479248
+            },
+            {
+              "horizon": 27,
+              "target_date": "2026-02-20",
+              "predicted_price": 90.3660294845581
+            },
+            {
+              "horizon": 28,
+              "target_date": "2026-02-23",
+              "predicted_price": 90.4437984375
+            },
+            {
+              "horizon": 29,
+              "target_date": "2026-02-24",
+              "predicted_price": 90.52163686676026
+            },
+            {
+              "horizon": 30,
+              "target_date": "2026-02-25",
+              "predicted_price": 90.59954479980469
+            }
+          ]
+        },
+        {
+          "model": "4B raw HDELTA",
+          "display_name": "4B Raw HDELTA",
+          "forecast": [
+            {
+              "horizon": 1,
+              "target_date": "2025-12-23",
+              "predicted_price": 87.4843657836914
+            },
+            {
+              "horizon": 2,
+              "target_date": "2025-12-24",
+              "predicted_price": 87.8866223526001
+            },
+            {
+              "horizon": 3,
+              "target_date": "2025-12-29",
+              "predicted_price": 88.32151807403565
+            },
+            {
+              "horizon": 4,
+              "target_date": "2025-12-30",
+              "predicted_price": 88.7255333404541
+            },
+            {
+              "horizon": 5,
+              "target_date": "2025-12-31",
+              "predicted_price": 89.09697132873535
+            },
+            {
+              "horizon": 6,
+              "target_date": "2026-01-02",
+              "predicted_price": 89.32735192616781
+            },
+            {
+              "horizon": 7,
+              "target_date": "2026-01-05",
+              "predicted_price": 89.5534845143636
+            },
+            {
+              "horizon": 8,
+              "target_date": "2026-01-26",
+              "predicted_price": 89.596519921875
+            },
+            {
+              "horizon": 9,
+              "target_date": "2026-01-27",
+              "predicted_price": 89.61676996103922
+            },
+            {
+              "horizon": 10,
+              "target_date": "2026-01-28",
+              "predicted_price": 89.68486107126873
+            },
+            {
+              "horizon": 11,
+              "target_date": "2026-01-29",
+              "predicted_price": 89.78863986968994
+            },
+            {
+              "horizon": 12,
+              "target_date": "2026-01-30",
+              "predicted_price": 89.86836891123454
+            },
+            {
+              "horizon": 13,
+              "target_date": "2026-02-02",
+              "predicted_price": 89.94041003163656
+            },
+            {
+              "horizon": 14,
+              "target_date": "2026-02-03",
+              "predicted_price": 90.011012600708
+            },
+            {
+              "horizon": 15,
+              "target_date": "2026-02-04",
+              "predicted_price": 90.081813621521
+            },
+            {
+              "horizon": 16,
+              "target_date": "2026-02-05",
+              "predicted_price": 90.15387964477539
+            },
+            {
+              "horizon": 17,
+              "target_date": "2026-02-06",
+              "predicted_price": 90.2273864013672
+            },
+            {
+              "horizon": 18,
+              "target_date": "2026-02-09",
+              "predicted_price": 90.30302785746257
+            },
+            {
+              "horizon": 19,
+              "target_date": "2026-02-10",
+              "predicted_price": 90.37853387858073
+            },
+            {
+              "horizon": 20,
+              "target_date": "2026-02-11",
+              "predicted_price": 90.45418640899658
+            },
+            {
+              "horizon": 21,
+              "target_date": "2026-02-12",
+              "predicted_price": 90.50714403076172
+            },
+            {
+              "horizon": 22,
+              "target_date": "2026-02-13",
+              "predicted_price": 90.55830610046387
+            },
+            {
+              "horizon": 23,
+              "target_date": "2026-02-16",
+              "predicted_price": 90.60896084518433
+            },
+            {
+              "horizon": 24,
+              "target_date": "2026-02-17",
+              "predicted_price": 90.65963410491943
+            },
+            {
+              "horizon": 25,
+              "target_date": "2026-02-18",
+              "predicted_price": 90.71031063461304
+            },
+            {
+              "horizon": 26,
+              "target_date": "2026-02-19",
+              "predicted_price": 90.7610208984375
+            },
+            {
+              "horizon": 27,
+              "target_date": "2026-02-20",
+              "predicted_price": 90.81176488265992
+            },
+            {
+              "horizon": 28,
+              "target_date": "2026-02-23",
+              "predicted_price": 90.8625197265625
+            },
+            {
+              "horizon": 29,
+              "target_date": "2026-02-24",
+              "predicted_price": 90.91330826797486
+            },
+            {
+              "horizon": 30,
+              "target_date": "2026-02-25",
+              "predicted_price": 90.96413049316406
+            }
+          ]
+        },
+        {
+          "model": "Baseline paper CoT-SENT",
+          "display_name": "Baseline paper CoT-SENT",
+          "forecast": [
+            {
+              "horizon": 1,
+              "target_date": "2025-12-23",
+              "predicted_price": 85.88
+            },
+            {
+              "horizon": 2,
+              "target_date": "2025-12-24",
+              "predicted_price": 86.32
+            },
+            {
+              "horizon": 3,
+              "target_date": "2025-12-29",
+              "predicted_price": 86.75
+            },
+            {
+              "horizon": 4,
+              "target_date": "2025-12-30",
+              "predicted_price": 87.17
+            },
+            {
+              "horizon": 5,
+              "target_date": "2025-12-31",
+              "predicted_price": 87.58
+            },
+            {
+              "horizon": 6,
+              "target_date": "2026-01-02",
+              "predicted_price": 87.88
+            },
+            {
+              "horizon": 7,
+              "target_date": "2026-01-05",
+              "predicted_price": 88.15
+            },
+            {
+              "horizon": 8,
+              "target_date": "2026-01-26",
+              "predicted_price": 88.38
+            },
+            {
+              "horizon": 9,
+              "target_date": "2026-01-27",
+              "predicted_price": 88.58
+            },
+            {
+              "horizon": 10,
+              "target_date": "2026-01-28",
+              "predicted_price": 88.75
+            },
+            {
+              "horizon": 11,
+              "target_date": "2026-01-29",
+              "predicted_price": 88.89
+            },
+            {
+              "horizon": 12,
+              "target_date": "2026-01-30",
+              "predicted_price": 89.0
+            },
+            {
+              "horizon": 13,
+              "target_date": "2026-02-02",
+              "predicted_price": 89.1
+            },
+            {
+              "horizon": 14,
+              "target_date": "2026-02-03",
+              "predicted_price": 89.2
+            },
+            {
+              "horizon": 15,
+              "target_date": "2026-02-04",
+              "predicted_price": 89.29
+            },
+            {
+              "horizon": 16,
+              "target_date": "2026-02-05",
+              "predicted_price": 89.37
+            },
+            {
+              "horizon": 17,
+              "target_date": "2026-02-06",
+              "predicted_price": 89.44
+            },
+            {
+              "horizon": 18,
+              "target_date": "2026-02-09",
+              "predicted_price": 89.5
+            },
+            {
+              "horizon": 19,
+              "target_date": "2026-02-10",
+              "predicted_price": 89.55
+            },
+            {
+              "horizon": 20,
+              "target_date": "2026-02-11",
+              "predicted_price": 89.59
+            },
+            {
+              "horizon": 21,
+              "target_date": "2026-02-12",
+              "predicted_price": 89.63
+            },
+            {
+              "horizon": 22,
+              "target_date": "2026-02-13",
+              "predicted_price": 89.66
+            },
+            {
+              "horizon": 23,
+              "target_date": "2026-02-16",
+              "predicted_price": 89.69
+            },
+            {
+              "horizon": 24,
+              "target_date": "2026-02-17",
+              "predicted_price": 89.72
+            },
+            {
+              "horizon": 25,
+              "target_date": "2026-02-18",
+              "predicted_price": 89.74
+            },
+            {
+              "horizon": 26,
+              "target_date": "2026-02-19",
+              "predicted_price": 89.76
+            },
+            {
+              "horizon": 27,
+              "target_date": "2026-02-20",
+              "predicted_price": 89.78
+            },
+            {
+              "horizon": 28,
+              "target_date": "2026-02-23",
+              "predicted_price": 89.8
+            },
+            {
+              "horizon": 29,
+              "target_date": "2026-02-24",
+              "predicted_price": 89.82
+            },
+            {
+              "horizon": 30,
+              "target_date": "2026-02-25",
+              "predicted_price": 89.84
+            }
+          ]
+        },
+        {
+          "model": "Raw tsm",
+          "display_name": "Raw TSM",
+          "forecast": [
+            {
+              "horizon": 1,
+              "target_date": "2025-12-23",
+              "predicted_price": 87.83570861816406
+            },
+            {
+              "horizon": 2,
+              "target_date": "2025-12-24",
+              "predicted_price": 88.21743774414062
+            },
+            {
+              "horizon": 3,
+              "target_date": "2025-12-29",
+              "predicted_price": 88.63172912597656
+            },
+            {
+              "horizon": 4,
+              "target_date": "2025-12-30",
+              "predicted_price": 89.01483154296875
+            },
+            {
+              "horizon": 5,
+              "target_date": "2025-12-31",
+              "predicted_price": 89.36506652832031
+            },
+            {
+              "horizon": 6,
+              "target_date": "2026-01-02",
+              "predicted_price": 89.58415985107422
+            },
+            {
+              "horizon": 7,
+              "target_date": "2026-01-05",
+              "predicted_price": 89.79893493652344
+            },
+            {
+              "horizon": 8,
+              "target_date": "2026-01-26",
+              "predicted_price": 89.830078125
+            },
+            {
+              "horizon": 9,
+              "target_date": "2026-01-27",
+              "predicted_price": 89.83837127685547
+            },
+            {
+              "horizon": 10,
+              "target_date": "2026-01-28",
+              "predicted_price": 89.89461517333984
+            },
+            {
+              "horizon": 11,
+              "target_date": "2026-01-29",
+              "predicted_price": 89.98661041259766
+            },
+            {
+              "horizon": 12,
+              "target_date": "2026-01-30",
+              "predicted_price": 90.05448150634766
+            },
+            {
+              "horizon": 13,
+              "target_date": "2026-02-02",
+              "predicted_price": 90.11463165283203
+            },
+            {
+              "horizon": 14,
+              "target_date": "2026-02-03",
+              "predicted_price": 90.17332458496094
+            },
+            {
+              "horizon": 15,
+              "target_date": "2026-02-04",
+              "predicted_price": 90.2322006225586
+            },
+            {
+              "horizon": 16,
+              "target_date": "2026-02-05",
+              "predicted_price": 90.29232788085938
+            },
+            {
+              "horizon": 17,
+              "target_date": "2026-02-06",
+              "predicted_price": 90.3538818359375
+            },
+            {
+              "horizon": 18,
+              "target_date": "2026-02-09",
+              "predicted_price": 90.41755676269531
+            },
+            {
+              "horizon": 19,
+              "target_date": "2026-02-10",
+              "predicted_price": 90.4810791015625
+            },
+            {
+              "horizon": 20,
+              "target_date": "2026-02-11",
+              "predicted_price": 90.54473114013672
+            },
+            {
+              "horizon": 21,
+              "target_date": "2026-02-12",
+              "predicted_price": 90.6068115234375
+            },
+            {
+              "horizon": 22,
+              "target_date": "2026-02-13",
+              "predicted_price": 90.66710662841797
+            },
+            {
+              "horizon": 23,
+              "target_date": "2026-02-16",
+              "predicted_price": 90.7269058227539
+            },
+            {
+              "horizon": 24,
+              "target_date": "2026-02-17",
+              "predicted_price": 90.78673553466797
+            },
+            {
+              "horizon": 25,
+              "target_date": "2026-02-18",
+              "predicted_price": 90.8465805053711
+            },
+            {
+              "horizon": 26,
+              "target_date": "2026-02-19",
+              "predicted_price": 90.9064712524414
+            },
+            {
+              "horizon": 27,
+              "target_date": "2026-02-20",
+              "predicted_price": 90.9664077758789
+            },
+            {
+              "horizon": 28,
+              "target_date": "2026-02-23",
+              "predicted_price": 91.0263671875
+            },
+            {
+              "horizon": 29,
+              "target_date": "2026-02-24",
+              "predicted_price": 91.08637237548828
+            },
+            {
+              "horizon": 30,
+              "target_date": "2026-02-25",
+              "predicted_price": 91.14642333984375
+            }
+          ]
+        },
+        {
+          "model": "gate_sentiment_alignment_5d",
+          "display_name": "Sentiment-Alignment Gate",
+          "forecast": [
+            {
+              "horizon": 1,
+              "target_date": "2025-12-23",
+              "predicted_price": 85.88
+            },
+            {
+              "horizon": 2,
+              "target_date": "2025-12-24",
+              "predicted_price": 86.32
+            },
+            {
+              "horizon": 3,
+              "target_date": "2025-12-29",
+              "predicted_price": 86.75
+            },
+            {
+              "horizon": 4,
+              "target_date": "2025-12-30",
+              "predicted_price": 87.17
+            },
+            {
+              "horizon": 5,
+              "target_date": "2025-12-31",
+              "predicted_price": 87.58
+            },
+            {
+              "horizon": 6,
+              "target_date": "2026-01-02",
+              "predicted_price": 87.88
+            },
+            {
+              "horizon": 7,
+              "target_date": "2026-01-05",
+              "predicted_price": 88.15
+            },
+            {
+              "horizon": 8,
+              "target_date": "2026-01-26",
+              "predicted_price": 88.38
+            },
+            {
+              "horizon": 9,
+              "target_date": "2026-01-27",
+              "predicted_price": 88.58
+            },
+            {
+              "horizon": 10,
+              "target_date": "2026-01-28",
+              "predicted_price": 88.75
+            },
+            {
+              "horizon": 11,
+              "target_date": "2026-01-29",
+              "predicted_price": 88.89
+            },
+            {
+              "horizon": 12,
+              "target_date": "2026-01-30",
+              "predicted_price": 89.0
+            },
+            {
+              "horizon": 13,
+              "target_date": "2026-02-02",
+              "predicted_price": 89.1
+            },
+            {
+              "horizon": 14,
+              "target_date": "2026-02-03",
+              "predicted_price": 89.2
+            },
+            {
+              "horizon": 15,
+              "target_date": "2026-02-04",
+              "predicted_price": 89.29
+            },
+            {
+              "horizon": 16,
+              "target_date": "2026-02-05",
+              "predicted_price": 89.37
+            },
+            {
+              "horizon": 17,
+              "target_date": "2026-02-06",
+              "predicted_price": 89.44
+            },
+            {
+              "horizon": 18,
+              "target_date": "2026-02-09",
+              "predicted_price": 89.5
+            },
+            {
+              "horizon": 19,
+              "target_date": "2026-02-10",
+              "predicted_price": 89.55
+            },
+            {
+              "horizon": 20,
+              "target_date": "2026-02-11",
+              "predicted_price": 89.59
+            },
+            {
+              "horizon": 21,
+              "target_date": "2026-02-12",
+              "predicted_price": 89.63
+            },
+            {
+              "horizon": 22,
+              "target_date": "2026-02-13",
+              "predicted_price": 89.66
+            },
+            {
+              "horizon": 23,
+              "target_date": "2026-02-16",
+              "predicted_price": 89.69
+            },
+            {
+              "horizon": 24,
+              "target_date": "2026-02-17",
+              "predicted_price": 89.72
+            },
+            {
+              "horizon": 25,
+              "target_date": "2026-02-18",
+              "predicted_price": 89.74
+            },
+            {
+              "horizon": 26,
+              "target_date": "2026-02-19",
+              "predicted_price": 89.76
+            },
+            {
+              "horizon": 27,
+              "target_date": "2026-02-20",
+              "predicted_price": 89.78
+            },
+            {
+              "horizon": 28,
+              "target_date": "2026-02-23",
+              "predicted_price": 89.8
+            },
+            {
+              "horizon": 29,
+              "target_date": "2026-02-24",
+              "predicted_price": 89.82
+            },
+            {
+              "horizon": 30,
+              "target_date": "2026-02-25",
+              "predicted_price": 89.84
+            }
+          ],
+          "selected_underlying_model": "Baseline paper CoT-SENT",
+          "regime_value": "neutral"
+        }
+      ]
+    }
+  ]
+}

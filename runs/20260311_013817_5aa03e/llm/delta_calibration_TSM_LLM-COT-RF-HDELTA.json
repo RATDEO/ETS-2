@@ -1,0 +1,19 @@
+{
+  "target_horizons": [
+    5,
+    20,
+    30
+  ],
+  "min_scale": 0.0,
+  "max_scale": 1.0,
+  "shared": false,
+  "tune_scope": "full",
+  "recent_tail_fraction": 1.0,
+  "recent_tail_min_samples": 0,
+  "scales": {
+    "1": 1.0,
+    "5": 0.0,
+    "20": 0.0,
+    "30": 0.0
+  }
+}

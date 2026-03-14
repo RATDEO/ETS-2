@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if vol_20d is low and change_20d_pct is flat\", \"Avoid overshoot on h1 if change_5d_pct is small positive\", \"Match h30 anchor to current_price if anchor_error_pct exceeds 5%\", \"Hold h5 anchor if change_5d_pct is low and vol_20d is moderate\", \"If match_rank is low, defer anchor adjustment until vol_20d rises\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid over-optimistic short-term forecasts when volatility is low.\", \"Hold long-term anchors near zero error when 5d change is small.\", \"If 20d vol is high, adjust forecasts to match recent price trends.\", \"Keep h30 forecast unchanged if anchor errors are inconsistent.\", \"Prioritize h5 accuracy over h1 when 5d change exceeds \u00b15%.\"]}"}

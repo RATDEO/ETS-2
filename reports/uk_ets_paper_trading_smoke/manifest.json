@@ -1,0 +1,6 @@
+{
+  "generated_at_utc": "2026-03-14T15:02:16.905206",
+  "ledger_path": "/Users/davidwilkinson/Desktop/ETS 2/reports/uk_ets_paper_trading_smoke/paper_trade_ledger.csv",
+  "packet_path": "/Users/davidwilkinson/Desktop/ETS 2/reports/uk_ets_paper_trading_smoke/packets/2026-03-13_TSM+LLM-COT-RF-HDELTA_h20.json",
+  "note": "This ledger records frozen forecast packets before outcomes are known. Execution and realized PnL should be appended later by a separate reconciliation step."
+}

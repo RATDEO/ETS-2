@@ -1,0 +1,29 @@
+{
+  "strategy": "strategy3_sentiment_tsm_partial",
+  "status": "partial",
+  "reason_stopped": "llm_overlay_runtime_too_high_for_single_turn",
+  "completed_results": [
+    {
+      "name": "base_tsm_sent",
+      "path_mse": 20.99062728881836,
+      "status": "completed"
+    },
+    {
+      "name": "paper_cot_sent_4b_on_tsm_sent",
+      "path_mse": 21.148469455265833,
+      "status": "completed"
+    }
+  ],
+  "aborted_results": [
+    {
+      "name": "hdelta_4b_on_tsm_sent",
+      "path_mse": null,
+      "status": "aborted_before_completion"
+    },
+    {
+      "name": "hdelta_35b_guarded_on_tsm_sent",
+      "path_mse": null,
+      "status": "aborted_before_completion"
+    }
+  ]
+}

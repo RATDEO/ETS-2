@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal drift\", \"H20 anchor shows strong upward bias; avoid overshoot\", \"H30 anchor overcorrected; revert to recent trend\", \"Volatility low; ignore short-term noise\", \"Match H5 anchor to spot for stability\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with low vol_20d\", \"Keep 20d_pct near zero when anchor errors are small\", \"Hold 20d anchor unchanged if 20d_pct is flat\", \"Do not adjust h1 if spot error is minimal\", \"Ignore h30 if 20d vol is low and 20d_pct is stable\"]}"}

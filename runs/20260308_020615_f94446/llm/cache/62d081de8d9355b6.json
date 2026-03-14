@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor shows slight upward bias, keep it unchanged\", \"H20 anchor near zero change, maintain stability\", \"H30 anchor shows strong upward momentum, avoid overshoot\", \"5d change negative, expect mean reversion\", \"Volatility low, avoid overreacting to short-term noise\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d vol near 1.00 when anchors show minimal drift\", \"Keep h20 anchor close to spot if 20d pct change is flat\", \"Do not adjust h30 if 20d vol is low and 20d pct change is zero\", \"If h1 and h5 errors are small, maintain h20 unchanged\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, keep 20d change near zero\", \"base anchors show 20d horizon overshoot, stabilize it\", \"vol_20d is low, avoid large anchor shifts\", \"h30 anchor is high, match h20 to prevent lag\", \"if 5d change > 5%, cap h1 anchor rise to 0.5%\"]}"}

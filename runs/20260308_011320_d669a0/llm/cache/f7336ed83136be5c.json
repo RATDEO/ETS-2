@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.75 with no significant change\", \"Avoid large 5d pct overshoots like +3.78 seen in example 2\", \"Match h1 anchor to spot within 0.44% margin as in example 1\", \"Hold 20d vol near 0.95 to avoid volatility spikes\", \"If 5d pct > +2.00, cap at +1.85 to prevent overreaction\"]}"}

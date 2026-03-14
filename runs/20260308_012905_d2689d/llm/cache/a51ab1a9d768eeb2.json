@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if vol_20d is low and change_20d_pct is flat\", \"Avoid large overshoots in h30 when h20 anchor is stable\", \"Match h1 anchor error to spot volatility if change_5d_pct is high\", \"Hold h5 anchor near spot if change_20d_pct is zero\", \"If h20 anchor error exceeds 0.5%, reset to spot value\"]}"}

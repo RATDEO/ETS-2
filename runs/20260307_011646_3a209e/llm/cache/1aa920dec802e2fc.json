@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor gaps when 20d vol is low\", \"Hold 5d change near zero if 20d change is flat\", \"Keep 20d anchor error below 5% to avoid overshoot\", \"If 30d anchor is high, match 20d anchor to prevent lag\", \"Anchor 20d horizon unchanged if 20d change is zero\"]}"}

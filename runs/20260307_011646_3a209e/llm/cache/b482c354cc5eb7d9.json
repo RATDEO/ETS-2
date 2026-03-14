@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d anchor if 20d vol is low and 20d pct change is flat\", \"Cap 30d anchor if 20d vol is low and 30d anchor exceeds 5% above spot\", \"If 5d change is high, keep 20d anchor unchanged if 20d pct change is zero\", \"If 20d vol is low, avoid large anchor error in 20d horizon\"]}"}

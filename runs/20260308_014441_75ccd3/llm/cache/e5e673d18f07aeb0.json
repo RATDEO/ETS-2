@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 57.60 due to weak vol_20d signal\", \"Avoid overshoot on h1 anchor given +3.33% 5d change\", \"Mean revert h20 anchor if vol_20d remains low\", \"Hold h30 anchor steady at 57.50 with no significant change\", \"Ignore 20d pct change of +0.00 as it lacks momentum signal\"]}"}

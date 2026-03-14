@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with zero 20d change\", \"Hold 20d vol near 1.4 if anchors show weak trend\", \"If h20 anchor grows >4% vs spot, cap forecast to avoid overshoot\", \"Keep h1 anchor within 0.1% of spot to avoid lag\", \"If h30 anchor exceeds 5% vs spot, revert to h20 for stability\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Hold 20d vol near 1.0 when anchors show small divergence\", \"Keep h20 anchor error below 0.5% to avoid overshoot\", \"If h30 anchor error exceeds 0.5%, reset to match h20\", \"Maintain h1 anchor within 0.1% of spot to prevent lag\"]}"}

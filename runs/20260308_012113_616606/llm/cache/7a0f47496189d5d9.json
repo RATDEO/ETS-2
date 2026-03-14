@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal overshoot\", \"H20 anchor must remain stable if 5d change is flat\", \"Avoid large vol_20d swings when 20d pct change is zero\", \"H30 anchor should not deviate more than \u00b10.5% from spot\", \"If anchor error pct exceeds \u00b13%, reset horizon to match spot trend\"]}"}

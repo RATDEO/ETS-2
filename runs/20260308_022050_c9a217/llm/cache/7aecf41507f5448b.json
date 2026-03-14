@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes without volume confirmation\", \"Halt if 20d pct change is flat and vol is low\", \"Anchor h20 should stay near spot if 20d pct is zero\", \"If h5 pct > 1.5%, cap h1 adjustment to +0.5% max\", \"Keep h30 unchanged if 5d pct > 5% and vol < 1.5\"]}"}

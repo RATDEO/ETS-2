@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d vol near 0.60 to prevent overshoot\", \"Keep h20 anchor close to spot to avoid mean reversion bias\", \"If 5d change is strong, ensure h1 anchor aligns with spot\", \"If 20d vol is low, maintain h30 anchor near spot to prevent lag\"]}"}

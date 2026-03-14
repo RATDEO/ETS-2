@@ -1,0 +1,379 @@
+2026-03-14 15:13:00 | INFO     | src.run_experiment | Run ID: 20260314_151300_2c5df4
+2026-03-14 15:13:00 | INFO     | src.run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260314_151300_2c5df4
+2026-03-14 15:13:00 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:13:00 | INFO     | src.run_experiment | STEP 2: Building data panel
+2026-03-14 15:13:00 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:13:00 | INFO     | src.run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk
+2026-03-14 15:13:00 | INFO     | data.panel | ============================================================
+2026-03-14 15:13:00 | INFO     | data.panel | Building panel dataset
+2026-03-14 15:13:00 | INFO     | data.panel | Target source: uka_futures (UKA_FUTURES)
+2026-03-14 15:13:00 | INFO     | data.panel | ============================================================
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[1/7] Loading target series (UKA Futures)...
+2026-03-14 15:13:00 | INFO     | data.load_eua_futures | Loading UKA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-14 15:13:00 | INFO     | data.load_eua_futures | Loaded UKA futures: 1233 records from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-14 15:13:00 | INFO     | data.load_eua_futures | Combined UKA_FUTURES data: 1233 records from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-14 15:13:00 | INFO     | data.load_eua_futures | UKA_FUTURES target series: 1233 records, price range: 30.20 - 97.15 GBP
+2026-03-14 15:13:00 | INFO     | data.panel | UKA Futures loaded: 1233 records
+2026-03-14 15:13:00 | INFO     | data.panel | Applying target date filter: min_date=<none> max_date=2023-12-31
+2026-03-14 15:13:00 | INFO     | data.panel | Master calendar: 674 days from 2021-05-19 00:00:00 to 2023-12-29 00:00:00
+2026-03-14 15:13:00 | INFO     | data.panel | Target coverage: 674 / 674 days
+2026-03-14 15:13:00 | INFO     | data.panel | Adding UKA Futures OHLC and volume features...
+2026-03-14 15:13:00 | INFO     | data.panel | Added UKA Futures features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-03-14 15:13:00 | INFO     | data.fx | Loaded EUR/USD FX rates: 6957 observations from 1999-01-04 00:00:00 to 2026-03-04 00:00:00
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-14 15:13:00 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-14 15:13:00 | INFO     | data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-14 15:13:00 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-14 15:13:00 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-14 15:13:00 | INFO     | data.fx | Converted 6890 prices from USD to EUR
+2026-03-14 15:13:00 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-03-14 15:13:00 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-14 15:13:00 | INFO     | data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-14 15:13:00 | INFO     | data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-14 15:13:00 | INFO     | data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-14 15:13:00 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-03-14 15:13:00 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260314_151300_2c5df4/data
+2026-03-14 15:13:00 | INFO     | data.panel | ============================================================
+2026-03-14 15:13:00 | INFO     | data.panel | Panel built: 674 rows, 46 columns
+2026-03-14 15:13:00 | INFO     | data.panel | Target coverage: 100.0%
+2026-03-14 15:13:00 | INFO     | data.panel | ============================================================
+2026-03-14 15:13:01 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260314_151300_2c5df4/paper_snapshot/fig_data_coverage.png
+2026-03-14 15:13:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:13:01 | INFO     | src.run_experiment | STEP 3: Creating windows and splitting data
+2026-03-14 15:13:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:13:01 | INFO     | data.windows | Creating windows with 10 features, mode=MS
+2026-03-14 15:13:01 | INFO     | data.windows | Creating 625 windows
+2026-03-14 15:13:02 | INFO     | data.windows | Window shapes: X_enc=(625, 20, 10), X_dec=(625, 40, 10), y=(625, 30)
+2026-03-14 15:13:02 | INFO     | data.windows | train: 368 windows
+2026-03-14 15:13:02 | INFO     | data.windows | val: 100 windows
+2026-03-14 15:13:02 | INFO     | data.windows | test: 99 windows
+2026-03-14 15:13:02 | INFO     | data.windows | Dropped 58 boundary-crossing windows to prevent split leakage
+2026-03-14 15:13:02 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260314_151300_2c5df4/data/datasets
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:13:02 | INFO     | src.run_experiment | STEP 4: Training and evaluating baselines
+2026-03-14 15:13:02 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:13:02 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-14 15:13:02 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+Baseline Results (MSE by horizon):
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+naive_persistence:
+2026-03-14 15:13:02 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         7.085310  2.661825  1.733535   4.097752
+5        17.884506  4.229008  3.426364   8.035581
+20       52.015457  7.212174  6.107072  15.305889
+30       23.162836  4.812778  3.765152   9.487446
+2026-03-14 15:13:02 | INFO     | src.run_experiment | Path MSE (avg over 30d): 36.825447
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+seasonal_naive:
+2026-03-14 15:13:02 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1        18.048897  4.248399  3.439495   8.012263
+5        17.884507  4.229008  3.426364   8.035581
+20       52.015454  7.212174  6.107071  15.305889
+30       23.162839  4.812779  3.765152   9.487446
+2026-03-14 15:13:02 | INFO     | src.run_experiment | Path MSE (avg over 30d): 38.238505
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+linear_ridge:
+2026-03-14 15:13:02 | INFO     | src.run_experiment |                 mse       rmse        mae       mape
+horizon                                             
+1          7.387631   2.718020   1.851491   4.400478
+5         23.599075   4.857888   4.320174  10.333159
+20       150.017461  12.248162  10.724367  27.706590
+30       235.344712  15.340949  14.747111  37.549053
+2026-03-14 15:13:02 | INFO     | src.run_experiment | Path MSE (avg over 30d): 112.426646
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+linear_lasso:
+2026-03-14 15:13:02 | INFO     | src.run_experiment |                 mse       rmse        mae       mape
+horizon                                             
+1         13.672427   3.697625   3.077915   7.444660
+5         42.635528   6.529589   5.814622  14.151310
+20       207.393849  14.401175  13.290364  34.088115
+30       313.860577  17.716111  17.217282  43.777590
+2026-03-14 15:13:02 | INFO     | src.run_experiment | Path MSE (avg over 30d): 158.144303
+2026-03-14 15:13:02 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:13:02 | INFO     | src.run_experiment | STEP 5: TSM model training
+2026-03-14 15:13:02 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:13:02 | INFO     | models.tsm | Building TSM model: type=dlinear, seq_len=20, pred_len=30
+2026-03-14 15:13:02 | INFO     | models.tsm | Built DLinear model with 1272 parameters (channel_mixer=residual_linear)
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 1/80 - Train: 1.367764, Val: 3.175370
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 2/80 - Train: 1.303508, Val: 3.117390
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 3/80 - Train: 1.265577, Val: 3.065804
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 4/80 - Train: 1.240457, Val: 3.019142
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 5/80 - Train: 1.205420, Val: 2.975339
+2026-03-14 15:13:02 | INFO     | models.tsm | Epoch 6/80 - Train: 1.175379, Val: 2.937156
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 7/80 - Train: 1.154573, Val: 2.904529
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 8/80 - Train: 1.140847, Val: 2.874290
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 9/80 - Train: 1.110783, Val: 2.848079
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 10/80 - Train: 1.095531, Val: 2.824555
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 11/80 - Train: 1.082954, Val: 2.804940
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 12/80 - Train: 1.066710, Val: 2.787309
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 13/80 - Train: 1.057177, Val: 2.773843
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 14/80 - Train: 1.052348, Val: 2.761444
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 15/80 - Train: 1.036657, Val: 2.749420
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 16/80 - Train: 1.029728, Val: 2.740562
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 17/80 - Train: 1.022551, Val: 2.732291
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 18/80 - Train: 1.010364, Val: 2.727372
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 19/80 - Train: 1.010080, Val: 2.721501
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 20/80 - Train: 0.998536, Val: 2.717117
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 21/80 - Train: 1.000256, Val: 2.714557
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 22/80 - Train: 0.992429, Val: 2.712421
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 23/80 - Train: 0.985160, Val: 2.710773
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 24/80 - Train: 0.975857, Val: 2.709466
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 25/80 - Train: 0.975730, Val: 2.709916
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 26/80 - Train: 0.974435, Val: 2.709614
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 27/80 - Train: 0.969949, Val: 2.709875
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 28/80 - Train: 0.974790, Val: 2.710255
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 29/80 - Train: 0.963866, Val: 2.711178
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 30/80 - Train: 0.962099, Val: 2.712241
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 31/80 - Train: 0.966519, Val: 2.713440
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 32/80 - Train: 0.956865, Val: 2.714556
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 33/80 - Train: 0.959173, Val: 2.715896
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 34/80 - Train: 0.966064, Val: 2.717299
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 35/80 - Train: 0.959348, Val: 2.719447
+2026-03-14 15:13:03 | INFO     | models.tsm | Epoch 36/80 - Train: 0.959461, Val: 2.720786
+2026-03-14 15:13:03 | INFO     | models.tsm | Early stopping at epoch 36
+2026-03-14 15:13:03 | INFO     | src.run_experiment | 
+TSM Results:
+2026-03-14 15:13:03 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          7.132722   2.670716  1.769185   4.190734
+5         18.041004   4.247470  3.669805   8.643813
+20       106.665672  10.327908  8.555087  22.163913
+30       106.276878  10.309068  9.063334  23.208693
+2026-03-14 15:13:03 | INFO     | src.run_experiment | TSM Path MSE (avg over 30d): 70.851189
+2026-03-14 15:13:03 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:13:03 | INFO     | src.run_experiment | STEP 6: LLM refinement
+2026-03-14 15:13:03 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:13:03 | INFO     | src.run_experiment | LLM base forecast model: tsm
+2026-03-14 15:13:03 | INFO     | src.run_experiment | Running method: TSM+LLM-COT-RF-HDELTA
+2026-03-14 15:14:21 | INFO     | llm.refine | Processed 10/99 samples (0 resumed from checkpoint)
+2026-03-14 15:15:39 | INFO     | llm.refine | Processed 20/99 samples (0 resumed from checkpoint)
+2026-03-14 15:16:57 | INFO     | llm.refine | Processed 30/99 samples (0 resumed from checkpoint)
+2026-03-14 15:18:13 | INFO     | llm.refine | Processed 40/99 samples (0 resumed from checkpoint)
+2026-03-14 15:19:31 | INFO     | llm.refine | Processed 50/99 samples (0 resumed from checkpoint)
+2026-03-14 15:20:49 | INFO     | llm.refine | Processed 60/99 samples (0 resumed from checkpoint)
+2026-03-14 15:22:06 | INFO     | llm.refine | Processed 70/99 samples (0 resumed from checkpoint)
+2026-03-14 15:23:24 | INFO     | llm.refine | Processed 80/99 samples (0 resumed from checkpoint)
+2026-03-14 15:24:43 | INFO     | llm.refine | Processed 90/99 samples (0 resumed from checkpoint)
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Results:
+2026-03-14 15:25:52 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          7.132722   2.670716  1.769185   4.190734
+5         17.923644   4.233633  3.636935   8.562227
+20       105.285491  10.260872  8.464144  21.938174
+30       102.946411  10.146251  8.911557  22.809585
+2026-03-14 15:25:52 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA Path MSE (avg over 30d): 69.815916
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | STEP 7: Statistical significance tests
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+Significance test results saved
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | STEP 8: Robustness suite
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | Robustness noise injection results saved
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | STEP 9: Drift/return and long-short portfolio evaluation
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | Drift metrics saved
+2026-03-14 15:25:52 | INFO     | src.run_experiment | Long-short portfolio metrics saved
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | STEP 10: Trend classification accuracy
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.272727
+5        0.080808
+20       0.040404
+30       0.090909
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.585859
+20       0.393939
+30       0.767677
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.303030
+5        0.080808
+20       0.040404
+30       0.090909
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.585859
+20       0.393939
+30       0.767677
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.343434
+5        0.292929
+20       0.383838
+30       0.242424
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.383838
+20       0.191919
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.353535
+5        0.292929
+20       0.373737
+30       0.242424
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.333333
+20       0.191919
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.313131
+5        0.323232
+20       0.404040
+30       0.292929
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.515152
+20       0.171717
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.313131
+5        0.353535
+20       0.414141
+30       0.292929
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.525253
+20       0.181818
+30       0.272727
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.272727
+5        0.080808
+20       0.040404
+30       0.090909
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.585859
+20       0.393939
+30       0.767677
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.303030
+5        0.080808
+20       0.040404
+30       0.090909
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.585859
+20       0.393939
+30       0.767677
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.343434
+5        0.292929
+20       0.383838
+30       0.242424
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.383838
+20       0.191919
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.353535
+5        0.292929
+20       0.373737
+30       0.242424
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.333333
+20       0.191919
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.313131
+5        0.323232
+20       0.404040
+30       0.292929
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-14 15:25:52 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.515152
+20       0.171717
+30       0.262626
+2026-03-14 15:25:52 | INFO     | src.run_experiment | Paper generation disabled by config
+2026-03-14 15:25:52 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | EXPERIMENT COMPLETE
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260314_151300_2c5df4
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================
+2026-03-14 15:25:52 | INFO     | src.run_experiment | EU ETS FUTURES FORECASTING EXPERIMENT
+2026-03-14 15:25:52 | INFO     | src.run_experiment | ======================================================================

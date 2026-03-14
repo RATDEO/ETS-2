@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor near spot if vol_20d is low\", \"Avoid large positive change_5d_pct if h20 anchor is rising sharply\", \"Hold h30 anchor if change_20d_pct is flat\", \"Do not adjust h1 anchor if vol_20d is high\", \"If anchor_error_pct exceeds 5%, reset horizon to match spot trend\"]}"}

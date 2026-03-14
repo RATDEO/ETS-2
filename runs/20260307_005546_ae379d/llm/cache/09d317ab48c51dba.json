@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct gains without volume confirmation\", \"Hold 20d pct near zero when volatility is low\", \"Keep h5 anchor close to spot if 5d change is high\", \"If h20 anchor diverges, match h5 trend unless volatility spikes\", \"Anchor h1 near spot if 5d change exceeds 20%\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d_pct changes with minimal 20d_vol\", \"Hold 20d_pct near zero when vol_20d is low\", \"Anchor h20 at 55.84 if h30 is rising\", \"Keep h1 close to spot if 5d_pct is negative\", \"If 20d_pct is flat, defer h20 adjustment until vol_20d rises\"]}"}

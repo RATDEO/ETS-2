@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"5d change is high, so avoid overreacting to short-term volatility.\", \"20d vol is low, so anchor h20 should stay near current price.\", \"h20 anchor error is large, so keep h20 unchanged.\", \"h1 anchor error is small, so use it as reference for short-term bias.\", \"If 20d change is flat, avoid forcing mean reversion on h20.\"]}"}

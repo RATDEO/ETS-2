@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d change is near zero\", \"Avoid overshoot on h1 if 5d change is positive\", \"Hold h30 anchor if 30d forecast error exceeds 2%\", \"Use h5 anchor if 5d change is volatile\", \"Ignore base anchors if vol_20d < 1.20\"]}"}

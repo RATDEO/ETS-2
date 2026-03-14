@@ -1,0 +1,7 @@
+{
+  "selected_candidate": "paper_event90_proxy_official_ctx",
+  "selected_test_mse_path": 20.85471947760012,
+  "gap_vs_target_20": 0.8547194776001206,
+  "gap_vs_repo_old_paper_sent_13_8262": 7.0285194776001205,
+  "gap_vs_repo_old_paper_cot_rf_12_5149": 8.33981947760012
+}

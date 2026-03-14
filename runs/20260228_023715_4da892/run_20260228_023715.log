@@ -1,0 +1,113 @@
+2026-02-28 02:37:15 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:37:15 | INFO     | src.data.panel | Building panel dataset
+2026-02-28 02:37:15 | INFO     | src.data.panel | Target source: eua_futures (EUA_FUTURES)
+2026-02-28 02:37:15 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:37:15 | INFO     | src.data.panel | 
+[1/7] Loading target series (EUA Futures)...
+2026-02-28 02:37:15 | INFO     | src.data.load_eua_futures | Loading EUA futures file: European Union Allowance (EUA) Yearly Futures Historical Data AUTO.csv
+2026-02-28 02:37:15 | INFO     | src.data.load_eua_futures | Loaded EUA futures: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_eua_futures | Combined EUA futures data: 4334 records from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_eua_futures | EUA futures target series: 4334 records, price range: 2.75 - 100.29 EUR
+2026-02-28 02:37:15 | INFO     | src.data.panel | EUA Futures loaded: 4334 records
+2026-02-28 02:37:15 | INFO     | src.data.panel | Master calendar: 4334 days from 2009-04-01 00:00:00 to 2026-02-25 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.panel | Target coverage: 4334 / 4334 days
+2026-02-28 02:37:15 | INFO     | src.data.panel | Adding EUA futures OHLC and volume features...
+2026-02-28 02:37:15 | INFO     | src.data.panel | Added EUA features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-02-28 02:37:15 | INFO     | src.data.panel | Adding ICAP secondary market as exogenous feature...
+2026-02-28 02:37:15 | INFO     | src.data.load_icap | Loaded ICAP file: 3481 records from 2005-03-09 00:00:00 to 2018-12-28 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_icap | Loaded ICAP file: 1555 records from 2019-01-07 00:00:00 to 2025-12-15 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_icap | Combined ICAP data: 5036 records from 2005-03-09 00:00:00 to 2025-12-15 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_icap | ICAP target series: 2918 daily prices
+2026-02-28 02:37:15 | INFO     | src.data.panel | Added ICAP secondary market feature
+2026-02-28 02:37:15 | INFO     | src.data.panel | 
+[2/7] Loading FX rates...
+2026-02-28 02:37:15 | INFO     | src.data.fx | Loaded EUR/USD FX rates: 6953 observations from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.panel | 
+[3/7] Loading energy benchmarks...
+2026-02-28 02:37:15 | WARNING  | src.data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-02-28 02:37:15 | INFO     | src.data.load_energy | Loaded Brent crude: 9836 records from 1987-05-20 00:00:00 to 2026-02-23 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-02-28 02:37:15 | WARNING  | src.data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 6885 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 3677 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.panel | 
+[4/7] Loading carbon indices...
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded KEUA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded KRBN: 1400 records from 2020-07-31 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded GRN: 1619 records from 2019-09-18 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded KCCA: 1103 records from 2021-10-05 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded KSET: 488 records from 2022-04-20 00:00:00 to 2024-03-28 00:00:00
+2026-02-28 02:37:15 | INFO     | src.data.load_indices | Loaded 5 carbon market indices
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 1103 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 1400 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 1619 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 1103 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.fx | Converted 488 prices from USD to EUR
+2026-02-28 02:37:15 | INFO     | src.data.panel | 
+[5/7] Loading auction data...
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2017-data(Primary Market Auction).csv: 206 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2018-data(Primary Market Auction).csv: 209 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2019-data(Primary Market Auction).csv: 216 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2020-data(Primary Market Auction).csv: 218 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2021-data(Primary Market Auction).csv: 230 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2022-data(Primary Market Auction).csv: 222 auction records
+2026-02-28 02:37:15 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2023-data(Primary Market Auction).csv: 223 auction records
+2026-02-28 02:37:16 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2024-data(Primary Market Auction).csv: 221 auction records
+2026-02-28 02:37:16 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-2025-data(Primary Market Auction).csv: 200 auction records
+2026-02-28 02:37:16 | WARNING  | src.data.load_auctions | Could not parse emission-spot-primary-market-auction-report-2026-data.xlsx: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2026-02-28 02:37:16 | INFO     | src.data.load_auctions | Loaded 1945 total auction records from 9 files
+2026-02-28 02:37:16 | INFO     | src.data.load_auctions | Date range: 2017-01-09 00:00:00 to 2025-11-25 00:00:00
+2026-02-28 02:37:16 | INFO     | src.data.panel | 
+[6/7] Loading VSTOXX...
+2026-02-28 02:37:16 | INFO     | src.data.load_vstoxx | Loaded VSTOXX: 6912 records from 1999-01-04 00:00:00 to 2026-02-26 00:00:00
+2026-02-28 02:37:16 | INFO     | src.data.panel | 
+[7/7] Creating target features...
+2026-02-28 02:37:16 | INFO     | src.data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260228_023715_4da892/data
+2026-02-28 02:37:16 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:37:16 | INFO     | src.data.panel | Panel built: 4334 rows, 44 columns
+2026-02-28 02:37:16 | INFO     | src.data.panel | Target coverage: 100.0%
+2026-02-28 02:37:16 | INFO     | src.data.panel | ============================================================
+2026-02-28 02:37:16 | INFO     | src.frontend_live_bundle | Generating contamination-safe archive for 1 origins.
+2026-02-28 02:37:16 | INFO     | src.frontend_live_bundle | [1/1] Origin 2025-12-22
+2026-02-28 02:37:16 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:37:16 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:37:26 | INFO     | src.models.tsm | Epoch 1/100 - Train: 0.997962, Val: 0.286353
+2026-02-28 02:37:35 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.996842, Val: 0.286433
+2026-02-28 02:37:43 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.997148, Val: 0.286277
+2026-02-28 02:37:52 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.995776, Val: 0.286136
+2026-02-28 02:37:59 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.994691, Val: 0.286130
+2026-02-28 02:38:06 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.994512, Val: 0.286159
+2026-02-28 02:38:14 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.994024, Val: 0.286101
+2026-02-28 02:38:21 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.993802, Val: 0.285897
+2026-02-28 02:38:28 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.993430, Val: 0.285914
+2026-02-28 02:38:36 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.992387, Val: 0.285796
+2026-02-28 02:38:43 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.992724, Val: 0.285744
+2026-02-28 02:38:50 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.991729, Val: 0.285707
+2026-02-28 02:38:57 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.991430, Val: 0.285419
+2026-02-28 02:39:04 | INFO     | src.models.tsm | Epoch 14/100 - Train: 0.991022, Val: 0.285706
+2026-02-28 02:39:10 | INFO     | src.models.tsm | Epoch 15/100 - Train: 0.990221, Val: 0.286150
+2026-02-28 02:39:17 | INFO     | src.models.tsm | Epoch 16/100 - Train: 0.990000, Val: 0.285551
+2026-02-28 02:39:24 | INFO     | src.models.tsm | Epoch 17/100 - Train: 0.989364, Val: 0.286001
+2026-02-28 02:39:31 | INFO     | src.models.tsm | Epoch 18/100 - Train: 0.988524, Val: 0.286033
+2026-02-28 02:39:37 | INFO     | src.models.tsm | Epoch 19/100 - Train: 0.986677, Val: 0.286040
+2026-02-28 02:39:44 | INFO     | src.models.tsm | Epoch 20/100 - Train: 0.988548, Val: 0.285516
+2026-02-28 02:39:51 | INFO     | src.models.tsm | Epoch 21/100 - Train: 0.986456, Val: 0.285477
+2026-02-28 02:39:58 | INFO     | src.models.tsm | Epoch 22/100 - Train: 0.984729, Val: 0.285421
+2026-02-28 02:40:05 | INFO     | src.models.tsm | Epoch 23/100 - Train: 0.985067, Val: 0.285960
+2026-02-28 02:40:05 | INFO     | src.models.tsm | Early stopping at epoch 23
+2026-02-28 02:40:05 | INFO     | src.models.tsm | Building TSM model: type=autoformer, seq_len=120, pred_len=30
+2026-02-28 02:40:06 | INFO     | src.models.tsm | Built Autoformer model with 9463809 parameters
+2026-02-28 02:40:12 | INFO     | src.models.tsm | Epoch 1/100 - Train: 0.999186, Val: 0.288779
+2026-02-28 02:40:19 | INFO     | src.models.tsm | Epoch 2/100 - Train: 0.997699, Val: 0.288743
+2026-02-28 02:40:26 | INFO     | src.models.tsm | Epoch 3/100 - Train: 0.997060, Val: 0.288539
+2026-02-28 02:40:33 | INFO     | src.models.tsm | Epoch 4/100 - Train: 0.996518, Val: 0.288987
+2026-02-28 02:40:40 | INFO     | src.models.tsm | Epoch 5/100 - Train: 0.996372, Val: 0.288697
+2026-02-28 02:40:47 | INFO     | src.models.tsm | Epoch 6/100 - Train: 0.995840, Val: 0.288893
+2026-02-28 02:40:53 | INFO     | src.models.tsm | Epoch 7/100 - Train: 0.995357, Val: 0.288667
+2026-02-28 02:41:00 | INFO     | src.models.tsm | Epoch 8/100 - Train: 0.994417, Val: 0.288955
+2026-02-28 02:41:07 | INFO     | src.models.tsm | Epoch 9/100 - Train: 0.995585, Val: 0.288930
+2026-02-28 02:41:14 | INFO     | src.models.tsm | Epoch 10/100 - Train: 0.993334, Val: 0.288700
+2026-02-28 02:41:21 | INFO     | src.models.tsm | Epoch 11/100 - Train: 0.993793, Val: 0.288830
+2026-02-28 02:41:27 | INFO     | src.models.tsm | Epoch 12/100 - Train: 0.993248, Val: 0.289168
+2026-02-28 02:41:34 | INFO     | src.models.tsm | Epoch 13/100 - Train: 0.992490, Val: 0.289067
+2026-02-28 02:41:34 | INFO     | src.models.tsm | Early stopping at epoch 13

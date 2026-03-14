@@ -1,0 +1,8 @@
+{
+  "schedule": "uniform",
+  "selected_w": 0.75,
+  "val_mse_path": 16.131992528854983,
+  "test_mse_path": 27.1382089363161,
+  "ridge_test_mse_path": 22.419955242336467,
+  "tsm_test_mse_path": 29.593332290649414
+}

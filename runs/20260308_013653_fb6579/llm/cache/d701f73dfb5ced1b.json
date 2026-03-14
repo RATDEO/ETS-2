@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 anchor should stay near spot with minimal overshoot\", \"H20 anchor must remain stable if 20d vol is low\", \"Avoid large 5d pct swings unless anchored by strong H1-H5 signals\", \"H30 anchor should not drift if 5d pct is negative\", \"Hold H20 anchor if 20d vol is near 2.00 and 20d pct is flat\"]}"}

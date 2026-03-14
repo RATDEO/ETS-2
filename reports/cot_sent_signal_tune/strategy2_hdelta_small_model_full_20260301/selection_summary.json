@@ -1,0 +1,138 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": false
+  },
+  "best_signal": {
+    "name": "baseline_daily_sentiment",
+    "path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "date_col": "seendate",
+    "source_path": null,
+    "transform": null
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 35.31368756007478,
+      "h1_mse": 3.578665589031814,
+      "h5_mse": 14.066242980285605,
+      "h20_mse": 42.60415971434991,
+      "h30_mse": 67.19066906695731,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3-vl-4b-gpu",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": false,
+        "strict_json_response_format": true,
+        "rules_text": "- When sentiment is consistently neutral or negative (0.00), model tends to overestimate prices; correct by reducing forecast by 2\u20135% relative to recent peak.\n- After sharp price spikes (e.g., >10% from prior day), model often overshoots and fails to correct; apply downward bias of 3\u20138% for next 3\u20135 days.\n- If sentiment shows early positive signals (e.g., 0.20\u20130.33), model tends to overreact; reduce forecast slope or cap upward movement at 1\u20132% below recent high.\n- Mean reversion is strong in 30-day horizon; if forecast is trending upward >1.5% per day, adjust downward by 0.5\u20131.0% per day until price stabilizes.\n- When sentiment is negative and price is falling, model often underestimates drop; add 1\u20133% downward bias to forecast to account for volatility.\n- If sentiment history shows no clear trend, model tends to drift upward; apply a 0.5\u20131.0% downward correction to prevent overfitting to recent highs.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ],
+  "stage2_best": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 36.52243526144071,
+    "h1_mse": 2.822389464418389,
+    "h5_mse": 15.696954010890304,
+    "h20_mse": 44.691458199927695,
+    "h30_mse": 67.66143691252314,
+    "split": "val",
+    "n_samples": 226,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3-vl-4b-gpu",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": true,
+      "strict_json_prompt": false,
+      "strict_json_response_format": true,
+      "rules_text": "- When sentiment is consistently neutral or negative (0.00), model tends to overestimate prices; correct by reducing forecast by 2\u20135% relative to recent peak.\n- After sharp price spikes (e.g., >10% from prior day), model often overshoots and fails to correct; apply downward bias of 3\u20138% for next 3\u20135 days.\n- If sentiment shows early positive signals (e.g., 0.20\u20130.33), model tends to overreact; reduce forecast slope or cap upward movement at 1\u20132% below recent high.\n- Mean reversion is strong in 30-day horizon; if forecast is trending upward >1.5% per day, adjust downward by 0.5\u20131.0% per day until price stabilizes.\n- When sentiment is negative and price is falling, model often underestimates drop; add 1\u20133% downward bias to forecast to account for volatility.\n- If sentiment history shows no clear trend, model tends to drift upward; apply a 0.5\u20131.0% downward correction to prevent overfitting to recent highs.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2022-08-30 00:00:00",
+        "2023-02-13 00:00:00",
+        "2023-02-14 00:00:00",
+        "2023-02-15 00:00:00",
+        "2023-05-09 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  },
+  "baseline_test": {
+    "signal_name": "baseline_paper_signal",
+    "sentiment_path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "path_mse": 20.60442973689488
+  },
+  "best_signal_test": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 20.618083461620405,
+    "h1_mse": 1.3958238531271585,
+    "h5_mse": 6.393483105114026,
+    "h20_mse": 25.92156215115349,
+    "h30_mse": 40.99818031514918,
+    "split": "test",
+    "n_samples": 382,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3-vl-4b-gpu",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": true,
+      "strict_json_prompt": false,
+      "strict_json_response_format": true,
+      "rules_text": "- If sentiment shows strong bullish (e.g., 1.00) or bearish (-1.00) signals in recent days, model should adjust forecast to reflect sentiment bias \u2014 avoid over-optimistic or over-pessimistic trends.\n- When model forecasts show steady upward or downward drift without sharp spikes, but true outcome exhibits sudden spikes or reversals, reduce forecast slope or introduce mean-reversion logic.\n- After a sharp price spike (e.g., >10% from prior day), model tends to over-forecast continuation \u2014 apply a \u201ccool-down\u201d rule: reduce forecast slope by 10\u201320% for next 3\u20135 days.\n- If sentiment is neutral (0.00) and price is trending, model should not over-forecast \u2014 use recent 5\u20137 day average as baseline for correction.\n- If true outcome shows strong mean-reversion after a spike (e.g., 76.67 \u2192 70.30), model should not assume continuation \u2014 apply a \u201creversion buffer\u201d to cap forecast above 1.5\u20132x recent high.\n- For 30-day forecasts, if model consistently over-estimates early days (e.g., first 5\u20137 days) and under-estimates late days, shift forecast curve to align with true outcome\u2019s \u201ctail decay\u201d \u2014 especially if sentiment is bearish.\n- If sentiment history includes multiple 1.00 or -1.00 entries, model should not ignore sentiment \u2014 adjust forecast by \u00b15\u201310% based on sentiment magnitude (e.g., 1.00 \u2192 +5%, -1.00 \u2192 -5%) as a baseline correction.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2024-05-07 00:00:00",
+        "2024-05-08 00:00:00",
+        "2024-05-09 00:00:00",
+        "2024-05-16 00:00:00",
+        "2024-05-17 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  }
+}

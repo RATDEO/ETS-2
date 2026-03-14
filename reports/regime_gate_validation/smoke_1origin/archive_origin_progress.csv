@@ -1,0 +1,4 @@
+origin_date,model,path_mse,fallback_to_tsm
+2025-12-22,Baseline paper CoT-SENT,86.46946333333331,False
+2025-12-22,4B raw HDELTA,112.73585179023105,False
+2025-12-22,35B raw guarded HDELTA,123.39520397113735,False

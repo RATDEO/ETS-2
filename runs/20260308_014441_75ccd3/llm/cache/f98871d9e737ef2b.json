@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d vol near 1.0 when anchors show minimal drift\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not overreact to small 5d pct gain without volume support\", \"If h30 anchor exceeds spot by >0.5%, cap forecast to avoid overshoot\"]}"}

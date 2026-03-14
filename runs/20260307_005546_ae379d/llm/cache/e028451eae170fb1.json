@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near zero if volatility is low\", \"Avoid large anchor overshoots when 20d vol is below 1.5\", \"Hold 20d anchor if 20d pct change is flat\", \"Match 5d change to anchor error if volatility is low\", \"If 5d change is negative, avoid anchor increase beyond 0.5%\"]}"}

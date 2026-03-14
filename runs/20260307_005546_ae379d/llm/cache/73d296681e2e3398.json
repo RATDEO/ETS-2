@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged if 20d change is near zero\", \"Avoid large overshoots in h30 when 5d change is high\", \"Match h1 anchor error to spot volatility if vol_20d is low\", \"Hold h5 anchor if 5d change exceeds 8% without strong volatility\", \"If 20d vol is low, avoid anchoring h20 to high future values\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"H1 forecast error is small; keep it unchanged\", \"H20 error consistently large; avoid large overshoot\", \"H30 error stable; maintain current horizon\", \"Volatility near 1.0; no need for mean reversion\", \"Anchor errors suggest no bias in short-term forecasts\"]}"}

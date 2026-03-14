@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when 20d pct is flat\", \"Keep 20d vol near 1.20 if anchors show minimal drift\", \"Hold 20d anchor unchanged if 5d pct overshoots by >5%\", \"If 5d pct >5% and 20d pct =0, defer adjustment until 5d stabilizes\", \"Anchor error pct >3% triggers mean reversion bias correction\"]}"}

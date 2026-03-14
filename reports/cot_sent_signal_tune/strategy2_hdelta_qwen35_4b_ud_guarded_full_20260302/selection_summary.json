@@ -1,0 +1,138 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": false,
+    "strict_json_prompt": true
+  },
+  "best_signal": {
+    "name": "baseline_daily_sentiment",
+    "path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "date_col": "seendate",
+    "source_path": null,
+    "transform": null
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 37.46342736951077,
+      "h1_mse": 3.449483396699361,
+      "h5_mse": 14.132220575426953,
+      "h20_mse": 45.42725828201932,
+      "h30_mse": 73.3066498294521,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3.5-4b-ud-q4-k-xl",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": false,
+        "strict_json_prompt": true,
+        "strict_json_response_format": true,
+        "rules_text": "- When sentiment is consistently zero (0.00) while historical prices show high volatility or a clear trend, the model exhibits severe underestimation of price swings and fails to capture mean reversion; apply a volatility correction factor to widen forecast bands.\n- The model systematically overestimates immediate upside following short-term spikes (e.g., Example 2/3/4), failing to account for subsequent sharp reversals or 'sell the news' dynamics where sentiment remains low despite price surges.\n- In high-volatility regimes with mixed or fluctuating sentiment, the model displays significant lag in reacting to trend changes, resulting in forecasts that drift persistently below actual peaks and above actual troughs.\n- When historical data shows a downward trend but sentiment is non-zero (positive), the model fails to incorporate the 'risk-on' momentum, leading to an underestimation of short-term recovery potential.\n- The model assumes a smooth linear progression that ignores the binary nature of carbon market events; forecasts should be adjusted to reflect higher probability of discrete jumps rather than gradual drift.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ],
+  "stage2_best": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 38.71463662190328,
+    "h1_mse": 2.7679753556429816,
+    "h5_mse": 15.759482052940342,
+    "h20_mse": 47.37109071978534,
+    "h30_mse": 74.47221965411424,
+    "split": "val",
+    "n_samples": 226,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3.5-4b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": false,
+      "strict_json_prompt": true,
+      "strict_json_response_format": true,
+      "rules_text": "- When sentiment is consistently zero (0.00) while historical prices show high volatility or a clear trend, the model exhibits severe upward bias and fails to capture mean reversion; apply a downward correction of approximately 5-10% to forecasted values.\n- The model systematically underestimates immediate post-spike volatility, assuming smooth continuation after sharp price increases (e.g., Example 2/3/4), whereas true outcomes often reverse direction within 3-5 days of the spike.\n- In low-sentiment environments with high historical variance, the model's linear extrapolation leads to significant overshooting; introduce a volatility dampening factor that reduces forecasted growth rates by 15-20%.\n- When sentiment history shows isolated positive spikes (e.g., 0.33 or 0.40) amidst otherwise neutral data, the model ignores these signals and continues its baseline trend, resulting in missed opportunities to adjust for short-term momentum shifts.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2022-08-30 00:00:00",
+        "2023-02-13 00:00:00",
+        "2023-02-14 00:00:00",
+        "2023-02-15 00:00:00",
+        "2023-05-09 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  },
+  "baseline_test": {
+    "signal_name": "baseline_paper_signal",
+    "sentiment_path": "data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "path_mse": 20.60442973689488
+  },
+  "best_signal_test": {
+    "name": "baseline_daily_sentiment",
+    "path_mse": 20.51983809384856,
+    "h1_mse": 1.384548651839924,
+    "h5_mse": 6.421121760511796,
+    "h20_mse": 25.866503956907707,
+    "h30_mse": 40.65588383936372,
+    "split": "test",
+    "n_samples": 382,
+    "candidate": "baseline_daily_sentiment",
+    "metadata_sample": {
+      "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+      "model": "qwen3.5-4b-ud-q4-k-xl",
+      "temperature": 0.0,
+      "success": true,
+      "reflect_attempts": 1,
+      "apply_attempts": 1,
+      "retain_context": false,
+      "strict_json_prompt": true,
+      "strict_json_response_format": true,
+      "rules_text": "- Model exhibits a persistent upward bias when recent history shows high volatility (range > 10 EUR) and mixed sentiment signals; true outcomes often reverse direction immediately after the forecast peak.\n- When sentiment history contains a spike to 1.0 or -1.0 within the last 5 days, the model fails to capture the subsequent mean reversion, resulting in forecasts that overshoot by 4-8 EUR in the opposite direction of the sentiment shift.\n- The model displays significant lag in reacting to sudden price spikes (e.g., jumps from ~70 to ~76); true outcomes often peak within 3 days while the forecast remains flat or slowly rising for 10+ days.\n- In low-sentiment environments (all zeros), the model assumes a smooth linear trend, whereas true outcomes frequently exhibit erratic, non-linear movements with high frequency reversals.\n- Forecast errors are maximized in the first 5-7 days of the horizon when volatility is highest; accuracy improves only after the initial spike subsides and sentiment stabilizes.",
+      "teaching_examples": 5,
+      "teaching_dates": [
+        "2024-05-07 00:00:00",
+        "2024-05-08 00:00:00",
+        "2024-05-09 00:00:00",
+        "2024-05-16 00:00:00",
+        "2024-05-17 00:00:00"
+      ]
+    },
+    "signal_name": "baseline_daily_sentiment",
+    "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+    "score_col": "sent_score",
+    "signal_transform": "direct"
+  }
+}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h20 anchor unchanged as 50.75 with no significant trend\", \"Avoid large 5d pct changes if vol_20d is low\", \"Match h1 anchor to spot if 5d pct is positive\", \"Do not adjust h30 if 20d pct is flat\", \"Hold current price if 20d vol is near 1.0\"]}"}

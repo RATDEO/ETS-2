@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large negative 5d pct changes with low vol_20d\", \"Hold 20d pct change near zero when vol_20d is low\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not overreact to small 5d pct shifts with high vol_20d\", \"Match h1 anchor if 5d pct change is negative and vol_20d is below 1.0\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep 5d change near zero if 20d change is flat\", \"Avoid large 20d volatility if 5d change is positive\", \"Hold anchor h20 unchanged if 20d change is zero\", \"Do not overshoot h5 if 5d change is small\", \"Match h30 to h20 if 20d vol is low\"]}"}

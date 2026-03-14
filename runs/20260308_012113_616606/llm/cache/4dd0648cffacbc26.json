@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct changes when vol_20d is low\", \"Hold 20d pct near zero if anchors show weak trend\", \"Keep 20d anchor close to spot if vol_20d < 0.7\", \"If 5d pct rises, check if 20d pct stabilizes\", \"Anchor error pct > 5% suggests adjust horizon bias\"]}"}

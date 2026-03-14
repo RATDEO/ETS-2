@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Keep h1 near spot with minimal overshoot\", \"Avoid large vol_20d swings when change_20d_pct is flat\", \"Hold h20 unchanged if anchor_error_pct exceeds 2%\", \"Match h30 to spot within \u00b10.5% if change_5d_pct is positive\", \"If match_rank is low, defer horizon adjustment until volatility stabilizes\"]}"}

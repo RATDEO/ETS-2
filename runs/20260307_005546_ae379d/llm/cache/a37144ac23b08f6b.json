@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large 5d pct gains with low vol_20d\", \"Keep h20 anchor near spot if change_20d_pct is flat\", \"Cap h30 anchor if h20 error exceeds 5%\", \"Hold h1 anchor if 5d pct > 10% and vol_20d < 1.8\", \"If h5 error > 2%, align h20 with h5 trend\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive anchor errors when 20d vol is low.\", \"Hold 20d change near zero if 20d vol is low.\", \"Keep 5d change near zero if 5d change is negative and 20d change is flat.\", \"Do not adjust 30d anchor if 20d change is flat.\", \"If 20d vol is low, anchor error should stay near zero for all horizons.\"]}"}

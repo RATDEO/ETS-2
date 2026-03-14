@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with zero 20d change\", \"Hold 20d vol near 1.00 when anchors show minimal divergence\", \"Keep h20 anchor close to spot if 20d pct change is flat\", \"Do not adjust h1 or h5 if anchor error pct is under 3%\", \"If h30 anchor is above spot, keep it unchanged unless 5d change exceeds 5%\"]}"}

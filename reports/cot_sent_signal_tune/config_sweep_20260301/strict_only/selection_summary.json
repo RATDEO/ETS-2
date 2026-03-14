@@ -1,0 +1,53 @@
+{
+  "base_run": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260228_145058_40d91f",
+  "best_candidate": {
+    "name": "paper_sim_k5_h18_lb365_ctx",
+    "history_points": 18,
+    "prompt_history_points": 18,
+    "prompt_sentiment_points": 18,
+    "sentiment_points": 18,
+    "k_examples": 5,
+    "example_selection": "similarity",
+    "feature_window": 18,
+    "lookback_days": 365,
+    "retain_context": true,
+    "strict_json_prompt": true
+  },
+  "stage1_best": [
+    {
+      "name": "baseline_daily_sentiment",
+      "path_mse": 35.46133322393535,
+      "h1_mse": 3.7828070235966655,
+      "h5_mse": 14.522644674258826,
+      "h20_mse": 42.51103006471116,
+      "h30_mse": 67.43318365202813,
+      "split": "val",
+      "n_samples": 60,
+      "candidate": "baseline_daily_sentiment",
+      "metadata_sample": {
+        "method": "TSM+LLM-COT-SENT-RF-HDELTA",
+        "model": "qwen3-vl-4b-gpu",
+        "temperature": 0.0,
+        "success": true,
+        "reflect_attempts": 1,
+        "apply_attempts": 1,
+        "retain_context": true,
+        "strict_json_prompt": true,
+        "strict_json_response_format": true,
+        "rules_text": "- If sentiment is consistently negative or neutral over recent days, model tends to overestimate prices \u2014 correct by reducing forecast slope or adding downward bias.\n- After a sharp price spike, model often overshoots and fails to correct \u2014 apply a lagged mean reversion or cap forecast at recent high minus 5\u201310%.\n- When sentiment shows early positive signals (e.g., >0.2), model frequently overreacts \u2014 dampen forecast growth rate or introduce sentiment-weighted smoothing.\n- If true outcome shows strong mean reversion after a peak, model often fails to recognize it \u2014 adjust forecast to align with 3\u20135 day moving average of prior 10\u201315 days.\n- In low-sentiment environments, model tends to forecast flat or upward trends \u2014 force downward bias if true price drops >10% from recent peak.\n- If model forecast is rising steadily but true outcome shows early divergence downward, reduce forecast slope by 10\u201320% for next 3\u20135 days to avoid overconfidence in trend.",
+        "teaching_examples": 5,
+        "teaching_dates": [
+          "2022-08-30 00:00:00",
+          "2023-02-13 00:00:00",
+          "2023-02-14 00:00:00",
+          "2023-02-15 00:00:00",
+          "2023-05-09 00:00:00"
+        ]
+      },
+      "signal_name": "baseline_daily_sentiment",
+      "sentiment_path": "/Users/davidwilkinson/Desktop/ETS 2/data/news/daily_sentiment.csv",
+      "score_col": "sent_score",
+      "signal_transform": "direct"
+    }
+  ]
+}

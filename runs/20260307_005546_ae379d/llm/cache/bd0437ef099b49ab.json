@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overshoot on 20d horizon when change_20d_pct is flat.\", \"Keep h1 anchor near spot if vol_20d is low.\", \"If h30 anchor is high, cap it at +1.5% vs spot.\", \"Do not adjust h20 anchor if change_20d_pct is zero.\", \"Hold h5 anchor if match_rank is low and error_pct is high.\"]}"}

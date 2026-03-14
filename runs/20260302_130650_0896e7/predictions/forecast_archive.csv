@@ -1,0 +1,151 @@
+origin_date,target_date,model,display_name,horizon,predicted_price,actual_price,last_observed_price,is_realized,gate_selected_model,gate_regime_value
+2025-12-22,2025-12-23,Raw tsm,Raw TSM,1,87.83570861816406,88.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-24,Raw tsm,Raw TSM,2,88.21743774414062,88.01,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-29,Raw tsm,Raw TSM,3,88.63172912597656,87.46,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-30,Raw tsm,Raw TSM,4,89.01483154296875,87.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-31,Raw tsm,Raw TSM,5,89.36506652832031,87.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-02,Raw tsm,Raw TSM,6,89.58415985107422,88.31,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-05,Raw tsm,Raw TSM,7,89.79893493652344,87.25,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-26,Raw tsm,Raw TSM,8,89.830078125,87.13,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-27,Raw tsm,Raw TSM,9,89.83837127685547,88.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-28,Raw tsm,Raw TSM,10,89.89461517333984,86.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-29,Raw tsm,Raw TSM,11,89.98661041259766,83.98,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-30,Raw tsm,Raw TSM,12,90.05448150634766,81.26,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-02,Raw tsm,Raw TSM,13,90.11463165283203,83.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-03,Raw tsm,Raw TSM,14,90.17332458496094,83.11,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-04,Raw tsm,Raw TSM,15,90.2322006225586,82.92,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-05,Raw tsm,Raw TSM,16,90.29232788085938,78.2,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-06,Raw tsm,Raw TSM,17,90.3538818359375,78.73,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-09,Raw tsm,Raw TSM,18,90.41755676269531,81.35,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-10,Raw tsm,Raw TSM,19,90.4810791015625,78.86,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-11,Raw tsm,Raw TSM,20,90.54473114013672,78.45,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-12,Raw tsm,Raw TSM,21,90.6068115234375,72.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-13,Raw tsm,Raw TSM,22,90.66710662841797,70.68,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-16,Raw tsm,Raw TSM,23,90.7269058227539,69.18,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-17,Raw tsm,Raw TSM,24,90.78673553466797,70.08,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-18,Raw tsm,Raw TSM,25,90.8465805053711,71.57,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-19,Raw tsm,Raw TSM,26,90.9064712524414,71.34,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-20,Raw tsm,Raw TSM,27,90.9664077758789,73.78,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-23,Raw tsm,Raw TSM,28,91.0263671875,71.38,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-24,Raw tsm,Raw TSM,29,91.08637237548828,70.67,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-25,Raw tsm,Raw TSM,30,91.14642333984375,72.58,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-23,Baseline paper CoT-SENT,Baseline paper CoT-SENT,1,85.88,88.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-24,Baseline paper CoT-SENT,Baseline paper CoT-SENT,2,86.32,88.01,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-29,Baseline paper CoT-SENT,Baseline paper CoT-SENT,3,86.75,87.46,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-30,Baseline paper CoT-SENT,Baseline paper CoT-SENT,4,87.17,87.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-31,Baseline paper CoT-SENT,Baseline paper CoT-SENT,5,87.58,87.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-02,Baseline paper CoT-SENT,Baseline paper CoT-SENT,6,87.88,88.31,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-05,Baseline paper CoT-SENT,Baseline paper CoT-SENT,7,88.15,87.25,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-26,Baseline paper CoT-SENT,Baseline paper CoT-SENT,8,88.38,87.13,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-27,Baseline paper CoT-SENT,Baseline paper CoT-SENT,9,88.58,88.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-28,Baseline paper CoT-SENT,Baseline paper CoT-SENT,10,88.75,86.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-29,Baseline paper CoT-SENT,Baseline paper CoT-SENT,11,88.89,83.98,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-30,Baseline paper CoT-SENT,Baseline paper CoT-SENT,12,89.0,81.26,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-02,Baseline paper CoT-SENT,Baseline paper CoT-SENT,13,89.1,83.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-03,Baseline paper CoT-SENT,Baseline paper CoT-SENT,14,89.2,83.11,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-04,Baseline paper CoT-SENT,Baseline paper CoT-SENT,15,89.29,82.92,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-05,Baseline paper CoT-SENT,Baseline paper CoT-SENT,16,89.37,78.2,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-06,Baseline paper CoT-SENT,Baseline paper CoT-SENT,17,89.44,78.73,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-09,Baseline paper CoT-SENT,Baseline paper CoT-SENT,18,89.5,81.35,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-10,Baseline paper CoT-SENT,Baseline paper CoT-SENT,19,89.55,78.86,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-11,Baseline paper CoT-SENT,Baseline paper CoT-SENT,20,89.59,78.45,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-12,Baseline paper CoT-SENT,Baseline paper CoT-SENT,21,89.63,72.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-13,Baseline paper CoT-SENT,Baseline paper CoT-SENT,22,89.66,70.68,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-16,Baseline paper CoT-SENT,Baseline paper CoT-SENT,23,89.69,69.18,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-17,Baseline paper CoT-SENT,Baseline paper CoT-SENT,24,89.72,70.08,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-18,Baseline paper CoT-SENT,Baseline paper CoT-SENT,25,89.74,71.57,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-19,Baseline paper CoT-SENT,Baseline paper CoT-SENT,26,89.76,71.34,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-20,Baseline paper CoT-SENT,Baseline paper CoT-SENT,27,89.78,73.78,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-23,Baseline paper CoT-SENT,Baseline paper CoT-SENT,28,89.8,71.38,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-24,Baseline paper CoT-SENT,Baseline paper CoT-SENT,29,89.82,70.67,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-25,Baseline paper CoT-SENT,Baseline paper CoT-SENT,30,89.84,72.58,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-23,4B raw HDELTA,4B Raw HDELTA,1,87.4843657836914,88.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-24,4B raw HDELTA,4B Raw HDELTA,2,87.8866223526001,88.01,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-29,4B raw HDELTA,4B Raw HDELTA,3,88.32151807403565,87.46,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-30,4B raw HDELTA,4B Raw HDELTA,4,88.7255333404541,87.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-31,4B raw HDELTA,4B Raw HDELTA,5,89.09697132873535,87.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-02,4B raw HDELTA,4B Raw HDELTA,6,89.32735192616781,88.31,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-05,4B raw HDELTA,4B Raw HDELTA,7,89.5534845143636,87.25,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-26,4B raw HDELTA,4B Raw HDELTA,8,89.596519921875,87.13,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-27,4B raw HDELTA,4B Raw HDELTA,9,89.61676996103922,88.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-28,4B raw HDELTA,4B Raw HDELTA,10,89.68486107126873,86.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-29,4B raw HDELTA,4B Raw HDELTA,11,89.78863986968994,83.98,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-30,4B raw HDELTA,4B Raw HDELTA,12,89.86836891123454,81.26,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-02,4B raw HDELTA,4B Raw HDELTA,13,89.94041003163656,83.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-03,4B raw HDELTA,4B Raw HDELTA,14,90.011012600708,83.11,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-04,4B raw HDELTA,4B Raw HDELTA,15,90.081813621521,82.92,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-05,4B raw HDELTA,4B Raw HDELTA,16,90.15387964477539,78.2,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-06,4B raw HDELTA,4B Raw HDELTA,17,90.2273864013672,78.73,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-09,4B raw HDELTA,4B Raw HDELTA,18,90.30302785746257,81.35,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-10,4B raw HDELTA,4B Raw HDELTA,19,90.37853387858073,78.86,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-11,4B raw HDELTA,4B Raw HDELTA,20,90.45418640899658,78.45,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-12,4B raw HDELTA,4B Raw HDELTA,21,90.50714403076172,72.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-13,4B raw HDELTA,4B Raw HDELTA,22,90.55830610046387,70.68,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-16,4B raw HDELTA,4B Raw HDELTA,23,90.60896084518433,69.18,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-17,4B raw HDELTA,4B Raw HDELTA,24,90.65963410491943,70.08,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-18,4B raw HDELTA,4B Raw HDELTA,25,90.71031063461304,71.57,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-19,4B raw HDELTA,4B Raw HDELTA,26,90.7610208984375,71.34,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-20,4B raw HDELTA,4B Raw HDELTA,27,90.81176488265992,73.78,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-23,4B raw HDELTA,4B Raw HDELTA,28,90.8625197265625,71.38,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-24,4B raw HDELTA,4B Raw HDELTA,29,90.91330826797486,70.67,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-25,4B raw HDELTA,4B Raw HDELTA,30,90.96413049316406,72.58,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-23,35B raw guarded HDELTA,35B Raw Guarded HDELTA,1,87.83570861816406,88.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-24,35B raw guarded HDELTA,35B Raw Guarded HDELTA,2,88.12922030639649,88.01,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-29,35B raw guarded HDELTA,35B Raw Guarded HDELTA,3,88.4544656677246,87.46,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-30,35B raw guarded HDELTA,35B Raw Guarded HDELTA,4,88.74778704833984,87.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-31,35B raw guarded HDELTA,35B Raw Guarded HDELTA,5,89.00760626220703,87.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-02,35B raw guarded HDELTA,35B Raw Guarded HDELTA,6,89.2019341023763,88.31,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-05,35B raw guarded HDELTA,35B Raw Guarded HDELTA,7,89.39184643147787,87.25,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-26,35B raw guarded HDELTA,35B Raw Guarded HDELTA,8,89.39889375,87.13,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-27,35B raw guarded HDELTA,35B Raw Guarded HDELTA,9,89.38319019571941,88.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-28,35B raw guarded HDELTA,35B Raw Guarded HDELTA,10,89.4151772257487,86.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-29,35B raw guarded HDELTA,35B Raw Guarded HDELTA,11,89.4826853942871,83.98,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-30,35B raw guarded HDELTA,35B Raw Guarded HDELTA,12,89.52616188151042,81.26,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-02,35B raw guarded HDELTA,35B Raw Guarded HDELTA,13,89.56192857869466,83.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-03,35B raw guarded HDELTA,35B Raw Guarded HDELTA,14,89.59621530761719,83.11,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-04,35B raw guarded HDELTA,35B Raw Guarded HDELTA,15,89.6306526184082,82.92,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-05,35B raw guarded HDELTA,35B Raw Guarded HDELTA,16,89.66630107421875,78.2,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-06,35B raw guarded HDELTA,35B Raw Guarded HDELTA,17,89.70333388671875,78.73,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-09,35B raw guarded HDELTA,35B Raw Guarded HDELTA,18,89.74243900553385,81.35,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-10,35B raw guarded HDELTA,35B Raw Guarded HDELTA,19,89.78135875651041,78.86,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-11,35B raw guarded HDELTA,35B Raw Guarded HDELTA,20,89.82037329101563,78.45,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-12,35B raw guarded HDELTA,35B Raw Guarded HDELTA,21,89.90007839355468,72.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-13,35B raw guarded HDELTA,35B Raw Guarded HDELTA,22,89.97803661804198,70.68,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-16,35B raw guarded HDELTA,35B Raw Guarded HDELTA,23,90.05552671966554,69.18,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-17,35B raw guarded HDELTA,35B Raw Guarded HDELTA,24,90.13307103881836,70.08,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-18,35B raw guarded HDELTA,35B Raw Guarded HDELTA,25,90.2106544418335,71.57,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-19,35B raw guarded HDELTA,35B Raw Guarded HDELTA,26,90.2883072479248,71.34,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-20,35B raw guarded HDELTA,35B Raw Guarded HDELTA,27,90.3660294845581,73.78,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-23,35B raw guarded HDELTA,35B Raw Guarded HDELTA,28,90.4437984375,71.38,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-24,35B raw guarded HDELTA,35B Raw Guarded HDELTA,29,90.52163686676026,70.67,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-25,35B raw guarded HDELTA,35B Raw Guarded HDELTA,30,90.59954479980469,72.58,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-23,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,1,85.88,88.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-24,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,2,86.32,88.01,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-29,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,3,86.75,87.46,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-30,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,4,87.17,87.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2025-12-31,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,5,87.58,87.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-02,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,6,87.88,88.31,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-05,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,7,88.15,87.25,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-26,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,8,88.38,87.13,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-27,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,9,88.58,88.37,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-28,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,10,88.75,86.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-29,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,11,88.89,83.98,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-01-30,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,12,89.0,81.26,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-02,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,13,89.1,83.28,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-03,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,14,89.2,83.11,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-04,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,15,89.29,82.92,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-05,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,16,89.37,78.2,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-06,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,17,89.44,78.73,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-09,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,18,89.5,81.35,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-10,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,19,89.55,78.86,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-11,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,20,89.59,78.45,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-12,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,21,89.63,72.54,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-13,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,22,89.66,70.68,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-16,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,23,89.69,69.18,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-17,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,24,89.72,70.08,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-18,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,25,89.74,71.57,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-19,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,26,89.76,71.34,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-20,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,27,89.78,73.78,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-23,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,28,89.8,71.38,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-24,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,29,89.82,70.67,87.4800033569336,True,Baseline paper CoT-SENT,neutral
+2025-12-22,2026-02-25,gate_sentiment_alignment_5d,Sentiment-Alignment Gate,30,89.84,72.58,87.4800033569336,True,Baseline paper CoT-SENT,neutral

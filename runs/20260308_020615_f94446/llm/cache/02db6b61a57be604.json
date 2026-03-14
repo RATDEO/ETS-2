@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid overreacting to 5d gain with zero 20d change\", \"Hold 20d vol near 0.75 to prevent overshoot\", \"Keep h20 anchor unchanged if 20d pct change is flat\", \"Do not adjust h30 if spot drift is minimal\", \"Match h1 anchor to -1.17% drift for stability\"]}"}

@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d_pct changes with high vol_20d\", \"Keep h30 anchor unchanged if err > -1.0\", \"If h1 err > +0.5, reduce forecast bias\", \"H20 err near zero indicates mean reversion\", \"If h5 err > +2.0, pause forecast adjustment\"]}"}

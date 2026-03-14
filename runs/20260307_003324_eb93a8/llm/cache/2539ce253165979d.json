@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive forecasts when volatility is low\", \"Hold short-term horizon unchanged if anchor errors are inconsistent\", \"Prioritize mean reversion for high volatility periods\", \"Cap forecast overshoot when 5d change is small\", \"Keep 30d horizon stable if 20d volatility exceeds 1.5\"]}"}

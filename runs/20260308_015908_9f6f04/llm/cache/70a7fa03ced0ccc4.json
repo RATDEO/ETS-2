@@ -1,0 +1,1 @@
+{"content": "{\"rules\": [\"Avoid large positive 5d change with near-zero 20d change\", \"Hold 20d vol near 1.00 when anchors show minimal divergence\", \"Keep 30d anchor unchanged if 20d change is flat\", \"Do not overreact to small 5d gain without 20d momentum\", \"If 20d vol is 1.00, anchor error should stay below 1%\"]}"}
