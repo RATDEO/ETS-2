@@ -3,27 +3,44 @@ import sys
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.run_experiment import (
     _profile_regime_tag,
     apply_rule_gate,
-    build_exogenous_summary,
     build_aux_teacher_case_summary,
+    build_exogenous_summary,
+    build_online_memory_gate_candidate_cfgs,
+    build_online_memory_gate_feature_frame,
+    build_online_memory_gate_feature_row,
+    build_online_memory_gate_labels,
+    apply_online_memory_gate_features,
+    build_online_memory_gate_decision,
     apply_delta_calibration,
     build_llm_refiner_config,
+    build_realized_availability_dates,
     build_retrieval_feature_vector,
     build_rule_gate_candidate_masks,
     build_rule_gate_feature_frame,
+    classify_online_memory_helpfulness,
+    classify_online_memory_admission,
+    compute_online_memory_helpfulness,
+    compute_online_memory_horizon_gains,
     evaluate_rule_gate_candidates,
+    evaluate_online_memory_gate_candidates,
+    evaluate_online_memory_learned_gate_thresholds,
     fit_delta_calibration_scales,
+    fit_online_memory_learned_gate,
     infer_llm_market_name,
     llm_method_requires_base_forecast,
     llm_result_name,
     normalize_llm_base_model_name,
     parse_name_list,
+    predict_online_memory_learned_gate_scores,
     resolve_exogenous_feature_names,
+    select_online_memory_records,
     select_balanced_long_horizon_indices,
     select_counterexample_index,
     select_error_stratified_indices,
@@ -131,6 +148,31 @@ def test_build_exogenous_summary_can_focus_on_requested_features():
         include_features=["is_auction_day", "target_volume"],
     )
     assert list(summary.keys()) == ["is_auction_day", "target_volume"]
+
+
+def test_build_realized_availability_dates_uses_panel_trading_steps():
+    panel_dates = np.array(
+        [
+            "2024-01-01",
+            "2024-01-02",
+            "2024-01-03",
+            "2024-01-04",
+            "2024-01-05",
+            "2024-01-08",
+        ],
+        dtype="datetime64[D]",
+    )
+    date_to_idx = {pd.Timestamp(d): i for i, d in enumerate(panel_dates)}
+    availability = build_realized_availability_dates(
+        panel_dates,
+        date_to_idx,
+        np.array(["2024-01-02", "2024-01-03"], dtype="datetime64[D]"),
+        realization_horizon=3,
+    )
+    assert availability.astype("datetime64[D]").tolist() == [
+        np.datetime64("2024-01-05"),
+        np.datetime64("2024-01-08"),
+    ]
 
 
 def test_fit_delta_calibration_scales_shared_only_changes_selected_horizons():
@@ -389,6 +431,264 @@ def test_select_utility_score_indices_favors_recent_similar_hard_cases():
         k_examples=3,
     )
     assert selected.tolist() == [1, 2, 4]
+
+
+def test_compute_online_memory_helpfulness_positive_when_llm_improves_long_horizons():
+    base = np.array([10.0] * 30, dtype=float)
+    llm = np.array([10.0] * 19 + [9.0] * 11, dtype=float)
+    truth = np.array([10.0] * 19 + [8.5] * 11, dtype=float)
+    score = compute_online_memory_helpfulness(base, llm, truth)
+    assert score > 0.0
+
+
+def test_classify_online_memory_helpfulness_uses_thresholds():
+    assert classify_online_memory_helpfulness(0.03, positive_margin=0.02, negative_margin=-0.02) == "positive"
+    assert classify_online_memory_helpfulness(-0.03, positive_margin=0.02, negative_margin=-0.02) == "negative"
+    assert classify_online_memory_helpfulness(0.0, positive_margin=0.02, negative_margin=-0.02) == "neutral"
+
+
+def test_select_online_memory_records_prefers_matching_label():
+    records = [
+        {
+            "admission_label": "positive",
+            "case_profile": np.array([0.0, 0.0, 0.0], dtype=float),
+            "helpfulness_score": 0.05,
+        },
+        {
+            "admission_label": "positive",
+            "case_profile": np.array([1.0, 1.0, 1.0], dtype=float),
+            "helpfulness_score": 0.20,
+        },
+        {
+            "admission_label": "negative",
+            "case_profile": np.array([0.0, 0.0, 0.0], dtype=float),
+            "helpfulness_score": -0.10,
+        },
+    ]
+    selected = select_online_memory_records(
+        records,
+        np.array([0.1, 0.1, 0.1], dtype=float),
+        label="positive",
+        k_examples=1,
+    )
+    assert len(selected) == 1
+    assert selected[0]["admission_label"] == "positive"
+    assert "memory_similarity" in selected[0]
+
+
+def test_build_online_memory_gate_decision_blocks_when_negative_signal_is_too_high():
+    decision = build_online_memory_gate_decision(
+        positive_records=[{"helpfulness_score": 0.03, "memory_similarity": 0.8}],
+        negative_records=[{"helpfulness_score": -0.20, "memory_similarity": 0.9}],
+        base_forecast=np.array([100.0] * 30, dtype=float),
+        current_price=100.0,
+        warmup_ready=True,
+        gate_cfg={
+            "min_positive_examples": 1,
+            "min_positive_signal": 0.01,
+            "min_net_signal": 0.0,
+            "max_negative_signal": 0.05,
+            "min_abs_base_h20_pct": 0.0,
+        },
+    )
+    assert decision["apply_llm"] is False
+    assert decision["reason"] == "memory_gate_blocked"
+
+
+def test_compute_online_memory_horizon_gains_reports_anchor_improvements():
+    base = np.array([10.0] * 30, dtype=float)
+    llm = np.array([10.0] * 19 + [9.0] * 11, dtype=float)
+    truth = np.array([10.0] * 19 + [8.5] * 11, dtype=float)
+    gains = compute_online_memory_horizon_gains(base, llm, truth)
+    assert gains["path"] > 0.0
+    assert gains[20] > 0.0
+    assert gains[30] > 0.0
+
+
+def test_classify_online_memory_admission_respects_horizon_utility_rules():
+    gains = {5: -0.30, 20: 0.15, 30: 0.20}
+    label = classify_online_memory_admission(
+        0.08,
+        gains,
+        positive_margin=0.02,
+        negative_margin=-0.02,
+        positive_min_h20_gain=0.10,
+        positive_min_h30_gain=0.10,
+        positive_max_h5_damage=-0.20,
+    )
+    assert label == "neutral"
+
+
+def test_apply_online_memory_gate_features_applies_threshold_rule():
+    decision = apply_online_memory_gate_features(
+        {
+            "warmup_ready": True,
+            "positive_count": 2,
+            "negative_count": 0,
+            "positive_signal": 0.03,
+            "negative_signal": 0.01,
+            "net_signal": 0.02,
+            "base_move_h20_pct": 0.40,
+            "base_move_h30_pct": 0.50,
+        },
+        {
+            "min_positive_examples": 1,
+            "min_positive_signal": 0.02,
+            "min_net_signal": 0.01,
+            "max_negative_signal": 0.05,
+            "min_abs_base_h20_pct": 0.20,
+        },
+    )
+    assert decision["apply_llm"] is True
+
+
+def test_build_online_memory_gate_feature_row_tracks_horizon_specific_memory():
+    row = build_online_memory_gate_feature_row(
+        positive_records=[
+            {"helpfulness_score": 0.10, "memory_similarity": 0.8, "memory_horizon": 20},
+            {"helpfulness_score": 0.05, "memory_similarity": 0.6, "memory_horizon": 30},
+        ],
+        negative_records=[
+            {"helpfulness_score": -0.08, "memory_similarity": 0.7, "memory_horizon": 30},
+        ],
+        base_forecast=np.array([100.0] * 30, dtype=float),
+        current_price=100.0,
+        warmup_ready=True,
+        reference_profile=np.array([100.0, 1.5, 2.5, 1.0, 0.4, 1.0, 1.2], dtype=float),
+        support_example_count=3,
+    )
+    assert row["positive_count"] == 2
+    assert row["positive_count_h20"] == 1
+    assert row["positive_count_h30"] == 1
+    assert row["negative_count_h30"] == 1
+    assert row["support_example_count"] == 3
+    assert row["profile_change_20"] == 2.5
+
+
+def test_build_online_memory_gate_candidate_cfgs_expands_grid():
+    candidates = build_online_memory_gate_candidate_cfgs(
+        {
+            "min_positive_examples": 1,
+            "min_positive_signal": 0.01,
+            "min_net_signal": 0.0,
+            "max_negative_signal": 0.05,
+            "min_abs_base_h20_pct": 0.10,
+            "tuning_grid": {
+                "min_positive_examples": [1, 2],
+                "min_positive_signal": [0.01, 0.02],
+            },
+        }
+    )
+    assert len(candidates) == 4
+
+
+def test_evaluate_online_memory_gate_candidates_uses_feature_frame():
+    feature_df = build_online_memory_gate_feature_frame(
+        [
+            {
+                "warmup_ready": True,
+                "positive_count": 1,
+                "negative_count": 0,
+                "positive_signal": 0.03,
+                "negative_signal": 0.0,
+                "net_signal": 0.03,
+                "base_move_h20_pct": 0.40,
+                "base_move_h30_pct": 0.50,
+            },
+            {
+                "warmup_ready": True,
+                "positive_count": 0,
+                "negative_count": 1,
+                "positive_signal": 0.0,
+                "negative_signal": 0.10,
+                "net_signal": -0.10,
+                "base_move_h20_pct": 0.40,
+                "base_move_h30_pct": 0.50,
+            },
+        ]
+    )
+    y_true = np.array([[10.0] * 30, [10.0] * 30], dtype=float)
+    base_pred = np.array([[10.0] * 30, [10.0] * 30], dtype=float)
+    llm_pred = np.array([[9.0] * 30, [12.0] * 30], dtype=float)
+    summary, preds = evaluate_online_memory_gate_candidates(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        feature_df=feature_df,
+        candidate_gate_cfgs=[
+            {
+                "name": "strict",
+                "min_positive_examples": 1,
+                "min_positive_signal": 0.02,
+                "min_net_signal": 0.0,
+                "max_negative_signal": 0.05,
+                "min_abs_base_h20_pct": 0.10,
+            }
+        ],
+        horizons=[1, 5, 20, 30],
+    )
+    assert summary.loc[0, "applied_count"] == 1
+    assert preds["strict"].shape == (2, 30)
+
+
+def test_fit_online_memory_learned_gate_and_thresholding_work():
+    feature_df = pd.DataFrame(
+        [
+            {"warmup_ready": True, "positive_count": 2, "negative_count": 0, "positive_signal": 0.10, "negative_signal": 0.01, "net_signal": 0.09, "positive_count_h20": 1, "positive_count_h30": 1, "negative_count_h20": 0, "negative_count_h30": 0, "positive_signal_h20": 0.06, "positive_signal_h30": 0.04, "negative_signal_h20": 0.0, "negative_signal_h30": 0.01, "support_example_count": 3, "base_move_h5_pct": 0.1, "base_move_h20_pct": 1.2, "base_move_h30_pct": 1.5, "profile_change_5": 1.0, "profile_change_20": 2.0, "profile_vol_pct": 1.0, "profile_fc_h5": 0.2, "profile_fc_h20": 1.1, "profile_fc_h30": 1.4},
+            {"warmup_ready": True, "positive_count": 2, "negative_count": 0, "positive_signal": 0.09, "negative_signal": 0.01, "net_signal": 0.08, "positive_count_h20": 1, "positive_count_h30": 1, "negative_count_h20": 0, "negative_count_h30": 0, "positive_signal_h20": 0.05, "positive_signal_h30": 0.04, "negative_signal_h20": 0.0, "negative_signal_h30": 0.01, "support_example_count": 3, "base_move_h5_pct": 0.1, "base_move_h20_pct": 1.0, "base_move_h30_pct": 1.4, "profile_change_5": 0.9, "profile_change_20": 1.8, "profile_vol_pct": 1.1, "profile_fc_h5": 0.2, "profile_fc_h20": 1.0, "profile_fc_h30": 1.3},
+            {"warmup_ready": True, "positive_count": 0, "negative_count": 2, "positive_signal": 0.00, "negative_signal": 0.09, "net_signal": -0.09, "positive_count_h20": 0, "positive_count_h30": 0, "negative_count_h20": 1, "negative_count_h30": 1, "positive_signal_h20": 0.0, "positive_signal_h30": 0.0, "negative_signal_h20": 0.05, "negative_signal_h30": 0.04, "support_example_count": 3, "base_move_h5_pct": -0.1, "base_move_h20_pct": 0.4, "base_move_h30_pct": 0.3, "profile_change_5": -0.8, "profile_change_20": -1.4, "profile_vol_pct": 2.0, "profile_fc_h5": -0.1, "profile_fc_h20": 0.3, "profile_fc_h30": 0.2},
+            {"warmup_ready": True, "positive_count": 0, "negative_count": 2, "positive_signal": 0.00, "negative_signal": 0.10, "net_signal": -0.10, "positive_count_h20": 0, "positive_count_h30": 0, "negative_count_h20": 1, "negative_count_h30": 1, "positive_signal_h20": 0.0, "positive_signal_h30": 0.0, "negative_signal_h20": 0.06, "negative_signal_h30": 0.04, "support_example_count": 3, "base_move_h5_pct": -0.1, "base_move_h20_pct": 0.2, "base_move_h30_pct": 0.1, "profile_change_5": -1.0, "profile_change_20": -1.6, "profile_vol_pct": 2.1, "profile_fc_h5": -0.2, "profile_fc_h20": 0.2, "profile_fc_h30": 0.1},
+        ]
+    )
+    labels = np.array([1, 1, 0, 0], dtype=int)
+    bundle, dataset = fit_online_memory_learned_gate(
+        feature_df=feature_df,
+        labels=labels,
+        learned_cfg={"model_type": "logistic", "train_fraction": 0.5},
+    )
+    assert bundle is not None
+    probs = predict_online_memory_learned_gate_scores(feature_df, bundle)
+    assert probs.shape == (4,)
+    assert probs[0] > probs[-1]
+
+    y_true = np.array([[1.0] * 30] * 4, dtype=float)
+    base_pred = np.array([[1.0] * 30] * 4, dtype=float)
+    llm_pred = base_pred.copy()
+    llm_pred[:2, 19] = 0.9
+    llm_pred[2:, 19] = 1.2
+    summary, gated = evaluate_online_memory_learned_gate_thresholds(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        feature_df=dataset.drop(columns=["label"]),
+        learned_gate_bundle={**bundle, "threshold": 0.5},
+        thresholds=[0.4, 0.6],
+        horizons=[1, 5, 20, 30],
+    )
+    assert len(summary) == 2
+    assert "p_ge_0.400" in gated
+
+
+def test_build_online_memory_gate_labels_respects_positive_rules():
+    y_true = np.array([[10.0] * 30, [10.0] * 30], dtype=float)
+    base_pred = np.array([[10.0] * 30, [10.0] * 30], dtype=float)
+    base_pred[0, 19] = 12.0
+    base_pred[0, 29] = 12.0
+    base_pred[1, 19] = 10.5
+    base_pred[1, 29] = 10.5
+    llm_pred = base_pred.copy()
+    llm_pred[0, 19] = 10.5
+    llm_pred[0, 29] = 10.5
+    llm_pred[1, 19] = 11.5
+    llm_pred[1, 29] = 11.5
+    labels, label_df = build_online_memory_gate_labels(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        label_cfg={"positive_margin": 0.0, "positive_min_h20_gain": 0.0, "positive_min_h30_gain": 0.0},
+    )
+    assert labels.tolist() == [1, 0]
+    assert label_df.loc[0, "gain_h20"] > 0.0
 
 
 def test_select_utility_mmr_indices_reduces_redundant_neighbors():

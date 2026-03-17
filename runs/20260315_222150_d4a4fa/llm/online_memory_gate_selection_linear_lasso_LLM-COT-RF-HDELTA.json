@@ -1,0 +1,17 @@
+{
+  "method": "linear_lasso+LLM-COT-RF-HDELTA",
+  "method_template": "TSM+LLM-COT-RF-HDELTA",
+  "base_model": "linear_lasso",
+  "selected_candidate": "p1_ps0.008_ns0.000_neg0.070_h200.10",
+  "metric": "mse_path",
+  "n_val": 80,
+  "scope": "recent_tail",
+  "max_samples": 80,
+  "selected_gate_cfg": {
+    "min_positive_examples": 1,
+    "min_positive_signal": 0.008,
+    "min_net_signal": 0.0,
+    "max_negative_signal": 0.07,
+    "min_abs_base_h20_pct": 0.1
+  }
+}

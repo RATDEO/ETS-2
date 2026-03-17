@@ -1,0 +1,10 @@
+{
+  "policy": "linear_size",
+  "selected_scale_or_threshold": 0.03138126489896559,
+  "selected_prob_floor": 0.0,
+  "test_sharpe": 2.0063838238495078,
+  "test_total_return": 0.09240055052370111,
+  "test_annualized_return": 0.1984946755656145,
+  "test_max_drawdown": 0.020305939634460257,
+  "test_n_trades": 103
+}

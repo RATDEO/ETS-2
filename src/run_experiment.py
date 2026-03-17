@@ -22,6 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime
+from itertools import product
 from typing import Optional, Sequence
 import logging
 import json
@@ -314,6 +315,24 @@ def build_history_dates(
             history_dates = panel_dates[start_idx:idx]
         date_arrays.append([str(d) for d in history_dates])
     return date_arrays
+
+
+def build_realized_availability_dates(
+    panel_dates: np.ndarray,
+    date_to_idx: dict,
+    pred_dates: np.ndarray,
+    realization_horizon: int,
+) -> np.ndarray:
+    """Map each forecast origin date to the first date its full path is known."""
+    availability_dates: list[np.datetime64] = []
+    horizon = int(max(1, realization_horizon))
+    max_idx = len(panel_dates) - 1
+    for pred_date in pd.to_datetime(pred_dates):
+        idx = date_to_idx.get(pd.Timestamp(pred_date))
+        if idx is None:
+            raise KeyError(f"Prediction date {pred_date} is missing from panel_dates.")
+        availability_dates.append(panel_dates[min(idx + horizon, max_idx)])
+    return np.asarray(availability_dates, dtype="datetime64[ns]")
 
 
 def build_sentiment_histories(
@@ -1051,6 +1070,828 @@ def select_counterexample_index(
     scale[scale < 1e-6] = 1.0
     distances = np.linalg.norm((profiles - ref) / scale, axis=1)
     return int(filtered[int(np.argmin(distances))])
+
+
+def compute_online_memory_helpfulness(
+    base_forecast: np.ndarray,
+    llm_forecast: np.ndarray,
+    truth: np.ndarray,
+    *,
+    path_weight: float = 0.40,
+    h5_weight: float = 0.05,
+    h20_weight: float = 0.30,
+    h30_weight: float = 0.25,
+) -> float:
+    """Weighted relative gain of the LLM forecast over the base forecast."""
+    base_arr = np.asarray(base_forecast, dtype=float)
+    llm_arr = np.asarray(llm_forecast, dtype=float)
+    truth_arr = np.asarray(truth, dtype=float)
+    if base_arr.size == 0 or llm_arr.size == 0 or truth_arr.size == 0:
+        return 0.0
+
+    def _rel_gain(base_err: float, llm_err: float) -> float:
+        denom = max(abs(float(base_err)), 1e-8)
+        return float((float(base_err) - float(llm_err)) / denom)
+
+    path_gain = _rel_gain(
+        np.mean((base_arr - truth_arr) ** 2),
+        np.mean((llm_arr - truth_arr) ** 2),
+    )
+
+    horizon_gains: dict[int, float] = {}
+    for horizon in (5, 20, 30):
+        idx = int(horizon) - 1
+        if idx < base_arr.size and idx < llm_arr.size and idx < truth_arr.size:
+            base_err = float((base_arr[idx] - truth_arr[idx]) ** 2)
+            llm_err = float((llm_arr[idx] - truth_arr[idx]) ** 2)
+            horizon_gains[int(horizon)] = _rel_gain(base_err, llm_err)
+        else:
+            horizon_gains[int(horizon)] = 0.0
+
+    return float(
+        float(path_weight) * path_gain
+        + float(h5_weight) * float(horizon_gains.get(5, 0.0))
+        + float(h20_weight) * float(horizon_gains.get(20, 0.0))
+        + float(h30_weight) * float(horizon_gains.get(30, 0.0))
+    )
+
+
+def compute_online_memory_horizon_gains(
+    base_forecast: np.ndarray,
+    llm_forecast: np.ndarray,
+    truth: np.ndarray,
+    *,
+    horizons: Sequence[int] = (5, 20, 30),
+) -> dict[object, float]:
+    """Return relative improvement by path and anchor horizon."""
+    base_arr = np.asarray(base_forecast, dtype=float)
+    llm_arr = np.asarray(llm_forecast, dtype=float)
+    truth_arr = np.asarray(truth, dtype=float)
+    gains: dict[object, float] = {}
+    if base_arr.size == 0 or llm_arr.size == 0 or truth_arr.size == 0:
+        gains["path"] = 0.0
+        for horizon in horizons:
+            gains[int(horizon)] = 0.0
+        return gains
+
+    def _rel_gain(base_err: float, llm_err: float) -> float:
+        denom = max(abs(float(base_err)), 1e-8)
+        return float((float(base_err) - float(llm_err)) / denom)
+
+    gains["path"] = _rel_gain(
+        np.mean((base_arr - truth_arr) ** 2),
+        np.mean((llm_arr - truth_arr) ** 2),
+    )
+    for horizon in horizons:
+        idx = int(horizon) - 1
+        if idx < base_arr.size and idx < llm_arr.size and idx < truth_arr.size:
+            base_err = float((base_arr[idx] - truth_arr[idx]) ** 2)
+            llm_err = float((llm_arr[idx] - truth_arr[idx]) ** 2)
+            gains[int(horizon)] = _rel_gain(base_err, llm_err)
+        else:
+            gains[int(horizon)] = 0.0
+    return gains
+
+
+def classify_online_memory_helpfulness(
+    helpfulness_score: float,
+    *,
+    positive_margin: float = 0.01,
+    negative_margin: float = -0.01,
+) -> str:
+    """Classify realized LLM helpfulness into positive/neutral/negative memory."""
+    score = float(helpfulness_score)
+    if score >= float(positive_margin):
+        return "positive"
+    if score <= float(negative_margin):
+        return "negative"
+    return "neutral"
+
+
+def classify_online_memory_admission(
+    helpfulness_score: float,
+    horizon_gains: dict[object, float],
+    *,
+    positive_margin: float = 0.01,
+    negative_margin: float = -0.01,
+    positive_min_h20_gain: Optional[float] = None,
+    positive_min_h30_gain: Optional[float] = None,
+    positive_max_h5_damage: Optional[float] = None,
+    negative_max_h20_gain: Optional[float] = None,
+    negative_max_h30_gain: Optional[float] = None,
+    target_horizon: Optional[int] = None,
+    positive_min_target_gain: Optional[float] = None,
+    negative_max_target_gain: Optional[float] = None,
+) -> str:
+    """Classify online memory records with optional horizon-aware utility rules."""
+    score = float(helpfulness_score)
+    h5_gain = float(horizon_gains.get(5, 0.0))
+    h20_gain = float(horizon_gains.get(20, 0.0))
+    h30_gain = float(horizon_gains.get(30, 0.0))
+    target_gain = None
+    if target_horizon is not None:
+        target_gain = float(horizon_gains.get(int(target_horizon), 0.0))
+
+    positive_ok = score >= float(positive_margin)
+    if positive_ok and positive_min_h20_gain is not None:
+        positive_ok = h20_gain >= float(positive_min_h20_gain)
+    if positive_ok and positive_min_h30_gain is not None:
+        positive_ok = h30_gain >= float(positive_min_h30_gain)
+    if positive_ok and positive_max_h5_damage is not None:
+        positive_ok = h5_gain >= float(positive_max_h5_damage)
+    if positive_ok and positive_min_target_gain is not None and target_gain is not None:
+        positive_ok = target_gain >= float(positive_min_target_gain)
+    if positive_ok:
+        return "positive"
+
+    negative_ok = score <= float(negative_margin)
+    if negative_max_h20_gain is not None:
+        negative_ok = negative_ok or h20_gain <= float(negative_max_h20_gain)
+    if negative_max_h30_gain is not None:
+        negative_ok = negative_ok or h30_gain <= float(negative_max_h30_gain)
+    if negative_max_target_gain is not None and target_gain is not None:
+        negative_ok = negative_ok or target_gain <= float(negative_max_target_gain)
+    if negative_ok:
+        return "negative"
+    return "neutral"
+
+
+def build_online_memory_gate_feature_row(
+    *,
+    positive_records: Sequence[dict],
+    negative_records: Sequence[dict],
+    base_forecast: np.ndarray,
+    current_price: float,
+    warmup_ready: bool,
+    reference_profile: Optional[np.ndarray] = None,
+    support_example_count: int = 0,
+) -> dict[str, float | int | bool]:
+    """Summarize current online-memory state into a deployable gate feature row."""
+    def _stats(records: Sequence[dict], *, negative: bool = False) -> dict[str, float]:
+        if not records:
+            return {
+                "count": 0.0,
+                "signal": 0.0,
+                "best_similarity": 0.0,
+                "mean_similarity": 0.0,
+                "mean_helpfulness": 0.0,
+            }
+        total = 0.0
+        similarities = []
+        helpfulness_values = []
+        for record in records:
+            score = float(record.get("helpfulness_score", 0.0))
+            sim = float(record.get("memory_similarity", 0.0))
+            contribution = abs(score) if negative else max(score, 0.0)
+            total += sim * contribution
+            similarities.append(sim)
+            helpfulness_values.append(score)
+        return {
+            "count": float(len(records)),
+            "signal": float(total),
+            "best_similarity": float(max(similarities) if similarities else 0.0),
+            "mean_similarity": float(np.mean(similarities) if similarities else 0.0),
+            "mean_helpfulness": float(np.mean(helpfulness_values) if helpfulness_values else 0.0),
+        }
+
+    def _filter_horizon(records: Sequence[dict], horizon: int) -> list[dict]:
+        return [
+            dict(record)
+            for record in records
+            if int(record.get("memory_horizon", 0) or 0) == int(horizon)
+        ]
+
+    positive_stats = _stats(positive_records, negative=False)
+    negative_stats = _stats(negative_records, negative=True)
+    positive_h20_stats = _stats(_filter_horizon(positive_records, 20), negative=False)
+    positive_h30_stats = _stats(_filter_horizon(positive_records, 30), negative=False)
+    negative_h20_stats = _stats(_filter_horizon(negative_records, 20), negative=True)
+    negative_h30_stats = _stats(_filter_horizon(negative_records, 30), negative=True)
+    base_arr = np.asarray(base_forecast, dtype=float)
+    base_move_h5_pct = 0.0
+    base_move_h20_pct = 0.0
+    base_move_h30_pct = 0.0
+    if base_arr.size >= 5 and abs(float(current_price)) > 1e-8:
+        base_move_h5_pct = float((base_arr[4] / float(current_price) - 1.0) * 100.0)
+    if base_arr.size >= 20 and abs(float(current_price)) > 1e-8:
+        base_move_h20_pct = float((base_arr[19] / float(current_price) - 1.0) * 100.0)
+    if base_arr.size >= 30 and abs(float(current_price)) > 1e-8:
+        base_move_h30_pct = float((base_arr[29] / float(current_price) - 1.0) * 100.0)
+    ref_profile = np.asarray(reference_profile, dtype=float) if reference_profile is not None else np.zeros(7, dtype=float)
+    profile_last_price = float(ref_profile[0]) if ref_profile.size >= 1 else float(current_price)
+    profile_change_5 = float(ref_profile[1]) if ref_profile.size >= 2 else 0.0
+    profile_change_20 = float(ref_profile[2]) if ref_profile.size >= 3 else 0.0
+    profile_vol_abs = float(ref_profile[3]) if ref_profile.size >= 4 else 0.0
+    profile_vol_pct = (
+        float(abs(profile_vol_abs) / max(abs(profile_last_price), 1e-8) * 100.0)
+        if ref_profile.size >= 4
+        else 0.0
+    )
+    profile_fc_h5 = float(ref_profile[4]) if ref_profile.size >= 5 else 0.0
+    profile_fc_h20 = float(ref_profile[5]) if ref_profile.size >= 6 else 0.0
+    profile_fc_h30 = float(ref_profile[6]) if ref_profile.size >= 7 else 0.0
+    return {
+        "warmup_ready": bool(warmup_ready),
+        "support_example_count": int(support_example_count),
+        "positive_count": int(positive_stats["count"]),
+        "negative_count": int(negative_stats["count"]),
+        "positive_signal": float(positive_stats["signal"]),
+        "negative_signal": float(negative_stats["signal"]),
+        "net_signal": float(positive_stats["signal"] - negative_stats["signal"]),
+        "positive_best_similarity": float(positive_stats["best_similarity"]),
+        "negative_best_similarity": float(negative_stats["best_similarity"]),
+        "positive_mean_similarity": float(positive_stats["mean_similarity"]),
+        "negative_mean_similarity": float(negative_stats["mean_similarity"]),
+        "positive_mean_helpfulness": float(positive_stats["mean_helpfulness"]),
+        "negative_mean_helpfulness": float(negative_stats["mean_helpfulness"]),
+        "positive_count_h20": int(positive_h20_stats["count"]),
+        "positive_count_h30": int(positive_h30_stats["count"]),
+        "negative_count_h20": int(negative_h20_stats["count"]),
+        "negative_count_h30": int(negative_h30_stats["count"]),
+        "positive_signal_h20": float(positive_h20_stats["signal"]),
+        "positive_signal_h30": float(positive_h30_stats["signal"]),
+        "negative_signal_h20": float(negative_h20_stats["signal"]),
+        "negative_signal_h30": float(negative_h30_stats["signal"]),
+        "base_move_h20_pct": float(base_move_h20_pct),
+        "base_move_h30_pct": float(base_move_h30_pct),
+        "base_move_h5_pct": float(base_move_h5_pct),
+        "profile_change_5": float(profile_change_5),
+        "profile_change_20": float(profile_change_20),
+        "profile_vol_pct": float(profile_vol_pct),
+        "profile_fc_h5": float(profile_fc_h5),
+        "profile_fc_h20": float(profile_fc_h20),
+        "profile_fc_h30": float(profile_fc_h30),
+    }
+
+
+def apply_online_memory_gate_features(
+    feature_row: dict[str, object],
+    gate_cfg: Optional[dict] = None,
+    learned_gate_bundle: Optional[dict] = None,
+) -> dict:
+    """Apply deployable online-memory thresholds to a feature row."""
+    gate_cfg = dict(gate_cfg or {})
+    warmup_ready = bool(feature_row.get("warmup_ready", False))
+    if gate_cfg.get("always_apply", False):
+        return {
+            "apply_llm": True,
+            "reason": "forced_apply",
+            **feature_row,
+        }
+    if not warmup_ready:
+        return {
+            "apply_llm": True,
+            "reason": "warmup",
+            **feature_row,
+        }
+    if learned_gate_bundle is not None:
+        probability = float(
+            predict_online_memory_learned_gate_scores(
+                pd.DataFrame([dict(feature_row)]),
+                learned_gate_bundle,
+            )[0]
+        )
+        threshold = float(learned_gate_bundle.get("threshold", 0.5))
+        apply_llm = bool(probability >= threshold)
+        return {
+            "apply_llm": apply_llm,
+            "reason": "learned_gate_apply" if apply_llm else "learned_gate_blocked",
+            "apply_probability": probability,
+            "apply_threshold": threshold,
+            **feature_row,
+        }
+    min_positive_examples = int(gate_cfg.get("min_positive_examples", 1))
+    min_positive_signal = float(gate_cfg.get("min_positive_signal", 0.02))
+    min_net_signal = float(gate_cfg.get("min_net_signal", 0.0))
+    max_negative_signal = float(gate_cfg.get("max_negative_signal", 0.10))
+    min_abs_base_h20_pct = float(gate_cfg.get("min_abs_base_h20_pct", 0.0))
+
+    apply_llm = bool(
+        int(feature_row.get("positive_count", 0)) >= min_positive_examples
+        and float(feature_row.get("positive_signal", 0.0)) >= min_positive_signal
+        and float(feature_row.get("net_signal", 0.0)) >= min_net_signal
+        and float(feature_row.get("negative_signal", 0.0)) <= max_negative_signal
+        and abs(float(feature_row.get("base_move_h20_pct", 0.0))) >= min_abs_base_h20_pct
+    )
+    return {
+        "apply_llm": apply_llm,
+        "reason": "positive_memory_consensus" if apply_llm else "memory_gate_blocked",
+        **feature_row,
+    }
+
+
+def select_online_memory_records(
+    records: Sequence[dict],
+    reference_profile: np.ndarray,
+    *,
+    label: str,
+    k_examples: int,
+    reference_tag: Optional[str] = None,
+    min_tag_overlap: int = 0,
+    target_horizons: Optional[Sequence[int]] = None,
+    prototype_enabled: bool = False,
+    prototype_top_pool_size: int = 0,
+) -> list[dict]:
+    """Pick the most relevant admitted online-memory records for the current case."""
+    candidates = [
+        dict(record)
+        for record in records
+        if str(record.get("admission_label", "")).strip().lower() == str(label).strip().lower()
+    ]
+    if target_horizons:
+        allowed_horizons = {int(x) for x in target_horizons}
+        candidates = [
+            dict(record)
+            for record in candidates
+            if int(record.get("memory_horizon", 0) or 0) in allowed_horizons
+        ]
+    if min_tag_overlap > 0 and reference_tag:
+        overlaps = np.asarray(
+            [_tag_component_overlap(str(record.get("retrieval_tag", "")), reference_tag) for record in candidates],
+            dtype=int,
+        )
+        keep_mask = overlaps >= int(min_tag_overlap)
+        filtered = [dict(record) for record, keep in zip(candidates, keep_mask) if bool(keep)]
+        if filtered:
+            candidates = filtered
+        elif overlaps.size > 0:
+            best_overlap = int(np.max(overlaps))
+            candidates = [
+                dict(record)
+                for record, overlap in zip(candidates, overlaps)
+                if int(overlap) == best_overlap
+            ]
+    if not candidates or int(k_examples) <= 0:
+        return []
+
+    ref = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    profiles = np.vstack(
+        [
+            np.asarray(record.get("case_profile", np.zeros_like(ref[0])), dtype=float)
+            for record in candidates
+        ]
+    )
+    stacked = np.vstack([profiles, ref])
+    scale = np.std(stacked, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    distances = np.linalg.norm((profiles - ref) / scale, axis=1)
+    similarity = 1.0 / (1.0 + distances)
+    helpfulness = np.asarray(
+        [abs(float(record.get("helpfulness_score", 0.0))) for record in candidates],
+        dtype=float,
+    )
+    helpfulness_score = 0.5 + 0.5 * _minmax_scale(helpfulness)
+    total_score = 0.70 * similarity + 0.30 * helpfulness_score
+
+    if prototype_enabled and len(candidates) > int(k_examples):
+        top_pool_size = max(int(k_examples), int(prototype_top_pool_size or k_examples))
+        top_positions = np.argsort(total_score)[::-1][:top_pool_size]
+        top_profiles = profiles[top_positions]
+        center = np.mean(top_profiles, axis=0, keepdims=True)
+        scale = np.std(top_profiles, axis=0, keepdims=True)
+        scale[scale < 1e-6] = 1.0
+        norm_profiles = (top_profiles - center) / scale
+        selected_top = [0]
+        while len(selected_top) < min(int(k_examples), len(top_positions)):
+            remaining = [i for i in range(len(top_positions)) if i not in selected_top]
+            if not remaining:
+                break
+            best_pos = remaining[0]
+            best_tuple = None
+            for pos in remaining:
+                min_dist = min(
+                    float(np.linalg.norm(norm_profiles[pos] - norm_profiles[sel]))
+                    for sel in selected_top
+                )
+                candidate_tuple = (
+                    min_dist,
+                    float(total_score[int(top_positions[pos])]),
+                    float(helpfulness[int(top_positions[pos])]),
+                )
+                if best_tuple is None or candidate_tuple > best_tuple:
+                    best_tuple = candidate_tuple
+                    best_pos = pos
+            selected_top.append(int(best_pos))
+        order = np.asarray([int(top_positions[pos]) for pos in selected_top], dtype=int)
+    else:
+        order = np.argsort(total_score)[::-1][: int(k_examples)]
+
+    selected: list[dict] = []
+    for rank, pos in enumerate(order, start=1):
+        record = dict(candidates[int(pos)])
+        record["memory_similarity"] = float(similarity[int(pos)])
+        record["memory_rank"] = int(rank)
+        record["memory_selection_score"] = float(total_score[int(pos)])
+        selected.append(record)
+    return selected
+
+
+def build_online_memory_gate_decision(
+    *,
+    positive_records: Sequence[dict],
+    negative_records: Sequence[dict],
+    base_forecast: np.ndarray,
+    current_price: float,
+    warmup_ready: bool,
+    gate_cfg: Optional[dict] = None,
+    learned_gate_bundle: Optional[dict] = None,
+    reference_profile: Optional[np.ndarray] = None,
+    support_example_count: int = 0,
+) -> dict:
+    """Deterministic online gate based on admitted positive/negative memory evidence."""
+    feature_row = build_online_memory_gate_feature_row(
+        positive_records=positive_records,
+        negative_records=negative_records,
+        base_forecast=base_forecast,
+        current_price=current_price,
+        warmup_ready=warmup_ready,
+        reference_profile=reference_profile,
+        support_example_count=support_example_count,
+    )
+    return apply_online_memory_gate_features(
+        feature_row,
+        gate_cfg=gate_cfg,
+        learned_gate_bundle=learned_gate_bundle,
+    )
+
+
+def build_online_memory_gate_feature_frame(
+    feature_rows: Sequence[dict],
+) -> pd.DataFrame:
+    """Convert saved online-memory gate metadata into a flat feature frame."""
+    rows: list[dict[str, object]] = []
+    for idx, row in enumerate(feature_rows):
+        gate = dict(row or {})
+        rows.append(
+            {
+                "row_idx": int(idx),
+                "warmup_ready": bool(gate.get("warmup_ready", False)),
+                "positive_count": int(gate.get("positive_count", 0)),
+                "negative_count": int(gate.get("negative_count", 0)),
+                "positive_signal": float(gate.get("positive_signal", 0.0)),
+                "negative_signal": float(gate.get("negative_signal", 0.0)),
+                "net_signal": float(gate.get("net_signal", 0.0)),
+                "support_example_count": int(gate.get("support_example_count", 0)),
+                "positive_best_similarity": float(gate.get("positive_best_similarity", 0.0)),
+                "negative_best_similarity": float(gate.get("negative_best_similarity", 0.0)),
+                "positive_mean_similarity": float(gate.get("positive_mean_similarity", 0.0)),
+                "negative_mean_similarity": float(gate.get("negative_mean_similarity", 0.0)),
+                "positive_mean_helpfulness": float(gate.get("positive_mean_helpfulness", 0.0)),
+                "negative_mean_helpfulness": float(gate.get("negative_mean_helpfulness", 0.0)),
+                "positive_count_h20": int(gate.get("positive_count_h20", 0)),
+                "positive_count_h30": int(gate.get("positive_count_h30", 0)),
+                "negative_count_h20": int(gate.get("negative_count_h20", 0)),
+                "negative_count_h30": int(gate.get("negative_count_h30", 0)),
+                "positive_signal_h20": float(gate.get("positive_signal_h20", 0.0)),
+                "positive_signal_h30": float(gate.get("positive_signal_h30", 0.0)),
+                "negative_signal_h20": float(gate.get("negative_signal_h20", 0.0)),
+                "negative_signal_h30": float(gate.get("negative_signal_h30", 0.0)),
+                "base_move_h5_pct": float(gate.get("base_move_h5_pct", 0.0)),
+                "base_move_h20_pct": float(gate.get("base_move_h20_pct", 0.0)),
+                "base_move_h30_pct": float(gate.get("base_move_h30_pct", 0.0)),
+                "profile_change_5": float(gate.get("profile_change_5", 0.0)),
+                "profile_change_20": float(gate.get("profile_change_20", 0.0)),
+                "profile_vol_pct": float(gate.get("profile_vol_pct", 0.0)),
+                "profile_fc_h5": float(gate.get("profile_fc_h5", 0.0)),
+                "profile_fc_h20": float(gate.get("profile_fc_h20", 0.0)),
+                "profile_fc_h30": float(gate.get("profile_fc_h30", 0.0)),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def build_online_memory_gate_labels(
+    *,
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    label_cfg: Optional[dict] = None,
+) -> tuple[np.ndarray, pd.DataFrame]:
+    """Create binary live-gate targets from realized validation outcomes."""
+    label_cfg = dict(label_cfg or {})
+    y_true = np.asarray(y_true, dtype=float)
+    base_pred = np.asarray(base_pred, dtype=float)
+    llm_pred = np.asarray(llm_pred, dtype=float)
+    labels = []
+    rows = []
+    for idx in range(len(y_true)):
+        helpfulness_score = compute_online_memory_helpfulness(
+            base_pred[idx],
+            llm_pred[idx],
+            y_true[idx],
+            path_weight=float(label_cfg.get("path_weight", 0.40)),
+            h5_weight=float(label_cfg.get("h5_weight", 0.05)),
+            h20_weight=float(label_cfg.get("h20_weight", 0.30)),
+            h30_weight=float(label_cfg.get("h30_weight", 0.25)),
+        )
+        horizon_gains = compute_online_memory_horizon_gains(
+            base_pred[idx],
+            llm_pred[idx],
+            y_true[idx],
+        )
+        label = classify_online_memory_admission(
+            helpfulness_score,
+            horizon_gains,
+            positive_margin=float(label_cfg.get("positive_margin", 0.0)),
+            negative_margin=float(label_cfg.get("negative_margin", -1e-6)),
+            positive_min_h20_gain=label_cfg.get("positive_min_h20_gain"),
+            positive_min_h30_gain=label_cfg.get("positive_min_h30_gain"),
+            positive_max_h5_damage=label_cfg.get("positive_max_h5_damage"),
+        )
+        is_positive = int(str(label) == "positive")
+        labels.append(is_positive)
+        rows.append(
+            {
+                "row_idx": int(idx),
+                "label": int(is_positive),
+                "helpfulness_score": float(helpfulness_score),
+                "gain_path": float(horizon_gains.get("path", 0.0)),
+                "gain_h5": float(horizon_gains.get(5, 0.0)),
+                "gain_h20": float(horizon_gains.get(20, 0.0)),
+                "gain_h30": float(horizon_gains.get(30, 0.0)),
+            }
+        )
+    return np.asarray(labels, dtype=int), pd.DataFrame(rows)
+
+
+def _online_memory_gate_default_feature_columns(feature_df: pd.DataFrame) -> list[str]:
+    preferred = [
+        "positive_count",
+        "negative_count",
+        "positive_signal",
+        "negative_signal",
+        "net_signal",
+        "positive_count_h20",
+        "positive_count_h30",
+        "negative_count_h20",
+        "negative_count_h30",
+        "positive_signal_h20",
+        "positive_signal_h30",
+        "negative_signal_h20",
+        "negative_signal_h30",
+        "positive_best_similarity",
+        "negative_best_similarity",
+        "positive_mean_similarity",
+        "negative_mean_similarity",
+        "positive_mean_helpfulness",
+        "negative_mean_helpfulness",
+        "support_example_count",
+        "base_move_h5_pct",
+        "base_move_h20_pct",
+        "base_move_h30_pct",
+        "profile_change_5",
+        "profile_change_20",
+        "profile_vol_pct",
+        "profile_fc_h5",
+        "profile_fc_h20",
+        "profile_fc_h30",
+    ]
+    return [col for col in preferred if col in feature_df.columns]
+
+
+def fit_online_memory_learned_gate(
+    *,
+    feature_df: pd.DataFrame,
+    labels: np.ndarray,
+    learned_cfg: Optional[dict] = None,
+) -> tuple[Optional[dict], pd.DataFrame]:
+    """Fit a lightweight learned apply gate on validation-only online-memory features."""
+    learned_cfg = dict(learned_cfg or {})
+    labels = np.asarray(labels, dtype=int)
+    dataset = feature_df.reset_index(drop=True).copy()
+    if dataset.empty or labels.size != len(dataset):
+        return None, pd.DataFrame()
+    dataset["label"] = labels
+    feature_columns = parse_name_list(learned_cfg.get("feature_columns"))
+    if not feature_columns:
+        feature_columns = _online_memory_gate_default_feature_columns(dataset)
+    if not feature_columns:
+        return None, dataset
+    for col in feature_columns:
+        if col not in dataset.columns:
+            dataset[col] = 0.0
+    dataset = dataset.fillna(0.0)
+    if np.unique(labels).size < 2:
+        return None, dataset
+
+    n_rows = len(dataset)
+    use_all_for_fit = bool(learned_cfg.get("use_all_for_fit", False))
+    if use_all_for_fit:
+        train_df = dataset.copy()
+        select_df = dataset.iloc[0:0].copy()
+    else:
+        train_fraction = float(learned_cfg.get("train_fraction", 0.67))
+        train_size = int(max(12, min(n_rows - 1, round(n_rows * train_fraction))))
+        if n_rows < 24:
+            train_size = max(1, n_rows - 1)
+        if train_size <= 0 or train_size >= n_rows:
+            train_size = max(1, n_rows - 1)
+        train_df = dataset.iloc[:train_size].copy()
+        select_df = dataset.iloc[train_size:].copy()
+        if select_df.empty:
+            select_df = train_df.copy()
+
+    X_train = train_df[feature_columns].astype(float).to_numpy()
+    y_train = train_df["label"].astype(int).to_numpy()
+    model_type = str(learned_cfg.get("model_type", "logistic")).strip().lower()
+    random_state = int(learned_cfg.get("random_state", 42))
+    class_weight = learned_cfg.get("class_weight", "balanced")
+    if class_weight in {"none", "", None}:
+        class_weight = None
+
+    if model_type in {"logistic", "logit"}:
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler as SklearnStandardScaler
+
+        model = make_pipeline(
+            SklearnStandardScaler(),
+            LogisticRegression(
+                random_state=random_state,
+                max_iter=int(learned_cfg.get("max_iter", 1000)),
+                class_weight=class_weight,
+                C=float(learned_cfg.get("c", 1.0)),
+                solver=str(learned_cfg.get("solver", "lbfgs")),
+            ),
+        )
+    elif model_type in {"hist_gbdt", "hgbt", "gbdt"}:
+        from sklearn.ensemble import HistGradientBoostingClassifier
+
+        model = HistGradientBoostingClassifier(
+            max_depth=int(learned_cfg.get("max_depth", 3)),
+            learning_rate=float(learned_cfg.get("learning_rate", 0.05)),
+            max_iter=int(learned_cfg.get("max_iter", 200)),
+            random_state=random_state,
+        )
+    else:
+        raise ValueError(f"Unsupported learned online-memory gate model_type: {model_type}")
+    model.fit(X_train, y_train)
+
+    bundle = {
+        "model": model,
+        "model_type": model_type,
+        "feature_columns": list(feature_columns),
+        "train_size": int(len(train_df)),
+        "select_size": int(len(select_df)),
+        "positive_rate_train": float(np.mean(y_train)) if y_train.size else 0.0,
+        "positive_rate_all": float(np.mean(labels)) if labels.size else 0.0,
+    }
+    return bundle, dataset
+
+
+def predict_online_memory_learned_gate_scores(
+    feature_df: pd.DataFrame,
+    learned_gate_bundle: Optional[dict],
+) -> np.ndarray:
+    """Score gate probabilities for one or more rows."""
+    if learned_gate_bundle is None:
+        return np.zeros(len(feature_df), dtype=float)
+    model = learned_gate_bundle.get("model")
+    feature_columns = list(learned_gate_bundle.get("feature_columns") or [])
+    if model is None or not feature_columns:
+        return np.zeros(len(feature_df), dtype=float)
+    frame = feature_df.copy()
+    for col in feature_columns:
+        if col not in frame.columns:
+            frame[col] = 0.0
+    X = frame[feature_columns].astype(float).fillna(0.0).to_numpy()
+    if hasattr(model, "predict_proba"):
+        return np.asarray(model.predict_proba(X)[:, 1], dtype=float)
+    if hasattr(model, "decision_function"):
+        raw = np.asarray(model.decision_function(X), dtype=float)
+        return 1.0 / (1.0 + np.exp(-raw))
+    pred = np.asarray(model.predict(X), dtype=float)
+    return np.clip(pred, 0.0, 1.0)
+
+
+def evaluate_online_memory_learned_gate_thresholds(
+    *,
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    feature_df: pd.DataFrame,
+    learned_gate_bundle: dict,
+    thresholds: Sequence[float],
+    horizons: Sequence[int],
+) -> tuple[pd.DataFrame, dict[str, np.ndarray]]:
+    """Evaluate probability-thresholded learned gates on a holdout slice."""
+    y_true = np.asarray(y_true, dtype=float)
+    base_pred = np.asarray(base_pred, dtype=float)
+    llm_pred = np.asarray(llm_pred, dtype=float)
+    probs = predict_online_memory_learned_gate_scores(feature_df, learned_gate_bundle)
+    warmup_mask = feature_df["warmup_ready"].astype(bool).to_numpy() if "warmup_ready" in feature_df.columns else np.ones(len(feature_df), dtype=bool)
+    summaries: list[dict[str, object]] = []
+    gated_predictions: dict[str, np.ndarray] = {}
+    for threshold in thresholds:
+        apply_mask = np.where(~warmup_mask, True, probs >= float(threshold))
+        gated = np.where(apply_mask[:, None], llm_pred, base_pred)
+        name = f"p_ge_{float(threshold):.3f}"
+        gated_predictions[name] = gated
+        path_metrics = compute_path_metrics(y_true, gated)
+        summary_row: dict[str, object] = {
+            "candidate": name,
+            "threshold": float(threshold),
+            "applied_count": int(np.sum(apply_mask)),
+            "mean_probability": float(np.mean(probs)) if probs.size else 0.0,
+            "mse_path": float(path_metrics.get("mse_path", np.nan)),
+        }
+        by_h = compute_metrics_by_horizon(y_true, gated, horizons)
+        for horizon in horizons:
+            horizon_metrics = by_h.get(int(horizon), {}) or {}
+            summary_row[f"h{int(horizon)}_mse"] = float(horizon_metrics.get("MSE", np.nan))
+        summaries.append(summary_row)
+    return pd.DataFrame(summaries), gated_predictions
+
+
+def evaluate_online_memory_gate_candidates(
+    *,
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    feature_df: pd.DataFrame,
+    candidate_gate_cfgs: Sequence[dict],
+    horizons: Sequence[int],
+) -> tuple[pd.DataFrame, dict[str, np.ndarray]]:
+    """Evaluate a grid of threshold gates against validation or test predictions."""
+    y_true = np.asarray(y_true, dtype=float)
+    base_pred = np.asarray(base_pred, dtype=float)
+    llm_pred = np.asarray(llm_pred, dtype=float)
+    summaries: list[dict[str, object]] = []
+    gated_predictions: dict[str, np.ndarray] = {}
+    for candidate in candidate_gate_cfgs:
+        cfg = dict(candidate)
+        name = str(cfg.get("name", "candidate"))
+        apply_mask = np.array(
+            [
+                bool(apply_online_memory_gate_features(row, gate_cfg=cfg).get("apply_llm", False))
+                for row in feature_df.to_dict("records")
+            ],
+            dtype=bool,
+        )
+        gated = np.where(apply_mask[:, None], llm_pred, base_pred)
+        gated_predictions[name] = gated
+        path_metrics = compute_path_metrics(y_true, gated)
+        summary_row: dict[str, object] = {
+            "candidate": name,
+            "applied_count": int(np.sum(apply_mask)),
+            "mse_path": float(path_metrics.get("mse_path", np.nan)),
+        }
+        by_h = compute_metrics_by_horizon(y_true, gated, horizons)
+        for horizon in horizons:
+            horizon_metrics = by_h.get(int(horizon), {}) or {}
+            summary_row[f"h{int(horizon)}_mse"] = float(horizon_metrics.get("MSE", np.nan))
+        summaries.append(summary_row)
+    return pd.DataFrame(summaries), gated_predictions
+
+
+def build_online_memory_gate_candidate_cfgs(
+    gate_cfg: Optional[dict] = None,
+) -> list[dict]:
+    """Expand a validation tuning grid into explicit gate candidates."""
+    gate_cfg = dict(gate_cfg or {})
+    tune_cfg = dict(gate_cfg.get("tuning_grid", {}) or {})
+    value_grid = {
+        "min_positive_examples": tune_cfg.get(
+            "min_positive_examples",
+            [gate_cfg.get("min_positive_examples", 1)],
+        ),
+        "min_positive_signal": tune_cfg.get(
+            "min_positive_signal",
+            [gate_cfg.get("min_positive_signal", 0.02)],
+        ),
+        "min_net_signal": tune_cfg.get(
+            "min_net_signal",
+            [gate_cfg.get("min_net_signal", 0.0)],
+        ),
+        "max_negative_signal": tune_cfg.get(
+            "max_negative_signal",
+            [gate_cfg.get("max_negative_signal", 0.10)],
+        ),
+        "min_abs_base_h20_pct": tune_cfg.get(
+            "min_abs_base_h20_pct",
+            [gate_cfg.get("min_abs_base_h20_pct", 0.0)],
+        ),
+    }
+    candidates: list[dict] = []
+    for values in product(
+        value_grid["min_positive_examples"],
+        value_grid["min_positive_signal"],
+        value_grid["min_net_signal"],
+        value_grid["max_negative_signal"],
+        value_grid["min_abs_base_h20_pct"],
+    ):
+        candidate = dict(gate_cfg)
+        candidate["min_positive_examples"] = int(values[0])
+        candidate["min_positive_signal"] = float(values[1])
+        candidate["min_net_signal"] = float(values[2])
+        candidate["max_negative_signal"] = float(values[3])
+        candidate["min_abs_base_h20_pct"] = float(values[4])
+        candidate["name"] = (
+            f"p{int(values[0])}_ps{float(values[1]):.3f}_ns{float(values[2]):.3f}"
+            f"_neg{float(values[3]):.3f}_h20{float(values[4]):.2f}"
+        )
+        candidates.append(candidate)
+    return candidates
 
 
 def summarize_hindsight_feedback(
@@ -1838,6 +2679,77 @@ def run_experiment(
     # Fit scaler on training data
     scaler = StandardScaler()
     scaler.fit(splits['train']['X_enc'])
+
+    llm_context_feature_cols = feature_cols
+    llm_context_splits = splits
+    llm_prompt_feature_columns = parse_name_list(config.llm.get("prompt_feature_columns"))
+    llm_prompt_preferred_feature_order = parse_name_list(
+        config.llm.get("prompt_preferred_feature_order")
+    )
+    llm_prompt_max_exogenous = config.llm.get("prompt_max_exogenous_features")
+    if (
+        llm_prompt_feature_columns
+        or llm_prompt_preferred_feature_order
+        or llm_prompt_max_exogenous is not None
+    ):
+        if llm_prompt_feature_columns:
+            prompt_cols = [target_col]
+            missing_prompt_cols: list[str] = []
+            for name in llm_prompt_feature_columns:
+                if name == target_col:
+                    continue
+                if name in panel.columns and name not in prompt_cols:
+                    prompt_cols.append(name)
+                else:
+                    missing_prompt_cols.append(name)
+            if missing_prompt_cols:
+                logger.warning(
+                    "Ignoring missing llm.prompt_feature_columns: %s",
+                    ", ".join(missing_prompt_cols),
+                )
+            llm_context_feature_cols = prompt_cols
+        else:
+            llm_context_feature_cols = select_feature_columns(
+                panel,
+                target_col=target_col,
+                max_exogenous_features=int(
+                    llm_prompt_max_exogenous
+                    if llm_prompt_max_exogenous is not None
+                    else (config.features or {}).get("max_exogenous_features_model", 10)
+                ),
+                preferred_feature_order=llm_prompt_preferred_feature_order,
+            )
+
+        if llm_context_feature_cols != feature_cols:
+            llm_window_config = WindowConfig(
+                seq_len=config.seq_len,
+                label_len=config.label_len,
+                pred_len=config.pred_len,
+                target_col=target_col,
+                feature_cols=llm_context_feature_cols,
+            )
+            llm_X_enc, llm_X_dec, llm_y, llm_dates, llm_window_meta = make_windows(
+                panel,
+                llm_window_config,
+                mode="MS",
+                return_metadata=True,
+            )
+            if not np.array_equal(pd.to_datetime(llm_dates), pd.to_datetime(dates)):
+                raise ValueError("LLM prompt window dates do not align with model window dates")
+            llm_context_splits = split_windows(
+                llm_X_enc,
+                llm_X_dec,
+                llm_y,
+                llm_dates,
+                train_end=config.split.get('train_end', '2022-12-31'),
+                val_end=config.split.get('val_end', '2023-12-31'),
+                window_meta=llm_window_meta,
+            )
+            logger.info(
+                "Using separate LLM prompt feature slate with %d features (model uses %d)",
+                len(llm_context_feature_cols),
+                len(feature_cols),
+            )
     
     # Save datasets
     save_datasets(splits, scaler, run_dir / "data" / "datasets")
@@ -2329,7 +3241,7 @@ def run_experiment(
             tsm_lasso_config['model']['enc_in'] = len(selected_indices)
             tsm_lasso_config['model']['dec_in'] = len(selected_indices)
 
-            tsm_lasso_pred = _train_tsm(
+            tsm_lasso_artifacts = _train_tsm(
                 splits['train']['X_enc'][:, :, selected_indices],
                 splits['train']['X_dec'][:, :, selected_indices],
                 splits['train']['y'],
@@ -2341,18 +3253,52 @@ def run_experiment(
                 splits['test']['y'],
                 "tsm_lasso",
                 tsm_lasso_config,
+                return_artifacts=True,
             )
+
+            tsm_lasso_pred = tsm_lasso_artifacts["pred"]
+            tsm_lasso_model = tsm_lasso_artifacts["model"]
+            tsm_lasso_scaler = tsm_lasso_artifacts["scaler"]
+            tsm_lasso_datasets = tsm_lasso_artifacts["datasets"]
+
+            tsm_lasso_train_loader_eval = DataLoader(
+                tsm_lasso_datasets["train"],
+                batch_size=eval_batch_size,
+                num_workers=eval_workers,
+                pin_memory=eval_pin_memory,
+            )
+            tsm_lasso_val_loader_eval = DataLoader(
+                tsm_lasso_datasets["val"],
+                batch_size=eval_batch_size,
+                num_workers=eval_workers,
+                pin_memory=eval_pin_memory,
+            )
+
+            tsm_lasso_pred_train_scaled, _ = tsm_lasso_model.predict(tsm_lasso_train_loader_eval)
+            tsm_lasso_pred_val_scaled, _ = tsm_lasso_model.predict(tsm_lasso_val_loader_eval)
+
+            tsm_lasso_pred_train = tsm_lasso_scaler.inverse_transform_target(tsm_lasso_pred_train_scaled)
+            tsm_lasso_pred_val = tsm_lasso_scaler.inverse_transform_target(tsm_lasso_pred_val_scaled)
 
             if target_is_returns:
                 tsm_lasso_pred_eval = returns_to_prices(tsm_lasso_pred, y_test_base)
+                tsm_lasso_pred_train_eval = returns_to_prices(tsm_lasso_pred_train, y_train_base)
+                tsm_lasso_pred_val_eval = returns_to_prices(tsm_lasso_pred_val, y_val_base)
             else:
                 tsm_lasso_pred_eval = tsm_lasso_pred
+                tsm_lasso_pred_train_eval = tsm_lasso_pred_train
+                tsm_lasso_pred_val_eval = tsm_lasso_pred_val
 
             baseline_results['tsm_lasso'] = {
                 'predictions': tsm_lasso_pred_eval,
                 'metrics': compute_metrics_by_horizon(y_test_future, tsm_lasso_pred_eval, horizons),
                 'path_metrics': compute_path_metrics(y_test_future, tsm_lasso_pred_eval),
                 'errors': get_per_sample_errors(y_test_future, tsm_lasso_pred_eval, horizons)
+            }
+            llm_base_predictions['tsm_lasso'] = {
+                'train': tsm_lasso_pred_train_eval,
+                'val': tsm_lasso_pred_val_eval,
+                'test': tsm_lasso_pred_eval,
             }
 
             pred_df_lasso = pd.DataFrame({
@@ -2424,8 +3370,8 @@ def run_experiment(
             )
             exogenous_summaries = [
                 build_exogenous_summary(
-                    splits["test"]["X_enc"][i, -history_points:, :],
-                    feature_cols,
+                    llm_context_splits["test"]["X_enc"][i, -history_points:, :],
+                    llm_context_feature_cols,
                     target_col,
                     max_features=max_exo,
                     preferred_features=llm_exogenous_feature_priority,
@@ -2612,7 +3558,21 @@ def run_experiment(
             )
             val_subset_strategy = str(subset_cfg.get("val_strategy", subset_strategy)).lower()
             val_subset_seed = int(subset_cfg.get("val_seed", subset_seed))
-            export_val_predictions = bool(config.llm.get("export_val_predictions", False))
+            export_val_cfg = config.llm.get("export_val", {}) or {}
+            export_val_predictions = bool(
+                export_val_cfg.get(
+                    "enabled",
+                    config.llm.get("export_val_predictions", False),
+                )
+            )
+            export_val_scope = str(export_val_cfg.get("scope", "full")).lower()
+            export_val_recent_tail_fraction = float(
+                export_val_cfg.get("recent_tail_fraction", 1.0)
+            )
+            export_val_recent_tail_min_samples = int(
+                export_val_cfg.get("recent_tail_min_samples", 0)
+            )
+            export_val_max_samples = int(export_val_cfg.get("max_samples", 0))
 
             blend_grid_cfg = config.llm.get("blend_grid", {}) or {}
             blend_grid_enabled = bool(blend_grid_cfg.get("enabled", False))
@@ -2666,6 +3626,28 @@ def run_experiment(
                 default=[0.25, 0.40],
             )
             rule_gate_candidates = rule_gate_cfg.get("candidates")
+            online_memory_gate_tune_enabled_global = bool(
+                (
+                    (
+                        (
+                            (config.llm.get("cot_rf", {}) or {}).get("online_memory_policy", {}) or {}
+                        ).get("gate", {})
+                        or {}
+                    ).get("tune_on_val", {})
+                    or {}
+                ).get("enabled", False)
+            )
+            online_memory_gate_learned_enabled_global = bool(
+                (
+                    (
+                        (
+                            (config.llm.get("cot_rf", {}) or {}).get("online_memory_policy", {}) or {}
+                        ).get("gate", {})
+                        or {}
+                    ).get("learned", {})
+                    or {}
+                ).get("enabled", False)
+            )
 
             val_histories = None
             val_dates = None
@@ -2681,6 +3663,8 @@ def run_experiment(
                 or rule_gate_enabled
                 or delta_calib_enabled
                 or export_val_predictions
+                or online_memory_gate_tune_enabled_global
+                or online_memory_gate_learned_enabled_global
             ):
                 val_histories = y_val_hist[:, -history_points:]
                 val_dates = build_history_dates(
@@ -2691,8 +3675,8 @@ def run_experiment(
                 )
                 val_exogenous_summaries = [
                     build_exogenous_summary(
-                        splits["val"]["X_enc"][i, -history_points:, :],
-                        feature_cols,
+                        llm_context_splits["val"]["X_enc"][i, -history_points:, :],
+                        llm_context_feature_cols,
                         target_col,
                         max_features=max_exo,
                         preferred_features=llm_exogenous_feature_priority,
@@ -2862,6 +3846,12 @@ def run_experiment(
                     feature_window = int(cot_cfg.get("feature_window", 20))
                     lookback_days = cot_cfg.get("lookback_days")
                     lookback_days = int(lookback_days) if lookback_days is not None else None
+                    test_pool_mode = str(
+                        cot_cfg.get("test_pool_mode", "frozen")
+                    ).strip().lower()
+                    realized_memory_horizon = int(
+                        cot_cfg.get("realized_memory_horizon", config.pred_len)
+                    )
                     retrieval_feature_columns = parse_name_list(cot_cfg.get("retrieval_feature_columns"))
                     retrieval_max_features = int(
                         cot_cfg.get("retrieval_max_features", max(len(retrieval_feature_columns), max_exo))
@@ -2933,6 +3923,13 @@ def run_experiment(
                             aux_teacher_test_eval,
                         )
                     )
+                    if test_pool_mode not in {"frozen", "online_realized_memory"}:
+                        logger.warning(
+                            "Unknown cot_rf.test_pool_mode=%s for %s; falling back to frozen.",
+                            test_pool_mode,
+                            result_name,
+                        )
+                        test_pool_mode = "frozen"
 
                     def _history_features(hist: np.ndarray) -> np.ndarray:
                         window = hist[-feature_window:] if len(hist) >= feature_window else hist
@@ -3017,7 +4014,7 @@ def run_experiment(
                             )
                             prepared["history_features"] = history_features
                             retrieval_names = resolve_exogenous_feature_names(
-                                feature_cols,
+                                llm_context_feature_cols,
                                 target_col,
                                 preferred_features=exogenous_feature_priority,
                                 include_features=retrieval_feature_columns,
@@ -3031,7 +4028,7 @@ def run_experiment(
                                     [
                                         build_retrieval_feature_vector(
                                             window,
-                                            feature_cols,
+                                            llm_context_feature_cols,
                                             target_col,
                                             feature_window=feature_window,
                                             preferred_features=exogenous_feature_priority,
@@ -3061,7 +4058,7 @@ def run_experiment(
                                 [
                                     build_retrieval_feature_vector(
                                         window,
-                                        feature_cols,
+                                        llm_context_feature_cols,
                                         target_col,
                                         feature_window=feature_window,
                                         preferred_features=exogenous_feature_priority,
@@ -3110,7 +4107,7 @@ def run_experiment(
                         if augment_case_profiles_with_retrieval and reference_window is not None:
                             retrieval_vector = build_retrieval_feature_vector(
                                 reference_window,
-                                feature_cols,
+                                llm_context_feature_cols,
                                 target_col,
                                 feature_window=feature_window,
                                 preferred_features=exogenous_feature_priority,
@@ -3127,6 +4124,7 @@ def run_experiment(
                         reference_history: np.ndarray,
                         reference_forecast: np.ndarray | None = None,
                         reference_window: np.ndarray | None = None,
+                        k_override: int | None = None,
                     ) -> dict[str, object]:
                         reference_date = pd.Timestamp(reference_date).to_datetime64()
                         pos = np.searchsorted(pool["dates"], reference_date, side="left")
@@ -3156,7 +4154,7 @@ def run_experiment(
                             if candidate_indices.size == 0:
                                 candidate_indices = np.arange(pos, dtype=int)
 
-                        primary_k = int(k_examples)
+                        primary_k = int(k_override if k_override is not None else k_examples)
                         if include_counterexample_freeze and candidate_indices.size > 1:
                             primary_k = max(1, primary_k - 1)
                         roles: dict[int, str] = {}
@@ -3244,8 +4242,8 @@ def run_experiment(
                         elif selection_mode == "event_similarity":
                             retrieval_names = pool.get("retrieval_feature_names", np.array([], dtype=object))
                             sample_retrieval = build_retrieval_feature_vector(
-                                reference_window if reference_window is not None else np.zeros((0, len(feature_cols))),
-                                feature_cols,
+                                reference_window if reference_window is not None else np.zeros((0, len(llm_context_feature_cols))),
+                                llm_context_feature_cols,
                                 target_col,
                                 feature_window=feature_window,
                                 preferred_features=exogenous_feature_priority,
@@ -3415,7 +4413,7 @@ def run_experiment(
                             if include_example_exogenous_summary and pool.get("windows") is not None:
                                 exogenous_summary = build_exogenous_summary(
                                     pool["windows"][idx],
-                                    feature_cols,
+                                    llm_context_feature_cols,
                                     target_col,
                                     max_features=example_exogenous_max_features,
                                     preferred_features=exogenous_feature_priority,
@@ -3478,9 +4476,589 @@ def run_experiment(
                             )
                         return examples
 
+                    online_memory_policy_cfg = dict(
+                        cot_cfg.get("online_memory_policy", {}) or {}
+                    )
+                    online_memory_policy_enabled = bool(
+                        test_pool_mode == "online_realized_memory"
+                        and online_memory_policy_cfg.get("enabled", False)
+                    )
+                    online_memory_support_examples = int(
+                        online_memory_policy_cfg.get("support_examples", k_examples)
+                    )
+                    online_memory_positive_examples = int(
+                        online_memory_policy_cfg.get("positive_examples", 2)
+                    )
+                    online_memory_negative_examples = int(
+                        online_memory_policy_cfg.get("negative_examples", 1)
+                    )
+                    online_memory_max_total_examples = int(
+                        online_memory_policy_cfg.get(
+                            "max_total_examples",
+                            online_memory_support_examples
+                            + online_memory_positive_examples
+                            + online_memory_negative_examples,
+                        )
+                    )
+                    online_memory_positive_margin = float(
+                        online_memory_policy_cfg.get("positive_margin", 0.01)
+                    )
+                    online_memory_negative_margin = float(
+                        online_memory_policy_cfg.get("negative_margin", -0.01)
+                    )
+                    online_memory_warmup_min_realized = int(
+                        online_memory_policy_cfg.get("warmup_min_realized", 4)
+                    )
+                    online_memory_store_neutral = bool(
+                        online_memory_policy_cfg.get("store_neutral", False)
+                    )
+                    online_memory_gate_cfg = dict(
+                        online_memory_policy_cfg.get("gate", {}) or {}
+                    )
+                    online_memory_gate_learned_cfg = dict(
+                        online_memory_gate_cfg.get("learned", {}) or {}
+                    )
+                    online_memory_gate_learned_enabled = bool(
+                        online_memory_gate_learned_cfg.get("enabled", False)
+                    )
+                    online_memory_gate_tune_cfg = dict(
+                        online_memory_gate_cfg.get("tune_on_val", {}) or {}
+                    )
+                    online_memory_gate_tune_enabled = bool(
+                        online_memory_gate_tune_cfg.get("enabled", False)
+                    )
+                    online_memory_admission_cfg = dict(
+                        online_memory_policy_cfg.get("admission", {}) or {}
+                    )
+                    online_memory_regime_cfg = dict(
+                        online_memory_policy_cfg.get("regime", {}) or {}
+                    )
+                    online_memory_prototype_cfg = dict(
+                        online_memory_policy_cfg.get("prototype", {}) or {}
+                    )
+                    online_memory_horizon_cfg = dict(
+                        online_memory_policy_cfg.get("horizon_specific", {}) or {}
+                    )
+                    online_memory_horizon_enabled = bool(
+                        online_memory_horizon_cfg.get("enabled", False)
+                    )
+                    online_memory_split_banks_enabled = bool(
+                        online_memory_horizon_cfg.get("split_memory_banks", False)
+                    )
+                    online_memory_admission_horizons = sorted(
+                        {
+                            int(x)
+                            for x in _parse_float_list(
+                                online_memory_horizon_cfg.get("admission_horizons"),
+                                default=[20, 30] if online_memory_horizon_enabled else [realized_memory_horizon],
+                            )
+                        }
+                    )
+                    online_memory_target_horizons = (
+                        online_memory_admission_horizons if online_memory_horizon_enabled else None
+                    )
+                    online_memory_positive_examples_per_horizon = int(
+                        online_memory_horizon_cfg.get(
+                            "positive_examples_per_horizon",
+                            max(1, online_memory_positive_examples),
+                        )
+                    )
+                    online_memory_negative_examples_per_horizon = int(
+                        online_memory_horizon_cfg.get(
+                            "negative_examples_per_horizon",
+                            max(1, online_memory_negative_examples),
+                        )
+                    )
+                    online_memory_regime_enabled = bool(
+                        online_memory_regime_cfg.get("enabled", False)
+                    )
+                    online_memory_regime_min_overlap = int(
+                        online_memory_regime_cfg.get("min_overlap", 3)
+                    )
+                    online_memory_prototype_enabled = bool(
+                        online_memory_prototype_cfg.get("enabled", False)
+                    )
+                    online_memory_prototype_top_pool_size = int(
+                        online_memory_prototype_cfg.get(
+                            "top_pool_size",
+                            max(
+                                online_memory_positive_examples + online_memory_negative_examples,
+                                4,
+                            ),
+                        )
+                    )
+
+                    def _sentiment_history_for_sample(
+                        split_name: str,
+                        sample_idx: int,
+                    ) -> list[float]:
+                        if not sentiment_map:
+                            return []
+                        split_dates = {
+                            "train": splits["train"]["dates"],
+                            "val": splits["val"]["dates"],
+                            "test": splits["test"]["dates"],
+                        }
+                        ex_date = pd.Timestamp(split_dates[split_name][sample_idx])
+                        ex_dates = build_history_dates(
+                            panel_dates,
+                            date_to_idx,
+                            np.array([ex_date]),
+                            history_points,
+                        )[0]
+                        return build_sentiment_histories(
+                            [ex_dates],
+                            sentiment_map,
+                            sentiment_points,
+                        )[0]
+
+                    def _build_online_memory_example(
+                        record: dict,
+                        selection_role: str,
+                    ) -> dict:
+                        case_summary = dict(record.get("case_summary") or {})
+                        case_summary["selection_role"] = str(selection_role)
+                        case_summary["retrieval_tag"] = str(record.get("retrieval_tag", ""))
+                        case_summary["memory_helpfulness_score"] = f"{float(record.get('helpfulness_score', 0.0)):+.4f}"
+                        case_summary["memory_admission_label"] = str(
+                            record.get("admission_label", "")
+                        )
+                        case_summary["memory_rank"] = int(record.get("memory_rank", 0))
+                        case_summary["memory_similarity"] = f"{float(record.get('memory_similarity', 0.0)):.3f}"
+                        return {
+                            "history": np.asarray(record.get("history", []), dtype=float),
+                            "forecast": np.asarray(record.get("forecast", []), dtype=float),
+                            "truth": np.asarray(record.get("truth", []), dtype=float),
+                            "date": str(record.get("date", "")),
+                            "sentiment_history": list(record.get("sentiment_history") or []),
+                            "exogenous_summary": record.get("exogenous_summary"),
+                            "case_summary": case_summary,
+                            "retrieval_tag": str(record.get("retrieval_tag") or ""),
+                        }
+
+                    def _online_memory_split_arrays(split_name: str) -> dict[str, object]:
+                        split_name = str(split_name).strip().lower()
+                        if split_name == "val":
+                            return {
+                                "dates": splits["val"]["dates"],
+                                "histories": y_val_hist,
+                                "futures": y_val_future,
+                                "base_eval": llm_base_val_eval,
+                                "base_prices": y_val_base,
+                                "refiner_histories": val_histories,
+                                "refiner_dates": val_dates,
+                                "context_windows": llm_context_splits["val"]["X_enc"][:, -history_points:, :],
+                                "support_pool": val_pool,
+                            }
+                        if split_name == "test":
+                            return {
+                                "dates": splits["test"]["dates"],
+                                "histories": y_test_hist,
+                                "futures": y_test_future,
+                                "base_eval": llm_base_test_eval,
+                                "base_prices": y_test_base,
+                                "refiner_histories": llm_histories,
+                                "refiner_dates": test_dates,
+                                "context_windows": llm_context_splits["test"]["X_enc"][:, -history_points:, :],
+                                "support_pool": test_pool,
+                            }
+                        raise ValueError(f"Unsupported online memory split: {split_name}")
+
+                    def _online_memory_availability_dates(
+                        split_dates: np.ndarray,
+                        horizons_list: Sequence[int],
+                    ) -> dict[int, np.ndarray]:
+                        availability: dict[int, np.ndarray] = {}
+                        for horizon in horizons_list:
+                            availability[int(horizon)] = build_realized_availability_dates(
+                                panel_dates,
+                                date_to_idx,
+                                split_dates,
+                                int(horizon),
+                            )
+                        return availability
+
+                    def _run_online_memory_refinement_for_split(
+                        split_name: str,
+                        eval_indices: np.ndarray,
+                        *,
+                        gate_cfg_override: Optional[dict] = None,
+                        learned_gate_bundle: Optional[dict] = None,
+                        seed_records: Optional[Sequence[dict]] = None,
+                    ) -> tuple[np.ndarray, list[dict], list[list[dict]], list[dict]]:
+                        split_arrays = _online_memory_split_arrays(split_name)
+                        split_dates_arr = np.asarray(split_arrays["dates"])
+                        split_histories = np.asarray(split_arrays["histories"], dtype=float)
+                        split_futures = np.asarray(split_arrays["futures"], dtype=float)
+                        split_base_eval = np.asarray(split_arrays["base_eval"], dtype=float)
+                        split_base_prices = np.asarray(split_arrays["base_prices"], dtype=float)
+                        split_refiner_histories = np.asarray(split_arrays["refiner_histories"], dtype=float)
+                        split_refiner_dates = split_arrays["refiner_dates"]
+                        split_context_windows = np.asarray(split_arrays["context_windows"], dtype=float)
+                        split_support_pool = split_arrays["support_pool"]
+                        split_availability_dates = _online_memory_availability_dates(
+                            split_dates_arr,
+                            online_memory_admission_horizons,
+                        )
+                        active_gate_cfg = dict(online_memory_gate_cfg)
+                        if gate_cfg_override:
+                            active_gate_cfg.update(gate_cfg_override)
+
+                        eval_indices = np.asarray(eval_indices, dtype=int)
+                        n_samples = len(eval_indices)
+                        ordered_positions = sorted(
+                            range(n_samples),
+                            key=lambda pos: pd.Timestamp(split_dates_arr[eval_indices[pos]]),
+                        )
+                        pred_matrix = np.zeros((n_samples, config.pred_len), dtype=float)
+                        meta_list: list[dict] = [{} for _ in range(n_samples)]
+                        teaching_examples_by_position: list[list[dict]] = [[] for _ in range(n_samples)]
+                        online_memory_records: list[dict] = [dict(record) for record in (seed_records or [])]
+
+                        for row_pos in ordered_positions:
+                            sample_idx = int(eval_indices[row_pos])
+                            reference_date = pd.Timestamp(split_dates_arr[sample_idx])
+                            reference_window = split_context_windows[sample_idx]
+                            reference_profile = _reference_case_profile(
+                                split_histories[sample_idx],
+                                split_base_eval[sample_idx],
+                                reference_window,
+                            )
+                            reference_tag = _profile_regime_tag(reference_profile)
+                            support_bundle = _select_example_indices(
+                                split_support_pool,
+                                split_dates_arr[sample_idx],
+                                split_histories[sample_idx],
+                                split_base_eval[sample_idx],
+                                reference_window,
+                                k_override=online_memory_support_examples,
+                            )
+                            support_examples = _build_examples(split_support_pool, support_bundle)
+
+                            available_records = [
+                                dict(record)
+                                for record in online_memory_records
+                                if pd.Timestamp(record.get("availability_date")).to_datetime64()
+                                <= reference_date.to_datetime64()
+                                and str(record.get("admission_label", "")) in {"positive", "negative"}
+                            ]
+                            positive_records_by_horizon: dict[int, list[dict]] = {}
+                            negative_records_by_horizon: dict[int, list[dict]] = {}
+                            if online_memory_split_banks_enabled and online_memory_horizon_enabled:
+                                for memory_horizon in online_memory_admission_horizons:
+                                    positive_records_by_horizon[int(memory_horizon)] = select_online_memory_records(
+                                        available_records,
+                                        reference_profile,
+                                        label="positive",
+                                        k_examples=online_memory_positive_examples_per_horizon,
+                                        reference_tag=reference_tag if online_memory_regime_enabled else None,
+                                        min_tag_overlap=online_memory_regime_min_overlap,
+                                        target_horizons=[int(memory_horizon)],
+                                        prototype_enabled=online_memory_prototype_enabled,
+                                        prototype_top_pool_size=online_memory_prototype_top_pool_size,
+                                    )
+                                    negative_records_by_horizon[int(memory_horizon)] = select_online_memory_records(
+                                        available_records,
+                                        reference_profile,
+                                        label="negative",
+                                        k_examples=online_memory_negative_examples_per_horizon,
+                                        reference_tag=reference_tag if online_memory_regime_enabled else None,
+                                        min_tag_overlap=online_memory_regime_min_overlap,
+                                        target_horizons=[int(memory_horizon)],
+                                        prototype_enabled=online_memory_prototype_enabled,
+                                        prototype_top_pool_size=online_memory_prototype_top_pool_size,
+                                    )
+                                positive_records = [
+                                    dict(record)
+                                    for memory_horizon in online_memory_admission_horizons
+                                    for record in positive_records_by_horizon.get(int(memory_horizon), [])
+                                ]
+                                negative_records = [
+                                    dict(record)
+                                    for memory_horizon in online_memory_admission_horizons
+                                    for record in negative_records_by_horizon.get(int(memory_horizon), [])
+                                ]
+                            else:
+                                positive_records = select_online_memory_records(
+                                    available_records,
+                                    reference_profile,
+                                    label="positive",
+                                    k_examples=online_memory_positive_examples,
+                                    reference_tag=reference_tag if online_memory_regime_enabled else None,
+                                    min_tag_overlap=online_memory_regime_min_overlap,
+                                    target_horizons=online_memory_target_horizons,
+                                    prototype_enabled=online_memory_prototype_enabled,
+                                    prototype_top_pool_size=online_memory_prototype_top_pool_size,
+                                )
+                                negative_records = select_online_memory_records(
+                                    available_records,
+                                    reference_profile,
+                                    label="negative",
+                                    k_examples=online_memory_negative_examples,
+                                    reference_tag=reference_tag if online_memory_regime_enabled else None,
+                                    min_tag_overlap=online_memory_regime_min_overlap,
+                                    target_horizons=online_memory_target_horizons,
+                                    prototype_enabled=online_memory_prototype_enabled,
+                                    prototype_top_pool_size=online_memory_prototype_top_pool_size,
+                                )
+                                positive_records_by_horizon = {}
+                                negative_records_by_horizon = {}
+                            warmup_ready = (
+                                len(available_records) >= online_memory_warmup_min_realized
+                            )
+                            gate_decision = build_online_memory_gate_decision(
+                                positive_records=positive_records,
+                                negative_records=negative_records,
+                                base_forecast=split_base_eval[sample_idx],
+                                current_price=float(split_base_prices[sample_idx]),
+                                warmup_ready=warmup_ready,
+                                gate_cfg=active_gate_cfg,
+                                learned_gate_bundle=learned_gate_bundle,
+                                reference_profile=reference_profile,
+                                support_example_count=len(support_examples),
+                            )
+
+                            memory_examples: list[dict] = []
+                            if online_memory_split_banks_enabled and online_memory_horizon_enabled:
+                                for memory_horizon in online_memory_admission_horizons:
+                                    for record in positive_records_by_horizon.get(int(memory_horizon), []):
+                                        memory_examples.append(
+                                            _build_online_memory_example(
+                                                record,
+                                                f"positive_memory_h{int(memory_horizon)}",
+                                            )
+                                        )
+                                    for record in negative_records_by_horizon.get(int(memory_horizon), []):
+                                        memory_examples.append(
+                                            _build_online_memory_example(
+                                                record,
+                                                f"negative_memory_h{int(memory_horizon)}",
+                                            )
+                                        )
+                            else:
+                                memory_examples = [
+                                    _build_online_memory_example(record, "positive_memory")
+                                    for record in positive_records
+                                ] + [
+                                    _build_online_memory_example(record, "negative_memory")
+                                    for record in negative_records
+                                ]
+                            teaching_examples = list(support_examples) + memory_examples
+                            if online_memory_max_total_examples > 0:
+                                teaching_examples = teaching_examples[:online_memory_max_total_examples]
+                            teaching_examples_by_position[row_pos] = teaching_examples
+
+                            base_pred = np.asarray(split_base_eval[sample_idx], dtype=float)
+                            if not gate_decision.get("apply_llm", True):
+                                pred_matrix[row_pos] = base_pred
+                                meta_list[row_pos] = {
+                                    "method": method,
+                                    "success": True,
+                                    "applied": False,
+                                    "online_memory_gate": gate_decision,
+                                    "online_memory_support_examples": int(len(support_examples)),
+                                    "online_memory_positive_examples": int(len(positive_records)),
+                                    "online_memory_negative_examples": int(len(negative_records)),
+                                    "online_memory_reason": str(gate_decision.get("reason", "")),
+                                }
+                                continue
+
+                            sample_exogenous = (
+                                None
+                            )
+                            split_sentiment_histories = (
+                                sentiment_histories
+                                if split_name == "test"
+                                else val_sentiment_histories
+                            )
+                            sample_sentiment = (
+                                split_sentiment_histories[sample_idx]
+                                if split_sentiment_histories is not None
+                                and sample_idx < len(split_sentiment_histories)
+                                else None
+                            )
+                            pred, meta = refiner.refine(
+                                method=method,
+                                history=split_refiner_histories[sample_idx],
+                                dates=split_refiner_dates[sample_idx],
+                                tsm_forecast=base_pred,
+                                pred_len=config.pred_len,
+                                exogenous_summary=sample_exogenous,
+                                price_base=float(split_base_prices[sample_idx]),
+                                teaching_examples=teaching_examples,
+                                sentiment_history=sample_sentiment,
+                            )
+                            if pred is None:
+                                pred = base_pred.copy()
+                            pred = np.asarray(pred, dtype=float)
+                            if pred.shape != base_pred.shape:
+                                pred = base_pred.copy()
+                            pred_matrix[row_pos] = pred
+                            sample_meta = dict(meta or {})
+                            sample_meta["online_memory_gate"] = gate_decision
+                            sample_meta["online_memory_support_examples"] = int(len(support_examples))
+                            sample_meta["online_memory_positive_examples"] = int(len(positive_records))
+                            sample_meta["online_memory_negative_examples"] = int(len(negative_records))
+                            sample_meta["online_memory_reason"] = str(gate_decision.get("reason", ""))
+                            meta_list[row_pos] = sample_meta
+
+                            if sample_meta.get("success", True):
+                                helpfulness_score = compute_online_memory_helpfulness(
+                                    base_pred,
+                                    pred,
+                                    split_futures[sample_idx],
+                                    path_weight=float(
+                                        online_memory_admission_cfg.get("path_weight", 0.40)
+                                    ),
+                                    h5_weight=float(
+                                        online_memory_admission_cfg.get("h5_weight", 0.05)
+                                    ),
+                                    h20_weight=float(
+                                        online_memory_admission_cfg.get("h20_weight", 0.30)
+                                    ),
+                                    h30_weight=float(
+                                        online_memory_admission_cfg.get("h30_weight", 0.25)
+                                    ),
+                                )
+                                horizon_gains = compute_online_memory_horizon_gains(
+                                    base_pred,
+                                    pred,
+                                    split_futures[sample_idx],
+                                )
+                                memory_horizons = (
+                                    online_memory_admission_horizons
+                                    if online_memory_horizon_enabled
+                                    else [config.pred_len]
+                                )
+                                for memory_horizon in memory_horizons:
+                                    horizon_idx = int(memory_horizon) - 1
+                                    if horizon_idx >= len(base_pred) or horizon_idx >= split_futures.shape[1]:
+                                        continue
+                                    if online_memory_horizon_enabled:
+                                        record_base_pred = base_pred[: int(memory_horizon)].copy()
+                                        record_pred = pred[: int(memory_horizon)].copy()
+                                        record_truth = np.asarray(
+                                            split_futures[sample_idx, : int(memory_horizon)],
+                                            dtype=float,
+                                        )
+                                        record_helpfulness = float(
+                                            horizon_gains.get(int(memory_horizon), helpfulness_score)
+                                        )
+                                        target_horizon = int(memory_horizon)
+                                    else:
+                                        record_base_pred = base_pred.copy()
+                                        record_pred = pred.copy()
+                                        record_truth = np.asarray(split_futures[sample_idx], dtype=float)
+                                        record_helpfulness = float(helpfulness_score)
+                                        target_horizon = None
+
+                                    admission_label = classify_online_memory_admission(
+                                        record_helpfulness,
+                                        horizon_gains,
+                                        positive_margin=online_memory_positive_margin,
+                                        negative_margin=online_memory_negative_margin,
+                                        positive_min_h20_gain=online_memory_admission_cfg.get("positive_min_h20_gain"),
+                                        positive_min_h30_gain=online_memory_admission_cfg.get("positive_min_h30_gain"),
+                                        positive_max_h5_damage=online_memory_admission_cfg.get("positive_max_h5_damage"),
+                                        negative_max_h20_gain=online_memory_admission_cfg.get("negative_max_h20_gain"),
+                                        negative_max_h30_gain=online_memory_admission_cfg.get("negative_max_h30_gain"),
+                                        target_horizon=target_horizon,
+                                        positive_min_target_gain=online_memory_admission_cfg.get("positive_min_target_gain"),
+                                        negative_max_target_gain=online_memory_admission_cfg.get("negative_max_target_gain"),
+                                    )
+                                    if (
+                                        admission_label not in {"positive", "negative"}
+                                        and not online_memory_store_neutral
+                                    ):
+                                        continue
+                                    anchor_error_pct = {}
+                                    for horizon in (1, 5, 20, 30):
+                                        arr_idx = int(horizon) - 1
+                                        if arr_idx >= len(record_base_pred) or arr_idx >= len(record_truth):
+                                            continue
+                                        denom = (
+                                            float(record_base_pred[arr_idx])
+                                            if abs(float(record_base_pred[arr_idx])) > 1e-8
+                                            else float(record_truth[arr_idx])
+                                        )
+                                        denom = denom if abs(denom) > 1e-8 else 1.0
+                                        anchor_error_pct[int(horizon)] = float(
+                                            (float(record_base_pred[arr_idx]) - float(record_truth[arr_idx]))
+                                            / denom
+                                            * 100.0
+                                        )
+
+                                    case_summary: dict[str, object] = {
+                                        "retrieval_tag": reference_tag,
+                                    }
+                                    if include_hindsight_feedback:
+                                        hindsight = summarize_hindsight_feedback(
+                                            anchor_error_pct,
+                                            mode=str(cot_cfg.get("feedback_mode", "standard")),
+                                        )
+                                        if hindsight:
+                                            case_summary["hindsight_feedback"] = hindsight
+
+                                    record_exogenous_summary = None
+                                    if include_example_exogenous_summary:
+                                        record_exogenous_summary = build_exogenous_summary(
+                                            reference_window,
+                                            llm_context_feature_cols,
+                                            target_col,
+                                            max_features=example_exogenous_max_features,
+                                            preferred_features=exogenous_feature_priority,
+                                            include_features=retrieval_feature_columns,
+                                        )
+
+                                    online_memory_records.append(
+                                        {
+                                            "date": str(reference_date),
+                                            "availability_date": str(
+                                                pd.Timestamp(
+                                                    split_availability_dates.get(
+                                                        int(memory_horizon),
+                                                        split_availability_dates[
+                                                            int(online_memory_admission_horizons[-1])
+                                                        ],
+                                                    )[sample_idx]
+                                                )
+                                            ),
+                                            "history": np.asarray(split_histories[sample_idx], dtype=float),
+                                            "forecast": record_base_pred.copy(),
+                                            "truth": record_truth.copy(),
+                                            "llm_forecast": record_pred.copy(),
+                                            "case_profile": np.asarray(reference_profile, dtype=float),
+                                            "retrieval_tag": str(reference_tag),
+                                            "case_summary": case_summary,
+                                            "helpfulness_score": float(record_helpfulness),
+                                            "helpfulness_path_score": float(helpfulness_score),
+                                            "gain_h5": float(horizon_gains.get(5, 0.0)),
+                                            "gain_h20": float(horizon_gains.get(20, 0.0)),
+                                            "gain_h30": float(horizon_gains.get(30, 0.0)),
+                                            "memory_horizon": int(memory_horizon),
+                                            "admission_label": str(admission_label),
+                                            "sentiment_history": _sentiment_history_for_sample(
+                                                split_name,
+                                                sample_idx,
+                                            ),
+                                            "exogenous_summary": record_exogenous_summary,
+                                        }
+                                    )
+
+                        return pred_matrix, meta_list, teaching_examples_by_position, online_memory_records
+
                     # Strict non-leaking pools:
                     # - validation examples may only use training truths
-                    # - test examples may only use training + validation truths
+                    # - frozen test mode only uses training + validation truths
+                    # - online_realized_memory may additionally use prior test cases
+                    #   whose full forecast path is already realized by the
+                    #   current prediction date
+                    logger.info(
+                        "%s teaching pool mode=%s (realized_memory_horizon=%d)",
+                        result_name,
+                        test_pool_mode,
+                        realized_memory_horizon,
+                    )
                     val_aux_forecasts = (
                         {aux_teacher_model_name: aux_teacher_train_eval}
                         if aux_teacher_available
@@ -3491,7 +5069,7 @@ def run_experiment(
                         y_train_hist,
                         llm_base_train_eval,
                         y_train_future,
-                        splits["train"]["X_enc"][:, -history_points:, :],
+                        llm_context_splits["train"]["X_enc"][:, -history_points:, :],
                         val_aux_forecasts,
                     )
                     test_aux_forecasts = (
@@ -3510,28 +5088,96 @@ def run_experiment(
                         np.concatenate([y_train_future, y_val_future]),
                         np.concatenate(
                             [
-                                splits["train"]["X_enc"][:, -history_points:, :],
-                                splits["val"]["X_enc"][:, -history_points:, :],
+                                llm_context_splits["train"]["X_enc"][:, -history_points:, :],
+                                llm_context_splits["val"]["X_enc"][:, -history_points:, :],
                             ]
                         ),
                         test_aux_forecasts,
                     )
+                    test_pool_base_dates = np.concatenate(
+                        [splits["train"]["dates"], splits["val"]["dates"]]
+                    )
+                    test_pool_base_histories = np.concatenate([y_train_hist, y_val_hist])
+                    test_pool_base_forecasts = np.concatenate(
+                        [llm_base_train_eval, llm_base_val_eval]
+                    )
+                    test_pool_base_truth = np.concatenate([y_train_future, y_val_future])
+                    test_pool_base_windows = np.concatenate(
+                        [
+                            llm_context_splits["train"]["X_enc"][:, -history_points:, :],
+                            llm_context_splits["val"]["X_enc"][:, -history_points:, :],
+                        ]
+                    )
+                    test_realized_availability_dates = None
+                    if test_pool_mode == "online_realized_memory":
+                        test_realized_availability_dates = build_realized_availability_dates(
+                            panel_dates,
+                            date_to_idx,
+                            splits["test"]["dates"],
+                            realized_memory_horizon,
+                        )
+
+                    def _test_example_pool_for_sample(sample_idx: int) -> dict:
+                        if test_pool_mode != "online_realized_memory":
+                            return test_pool
+                        reference_date = pd.Timestamp(splits["test"]["dates"][sample_idx]).to_datetime64()
+                        prior_indices = np.arange(len(splits["test"]["dates"]), dtype=int) < int(sample_idx)
+                        realized_indices = test_realized_availability_dates <= reference_date
+                        eligible_test_indices = np.where(prior_indices & realized_indices)[0]
+                        if eligible_test_indices.size == 0:
+                            return test_pool
+                        online_aux_forecasts = None
+                        if aux_teacher_available:
+                            online_aux_forecasts = {
+                                aux_teacher_model_name: np.concatenate(
+                                    [
+                                        aux_teacher_train_eval,
+                                        aux_teacher_val_eval,
+                                        aux_teacher_test_eval[eligible_test_indices],
+                                    ]
+                                )
+                            }
+                        return _prepare_example_pool(
+                            np.concatenate(
+                                [test_pool_base_dates, splits["test"]["dates"][eligible_test_indices]]
+                            ),
+                            np.concatenate(
+                                [test_pool_base_histories, y_test_hist[eligible_test_indices]]
+                            ),
+                            np.concatenate(
+                                [test_pool_base_forecasts, llm_base_test_eval[eligible_test_indices]]
+                            ),
+                            np.concatenate(
+                                [test_pool_base_truth, y_test_future[eligible_test_indices]]
+                            ),
+                            np.concatenate(
+                                [
+                                    test_pool_base_windows,
+                                    llm_context_splits["test"]["X_enc"][
+                                        eligible_test_indices, -history_points:, :
+                                    ],
+                                ]
+                            ),
+                            online_aux_forecasts,
+                        )
 
                     teaching_examples_subset = []
                     val_teaching_examples_subset = []
                     val_teaching_examples_rule_gate = []
                     val_teaching_examples_delta = []
-                    for sample_idx in llm_eval_indices:
-                        example_indices = _select_example_indices(
-                            test_pool,
-                            splits["test"]["dates"][sample_idx],
-                            y_test_hist[sample_idx],
-                            llm_base_test_eval[sample_idx],
-                            splits["test"]["X_enc"][sample_idx, -history_points:, :],
-                        )
-                        teaching_examples_subset.append(
-                            _build_examples(test_pool, example_indices)
-                        )
+                    if not online_memory_policy_enabled:
+                        for sample_idx in llm_eval_indices:
+                            sample_test_pool = _test_example_pool_for_sample(int(sample_idx))
+                            example_indices = _select_example_indices(
+                                sample_test_pool,
+                                splits["test"]["dates"][sample_idx],
+                                y_test_hist[sample_idx],
+                                llm_base_test_eval[sample_idx],
+                                llm_context_splits["test"]["X_enc"][sample_idx, -history_points:, :],
+                            )
+                            teaching_examples_subset.append(
+                                _build_examples(sample_test_pool, example_indices)
+                            )
 
                     val_needed = []
                     if val_eval_indices_grid is not None and len(val_eval_indices_grid) > 0:
@@ -3549,7 +5195,7 @@ def run_experiment(
                             splits["val"]["dates"][sample_idx],
                             y_val_hist[sample_idx],
                             llm_base_val_eval[sample_idx],
-                            splits["val"]["X_enc"][sample_idx, -history_points:, :],
+                            llm_context_splits["val"]["X_enc"][sample_idx, -history_points:, :],
                         )
                         val_example_map[int(sample_idx)] = _build_examples(val_pool, example_indices)
 
@@ -3597,6 +5243,8 @@ def run_experiment(
                     method_exogenous = exogenous_subset
                     method_price_bases = price_bases
                     method_sentiment = sentiment_subset
+                    selected_online_memory_gate_cfg = None
+                    selected_online_memory_learned_bundle = None
                     if (
                         include_current_aux_teacher_summary
                         and aux_teacher_available
@@ -3615,24 +5263,231 @@ def run_experiment(
                     if method == "NEWS-SENTIMENT-ONLY":
                         method_tsm_forecast = None
 
-                    predictions, metadata = refiner.refine_batch(
-                        method=method,
-                        histories=histories_subset,
-                        date_arrays=dates_subset,
-                        tsm_forecasts=method_tsm_forecast,
-                        pred_len=config.pred_len,
-                        exogenous_summaries=method_exogenous,
-                        price_bases=method_price_bases,
-                        teaching_examples=(
-                            teaching_examples_subset
-                            if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA", "TSM+LLM-COT-SENT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HPRICE")
-                            else None
-                        ),
-                        sentiment_histories=method_sentiment,
-                        checkpoint_dir=checkpoint_dir,
-                        resume_checkpoint_dir=resume_checkpoint_dir,
-                        sample_keys=[str(int(i)) for i in llm_eval_indices],
-                    )
+                    if (
+                        online_memory_policy_enabled
+                        and method
+                        in (
+                            "TSM+LLM-COT-RF",
+                            "TSM+LLM-COT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF",
+                            "TSM+LLM-COT-SENT-RF-DELTA",
+                            "TSM+LLM-COT-SENT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF-HPRICE",
+                        )
+                    ):
+                        if online_memory_gate_learned_enabled:
+                            learned_scope = str(
+                                online_memory_gate_learned_cfg.get("scope", "recent_tail")
+                            ).lower()
+                            tune_val_indices = np.arange(len(y_val_hist), dtype=int)
+                            if learned_scope in {"recent", "recent_tail", "tail"}:
+                                tune_val_indices = restrict_to_recent_tail(
+                                    tune_val_indices,
+                                    tail_fraction=float(
+                                        online_memory_gate_learned_cfg.get("recent_tail_fraction", 0.5)
+                                    ),
+                                    min_samples=int(
+                                        online_memory_gate_learned_cfg.get("recent_tail_min_samples", 80)
+                                    ),
+                                )
+                            learned_max_samples = int(
+                                online_memory_gate_learned_cfg.get("max_samples", len(tune_val_indices))
+                            )
+                            if learned_max_samples > 0 and len(tune_val_indices) > learned_max_samples:
+                                tune_val_indices = np.asarray(tune_val_indices[-learned_max_samples:], dtype=int)
+
+                            val_online_pred, val_online_meta, _, _ = _run_online_memory_refinement_for_split(
+                                "val",
+                                tune_val_indices,
+                                gate_cfg_override={"always_apply": True},
+                                learned_gate_bundle=None,
+                            )
+                            val_feature_df = build_online_memory_gate_feature_frame(
+                                [
+                                    dict(meta.get("online_memory_gate") or {})
+                                    for meta in val_online_meta
+                                ]
+                            )
+                            val_labels, val_label_df = build_online_memory_gate_labels(
+                                y_true=y_val_future[tune_val_indices],
+                                base_pred=llm_base_val_eval[tune_val_indices],
+                                llm_pred=val_online_pred,
+                                label_cfg=online_memory_gate_learned_cfg,
+                            )
+                            learned_bundle, learned_dataset = fit_online_memory_learned_gate(
+                                feature_df=val_feature_df,
+                                labels=val_labels,
+                                learned_cfg=online_memory_gate_learned_cfg,
+                            )
+                            if learned_bundle is not None:
+                                train_size = int(learned_bundle.get("train_size", 0))
+                                select_size = int(learned_bundle.get("select_size", 0))
+                                pre_refit_train_size = int(train_size)
+                                pre_refit_select_size = int(select_size)
+                                val_select_df = learned_dataset.iloc[train_size : train_size + select_size].copy()
+                                selection_fallback_used = False
+                                if val_select_df.empty:
+                                    selection_fallback_used = True
+                                    val_select_df = learned_dataset.copy()
+                                threshold_grid = _parse_float_list(
+                                    online_memory_gate_learned_cfg.get("probability_threshold_grid"),
+                                    default=[0.35, 0.45, 0.50, 0.55, 0.60, 0.70],
+                                )
+                                val_gate_summary, _ = evaluate_online_memory_learned_gate_thresholds(
+                                    y_true=y_val_future[tune_val_indices][val_select_df["row_idx"].to_numpy(dtype=int)],
+                                    base_pred=llm_base_val_eval[tune_val_indices][val_select_df["row_idx"].to_numpy(dtype=int)],
+                                    llm_pred=val_online_pred[val_select_df["row_idx"].to_numpy(dtype=int)],
+                                    feature_df=val_feature_df.iloc[val_select_df["row_idx"].to_numpy(dtype=int)].reset_index(drop=True),
+                                    learned_gate_bundle=learned_bundle,
+                                    thresholds=threshold_grid,
+                                    horizons=horizons,
+                                )
+                                gate_metric = str(
+                                    online_memory_gate_learned_cfg.get("metric", "mse_path")
+                                )
+                                if gate_metric not in val_gate_summary.columns:
+                                    gate_metric = "mse_path"
+                                best_row = val_gate_summary.loc[val_gate_summary[gate_metric].idxmin()]
+                                refit_cfg = dict(online_memory_gate_learned_cfg)
+                                refit_cfg["use_all_for_fit"] = True
+                                refit_bundle, _ = fit_online_memory_learned_gate(
+                                    feature_df=val_feature_df,
+                                    labels=val_labels,
+                                    learned_cfg=refit_cfg,
+                                )
+                                if refit_bundle is not None:
+                                    learned_bundle = refit_bundle
+                                learned_bundle["threshold"] = float(best_row["threshold"])
+                                selected_online_memory_learned_bundle = learned_bundle
+                                out_root = run_dir / "results" / "online_memory_gate" / result_slug
+                                out_root.mkdir(parents=True, exist_ok=True)
+                                val_gate_summary.to_csv(out_root / "val_learned_gate_summary.csv", index=False)
+                                val_feature_df.to_csv(out_root / "val_learned_gate_features.csv", index=False)
+                                val_label_df.to_csv(out_root / "val_learned_gate_labels.csv", index=False)
+                                selection_payload = {
+                                    "method": result_name,
+                                    "method_template": method,
+                                    "base_model": llm_base_model_name,
+                                    "gate_mode": "learned",
+                                    "model_type": str(learned_bundle.get("model_type")),
+                                    "feature_columns": list(learned_bundle.get("feature_columns") or []),
+                                    "threshold": float(learned_bundle.get("threshold", 0.5)),
+                                    "metric": gate_metric,
+                                    "n_val": int(len(tune_val_indices)),
+                                    "scope": learned_scope,
+                                    "max_samples": learned_max_samples,
+                                    "threshold_selection_train_size": pre_refit_train_size,
+                                    "threshold_selection_select_size": pre_refit_select_size,
+                                    "threshold_selection_rows_used": int(len(val_select_df)),
+                                    "threshold_selection_fallback_used": bool(selection_fallback_used),
+                                    "refit_train_size": int(learned_bundle.get("train_size", 0)),
+                                    "refit_select_size": int(learned_bundle.get("select_size", 0)),
+                                    "positive_rate_train": float(learned_bundle.get("positive_rate_train", 0.0)),
+                                    "positive_rate_all": float(learned_bundle.get("positive_rate_all", 0.0)),
+                                }
+                                with (run_dir / "llm" / f"online_memory_gate_selection_{result_slug}.json").open("w") as f:
+                                    json.dump(selection_payload, f, indent=2)
+                        elif online_memory_gate_tune_enabled:
+                            tune_val_indices = np.arange(len(y_val_hist), dtype=int)
+                            tune_scope = str(
+                                online_memory_gate_tune_cfg.get("scope", "full")
+                            ).lower()
+                            if tune_scope in {"recent", "recent_tail", "tail"}:
+                                tune_val_indices = restrict_to_recent_tail(
+                                    tune_val_indices,
+                                    tail_fraction=float(
+                                        online_memory_gate_tune_cfg.get("recent_tail_fraction", 1.0)
+                                    ),
+                                    min_samples=int(
+                                        online_memory_gate_tune_cfg.get("recent_tail_min_samples", 0)
+                                    ),
+                                )
+                            tune_max_samples = int(
+                                online_memory_gate_tune_cfg.get("max_samples", len(tune_val_indices))
+                            )
+                            if tune_max_samples > 0 and len(tune_val_indices) > tune_max_samples:
+                                tune_val_indices = np.asarray(tune_val_indices[-tune_max_samples:], dtype=int)
+                            val_online_pred, val_online_meta, _, _ = _run_online_memory_refinement_for_split(
+                                "val",
+                                tune_val_indices,
+                                gate_cfg_override={"always_apply": True},
+                            )
+                            val_feature_df = build_online_memory_gate_feature_frame(
+                                [
+                                    dict(meta.get("online_memory_gate") or {})
+                                    for meta in val_online_meta
+                                ]
+                            )
+                            gate_candidates = build_online_memory_gate_candidate_cfgs(
+                                online_memory_gate_cfg
+                            )
+                            val_gate_summary, _ = evaluate_online_memory_gate_candidates(
+                                y_true=y_val_future[tune_val_indices],
+                                base_pred=llm_base_val_eval[tune_val_indices],
+                                llm_pred=val_online_pred,
+                                feature_df=val_feature_df,
+                                candidate_gate_cfgs=gate_candidates,
+                                horizons=horizons,
+                            )
+                            gate_metric = str(
+                                online_memory_gate_tune_cfg.get("metric", "mse_path")
+                            )
+                            if gate_metric not in val_gate_summary.columns:
+                                gate_metric = "mse_path"
+                            best_gate_name = str(
+                                val_gate_summary.loc[val_gate_summary[gate_metric].idxmin(), "candidate"]
+                            )
+                            selected_online_memory_gate_cfg = next(
+                                dict(candidate)
+                                for candidate in gate_candidates
+                                if str(candidate.get("name")) == best_gate_name
+                            )
+                            selected_online_memory_gate_cfg.pop("name", None)
+                            selected_online_memory_gate_cfg.pop("tuning_grid", None)
+                            selected_online_memory_gate_cfg.pop("tune_on_val", None)
+                            out_root = run_dir / "results" / "online_memory_gate" / result_slug
+                            out_root.mkdir(parents=True, exist_ok=True)
+                            val_gate_summary.to_csv(out_root / "val_gate_summary.csv", index=False)
+                            val_feature_df.to_csv(out_root / "val_gate_features.csv", index=False)
+                            selection_payload = {
+                                "method": result_name,
+                                "method_template": method,
+                                "base_model": llm_base_model_name,
+                                "selected_candidate": best_gate_name,
+                                "metric": gate_metric,
+                                "n_val": int(len(tune_val_indices)),
+                                "scope": tune_scope,
+                                "max_samples": tune_max_samples,
+                                "selected_gate_cfg": selected_online_memory_gate_cfg,
+                            }
+                            with (run_dir / "llm" / f"online_memory_gate_selection_{result_slug}.json").open("w") as f:
+                                json.dump(selection_payload, f, indent=2)
+
+                        predictions, metadata, teaching_examples_subset, online_memory_records_test = _run_online_memory_refinement_for_split(
+                            "test",
+                            llm_eval_indices,
+                            gate_cfg_override=selected_online_memory_gate_cfg,
+                            learned_gate_bundle=selected_online_memory_learned_bundle,
+                        )
+                    else:
+                        predictions, metadata = refiner.refine_batch(
+                            method=method,
+                            histories=histories_subset,
+                            date_arrays=dates_subset,
+                            tsm_forecasts=method_tsm_forecast,
+                            pred_len=config.pred_len,
+                            exogenous_summaries=method_exogenous,
+                            price_bases=method_price_bases,
+                            teaching_examples=(
+                                teaching_examples_subset
+                                if method in ("TSM+LLM-COT-RF", "TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF", "TSM+LLM-COT-SENT-RF-DELTA", "TSM+LLM-COT-SENT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HPRICE")
+                                else None
+                            ),
+                            sentiment_histories=method_sentiment,
+                            checkpoint_dir=checkpoint_dir,
+                            resume_checkpoint_dir=resume_checkpoint_dir,
+                            sample_keys=[str(int(i)) for i in llm_eval_indices],
+                        )
                     
                     llm_results[result_name] = {
                         'predictions': predictions,
@@ -3654,6 +5509,7 @@ def run_experiment(
                             'method_supports_internal_blend': method_supports_blend,
                             'method_uses_internal_blend': method_uses_blend,
                         },
+                        'online_memory_gate_cfg': selected_online_memory_gate_cfg,
                     }
 
                     # Persist subset predictions so we can debug deltas vs the
@@ -3682,6 +5538,60 @@ def run_experiment(
                         )
                     except Exception as e:
                         logger.warning("Failed to save LLM subset predictions: %s", e)
+
+                    if (
+                        online_memory_policy_enabled
+                        and method
+                        in (
+                            "TSM+LLM-COT-RF",
+                            "TSM+LLM-COT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF",
+                            "TSM+LLM-COT-SENT-RF-DELTA",
+                            "TSM+LLM-COT-SENT-RF-HDELTA",
+                            "TSM+LLM-COT-SENT-RF-HPRICE",
+                        )
+                    ):
+                        try:
+                            out_root = run_dir / "results" / "online_memory_gate" / result_slug
+                            out_root.mkdir(parents=True, exist_ok=True)
+                            test_feature_df = build_online_memory_gate_feature_frame(
+                                [
+                                    dict(meta.get("online_memory_gate") or {})
+                                    for meta in (metadata or [])
+                                ]
+                            )
+                            test_feature_df.to_csv(out_root / "test_learned_gate_features.csv", index=False)
+                            test_labels, test_label_df = build_online_memory_gate_labels(
+                                y_true=y_test_future[llm_eval_indices],
+                                base_pred=base_forecast,
+                                llm_pred=predictions,
+                                label_cfg=(
+                                    online_memory_gate_learned_cfg
+                                    if online_memory_gate_learned_enabled
+                                    else (online_memory_gate_cfg.get("learned", {}) or {})
+                                ),
+                            )
+                            test_label_df.to_csv(out_root / "test_learned_gate_labels.csv", index=False)
+                            if selected_online_memory_learned_bundle is not None:
+                                test_prob_df = test_feature_df.copy()
+                                test_prob_df["apply_probability"] = predict_online_memory_learned_gate_scores(
+                                    test_feature_df,
+                                    selected_online_memory_learned_bundle,
+                                )
+                                test_prob_df["selected_threshold"] = float(
+                                    selected_online_memory_learned_bundle.get("threshold", 0.5)
+                                )
+                                test_prob_df["apply_llm_selected"] = (
+                                    test_prob_df["apply_probability"]
+                                    >= test_prob_df["selected_threshold"]
+                                )
+                                test_prob_df["label"] = test_labels.astype(int)
+                                test_prob_df.to_csv(
+                                    out_root / "test_learned_gate_probabilities.csv",
+                                    index=False,
+                                )
+                        except Exception as e:
+                            logger.warning("Failed to save test online-memory gate artifacts: %s", e)
                     
                     logger.info("\n%s Results:", result_name)
                     logger.info(llm_results[result_name]['metrics'])
@@ -3755,10 +5665,39 @@ def run_experiment(
 
                     if export_val_predictions and val_histories is not None and val_dates is not None:
                         full_val_indices = np.arange(len(val_histories), dtype=int)
-                        full_val_pred, full_val_meta = _run_val_llm_for_indices(
-                            full_val_indices,
-                            val_teaching_examples_export,
-                        )
+                        if export_val_scope in {"recent", "recent_tail", "tail"}:
+                            full_val_indices = restrict_to_recent_tail(
+                                full_val_indices,
+                                tail_fraction=export_val_recent_tail_fraction,
+                                min_samples=export_val_recent_tail_min_samples,
+                            )
+                        if export_val_max_samples > 0 and full_val_indices.size > export_val_max_samples:
+                            full_val_indices = full_val_indices[-export_val_max_samples:]
+                        export_mode = "raw_refine"
+                        if (
+                            online_memory_policy_enabled
+                            and method
+                            in (
+                                "TSM+LLM-COT-RF",
+                                "TSM+LLM-COT-RF-HDELTA",
+                                "TSM+LLM-COT-SENT-RF",
+                                "TSM+LLM-COT-SENT-RF-DELTA",
+                                "TSM+LLM-COT-SENT-RF-HDELTA",
+                                "TSM+LLM-COT-SENT-RF-HPRICE",
+                            )
+                        ):
+                            full_val_pred, full_val_meta, _, _ = _run_online_memory_refinement_for_split(
+                                "val",
+                                full_val_indices,
+                                gate_cfg_override=selected_online_memory_gate_cfg,
+                                learned_gate_bundle=selected_online_memory_learned_bundle,
+                            )
+                            export_mode = "online_memory_selected_gate"
+                        else:
+                            full_val_pred, full_val_meta = _run_val_llm_for_indices(
+                                full_val_indices,
+                                val_teaching_examples_export,
+                            )
                         try:
                             out_path = run_dir / "predictions" / f"{result_name}_pred_val_full.npz"
                             np.savez_compressed(
@@ -3783,6 +5722,11 @@ def run_experiment(
                                     {
                                         "n_samples": int(len(full_val_indices)),
                                         "export_val_predictions": True,
+                                        "export_val_scope": export_val_scope,
+                                        "export_val_recent_tail_fraction": export_val_recent_tail_fraction,
+                                        "export_val_recent_tail_min_samples": export_val_recent_tail_min_samples,
+                                        "export_val_max_samples": export_val_max_samples,
+                                        "export_mode": export_mode,
                                         "method": method,
                                         "result_name": result_name,
                                     },
@@ -4263,7 +6207,7 @@ def run_experiment(
                                 f.write(json.dumps(record) + "\n")
                 
                 except Exception as e:
-                    logger.error("LLM method %s failed: %s", result_name, e)
+                    logger.error("LLM method %s failed: %s", result_name, e, exc_info=True)
             
             if llm_eval_indices is not None and len(llm_eval_indices) > 0:
                 for name, result in baseline_results.items():

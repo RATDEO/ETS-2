@@ -30,8 +30,13 @@ missing:
   min_coverage_pct: 0.80
 
 features:
-  include_brent: false
-  include_coal: false
+  include_brent: true
+  include_coal: true
+  include_uk_gas: true
+  include_uk_power: true
+  include_uk_weather: true
+  weather_feature_pack_path: "weather-proxy/uk_weather_daily_feature_pack.csv"
+  weather_lag_days: 1
   include_indices: false
   indices_list: []
 
@@ -49,7 +54,7 @@ features:
   returns: true
   rolling_vol_window: 20
   rolling_mean_windows: [5, 20, 60]
-  max_exogenous_features_model: 9
+  max_exogenous_features_model: 16
   preferred_feature_order:
     - target_range_pct
     - target_volume
@@ -60,6 +65,13 @@ features:
     - y_ma_5d
     - y_momentum_5d
     - y_momentum_20d
+    - uk_power_return
+    - uk_gas_return
+    - brent_return
+    - coal_return
+    - uk_hdd18
+    - uk_hdd18_7d_ma
+    - uk_temp_mean_c
 
 model:
   tsm_type: "dlinear"

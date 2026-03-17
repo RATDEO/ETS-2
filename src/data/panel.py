@@ -24,6 +24,7 @@ from .load_eua_futures import load_eua_futures_data, get_eua_futures_target_seri
 from .load_indices import load_carbon_indices, get_indices_combined
 from .load_auctions import load_auction_data, create_auction_features
 from .load_energy import load_energy_benchmarks, create_energy_features
+from .load_weather import load_weather_feature_pack
 from .load_vstoxx import load_vstoxx, create_vstoxx_features
 from .fx import load_eurusd_fx, convert_usd_to_eur
 
@@ -105,6 +106,60 @@ def _extend_proxy_event_features(panel: pd.DataFrame, days_since_cap: Optional[f
         dow = date_series.dt.dayofweek.astype(float)
         panel["uk_icap_dow_sin"] = np.sin(2.0 * np.pi * dow / 7.0)
         panel["uk_icap_dow_cos"] = np.cos(2.0 * np.pi * dow / 7.0)
+
+    return panel
+
+
+def _rolling_zscore(series: pd.Series, window: int) -> pd.Series:
+    min_periods = min(window, 5)
+    mean = series.rolling(window=window, min_periods=min_periods).mean()
+    std = series.rolling(window=window, min_periods=min_periods).std()
+    std = std.replace(0.0, np.nan)
+    return (series - mean) / std
+
+
+def _safe_ratio(numer: pd.Series, denom: pd.Series) -> pd.Series:
+    denom = denom.replace(0.0, np.nan)
+    return numer / denom
+
+
+def _add_uk_energy_weather_interactions(panel: pd.DataFrame) -> pd.DataFrame:
+    """Add UK-specific energy-demand and relative-value features."""
+    if "uk_hdd18" in panel.columns and "uk_hdd18_7d_ma" in panel.columns:
+        panel["uk_hdd18_surprise"] = panel["uk_hdd18"] - panel["uk_hdd18_7d_ma"]
+    if "uk_temp_mean_c" in panel.columns and "uk_temp_mean_7d_ma" in panel.columns:
+        panel["uk_temp_mean_anom"] = panel["uk_temp_mean_c"] - panel["uk_temp_mean_7d_ma"]
+
+    interaction_specs = [
+        ("uk_gas_return", "uk_hdd18", "uk_gas_hdd18_interaction"),
+        ("uk_gas_return", "uk_hdd18_surprise", "uk_gas_hdd18_surprise_interaction"),
+        ("uk_power_return", "uk_hdd18", "uk_power_hdd18_interaction"),
+        ("uk_power_return", "uk_hdd18_surprise", "uk_power_hdd18_surprise_interaction"),
+    ]
+    for left_col, right_col, out_col in interaction_specs:
+        if left_col in panel.columns and right_col in panel.columns:
+            panel[out_col] = panel[left_col] * panel[right_col]
+
+    ratio_specs = [
+        ("uk_gas_price", "uka_gas_ratio"),
+        ("uk_power_price", "uka_power_ratio"),
+        ("brent_price", "uka_brent_ratio"),
+        ("coal_price", "uka_coal_ratio"),
+    ]
+    for price_col, ratio_col in ratio_specs:
+        if "y" in panel.columns and price_col in panel.columns:
+            panel[ratio_col] = _safe_ratio(panel["y"], panel[price_col])
+            panel[f"{ratio_col}_z20"] = _rolling_zscore(panel[ratio_col], 20)
+
+    return_spread_specs = [
+        ("uk_gas_return", "uka_gas_return_spread"),
+        ("uk_power_return", "uka_power_return_spread"),
+        ("brent_return", "uka_brent_return_spread"),
+        ("coal_return", "uka_coal_return_spread"),
+    ]
+    for exog_col, out_col in return_spread_specs:
+        if "y_return" in panel.columns and exog_col in panel.columns:
+            panel[out_col] = panel["y_return"] - panel[exog_col]
 
     return panel
 
@@ -305,6 +360,14 @@ def load_auction_proxy_feature_pack(
     return df.reset_index(drop=True)
 
 
+def load_weather_features(
+    data_dir: Union[str, Path],
+    relative_path: str = "weather-proxy/uk_weather_daily_feature_pack.csv",
+) -> pd.DataFrame:
+    """Load a precomputed UK weather-demand feature pack."""
+    return load_weather_feature_pack(data_dir, relative_path=relative_path)
+
+
 def select_feature_columns(
     panel: pd.DataFrame,
     target_col: str,
@@ -462,25 +525,58 @@ def build_panel(
     # =========================================================================
     logger.info("\n[3/7] Loading energy benchmarks...")
     energy_dict = load_energy_benchmarks(data_dir)
-    
-    for name, df in energy_dict.items():
-        # Convert to EUR
-        if not df.empty:
+
+    for name, df in list(energy_dict.items()):
+        # Only USD-denominated benchmarks need FX conversion.
+        if not df.empty and "price_usd" in df.columns:
             df_converted, audit = convert_usd_to_eur(
-                df, fx_df, 
+                df,
+                fx_df,
                 price_col="price_usd",
-                out_col="price_eur"
+                out_col="price_eur",
             )
             energy_dict[name] = df_converted
-    
-    if feature_config.get("include_brent", True) or feature_config.get("include_coal", True):
+
+    energy_enabled = {
+        "brent": bool(feature_config.get("include_brent", True)),
+        "coal": bool(feature_config.get("include_coal", True)),
+        "uk_gas": bool(feature_config.get("include_uk_gas", False)),
+        "uk_power": bool(feature_config.get("include_uk_power", False)),
+    }
+    selected_energy = {
+        name: df
+        for name, df in energy_dict.items()
+        if energy_enabled.get(name, False)
+    }
+
+    if selected_energy:
         energy_features = create_energy_features(
-            energy_dict, 
+            selected_energy,
             calendar,
-            compute_returns=feature_config.get("returns", True)
+            compute_returns=feature_config.get("returns", True),
         )
         panel = panel.merge(energy_features, on="date", how="left")
-    
+
+    # =========================================================================
+    # Step 3b: Load UK weather-demand proxy features
+    # =========================================================================
+    if feature_config.get("include_uk_weather", False):
+        weather_pack_path = feature_config.get(
+            "weather_feature_pack_path",
+            "weather-proxy/uk_weather_daily_feature_pack.csv",
+        )
+        weather_lag_days = int(feature_config.get("weather_lag_days", 1))
+        try:
+            weather_df = load_weather_features(data_dir, relative_path=weather_pack_path)
+            weather_cols = [c for c in weather_df.columns if c != "date"]
+            if weather_lag_days > 0 and weather_cols:
+                weather_df = weather_df.sort_values("date").reset_index(drop=True)
+                weather_df[weather_cols] = weather_df[weather_cols].shift(weather_lag_days)
+            panel = panel.merge(weather_df, on="date", how="left")
+            logger.info("Added UK weather feature pack columns: %s", weather_cols)
+        except Exception as e:
+            logger.warning(f"Failed to add UK weather feature pack: {e}")
+
     # =========================================================================
     # Step 4: Load and align carbon indices
     # =========================================================================
@@ -591,6 +687,8 @@ def build_panel(
     # Momentum features
     panel["y_momentum_5d"] = panel["y"] / panel["y"].shift(5) - 1
     panel["y_momentum_20d"] = panel["y"] / panel["y"].shift(20) - 1
+
+    panel = _add_uk_energy_weather_interactions(panel)
     
     # =========================================================================
     # Create schema

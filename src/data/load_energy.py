@@ -1,16 +1,61 @@
 """
-Load energy benchmark data (Brent crude, Rotterdam coal).
+Load energy benchmark data.
 
-Both series are USD-denominated and need FX conversion.
+Supports:
+- Brent crude spot (USD)
+- Rotterdam coal futures (USD)
+- UK SAP gas (pence/kWh, ONS / National Gas)
+- UK system electricity price (pence/kWh, ONS / Elexon)
 """
 
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from typing import Dict, Optional, Union, Tuple
+from typing import Dict, Union
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _rolling_zscore(series: pd.Series, window: int) -> pd.Series:
+    min_periods = min(window, 5)
+    mean = series.rolling(window=window, min_periods=min_periods).mean()
+    std = series.rolling(window=window, min_periods=min_periods).std()
+    std = std.replace(0.0, np.nan)
+    return (series - mean) / std
+
+
+def _load_standard_energy_csv(
+    file_path: Union[str, Path],
+    *,
+    price_col: str,
+    series_name: str,
+    source: str,
+    currency: str,
+) -> pd.DataFrame:
+    file_path = Path(file_path)
+    if not file_path.exists():
+        raise FileNotFoundError(f"Energy file not found: {file_path}")
+
+    df = pd.read_csv(file_path)
+    if "date" not in df.columns and "Date" in df.columns:
+        df = df.rename(columns={"Date": "date"})
+    if "date" not in df.columns:
+        raise ValueError(f"Energy file missing date column: {file_path}")
+    if price_col not in df.columns:
+        raise ValueError(f"Energy file missing '{price_col}' column: {file_path}")
+
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df[price_col] = pd.to_numeric(df[price_col], errors="coerce")
+    df = df.dropna(subset=["date", price_col]).sort_values("date").drop_duplicates(subset=["date"], keep="last")
+
+    if "rolling_avg_7d" in df.columns:
+        df["rolling_avg_7d"] = pd.to_numeric(df["rolling_avg_7d"], errors="coerce")
+
+    df["series_name"] = series_name
+    df["source"] = source
+    df["currency"] = currency
+    return df.reset_index(drop=True)
 
 
 def load_brent_crude(file_path: Union[str, Path]) -> pd.DataFrame:
@@ -127,6 +172,46 @@ def load_rotterdam_coal(file_path: Union[str, Path]) -> pd.DataFrame:
     return df
 
 
+def load_uk_sap_gas(file_path: Union[str, Path]) -> pd.DataFrame:
+    """
+    Load official UK SAP gas data published by ONS and sourced from National Gas.
+
+    Expected normalized CSV format written by the UK bootstrap:
+    - date
+    - price_native (pence per kWh)
+    - rolling_avg_7d
+    """
+    df = _load_standard_energy_csv(
+        file_path,
+        price_col="price_native",
+        series_name="UK_SAP_GAS",
+        source="ons_national_gas",
+        currency="GBp/kWh",
+    )
+    logger.info("Loaded UK SAP gas: %s records from %s to %s", len(df), df["date"].min(), df["date"].max())
+    return df
+
+
+def load_uk_system_power(file_path: Union[str, Path]) -> pd.DataFrame:
+    """
+    Load official UK system electricity price data published by ONS and sourced from Elexon.
+
+    Expected normalized CSV format written by the UK bootstrap:
+    - date
+    - price_native (pence per kWh)
+    - rolling_avg_7d
+    """
+    df = _load_standard_energy_csv(
+        file_path,
+        price_col="price_native",
+        series_name="UK_SYSTEM_POWER",
+        source="ons_elexon",
+        currency="GBp/kWh",
+    )
+    logger.info("Loaded UK system power: %s records from %s to %s", len(df), df["date"].min(), df["date"].max())
+    return df
+
+
 def load_energy_benchmarks(data_dir: Union[str, Path]) -> Dict[str, pd.DataFrame]:
     """
     Load all energy benchmark data.
@@ -135,7 +220,7 @@ def load_energy_benchmarks(data_dir: Union[str, Path]) -> Dict[str, pd.DataFrame
         data_dir: Path to Data/ directory
         
     Returns:
-        Dictionary with 'brent' and 'coal' DataFrames
+        Dictionary with available energy benchmark DataFrames
     """
     data_dir = Path(data_dir)
     energy_dir = data_dir / "energy-benchmarks"
@@ -160,6 +245,20 @@ def load_energy_benchmarks(data_dir: Union[str, Path]) -> Dict[str, pd.DataFrame
             result["coal"] = load_rotterdam_coal(coal_file)
         except Exception as e:
             logger.error(f"Error loading coal data: {e}")
+
+    uk_gas_file = energy_dir / "uk-sap-gas-pence-per-kwh.csv"
+    if uk_gas_file.exists():
+        try:
+            result["uk_gas"] = load_uk_sap_gas(uk_gas_file)
+        except Exception as e:
+            logger.error(f"Error loading UK gas data: {e}")
+
+    uk_power_file = energy_dir / "uk-system-electricity-price-pence-per-kwh.csv"
+    if uk_power_file.exists():
+        try:
+            result["uk_power"] = load_uk_system_power(uk_power_file)
+        except Exception as e:
+            logger.error(f"Error loading UK power data: {e}")
     
     return result
 
@@ -188,8 +287,16 @@ def create_energy_features(
         if df.empty:
             continue
             
-        # Get price column (may be price_usd or price_eur after conversion)
-        price_col = "price_eur" if "price_eur" in df.columns else "price_usd"
+        # Price column may be FX-converted, USD-native, or native local units.
+        if "price_eur" in df.columns:
+            price_col = "price_eur"
+        elif "price_usd" in df.columns:
+            price_col = "price_usd"
+        elif "price_native" in df.columns:
+            price_col = "price_native"
+        else:
+            logger.warning("Skipping energy series %s because no usable price column was found", name)
+            continue
         
         # Merge price
         temp = df[["date", price_col]].copy()
@@ -201,9 +308,14 @@ def create_energy_features(
         
         if compute_returns:
             # Log returns
-            result[f"{name}_return"] = np.log(
-                result[f"{name}_price"] / result[f"{name}_price"].shift(1)
+            prev_price = result[f"{name}_price"].shift(1)
+            valid = (result[f"{name}_price"] > 0) & (prev_price > 0)
+            returns = pd.Series(np.nan, index=result.index, dtype=float)
+            valid_idx = valid.fillna(False)
+            returns.loc[valid_idx] = np.log(
+                result.loc[valid_idx, f"{name}_price"] / prev_price.loc[valid_idx]
             )
+            result[f"{name}_return"] = returns.to_numpy()
         
         # Rolling volatility
         for window in rolling_windows:
@@ -215,7 +327,24 @@ def create_energy_features(
     # Create spread features if both are available
     if "brent_price" in result.columns and "coal_price" in result.columns:
         result["coal_brent_ratio"] = result["coal_price"] / result["brent_price"]
-    
+        result["coal_brent_ratio_z20"] = _rolling_zscore(result["coal_brent_ratio"], 20)
+    if "brent_return" in result.columns and "coal_return" in result.columns:
+        result["coal_brent_return_spread"] = result["coal_return"] - result["brent_return"]
+    if "brent_vol_20d" in result.columns and "coal_vol_20d" in result.columns:
+        denom = result["brent_vol_20d"].replace(0.0, np.nan)
+        result["coal_brent_vol_ratio_20d"] = result["coal_vol_20d"] / denom
+    if "uk_power_price" in result.columns and "uk_gas_price" in result.columns:
+        denom = result["uk_gas_price"].replace(0.0, np.nan)
+        result["uk_power_gas_spread"] = result["uk_power_price"] - result["uk_gas_price"]
+        result["uk_power_gas_ratio"] = result["uk_power_price"] / denom
+        result["uk_power_gas_ratio_z20"] = _rolling_zscore(result["uk_power_gas_ratio"], 20)
+        result["uk_power_gas_spread_z20"] = _rolling_zscore(result["uk_power_gas_spread"], 20)
+    if "uk_power_return" in result.columns and "uk_gas_return" in result.columns:
+        result["uk_power_gas_return_spread"] = result["uk_power_return"] - result["uk_gas_return"]
+    if "uk_power_vol_20d" in result.columns and "uk_gas_vol_20d" in result.columns:
+        denom = result["uk_gas_vol_20d"].replace(0.0, np.nan)
+        result["uk_power_gas_vol_ratio_20d"] = result["uk_power_vol_20d"] / denom
+
     return result
 
 
@@ -223,8 +352,15 @@ def standardize_energy_output(df: pd.DataFrame, name: str) -> pd.DataFrame:
     """
     Convert energy DataFrame to standardized format.
     """
-    price_col = "price_eur" if "price_eur" in df.columns else "price_usd"
-    currency = "EUR" if "price_eur" in df.columns else "USD"
+    if "price_eur" in df.columns:
+        price_col = "price_eur"
+        currency = "EUR"
+    elif "price_usd" in df.columns:
+        price_col = "price_usd"
+        currency = "USD"
+    else:
+        price_col = "price_native"
+        currency = str(df.get("currency", pd.Series(["native"])).iloc[0])
     
     return pd.DataFrame({
         "date": df["date"],

@@ -1,0 +1,6 @@
+endpoint,base_model,best_single_candidate,best_single_llm_mse_path,best_single_gain_pct,combined_llm_mse_path,combined_gain_pct,combined_vs_best_single_abs,successful_variants
+4b,tsm,4b_tsm_regime_specific,4.174479969823514,0.6652444997483129,4.189792479841018,0.3008723025693994,-0.015312510017504444,"horizon_specific,regime_specific,high_utility_admission"
+4b,linear_ridge,4b_linear_ridge_horizon_specific,7.41417432766975,-0.18523875688803162,7.538552095950386,-1.8659136183814433,-0.12437776828063551,"ridge_horizon_specific,ridge_high_utility_admission"
+4b,linear_lasso,4b_linear_lasso_horizon_specific,17.463383654188075,-1.8720021146884942,17.80377977197016,-3.8576902675231866,-0.3403961177820847,"lasso_horizon_specific,lasso_high_utility_admission"
+4b,naive_persistence,4b_naive_persistence_horizon_specific,7.831993792428909,-1.2393726909235563,7.909735371704911,-2.244290330862502,-0.0777415792760019,persistence_horizon_specific
+4b,seasonal_naive,4b_seasonal_naive_horizon_specific,8.81346259406041,-1.1596499204262791,8.913792710992485,-2.311224502720885,-0.10033011693207605,naive_horizon_specific

@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import html
 import json
 import logging
 import os
 import re
 from datetime import datetime, timedelta, timezone
-from io import StringIO
+from io import BytesIO, StringIO
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import urljoin
@@ -49,6 +50,25 @@ ICAP_PRICE_DOWNLOAD_URL = f"{ICAP_BASE}/systems/reports/price/download"
 ICE_BASE = "https://www.ice.com"
 ICE_REPORT_API_BASE = f"{ICE_BASE}/marketdata/api/reports"
 ICE_UK_AUCTION_REPORT_ID = 278
+
+ONS_BASE = "https://www.ons.gov.uk"
+ONS_GAS_DATASET_PAGE = (
+    f"{ONS_BASE}/economy/economicoutputandproductivity/output/datasets/"
+    "systemaveragepricesapofgas"
+)
+ONS_POWER_DATASET_PAGE = (
+    f"{ONS_BASE}/economy/economicoutputandproductivity/output/datasets/"
+    "systempriceofelectricity"
+)
+OPEN_METEO_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
+
+UK_WEATHER_LOCATIONS = [
+    {"name": "london", "latitude": 51.5074, "longitude": -0.1278},
+    {"name": "birmingham", "latitude": 52.4862, "longitude": -1.8904},
+    {"name": "manchester", "latitude": 53.4808, "longitude": -2.2426},
+    {"name": "leeds", "latitude": 53.8008, "longitude": -1.5491},
+    {"name": "glasgow", "latitude": 55.8642, "longitude": -4.2518},
+]
 
 # Fallback volatility symbols: UK FTSE volatility first, then generic VIX.
 VOL_SYMBOL_CANDIDATES = ["^VFTSE", "^VIX"]
@@ -105,8 +125,244 @@ def _download_bytes(
     return eu_bootstrap._download_bytes(session, url, params=params)
 
 
+def _discover_ons_workbook_urls(session: requests.Session, dataset_page_url: str) -> list[str]:
+    page_html = _download_text(session, dataset_page_url)
+    candidates: list[str] = []
+    for pattern in [
+        r'href="([^"]+\.xlsx)"',
+        r'"contentUrl"\s*:\s*"([^"]+\.xlsx)"',
+    ]:
+        candidates.extend(html.unescape(x) for x in re.findall(pattern, page_html))
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for href in candidates:
+        full_url = urljoin(ONS_BASE, href)
+        if full_url in seen:
+            continue
+        seen.add(full_url)
+        normalized.append(full_url)
+
+    # In practice the dated workbook links are more reliable than the advertised
+    # /current/ link, which sometimes 404s on ONS.
+    ordered = [x for x in normalized if "/current/" not in x] + [x for x in normalized if "/current/" in x]
+    if not ordered:
+        raise ValueError(f"Could not discover ONS workbook URL from {dataset_page_url}")
+    return ordered
+
+
+def _load_ons_daily_sheet(
+    workbook_bytes: bytes,
+    *,
+    sheet_name: str,
+    value_col: str,
+    rolling_col: str,
+) -> pd.DataFrame:
+    raw = pd.read_excel(BytesIO(workbook_bytes), sheet_name=sheet_name, header=None, engine="openpyxl")
+    header_idx: int | None = None
+    rolling_expected = rolling_col.strip().lower()
+    for idx in range(min(len(raw), 20)):
+        values = {str(x).strip().lower() for x in raw.iloc[idx].tolist() if pd.notna(x)}
+        if "date" in values and value_col.strip().lower() in values:
+            header_idx = idx
+            if rolling_expected in values:
+                break
+    if header_idx is None:
+        raise ValueError(f"Unexpected ONS sheet schema for {sheet_name}: {raw.head(8).to_dict(orient='records')}")
+
+    df = pd.read_excel(BytesIO(workbook_bytes), sheet_name=sheet_name, header=header_idx, engine="openpyxl")
+    columns = {str(c).strip(): str(c).strip() for c in df.columns}
+    df = df.rename(columns=columns)
+    if "Date" not in df.columns or value_col not in df.columns:
+        raise ValueError(f"Unexpected ONS sheet schema for {sheet_name}: {list(df.columns)}")
+
+    out = pd.DataFrame(
+        {
+            "date": pd.to_datetime(df["Date"], errors="coerce"),
+            "price_native": pd.to_numeric(df[value_col], errors="coerce"),
+            "rolling_avg_7d": pd.to_numeric(df.get(rolling_col), errors="coerce"),
+        }
+    )
+    out = out.dropna(subset=["date", "price_native"]).sort_values("date").drop_duplicates(subset=["date"], keep="last")
+    return out.reset_index(drop=True)
+
+
+def _download_ons_daily_series(
+    session: requests.Session,
+    *,
+    dataset_page_url: str,
+    out_root: Path,
+    out_filename: str,
+    sheet_name: str,
+    value_col: str,
+    rolling_col: str,
+    status_name: str,
+    note: str,
+) -> SourceStatus:
+    out_dir = out_root / "energy-benchmarks"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / out_filename
+
+    candidate_urls = _discover_ons_workbook_urls(session, dataset_page_url)
+    last_exc: Exception | None = None
+    workbook_url: str | None = None
+    parsed: pd.DataFrame | None = None
+    for candidate_url in candidate_urls:
+        try:
+            workbook = _download_bytes(session, candidate_url)
+            parsed = _load_ons_daily_sheet(
+                workbook,
+                sheet_name=sheet_name,
+                value_col=value_col,
+                rolling_col=rolling_col,
+            )
+            workbook_url = candidate_url
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_exc = exc
+            LOG.warning("ONS workbook candidate failed for %s: %s", candidate_url, exc)
+            continue
+
+    if parsed is None or workbook_url is None:
+        raise RuntimeError(f"Failed to download any ONS workbook candidate for {dataset_page_url}") from last_exc
+
+    parsed.to_csv(out_path, index=False)
+
+    rows, dmin, dmax = _df_date_stats(parsed, "date")
+    return SourceStatus(
+        name=status_name,
+        ok=True,
+        path=str(out_path),
+        source_url=workbook_url,
+        rows=rows,
+        min_date=dmin,
+        max_date=dmax,
+        note=note,
+    )
+
+
 def _normalize_price_rows(df: pd.DataFrame) -> pd.DataFrame:
     return eu_bootstrap._normalize_eua_columns(df)
+
+
+def _download_uk_gas_ons(session: requests.Session, out_root: Path) -> SourceStatus:
+    return _download_ons_daily_series(
+        session,
+        dataset_page_url=ONS_GAS_DATASET_PAGE,
+        out_root=out_root,
+        out_filename="uk-sap-gas-pence-per-kwh.csv",
+        sheet_name="1.Daily SAP Gas",
+        value_col="SAP actual day",
+        rolling_col="SAP seven-day rolling average",
+        status_name="uk_sap_gas",
+        note="ONS daily SAP gas dataset sourced from National Gas Transmission.",
+    )
+
+
+def _download_uk_power_ons(session: requests.Session, out_root: Path) -> SourceStatus:
+    return _download_ons_daily_series(
+        session,
+        dataset_page_url=ONS_POWER_DATASET_PAGE,
+        out_root=out_root,
+        out_filename="uk-system-electricity-price-pence-per-kwh.csv",
+        sheet_name="1.Daily SP Electricity",
+        value_col="Daily average",
+        rolling_col="Seven-day rolling average",
+        status_name="uk_system_power",
+        note="ONS daily system electricity price dataset sourced from Elexon BMRS.",
+    )
+
+
+def _build_weather_feature_pack(payload: list[dict[str, Any]]) -> pd.DataFrame:
+    frames: list[pd.DataFrame] = []
+    for idx, item in enumerate(payload):
+        daily = item.get("daily", {})
+        loc = UK_WEATHER_LOCATIONS[idx]["name"] if idx < len(UK_WEATHER_LOCATIONS) else f"loc_{idx}"
+        frame = pd.DataFrame(
+            {
+                "date": pd.to_datetime(daily.get("time", []), errors="coerce"),
+                f"{loc}_temp_mean_c": pd.to_numeric(daily.get("temperature_2m_mean", []), errors="coerce"),
+                f"{loc}_temp_min_c": pd.to_numeric(daily.get("temperature_2m_min", []), errors="coerce"),
+                f"{loc}_temp_max_c": pd.to_numeric(daily.get("temperature_2m_max", []), errors="coerce"),
+            }
+        )
+        frame = frame.dropna(subset=["date"]).sort_values("date")
+        frames.append(frame)
+
+    if not frames:
+        raise ValueError("Open-Meteo returned no daily weather frames")
+
+    merged = frames[0]
+    for frame in frames[1:]:
+        merged = merged.merge(frame, on="date", how="outer")
+
+    mean_cols = [c for c in merged.columns if c.endswith("_temp_mean_c")]
+    min_cols = [c for c in merged.columns if c.endswith("_temp_min_c")]
+    max_cols = [c for c in merged.columns if c.endswith("_temp_max_c")]
+    merged["uk_temp_mean_c"] = merged[mean_cols].mean(axis=1)
+    merged["uk_temp_min_c"] = merged[min_cols].mean(axis=1)
+    merged["uk_temp_max_c"] = merged[max_cols].mean(axis=1)
+
+    hdd_city_cols: list[str] = []
+    for col in mean_cols:
+        hdd_col = col.replace("_temp_mean_c", "_hdd18")
+        merged[hdd_col] = np.maximum(18.0 - merged[col], 0.0)
+        hdd_city_cols.append(hdd_col)
+    merged["uk_hdd18"] = merged[hdd_city_cols].mean(axis=1)
+    merged["uk_hdd18_7d_ma"] = merged["uk_hdd18"].rolling(window=7, min_periods=1).mean()
+    merged["uk_temp_mean_7d_ma"] = merged["uk_temp_mean_c"].rolling(window=7, min_periods=1).mean()
+
+    keep_cols = [
+        "date",
+        "uk_temp_mean_c",
+        "uk_temp_min_c",
+        "uk_temp_max_c",
+        "uk_hdd18",
+        "uk_hdd18_7d_ma",
+        "uk_temp_mean_7d_ma",
+    ]
+    return merged[keep_cols].dropna(subset=["date"]).sort_values("date").drop_duplicates(subset=["date"], keep="last")
+
+
+def _download_uk_weather_open_meteo(
+    session: requests.Session,
+    out_root: Path,
+    *,
+    start_date: datetime,
+    end_date: datetime,
+) -> SourceStatus:
+    out_dir = out_root / "weather-proxy"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "uk_weather_daily_feature_pack.csv"
+
+    params = {
+        "latitude": ",".join(str(x["latitude"]) for x in UK_WEATHER_LOCATIONS),
+        "longitude": ",".join(str(x["longitude"]) for x in UK_WEATHER_LOCATIONS),
+        "start_date": start_date.date().isoformat(),
+        "end_date": end_date.date().isoformat(),
+        "daily": "temperature_2m_mean,temperature_2m_min,temperature_2m_max",
+        "timezone": "Europe/London",
+        "models": "era5_land",
+    }
+    response = _request_with_retries(session, OPEN_METEO_ARCHIVE_URL, params=params, timeout=60)
+    payload = response.json()
+    if not isinstance(payload, list):
+        raise ValueError("Open-Meteo weather archive response did not return a location list")
+
+    weather_df = _build_weather_feature_pack(payload)
+    weather_df.to_csv(out_path, index=False)
+
+    rows, dmin, dmax = _df_date_stats(weather_df, "date")
+    return SourceStatus(
+        name="uk_weather_open_meteo",
+        ok=True,
+        path=str(out_path),
+        source_url=response.url,
+        rows=rows,
+        min_date=dmin,
+        max_date=dmax,
+        note="Equal-weight GB metro weather proxy (London, Birmingham, Manchester, Leeds, Glasgow) from Open-Meteo ERA5-Land.",
+    )
 
 
 def _load_existing_target_snapshot(out_path: Path) -> pd.DataFrame:
@@ -1177,6 +1433,17 @@ def main() -> int:
         lambda: _build_uk_auction_feature_pack_from_icap(out_root, icap_paths),
     )
     run_step("ecb_fx", lambda: eu_bootstrap._download_fx(session, out_root))
+    run_step("uk_sap_gas", lambda: _download_uk_gas_ons(session, out_root))
+    run_step("uk_system_power", lambda: _download_uk_power_ons(session, out_root))
+    run_step(
+        "uk_weather_open_meteo",
+        lambda: _download_uk_weather_open_meteo(
+            session,
+            out_root,
+            start_date=start_date,
+            end_date=end_date,
+        ),
+    )
     run_step("brent", lambda: eu_bootstrap._download_brent(session, out_root))
     run_step("coal_api2_ara", lambda: eu_bootstrap._download_coal(out_root))
     run_step("carbon_indices", lambda: _download_carbon_indices_uk(out_root))

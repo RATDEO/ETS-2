@@ -1,0 +1,11 @@
+{
+  "n_samples": 80,
+  "export_val_predictions": true,
+  "export_val_scope": "recent_tail",
+  "export_val_recent_tail_fraction": 0.5,
+  "export_val_recent_tail_min_samples": 80,
+  "export_val_max_samples": 80,
+  "export_mode": "online_memory_selected_gate",
+  "method": "TSM+LLM-COT-RF-HDELTA",
+  "result_name": "TSM+LLM-COT-RF-HDELTA"
+}

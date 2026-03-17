@@ -1,0 +1,5 @@
+model,horizon,signal_disagreement_vs_tsm_pct,signal_changes_count
+baseline_heuristic,20,0.0,0
+learned_gbdt,20,0.0,0
+baseline_heuristic,30,0.0,0
+learned_gbdt,30,0.0,0

@@ -1,0 +1,21 @@
+{
+  "selected_features": [
+    "y_return",
+    "coal_brent_ratio",
+    "uk_icap_secondary",
+    "uk_icap_primary_lag_20",
+    "eurusd",
+    "uk_temp_mean_c",
+    "y_ma_20d",
+    "coal_vol_5d",
+    "uk_gas_vol_20d",
+    "uk_temp_min_c",
+    "uk_temp_max_c",
+    "auction_price_lag_20"
+  ],
+  "config_path": "/Users/davidwilkinson/Desktop/ETS 2/uk_ets/config/uk_ets_llm_4b_current_default.yaml",
+  "data_dir": "/Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk",
+  "train_windows": 754,
+  "candidate_feature_count": 70,
+  "analysis_generated_at": "2026-03-15T02:06:54.764547"
+}

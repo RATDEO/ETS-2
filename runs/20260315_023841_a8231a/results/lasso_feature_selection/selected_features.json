@@ -1,0 +1,65 @@
+{
+  "selected_features": [
+    "y_return",
+    "y",
+    "y_momentum_20d",
+    "coal_return",
+    "y_vol_20d",
+    "y_ma_5d",
+    "uk_hdd18",
+    "target_range_pct",
+    "is_auction_day",
+    "y_momentum_5d",
+    "target_volume"
+  ],
+  "selected_features_by_horizon": {},
+  "total_features": [
+    "y_return",
+    "y",
+    "target_range_pct",
+    "target_volume",
+    "is_auction_day",
+    "uk_icap_primary_print_day",
+    "uk_icap_secondary_print_day",
+    "y_vol_20d",
+    "y_ma_5d",
+    "y_momentum_5d",
+    "y_momentum_20d",
+    "uk_power_return",
+    "uk_gas_return",
+    "brent_return",
+    "coal_return",
+    "uk_hdd18",
+    "uk_hdd18_7d_ma"
+  ],
+  "config": {
+    "enabled": true,
+    "alpha": 0.01,
+    "alpha_by_horizon": {},
+    "max_iter": 10000,
+    "min_features": 6,
+    "max_features": 11,
+    "coef_threshold": 1e-06,
+    "feature_stats": [
+      "last",
+      "change_5",
+      "change_20",
+      "std_20"
+    ],
+    "target_horizons": [
+      1,
+      5,
+      20,
+      30
+    ],
+    "target_aggregation": "mean",
+    "mode": "aggregate",
+    "target_weights": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "drop_weakest": 0
+  }
+}

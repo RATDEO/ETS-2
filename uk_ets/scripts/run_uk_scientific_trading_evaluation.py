@@ -7,7 +7,7 @@ import argparse
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -179,6 +179,8 @@ def _evaluate_model(
     threshold_objective: str,
     threshold_min_executed_trades: int,
     trim_to_active_window: bool,
+    llm_test_memory_mode: str,
+    llm_realized_memory_horizon: int,
 ) -> tuple[dict[str, Any], pd.DataFrame, pd.DataFrame]:
     prediction_dates, y_true, y_pred = _load_model_predictions(run_dir, model_name, split="test")
     base_prices = _load_base_prices(run_dir, prediction_dates)
@@ -278,6 +280,8 @@ def _evaluate_model(
         "selected_signal_threshold": float(selected_threshold),
         "threshold_objective": str(threshold_objective),
         "threshold_calibrated_on_val": bool(calibrate_threshold_on_val),
+        "llm_test_memory_mode": str(llm_test_memory_mode),
+        "llm_realized_memory_horizon": int(llm_realized_memory_horizon),
         **mtm_metrics,
         "llm_cutoff_status": cutoff_note["status"],
         "llm_cutoff_date": cutoff_note["cutoff_date"],
@@ -291,6 +295,7 @@ def _evaluate_model(
     mtm_out["model"] = model_name
     mtm_out["primary_horizon"] = int(primary_horizon)
     mtm_out["selected_signal_threshold"] = float(selected_threshold)
+    mtm_out["llm_test_memory_mode"] = str(llm_test_memory_mode)
     return row, mtm_out, threshold_summary
 
 
@@ -302,6 +307,8 @@ def _resolve_run_dir(
     run_missing: bool,
     ignore_archived_runs: bool,
     export_val_predictions: bool,
+    llm_test_memory_mode: str,
+    llm_realized_memory_horizon: int,
 ) -> Path:
     if fold.existing_run_dir and not ignore_archived_runs:
         existing = (PROJECT_ROOT / fold.existing_run_dir).resolve()
@@ -320,6 +327,10 @@ def _resolve_run_dir(
         },
         "llm": {
             "export_val_predictions": bool(export_val_predictions),
+            "cot_rf": {
+                "test_pool_mode": str(llm_test_memory_mode),
+                "realized_memory_horizon": int(llm_realized_memory_horizon),
+            },
         },
     }
     return Path(run_experiment(config_path=config_path, overrides=overrides, data_dir=data_dir)).resolve()
@@ -336,6 +347,8 @@ def _write_summary(
     trim_to_active_window: bool,
     calibrate_threshold_on_val: bool,
     threshold_objective: str,
+    llm_test_memory_mode: str,
+    llm_realized_memory_horizon: int,
 ) -> None:
     lines = [
         "# UK ETS Scientific Trading Evaluation",
@@ -352,6 +365,8 @@ def _write_summary(
         f"- Portfolio window trimmed to active trading interval: `{trim_to_active_window}`",
         f"- Signal threshold calibrated on validation only: `{calibrate_threshold_on_val}`",
         f"- Threshold selection objective: `{threshold_objective}`",
+        f"- LLM test-time memory mode: `{llm_test_memory_mode}`",
+        f"- Online realized-memory horizon: `{llm_realized_memory_horizon}`",
         "",
         "LLM training-cutoff note:",
         f"- Cutoff used: `{cutoff_date}`",
@@ -381,6 +396,7 @@ def _write_summary(
             "",
             "Interpretation:",
             "- These results are stricter than the earlier offset-averaged horizon backtests because they use embargoed forecast windows and a daily marked-to-market portfolio construction.",
+            "- In `online_realized_memory` mode, each test-date LLM prompt can also use prior test-fold cases once their full future path is realized; this is closer to a live adaptive deployment than the frozen-memory benchmark.",
             "- They are still historical evidence. The first confirmatory economic test remains prospective paper trading after the strategy freeze.",
         ]
     )
@@ -407,6 +423,8 @@ def _run_single_existing(
     threshold_quantiles: Sequence[float],
     threshold_objective: str,
     threshold_min_executed_trades: int,
+    llm_test_memory_mode: str,
+    llm_realized_memory_horizon: int,
 ) -> Path:
     out_dir = (output_root / datetime.now().strftime("%Y%m%d_%H%M%S")).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -438,6 +456,8 @@ def _run_single_existing(
             threshold_objective=threshold_objective,
             threshold_min_executed_trades=threshold_min_executed_trades,
             trim_to_active_window=trim_to_active_window,
+            llm_test_memory_mode=llm_test_memory_mode,
+            llm_realized_memory_horizon=llm_realized_memory_horizon,
         )
         rows.append(row)
         daily_rows.append(daily_df)
@@ -464,6 +484,8 @@ def _run_single_existing(
         trim_to_active_window=trim_to_active_window,
         calibrate_threshold_on_val=calibrate_threshold_on_val,
         threshold_objective=threshold_objective,
+        llm_test_memory_mode=llm_test_memory_mode,
+        llm_realized_memory_horizon=llm_realized_memory_horizon,
     )
     return out_dir
 
@@ -491,6 +513,8 @@ def main() -> int:
     parser.add_argument("--threshold-objective", default="daily_sharpe_annualized")
     parser.add_argument("--threshold-min-executed-trades", type=int, default=10)
     parser.add_argument("--threshold-quantiles", default="0.0,0.25,0.5,0.6,0.7,0.8,0.9")
+    parser.add_argument("--llm-test-memory-mode", default="frozen")
+    parser.add_argument("--llm-realized-memory-horizon", type=int, default=30)
     parser.add_argument("--max-folds", type=int, default=None)
     parser.add_argument("--evaluate-run-dir", default=None, help="Evaluate one existing run instead of the full fold set.")
     parser.add_argument("--evaluate-fold-name", default="existing_run")
@@ -523,6 +547,8 @@ def main() -> int:
             ],
             threshold_objective=str(args.threshold_objective),
             threshold_min_executed_trades=int(args.threshold_min_executed_trades),
+            llm_test_memory_mode=str(args.llm_test_memory_mode),
+            llm_realized_memory_horizon=int(args.llm_realized_memory_horizon),
         )
         print(out_dir)
         return 0
@@ -548,6 +574,8 @@ def main() -> int:
             run_missing=bool(args.run_missing),
             ignore_archived_runs=bool(args.ignore_archived_runs),
             export_val_predictions=bool(args.calibrate_threshold_on_val),
+            llm_test_memory_mode=str(args.llm_test_memory_mode),
+            llm_realized_memory_horizon=int(args.llm_realized_memory_horizon),
         )
         for model_name in ("tsm", METHOD_NAME):
             row, daily_df, threshold_df = _evaluate_model(
@@ -566,6 +594,8 @@ def main() -> int:
                 threshold_objective=str(args.threshold_objective),
                 threshold_min_executed_trades=int(args.threshold_min_executed_trades),
                 trim_to_active_window=bool(args.trim_to_active_window),
+                llm_test_memory_mode=str(args.llm_test_memory_mode),
+                llm_realized_memory_horizon=int(args.llm_realized_memory_horizon),
             )
             rows.append(row)
             daily_rows.append(daily_df)
@@ -592,6 +622,8 @@ def main() -> int:
         trim_to_active_window=bool(args.trim_to_active_window),
         calibrate_threshold_on_val=bool(args.calibrate_threshold_on_val),
         threshold_objective=str(args.threshold_objective),
+        llm_test_memory_mode=str(args.llm_test_memory_mode),
+        llm_realized_memory_horizon=int(args.llm_realized_memory_horizon),
     )
     print(out_dir)
     return 0
