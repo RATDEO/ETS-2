@@ -1,0 +1,339 @@
+run_id: 20260319_195158_d174d3
+git_hash: 39e7379c
+timestamp: '2026-03-19T19:51:58.208591'
+project:
+  name: UK_ETS_Forecasting
+  version: 0.2.10
+target:
+  instrument: UKA_FUTURES
+  column: close_native
+  source: uka_futures
+  currency: GBP
+  price_column: close
+  mode: returns
+  max_date: '2025-06-30'
+time_series:
+  freq: D
+  horizons:
+  - 1
+  - 5
+  - 20
+  - 30
+  pred_len: 30
+  seq_len: 20
+  label_len: 10
+split:
+  train_end: '2023-10-27'
+  val_end: '2024-10-26'
+  test_end: '2025-06-30'
+missing:
+  max_ffill_days: 5
+  min_coverage_pct: 0.8
+features:
+  include_brent: true
+  include_coal: true
+  include_uk_gas: true
+  include_uk_power: true
+  include_uk_weather: true
+  weather_feature_pack_path: weather-proxy/uk_weather_daily_feature_pack.csv
+  weather_lag_days: 1
+  include_indices: false
+  indices_list: []
+  include_auctions: true
+  auction_features:
+  - price
+  - is_auction_day
+  auction_lags:
+  - 1
+  - 5
+  - 20
+  include_auction_proxy_pack: true
+  auction_proxy_pack_path: auction-proxy-features/uk_icap_primary_secondary_feature_pack.csv
+  auction_proxy_fill_limit: 10
+  auction_proxy_days_since_cap: 30
+  include_icap_secondary: false
+  include_vstoxx: false
+  returns: true
+  rolling_vol_window: 20
+  rolling_mean_windows:
+  - 5
+  - 20
+  - 60
+  max_exogenous_features_model: 16
+  preferred_feature_order:
+  - target_range_pct
+  - target_volume
+  - is_auction_day
+  - uk_icap_primary_print_day
+  - uk_icap_secondary_print_day
+  - y_vol_20d
+  - y_ma_5d
+  - y_momentum_5d
+  - y_momentum_20d
+  - uk_power_return
+  - uk_gas_return
+  - brent_return
+  - coal_return
+  - uk_hdd18
+  - uk_hdd18_7d_ma
+  - uk_temp_mean_c
+model:
+  tsm_type: dlinear
+  batch_size: 64
+  learning_rate: 0.001
+  max_epochs: 40
+  early_stopping_patience: 8
+  d_model: 32
+  n_heads: 2
+  e_layers: 1
+  d_layers: 1
+  d_ff: 64
+  dropout: 0.5
+  weight_decay: 0.02
+  grad_clip: 0.5
+  enc_in: 9
+  dec_in: 9
+  c_out: 1
+  dlinear_individual: false
+  kernel_size: 3
+  dlinear_channel_mixer: residual_linear
+  loss_type: weighted_mse
+  loss_horizon_weights:
+    1: 1.0
+    5: 1.0
+    20: 2.0
+    30: 3.0
+llm:
+  provider: openai
+  model: qwen3-vl-4b-gpu
+  base_model: tsm
+  temperature: 0.0
+  max_tokens: 512
+  timeout_seconds: 300
+  methods: []
+  history_points: 18
+  include_summary_stats: true
+  max_retries: 3
+  cache_enabled: true
+  max_samples: 100000
+  subset:
+    strategy: random
+    seed: 42
+    val_strategy: random
+    val_seed: 42
+  max_exogenous_features: 6
+  cot_rf:
+    k_examples: 4
+    example_selection: recent_high_error
+    n_similarity_examples: 3
+    feature_window: 18
+    lookback_days: 180
+    retain_context: false
+    strict_json_prompt: true
+    strict_json_response_format: true
+    structured_horizon_reflection: true
+    reasoning_style: least_to_most
+    apply_style: program_of_thought
+    include_hindsight_feedback: true
+    enable_numeric_tool: true
+    force_numeric_tool: true
+    enable_delta_verifier_tool: true
+    force_delta_verifier_tool: true
+    max_tool_rounds: 4
+    test_pool_mode: online_realized_memory
+    realized_memory_horizon: 30
+    online_memory_policy:
+      enabled: true
+      support_examples: 3
+      positive_examples: 2
+      negative_examples: 1
+      max_total_examples: 6
+      positive_margin: 0.015
+      negative_margin: -0.015
+      warmup_min_realized: 5
+      regime:
+        enabled: true
+        min_overlap: 4
+      gate:
+        min_positive_examples: 1
+        min_positive_signal: 0.015
+        min_net_signal: 0.005
+        max_negative_signal: 0.06
+        min_abs_base_h20_pct: 0.2
+        learned:
+          enabled: true
+          model_type: hist_gbdt
+          scope: recent_tail
+          recent_tail_fraction: 0.5
+          recent_tail_min_samples: 80
+          max_samples: 80
+          train_fraction: 0.67
+          positive_margin: 0.0
+          positive_min_h20_gain: 0.0
+          positive_min_h30_gain: 0.0
+          positive_max_h5_damage: -0.15
+          probability_threshold_grid:
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          metric: mse_path
+          max_depth: 3
+          learning_rate: 0.05
+          max_iter: 200
+          feature_columns:
+          - positive_count_h30
+          - positive_count
+          - positive_signal_h30
+          - positive_signal
+          - net_signal
+          - negative_mean_helpfulness
+          - base_move_h5_pct
+          - profile_fc_h5
+          - negative_count
+          - positive_mean_helpfulness
+          - profile_vol_pct
+          - positive_mean_similarity
+          - positive_best_similarity
+          - profile_change_5
+          - positive_count_h20
+          - negative_signal
+          - base_move_h20_pct
+          - profile_fc_h20
+          - negative_signal_h30
+          - base_move_h30_pct
+  prompt_history_points: 18
+  gating:
+    enabled: false
+    volatility_window: 20
+    volatility_percentile: 0.6
+  base_url: http://192.168.1.140:9877/v1
+  api_key: deo
+  sentiment:
+    enabled: false
+  blend_grid:
+    enabled: false
+    schedule: ramp
+    weights:
+    - 0.0
+    - 0.25
+    - 0.5
+    - 0.75
+    - 1.0
+    key_horizons:
+    - 1
+    - 5
+    - 10
+    - 20
+    - 30
+    tune_split: val
+hdelta:
+  key_horizons:
+  - 1
+  - 5
+  - 20
+  - 30
+  case_conditioned: true
+  max_adjustment_pct: 1.0
+  freeze_horizons:
+  - 1
+  case_match_top_k: 3
+  case_min_examples: 2
+  case_min_sign_agreement: 0.6
+  case_min_mean_abs_error_pct: 0.1
+  case_bound_scale: 0.85
+  case_min_bound_pct: 0.15
+  structured_coherence_guards: true
+  structured_zero_negative_long_when_h5_positive: true
+  structured_zero_h20_negative_when_h30_zero: true
+  structured_zero_mixed_long_signs: true
+  structured_prefer_positive_long_conflicts: true
+evaluation:
+  primary_metric: mse
+  additional_metrics:
+  - mae
+  - rmse
+  - mape
+  trend_threshold_method: volatility
+  trend_threshold_multiplier: 0.25
+  trend_classes:
+  - down
+  - flat
+  - up
+  significance_level: 0.05
+  tests:
+  - t_test
+  - wilcoxon
+econometric:
+  quantile_lasso:
+    enabled: false
+    quantiles:
+    - 0.1
+    - 0.5
+    - 0.9
+    alpha: 0.01
+    lags:
+    - 1
+    - 5
+    - 10
+    - 20
+  lasso_feature_selection:
+    enabled: false
+    alpha: 0.01
+    alpha_by_horizon: {}
+    max_iter: 10000
+    min_features: 6
+    max_features: 11
+    coef_threshold: 1.0e-06
+    feature_stats:
+    - last
+    - change_5
+    - change_20
+    - std_20
+    target_horizons:
+    - 1
+    - 5
+    - 20
+    - 30
+    target_aggregation: mean
+    mode: aggregate
+    target_weights:
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    drop_weakest: 0
+robustness:
+  noise_levels:
+  - 0.05
+  - 0.1
+  - 0.2
+  - 0.3
+  subperiods:
+  - name: post_uk_ets_launch
+    start: '2021-05-19'
+    end: '2023-12-31'
+  - name: recent
+    start: '2024-01-01'
+    end: '2026-03-04'
+output:
+  runs_dir: runs
+  paper_dir: paper
+  save_predictions: true
+  save_model_checkpoints: true
+  generate_plots: true
+  generate_paper: false
+  write_project_paper: false
+  write_manuscript: false
+  write_html_report: false
+  write_pdf_report: false
+reproducibility:
+  seed: 42
+  deterministic: true
+  log_git_hash: true
+  save_config: true
+compute:
+  device: auto
+  num_workers: 0
+  pin_memory: false

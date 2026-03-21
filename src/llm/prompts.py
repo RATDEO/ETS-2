@@ -1474,6 +1474,47 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
                 )
             if structured_lines:
                 structured_block = "\n## Structured Horizon Decisions\n" + "\n".join(structured_lines) + "\n"
+        discrete_block = ""
+        raw_discrete_by_h = kwargs.get("discrete_action_fractions_by_horizon") or {}
+        raw_discrete_default = kwargs.get("discrete_action_fractions") or []
+        if apply_style == "discrete_residual" or raw_discrete_by_h or raw_discrete_default:
+            discrete_lines = []
+            default_fracs = []
+            try:
+                default_fracs = sorted(
+                    {
+                        max(0.0, float(v))
+                        for v in raw_discrete_default
+                    }
+                )
+            except (TypeError, ValueError):
+                default_fracs = []
+            for h in horizons:
+                horizon_raw = None
+                for key in (int(h), str(int(h)), f"h{int(h)}"):
+                    if key in raw_discrete_by_h:
+                        horizon_raw = raw_discrete_by_h[key]
+                        break
+                if horizon_raw is None:
+                    horizon_fracs = list(default_fracs)
+                else:
+                    try:
+                        horizon_fracs = sorted(
+                            {
+                                max(0.0, float(v))
+                                for v in horizon_raw
+                            }
+                        )
+                    except (TypeError, ValueError):
+                        horizon_fracs = list(default_fracs)
+                if not horizon_fracs:
+                    continue
+                frac_text = ", ".join([f"{frac * 100.0:.0f}%" for frac in horizon_fracs])
+                discrete_lines.append(
+                    f"- h{int(h)}: allowed absolute action sizes are {{{frac_text}}} of that horizon's bound; use the signed version if non-zero."
+                )
+            if discrete_lines:
+                discrete_block = "\n## Discrete Action Menu\n" + "\n".join(discrete_lines) + "\n"
         tool_block = ""
         tool_lines = []
         if case_retrieval_tool_enabled:
@@ -1555,6 +1596,13 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
                 "Do not create new h30 drift unless the evidence is unusually strong.",
                 "When uncertain, return 0.0.",
             ]
+        elif apply_style == "discrete_residual":
+            style_lines = [
+                "Treat this as residual-action classification, not free-form path editing.",
+                "For each actionable horizon, choose either 0.0 or one signed discrete action from the allowed menu.",
+                "Default to 0.0 unless the matched evidence clearly supports a same-sign residual correction.",
+                "Prefer tiny or small long-horizon fixes; avoid medium actions unless the evidence is unusually strong and consistent.",
+            ]
         else:
             style_lines = [
                 "Use small corrections. If uncertain, prefer values near 0.",
@@ -1570,6 +1618,7 @@ Current price: {history[-1]:.2f} {currency}
 Recent prices: [{history_str}]
 {exo_block}
 {current_case_block}{memory_block}{matched_block}{guidance_block}{structured_block}
+{discrete_block}
 {tool_block}
 
 ## Base Model Forecast
@@ -1593,6 +1642,7 @@ Constraints:
 - If structured horizon decisions are provided, treat them as the primary contract for sign, confidence, and size.
 - Respect the structured `mode`: `freeze` means 0.0, `adjust` means make a bounded move.
 - Respect the structured `magnitude`: `zero` means 0.0, `tiny` means very close to 0, `small` means well below the bound, `medium` means still below the bound.
+- If a discrete action menu is provided, every non-zero output must be one of the signed menu values implied by that horizon's bound.
 - Do not return all zeros unless every actionable horizon is genuinely unsupported by the guidance.
 - If tools are available, use tool outputs as the source of truth for matched cases, arithmetic, bounds, and verified adjustments.
 

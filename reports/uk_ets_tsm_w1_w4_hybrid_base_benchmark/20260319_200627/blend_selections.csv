@@ -1,0 +1,5 @@
+window,run_dir,schedule,weight,val_mse_path
+W1,/Users/davidwilkinson/Desktop/ETS 2/runs/20260319_200627_d17b1f,uniform,1.0,21.669827322359033
+W2,/Users/davidwilkinson/Desktop/ETS 2/runs/20260319_200632_785633,uniform,1.0,69.0891648465587
+W3,/Users/davidwilkinson/Desktop/ETS 2/runs/20260319_200635_22304b,uniform,1.0,122.58280293763502
+W4,/Users/davidwilkinson/Desktop/ETS 2/runs/20260319_200637_4e4dc6,uniform,1.0,95.59530542718895

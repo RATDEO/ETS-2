@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -232,18 +233,47 @@ def _write_summary(out_dir: Path, df: pd.DataFrame) -> None:
     (out_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out-dir", type=str, default="")
+    parser.add_argument("--candidates", type=str, default="")
+    return parser.parse_args()
+
+
 def main() -> int:
-    out_dir = (
-        PROJECT_ROOT
-        / "reports"
-        / "uk_ets_gate_w1_w4_regularized_base"
-        / datetime.now().strftime("%Y%m%d_%H%M%S")
-    ).resolve()
+    args = _parse_args()
+    if args.out_dir:
+        out_dir = Path(args.out_dir).expanduser().resolve()
+    else:
+        out_dir = (
+            PROJECT_ROOT
+            / "reports"
+            / "uk_ets_gate_w1_w4_regularized_base"
+            / datetime.now().strftime("%Y%m%d_%H%M%S")
+        ).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    rows: list[dict[str, Any]] = []
-    for candidate_name, overrides in _candidate_overrides().items():
+    results_path = out_dir / "results.csv"
+    if results_path.exists():
+        rows = pd.read_csv(results_path).to_dict(orient="records")
+    else:
+        rows = []
+    completed = {(str(row["candidate"]), str(row["window"])) for row in rows}
+
+    all_candidates = _candidate_overrides()
+    if args.candidates:
+        requested = [item.strip() for item in args.candidates.split(",") if item.strip()]
+        candidate_map = {name: all_candidates[name] for name in requested}
+    else:
+        candidate_map = all_candidates
+
+    for candidate_name, overrides in candidate_map.items():
         for window in WINDOWS:
+            key = (candidate_name, window.name)
+            if key in completed:
+                print(f"Skipping completed {candidate_name} {window.name}", flush=True)
+                continue
+            print(f"Running {candidate_name} {window.name}", flush=True)
             run_dir = _run_candidate(window, candidate_name, overrides)
             metrics = _extract_metrics(run_dir)
             rows.append(
@@ -257,10 +287,10 @@ def main() -> int:
                     **metrics,
                 }
             )
-            pd.DataFrame(rows).to_csv(out_dir / "results.csv", index=False)
+            pd.DataFrame(rows).to_csv(results_path, index=False)
 
     df = pd.DataFrame(rows)
-    df.to_csv(out_dir / "results.csv", index=False)
+    df.to_csv(results_path, index=False)
     _write_summary(out_dir, df)
     print(out_dir)
     return 0

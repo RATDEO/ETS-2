@@ -1,0 +1,17 @@
+horizon,accuracy,accuracy_up,accuracy_down,accuracy_flat,n_up,n_down,n_flat,model,subset,n_samples
+1,0.17123287671232876,0.0,0.0,1.0,59,62,25,naive_persistence,full,146
+5,0.11643835616438356,0.0,0.0,1.0,46,83,17,naive_persistence,full,146
+20,0.0273972602739726,0.0,0.0,1.0,47,95,4,naive_persistence,full,146
+30,0.0410958904109589,0.0,0.0,1.0,45,95,6,naive_persistence,full,146
+1,0.4931506849315068,0.6610169491525424,0.45161290322580644,0.2,59,62,25,seasonal_naive,full,146
+5,0.11643835616438356,0.0,0.0,1.0,46,83,17,seasonal_naive,full,146
+20,0.0273972602739726,0.0,0.0,1.0,47,95,4,seasonal_naive,full,146
+30,0.0410958904109589,0.0,0.0,1.0,45,95,6,seasonal_naive,full,146
+1,0.17123287671232876,0.0,0.0,1.0,59,62,25,naive_persistence_llm_subset,llm_subset,146
+5,0.11643835616438356,0.0,0.0,1.0,46,83,17,naive_persistence_llm_subset,llm_subset,146
+20,0.0273972602739726,0.0,0.0,1.0,47,95,4,naive_persistence_llm_subset,llm_subset,146
+30,0.0410958904109589,0.0,0.0,1.0,45,95,6,naive_persistence_llm_subset,llm_subset,146
+1,0.4931506849315068,0.6610169491525424,0.45161290322580644,0.2,59,62,25,seasonal_naive_llm_subset,llm_subset,146
+5,0.11643835616438356,0.0,0.0,1.0,46,83,17,seasonal_naive_llm_subset,llm_subset,146
+20,0.0273972602739726,0.0,0.0,1.0,47,95,4,seasonal_naive_llm_subset,llm_subset,146
+30,0.0410958904109589,0.0,0.0,1.0,45,95,6,seasonal_naive_llm_subset,llm_subset,146

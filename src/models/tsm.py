@@ -413,6 +413,60 @@ if TORCH_AVAILABLE:
             self.optimizer = None
             self.scheduler = None
             self.best_val_loss = float("inf")
+
+        def _resolve_horizon_weights(self, pred_len: int) -> Optional[torch.Tensor]:
+            model_config = self.config.get("model", {})
+            anchors = model_config.get("loss_horizon_weights")
+            if not anchors:
+                return None
+            if isinstance(anchors, list):
+                if len(anchors) != pred_len:
+                    raise ValueError("loss_horizon_weights list must match pred_len")
+                weights = np.asarray(anchors, dtype=np.float32)
+            elif isinstance(anchors, dict):
+                parsed: dict[int, float] = {}
+                for k, v in anchors.items():
+                    parsed[int(k)] = float(v)
+                parsed.setdefault(1, 1.0)
+                parsed.setdefault(pred_len, parsed.get(max(parsed), 1.0))
+                anchor_x = np.array(sorted(parsed), dtype=np.float32)
+                anchor_y = np.array([parsed[int(x)] for x in anchor_x], dtype=np.float32)
+                x = np.arange(1, pred_len + 1, dtype=np.float32)
+                weights = np.interp(x, anchor_x, anchor_y).astype(np.float32)
+            else:
+                raise ValueError("loss_horizon_weights must be a list or dict")
+            return torch.tensor(weights, device=self.device, dtype=torch.float32).view(1, -1)
+
+        def _build_loss(self):
+            model_config = self.config.get("model", {})
+            loss_type = str(model_config.get("loss_type", "mse")).lower()
+            pred_len = int(self.config.get("time_series", {}).get("pred_len", 30))
+            horizon_weights = self._resolve_horizon_weights(pred_len)
+            huber_beta = float(model_config.get("loss_huber_beta", 1.0))
+
+            def _reduce(loss_matrix: torch.Tensor) -> torch.Tensor:
+                if horizon_weights is not None:
+                    weighted = loss_matrix * horizon_weights
+                    return weighted.mean()
+                return loss_matrix.mean()
+
+            if loss_type == "mse":
+                return lambda pred, target: _reduce((pred - target) ** 2)
+            if loss_type == "huber":
+                return lambda pred, target: _reduce(
+                    F.smooth_l1_loss(pred, target, reduction="none", beta=huber_beta)
+                )
+            if loss_type == "weighted_mse":
+                if horizon_weights is None:
+                    raise ValueError("weighted_mse requires loss_horizon_weights")
+                return lambda pred, target: _reduce((pred - target) ** 2)
+            if loss_type == "weighted_huber":
+                if horizon_weights is None:
+                    raise ValueError("weighted_huber requires loss_horizon_weights")
+                return lambda pred, target: _reduce(
+                    F.smooth_l1_loss(pred, target, reduction="none", beta=huber_beta)
+                )
+            raise ValueError(f"Unknown loss_type: {loss_type}")
         
         def _build_model(self) -> nn.Module:
             """Build the model from config."""
@@ -515,7 +569,7 @@ if TORCH_AVAILABLE:
             )
             
             self.grad_clip = grad_clip
-            criterion = nn.MSELoss()
+            criterion = self._build_loss()
             
             history = {"train_loss": [], "val_loss": []}
             no_improve = 0
@@ -572,7 +626,7 @@ if TORCH_AVAILABLE:
             """Evaluate model on a DataLoader."""
             self.model.eval()
             losses = []
-            criterion = nn.MSELoss()
+            criterion = self._build_loss()
             
             with torch.no_grad():
                 for batch in loader:

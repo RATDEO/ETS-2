@@ -219,7 +219,10 @@ def load_daily_sentiment_features(
         raise ValueError(f"Sentiment score column '{score_col}' not found in {sentiment_path}")
 
     work = df.copy()
-    work["date"] = pd.to_datetime(work[date_col]).dt.normalize()
+    parsed_dates = pd.to_datetime(work[date_col], errors="coerce")
+    if getattr(parsed_dates.dt, "tz", None) is not None:
+        parsed_dates = parsed_dates.dt.tz_convert(None)
+    work["date"] = parsed_dates.dt.normalize()
 
     numeric_cols = []
     for col in work.columns:

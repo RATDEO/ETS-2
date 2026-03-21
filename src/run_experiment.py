@@ -28,6 +28,7 @@ import logging
 import json
 import copy
 import re
+import shutil
 import numpy as np
 import pandas as pd
 
@@ -1344,6 +1345,25 @@ def apply_online_memory_gate_features(
             "reason": "warmup",
             **feature_row,
         }
+    safe_regime_cfg = dict(gate_cfg.get("safe_regime", {}) or {})
+    if bool(safe_regime_cfg.get("enabled", False)):
+        max_profile_vol_pct = safe_regime_cfg.get("max_profile_vol_pct")
+        max_abs_base_h20_pct = safe_regime_cfg.get("max_abs_base_h20_pct")
+        max_abs_base_h30_pct = safe_regime_cfg.get("max_abs_base_h30_pct")
+        violated_checks: list[str] = []
+        if max_profile_vol_pct is not None and float(feature_row.get("profile_vol_pct", 0.0)) > float(max_profile_vol_pct):
+            violated_checks.append("profile_vol_pct")
+        if max_abs_base_h20_pct is not None and abs(float(feature_row.get("base_move_h20_pct", 0.0))) > float(max_abs_base_h20_pct):
+            violated_checks.append("base_move_h20_pct")
+        if max_abs_base_h30_pct is not None and abs(float(feature_row.get("base_move_h30_pct", 0.0))) > float(max_abs_base_h30_pct):
+            violated_checks.append("base_move_h30_pct")
+        if violated_checks:
+            return {
+                "apply_llm": False,
+                "reason": "safe_regime_blocked",
+                "safe_regime_violations": list(violated_checks),
+                **feature_row,
+            }
     if learned_gate_bundle is not None:
         probability = float(
             predict_online_memory_learned_gate_scores(
@@ -1352,12 +1372,24 @@ def apply_online_memory_gate_features(
             )[0]
         )
         threshold = float(learned_gate_bundle.get("threshold", 0.5))
+        regime_thresholds = dict(learned_gate_bundle.get("regime_thresholds") or {})
+        regime_cfg = dict(learned_gate_bundle.get("regime_threshold_cfg") or {})
+        regime_bucket = None
+        if regime_thresholds:
+            regime_bucket = str(
+                build_online_memory_regime_bucket(
+                    pd.DataFrame([dict(feature_row)]),
+                    regime_cfg=regime_cfg,
+                ).iloc[0]
+            )
+            threshold = float(regime_thresholds.get(regime_bucket, threshold))
         apply_llm = bool(probability >= threshold)
         return {
             "apply_llm": apply_llm,
             "reason": "learned_gate_apply" if apply_llm else "learned_gate_blocked",
             "apply_probability": probability,
             "apply_threshold": threshold,
+            "regime_bucket": regime_bucket,
             **feature_row,
         }
     min_positive_examples = int(gate_cfg.get("min_positive_examples", 1))
@@ -1739,6 +1771,67 @@ def fit_online_memory_learned_gate(
     return bundle, dataset
 
 
+def load_online_memory_gate_bootstrap_dataset(
+    run_dirs: Sequence[str | Path],
+    result_slug: str,
+    include_splits: Optional[Sequence[str]] = None,
+) -> tuple[pd.DataFrame, np.ndarray]:
+    """Load historical learned-gate feature/label rows from prior runs."""
+    include = {str(x).strip().lower() for x in (include_splits or ["val", "test"]) if str(x).strip()}
+    feature_parts: list[pd.DataFrame] = []
+    label_parts: list[np.ndarray] = []
+    for run_dir_raw in run_dirs:
+        run_dir = Path(run_dir_raw).expanduser().resolve()
+        gate_dir = run_dir / "results" / "online_memory_gate" / result_slug
+        if not gate_dir.exists():
+            continue
+        for split_name in ["val", "test"]:
+            if split_name not in include:
+                continue
+            feat_path = gate_dir / f"{split_name}_learned_gate_features.csv"
+            label_path = gate_dir / f"{split_name}_learned_gate_labels.csv"
+            if not feat_path.exists() or not label_path.exists():
+                continue
+            feat_df = pd.read_csv(feat_path)
+            label_df = pd.read_csv(label_path)
+            if feat_df.empty or label_df.empty or len(feat_df) != len(label_df):
+                continue
+            feat_df = feat_df.reset_index(drop=True).copy()
+            feat_df["bootstrap_source_run_dir"] = str(run_dir)
+            feat_df["bootstrap_source_split"] = split_name
+            feature_parts.append(feat_df)
+            label_parts.append(label_df["label"].astype(int).to_numpy())
+    if not feature_parts:
+        return pd.DataFrame(), np.asarray([], dtype=int)
+    feature_df = pd.concat(feature_parts, ignore_index=True)
+    labels = np.concatenate(label_parts).astype(int)
+    return feature_df, labels
+
+
+def seed_llm_response_cache(
+    cache_dir: Path,
+    seed_run_dirs: Sequence[str | Path],
+) -> int:
+    """Copy cached LLM responses from prior runs into the current run cache."""
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    for run_dir_raw in seed_run_dirs:
+        run_dir = Path(run_dir_raw).expanduser().resolve()
+        src_cache_dir = run_dir / "llm" / "cache"
+        if not src_cache_dir.exists():
+            continue
+        for src_path in src_cache_dir.glob("*.json"):
+            dst_path = cache_dir / src_path.name
+            if dst_path.exists():
+                continue
+            try:
+                shutil.copy2(src_path, dst_path)
+                copied += 1
+            except OSError:
+                continue
+    return copied
+
+
 def predict_online_memory_learned_gate_scores(
     feature_df: pd.DataFrame,
     learned_gate_bundle: Optional[dict],
@@ -1762,6 +1855,35 @@ def predict_online_memory_learned_gate_scores(
         return 1.0 / (1.0 + np.exp(-raw))
     pred = np.asarray(model.predict(X), dtype=float)
     return np.clip(pred, 0.0, 1.0)
+
+
+def build_online_memory_regime_bucket(
+    feature_df: pd.DataFrame,
+    regime_cfg: Optional[dict] = None,
+) -> pd.Series:
+    """Assign simple deployable regime buckets from gate features."""
+    regime_cfg = dict(regime_cfg or {})
+    frame = feature_df.copy()
+    for col in ["base_move_h20_pct", "base_move_h30_pct", "profile_vol_pct"]:
+        if col not in frame.columns:
+            frame[col] = 0.0
+    max_abs_base_h20_pct = float(regime_cfg.get("max_abs_base_h20_pct", 2.5))
+    max_abs_base_h30_pct = float(regime_cfg.get("max_abs_base_h30_pct", 4.0))
+    use_profile_vol = bool(regime_cfg.get("use_profile_vol", False))
+    max_profile_vol_pct = float(regime_cfg.get("max_profile_vol_pct", 3.8))
+
+    large_move = (
+        frame["base_move_h20_pct"].abs().astype(float).to_numpy() > max_abs_base_h20_pct
+    ) | (
+        frame["base_move_h30_pct"].abs().astype(float).to_numpy() > max_abs_base_h30_pct
+    )
+    move_label = np.where(large_move, "large_move", "moderate_move")
+    if not use_profile_vol:
+        return pd.Series(move_label, index=frame.index, name="regime_bucket")
+    high_vol = frame["profile_vol_pct"].astype(float).to_numpy() > max_profile_vol_pct
+    vol_label = np.where(high_vol, "high_vol", "normal_vol")
+    bucket = np.asarray([f"{m}|{v}" for m, v in zip(move_label, vol_label)], dtype=object)
+    return pd.Series(bucket, index=frame.index, name="regime_bucket")
 
 
 def evaluate_online_memory_learned_gate_thresholds(
@@ -1801,6 +1923,113 @@ def evaluate_online_memory_learned_gate_thresholds(
             summary_row[f"h{int(horizon)}_mse"] = float(horizon_metrics.get("MSE", np.nan))
         summaries.append(summary_row)
     return pd.DataFrame(summaries), gated_predictions
+
+
+def evaluate_online_memory_learned_gate_regime_thresholds(
+    *,
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    feature_df: pd.DataFrame,
+    learned_gate_bundle: dict,
+    thresholds: Sequence[float],
+    horizons: Sequence[int],
+    regime_cfg: Optional[dict] = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Choose separate learned-gate thresholds per simple regime bucket."""
+    y_true = np.asarray(y_true, dtype=float)
+    base_pred = np.asarray(base_pred, dtype=float)
+    llm_pred = np.asarray(llm_pred, dtype=float)
+    probs = predict_online_memory_learned_gate_scores(feature_df, learned_gate_bundle)
+    warmup_mask = (
+        feature_df["warmup_ready"].astype(bool).to_numpy()
+        if "warmup_ready" in feature_df.columns
+        else np.ones(len(feature_df), dtype=bool)
+    )
+    regime_cfg = dict(regime_cfg or {})
+    min_bucket_rows = int(regime_cfg.get("min_bucket_rows", 8))
+    bucket_series = build_online_memory_regime_bucket(feature_df, regime_cfg=regime_cfg)
+    metric_name = str(regime_cfg.get("metric", "mse_path"))
+    threshold_rows: list[dict[str, object]] = []
+    selected_thresholds: dict[str, float] = {}
+
+    global_summary, _ = evaluate_online_memory_learned_gate_thresholds(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        feature_df=feature_df,
+        learned_gate_bundle=learned_gate_bundle,
+        thresholds=thresholds,
+        horizons=horizons,
+    )
+    if metric_name not in global_summary.columns:
+        metric_name = "mse_path"
+    global_best = global_summary.loc[global_summary[metric_name].idxmin()]
+    global_threshold = float(global_best["threshold"])
+
+    for bucket_name in bucket_series.astype(str).unique():
+        bucket_mask = bucket_series.astype(str).to_numpy() == str(bucket_name)
+        eligible_mask = bucket_mask & warmup_mask
+        if int(np.sum(eligible_mask)) < min_bucket_rows:
+            threshold_rows.append(
+                {
+                    "regime_bucket": str(bucket_name),
+                    "selected_threshold": global_threshold,
+                    "bucket_rows": int(np.sum(bucket_mask)),
+                    "eligible_rows": int(np.sum(eligible_mask)),
+                    "selection_mode": "fallback_global",
+                }
+            )
+            selected_thresholds[str(bucket_name)] = global_threshold
+            continue
+        bucket_summary, _ = evaluate_online_memory_learned_gate_thresholds(
+            y_true=y_true[bucket_mask],
+            base_pred=base_pred[bucket_mask],
+            llm_pred=llm_pred[bucket_mask],
+            feature_df=feature_df.loc[bucket_mask].reset_index(drop=True),
+            learned_gate_bundle=learned_gate_bundle,
+            thresholds=thresholds,
+            horizons=horizons,
+        )
+        if metric_name not in bucket_summary.columns:
+            metric_name = "mse_path"
+        best_row = bucket_summary.loc[bucket_summary[metric_name].idxmin()]
+        selected_thresholds[str(bucket_name)] = float(best_row["threshold"])
+        threshold_rows.append(
+            {
+                "regime_bucket": str(bucket_name),
+                "selected_threshold": float(best_row["threshold"]),
+                "bucket_rows": int(np.sum(bucket_mask)),
+                "eligible_rows": int(np.sum(eligible_mask)),
+                "selection_mode": "bucket_fit",
+            }
+        )
+
+    apply_mask = np.zeros(len(feature_df), dtype=bool)
+    for i, bucket_name in enumerate(bucket_series.astype(str).tolist()):
+        if not warmup_mask[i]:
+            apply_mask[i] = True
+            continue
+        threshold = float(selected_thresholds.get(bucket_name, global_threshold))
+        apply_mask[i] = bool(probs[i] >= threshold)
+
+    gated = np.where(apply_mask[:, None], llm_pred, base_pred)
+    path_metrics = compute_path_metrics(y_true, gated)
+    summary_row: dict[str, object] = {
+        "candidate": "regime_thresholds",
+        "threshold": global_threshold,
+        "applied_count": int(np.sum(apply_mask)),
+        "mean_probability": float(np.mean(probs)) if probs.size else 0.0,
+        "mse_path": float(path_metrics.get("mse_path", np.nan)),
+    }
+    by_h = compute_metrics_by_horizon(y_true, gated, horizons)
+    for horizon in horizons:
+        horizon_metrics = by_h.get(int(horizon), {}) or {}
+        summary_row[f"h{int(horizon)}_mse"] = float(horizon_metrics.get("MSE", np.nan))
+    threshold_df = pd.DataFrame(threshold_rows)
+    threshold_df["global_threshold"] = global_threshold
+    threshold_df["candidate_mse_path"] = float(summary_row["mse_path"])
+    return pd.DataFrame([summary_row]), threshold_df
 
 
 def evaluate_online_memory_gate_candidates(
@@ -3481,9 +3710,15 @@ def run_experiment(
 
             llm_refiner_config = build_llm_refiner_config(config)
 
+            llm_cache_dir = run_dir / "llm" / "cache"
+            cache_seed_run_dirs = parse_name_list(config.llm.get("cache_seed_run_dirs"))
+            if cache_seed_run_dirs:
+                seeded = seed_llm_response_cache(llm_cache_dir, cache_seed_run_dirs)
+                logger.info("Seeded %d cached LLM responses from %d prior runs", seeded, len(cache_seed_run_dirs))
+
             refiner = LLMRefiner(
                 llm_refiner_config,
-                cache_dir=run_dir / "llm" / "cache",
+                cache_dir=llm_cache_dir,
                 log_dir=run_dir / "llm" / "logs"
             )
 
@@ -5314,21 +5549,54 @@ def run_experiment(
                                 llm_pred=val_online_pred,
                                 label_cfg=online_memory_gate_learned_cfg,
                             )
+                            gate_fit_feature_df = val_feature_df.copy()
+                            gate_fit_labels = np.asarray(val_labels, dtype=int)
+                            bootstrap_run_dirs = parse_name_list(
+                                online_memory_gate_learned_cfg.get("bootstrap_from_run_dirs")
+                            )
+                            bootstrap_split_names = parse_name_list(
+                                online_memory_gate_learned_cfg.get("bootstrap_include_splits")
+                            )
+                            bootstrap_feature_df = pd.DataFrame()
+                            bootstrap_labels = np.asarray([], dtype=int)
+                            if bootstrap_run_dirs:
+                                bootstrap_feature_df, bootstrap_labels = load_online_memory_gate_bootstrap_dataset(
+                                    bootstrap_run_dirs,
+                                    result_slug=result_slug,
+                                    include_splits=bootstrap_split_names or ["val", "test"],
+                                )
+                                if not bootstrap_feature_df.empty and bootstrap_labels.size == len(bootstrap_feature_df):
+                                    gate_fit_feature_df = pd.concat(
+                                        [bootstrap_feature_df, gate_fit_feature_df],
+                                        ignore_index=True,
+                                    )
+                                    gate_fit_labels = np.concatenate(
+                                        [bootstrap_labels, gate_fit_labels]
+                                    ).astype(int)
+                            fit_cfg = dict(online_memory_gate_learned_cfg)
+                            if bootstrap_run_dirs:
+                                fit_cfg["use_all_for_fit"] = True
                             learned_bundle, learned_dataset = fit_online_memory_learned_gate(
-                                feature_df=val_feature_df,
-                                labels=val_labels,
-                                learned_cfg=online_memory_gate_learned_cfg,
+                                feature_df=gate_fit_feature_df,
+                                labels=gate_fit_labels,
+                                learned_cfg=fit_cfg,
                             )
                             if learned_bundle is not None:
-                                train_size = int(learned_bundle.get("train_size", 0))
-                                select_size = int(learned_bundle.get("select_size", 0))
-                                pre_refit_train_size = int(train_size)
-                                pre_refit_select_size = int(select_size)
-                                val_select_df = learned_dataset.iloc[train_size : train_size + select_size].copy()
+                                bootstrap_rows = int(len(bootstrap_feature_df))
                                 selection_fallback_used = False
-                                if val_select_df.empty:
-                                    selection_fallback_used = True
-                                    val_select_df = learned_dataset.copy()
+                                if bootstrap_rows > 0:
+                                    pre_refit_train_size = int(bootstrap_rows + len(val_feature_df))
+                                    pre_refit_select_size = 0
+                                    val_select_df = learned_dataset.iloc[bootstrap_rows:].copy()
+                                else:
+                                    train_size = int(learned_bundle.get("train_size", 0))
+                                    select_size = int(learned_bundle.get("select_size", 0))
+                                    pre_refit_train_size = int(train_size)
+                                    pre_refit_select_size = int(select_size)
+                                    val_select_df = learned_dataset.iloc[train_size : train_size + select_size].copy()
+                                    if val_select_df.empty:
+                                        selection_fallback_used = True
+                                        val_select_df = learned_dataset.copy()
                                 threshold_grid = _parse_float_list(
                                     online_memory_gate_learned_cfg.get("probability_threshold_grid"),
                                     default=[0.35, 0.45, 0.50, 0.55, 0.60, 0.70],
@@ -5348,22 +5616,50 @@ def run_experiment(
                                 if gate_metric not in val_gate_summary.columns:
                                     gate_metric = "mse_path"
                                 best_row = val_gate_summary.loc[val_gate_summary[gate_metric].idxmin()]
+                                regime_calibration_cfg = dict(
+                                    online_memory_gate_learned_cfg.get("regime_calibration", {}) or {}
+                                )
+                                regime_threshold_df = None
+                                if bool(regime_calibration_cfg.get("enabled", False)):
+                                    regime_calibration_cfg.setdefault("metric", gate_metric)
+                                    regime_summary_df, regime_threshold_df = evaluate_online_memory_learned_gate_regime_thresholds(
+                                        y_true=y_val_future[tune_val_indices][val_select_df["row_idx"].to_numpy(dtype=int)],
+                                        base_pred=llm_base_val_eval[tune_val_indices][val_select_df["row_idx"].to_numpy(dtype=int)],
+                                        llm_pred=val_online_pred[val_select_df["row_idx"].to_numpy(dtype=int)],
+                                        feature_df=val_feature_df.iloc[val_select_df["row_idx"].to_numpy(dtype=int)].reset_index(drop=True),
+                                        learned_gate_bundle=learned_bundle,
+                                        thresholds=threshold_grid,
+                                        horizons=horizons,
+                                        regime_cfg=regime_calibration_cfg,
+                                    )
+                                    if not regime_summary_df.empty and gate_metric in regime_summary_df.columns:
+                                        regime_best = regime_summary_df.loc[regime_summary_df[gate_metric].idxmin()]
+                                        if float(regime_best[gate_metric]) <= float(best_row[gate_metric]):
+                                            best_row = regime_best
                                 refit_cfg = dict(online_memory_gate_learned_cfg)
                                 refit_cfg["use_all_for_fit"] = True
                                 refit_bundle, _ = fit_online_memory_learned_gate(
-                                    feature_df=val_feature_df,
-                                    labels=val_labels,
+                                    feature_df=gate_fit_feature_df,
+                                    labels=gate_fit_labels,
                                     learned_cfg=refit_cfg,
                                 )
                                 if refit_bundle is not None:
                                     learned_bundle = refit_bundle
                                 learned_bundle["threshold"] = float(best_row["threshold"])
+                                if regime_threshold_df is not None and not regime_threshold_df.empty and str(best_row.get("candidate", "")) == "regime_thresholds":
+                                    learned_bundle["regime_thresholds"] = {
+                                        str(row["regime_bucket"]): float(row["selected_threshold"])
+                                        for _, row in regime_threshold_df.iterrows()
+                                    }
+                                    learned_bundle["regime_threshold_cfg"] = dict(regime_calibration_cfg)
                                 selected_online_memory_learned_bundle = learned_bundle
                                 out_root = run_dir / "results" / "online_memory_gate" / result_slug
                                 out_root.mkdir(parents=True, exist_ok=True)
                                 val_gate_summary.to_csv(out_root / "val_learned_gate_summary.csv", index=False)
                                 val_feature_df.to_csv(out_root / "val_learned_gate_features.csv", index=False)
                                 val_label_df.to_csv(out_root / "val_learned_gate_labels.csv", index=False)
+                                if regime_threshold_df is not None and not regime_threshold_df.empty:
+                                    regime_threshold_df.to_csv(out_root / "val_learned_gate_regime_thresholds.csv", index=False)
                                 selection_payload = {
                                     "method": result_name,
                                     "method_template": method,
@@ -5384,6 +5680,10 @@ def run_experiment(
                                     "refit_select_size": int(learned_bundle.get("select_size", 0)),
                                     "positive_rate_train": float(learned_bundle.get("positive_rate_train", 0.0)),
                                     "positive_rate_all": float(learned_bundle.get("positive_rate_all", 0.0)),
+                                    "bootstrap_rows": int(bootstrap_rows),
+                                    "bootstrap_run_dirs": list(bootstrap_run_dirs),
+                                    "regime_thresholds": dict(learned_bundle.get("regime_thresholds") or {}),
+                                    "regime_threshold_cfg": dict(learned_bundle.get("regime_threshold_cfg") or {}),
                                 }
                                 with (run_dir / "llm" / f"online_memory_gate_selection_{result_slug}.json").open("w") as f:
                                     json.dump(selection_payload, f, indent=2)

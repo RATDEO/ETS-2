@@ -1802,6 +1802,89 @@ def apply_structured_hdelta_coherence_guards(
     return guarded
 
 
+def apply_discrete_hdelta_actions(
+    adjustments_pct: Dict[int, float],
+    structured_guidance: Optional[Dict[int, Dict[str, str]]],
+    per_horizon_max: Dict[int, float],
+    config: Optional[Dict] = None,
+) -> Dict[int, float]:
+    """Snap bounded adjustments to a small discrete menu of residual actions."""
+    cfg = config or {}
+    if not bool(cfg.get("discrete_actions_enabled", False)):
+        return {int(h): float(v) for h, v in adjustments_pct.items()}
+
+    raw_default = cfg.get("discrete_action_fractions", [0.0, 0.25, 0.5]) or []
+    raw_by_h = cfg.get("discrete_action_fractions_by_horizon", {}) or {}
+    raw_activation = cfg.get("discrete_activation_fraction_by_horizon", {}) or {}
+    raw_min_conf = cfg.get("discrete_min_confidence_by_horizon", {}) or {}
+
+    def _parse_fraction_list(values: object) -> List[float]:
+        if not isinstance(values, (list, tuple)):
+            return []
+        parsed: List[float] = []
+        for value in values:
+            try:
+                parsed.append(max(0.0, float(value)))
+            except (TypeError, ValueError):
+                continue
+        return sorted(set(parsed))
+
+    default_fracs = _parse_fraction_list(raw_default)
+    activation_by_h = {
+        int(parsed): float(value)
+        for key, value in raw_activation.items()
+        if (parsed := _parse_horizon_key(key)) is not None
+    }
+    min_conf_by_h = {
+        int(parsed): str(value).strip().lower()
+        for key, value in raw_min_conf.items()
+        if (parsed := _parse_horizon_key(key)) is not None
+    }
+
+    snapped: Dict[int, float] = {}
+    for raw_h, raw_v in adjustments_pct.items():
+        horizon = int(raw_h)
+        value = float(raw_v)
+        per_h_max = float(per_horizon_max.get(horizon, abs(value)))
+        if per_h_max <= 0.0 or abs(value) <= 1e-12:
+            snapped[horizon] = 0.0
+            continue
+
+        guidance = (structured_guidance or {}).get(horizon) or {}
+        confidence = str(guidance.get("confidence", "")).strip().lower()
+        required_conf = min_conf_by_h.get(horizon)
+        if required_conf and _confidence_rank(confidence) < _confidence_rank(required_conf):
+            snapped[horizon] = 0.0
+            continue
+
+        horizon_raw = None
+        for key in (horizon, str(horizon), f"h{horizon}"):
+            if key in raw_by_h:
+                horizon_raw = raw_by_h[key]
+                break
+        levels = _parse_fraction_list(horizon_raw) if horizon_raw is not None else list(default_fracs)
+        if not levels:
+            snapped[horizon] = value
+            continue
+
+        activation_frac = float(activation_by_h.get(horizon, 0.15))
+        if abs(value) < max(1e-12, per_h_max * activation_frac):
+            snapped[horizon] = 0.0
+            continue
+
+        nonzero_levels = [level for level in levels if level > 0.0]
+        if not nonzero_levels:
+            snapped[horizon] = 0.0
+            continue
+
+        target_frac = min(1.0, abs(value) / per_h_max)
+        chosen_frac = min(nonzero_levels, key=lambda frac: abs(frac - target_frac))
+        snapped_value = float(np.sign(value) * per_h_max * chosen_frac)
+        snapped[horizon] = float(np.clip(snapped_value, -per_h_max, per_h_max))
+
+    return snapped
+
+
 def build_hdelta_case_summary(
     history: np.ndarray,
     forecast: np.ndarray,
@@ -3509,6 +3592,12 @@ class LLMRefiner:
                     apply_kwargs["market_microstructure_tool_name"] = MARKET_MICROSTRUCTURE_TOOL_NAME
                     apply_kwargs["freeze_counterexample_tool_enabled"] = freeze_counterexample_tool_enabled
                     apply_kwargs["freeze_counterexample_tool_name"] = COUNTEREXAMPLE_TOOL_NAME
+                    apply_kwargs["discrete_action_fractions"] = hdelta_cfg.get(
+                        "discrete_action_fractions"
+                    )
+                    apply_kwargs["discrete_action_fractions_by_horizon"] = hdelta_cfg.get(
+                        "discrete_action_fractions_by_horizon"
+                    )
                     if method == "TSM+LLM-COT-SENT-RF-HDELTA":
                         apply_kwargs["sentiment_secondary"] = bool(
                             hdelta_cfg.get("sentiment_secondary", False)
@@ -3837,6 +3926,12 @@ class LLMRefiner:
                             )
                             for h in frozen_horizons:
                                 clipped[int(h)] = 0.0
+                            clipped = apply_discrete_hdelta_actions(
+                                clipped,
+                                structured_guidance=hdelta_structured_guidance,
+                                per_horizon_max=per_horizon_max,
+                                config=hdelta_cfg,
+                            )
                             path_pct = interpolate_horizon_adjustments(pred_len, clipped)
                             forecast = np.asarray(tsm_forecast, dtype=float) * (1.0 + path_pct / 100.0)
                     elif method == "TSM+LLM-COT-SENT-RF-HPRICE":

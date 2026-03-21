@@ -15,6 +15,7 @@ from src.llm.refine import (
     NUMERIC_ANALYSIS_TOOL_NAME,
     aggregate_horizon_adjustments,
     aggregate_structured_hdelta_guidance,
+    apply_discrete_hdelta_actions,
     apply_structured_hdelta_coherence_guards,
     build_hdelta_retrieval_tag,
     build_hdelta_delta_verification_payload,
@@ -1532,6 +1533,47 @@ def test_apply_structured_hdelta_coherence_guards_targets_conflicts():
 
     assert guarded[20] == 0.0
     assert guarded[30] == 0.1
+
+
+def test_apply_discrete_hdelta_actions_snaps_to_signed_menu():
+    snapped = apply_discrete_hdelta_actions(
+        adjustments_pct={5: 0.19, 20: -0.41, 30: 0.0},
+        structured_guidance={
+            5: {"confidence": "medium"},
+            20: {"confidence": "high"},
+            30: {"confidence": "high"},
+        },
+        per_horizon_max={5: 1.0, 20: 1.0, 30: 1.0},
+        config={
+            "discrete_actions_enabled": True,
+            "discrete_action_fractions_by_horizon": {
+                "h5": [0.0, 0.2],
+                "h20": [0.0, 0.25, 0.5],
+                "h30": [0.0, 0.2, 0.4],
+            },
+            "discrete_activation_fraction_by_horizon": {"h5": 0.1, "h20": 0.1, "h30": 0.1},
+        },
+    )
+
+    assert snapped[5] == 0.2
+    assert snapped[20] == -0.5
+    assert snapped[30] == 0.0
+
+
+def test_apply_discrete_hdelta_actions_respects_confidence_floor():
+    snapped = apply_discrete_hdelta_actions(
+        adjustments_pct={20: 0.4},
+        structured_guidance={20: {"confidence": "low"}},
+        per_horizon_max={20: 1.0},
+        config={
+            "discrete_actions_enabled": True,
+            "discrete_action_fractions": [0.0, 0.25, 0.5],
+            "discrete_activation_fraction_by_horizon": {"h20": 0.1},
+            "discrete_min_confidence_by_horizon": {"h20": "medium"},
+        },
+    )
+
+    assert snapped[20] == 0.0
 
 
 def test_aggregate_horizon_adjustments_median():

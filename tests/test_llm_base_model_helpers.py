@@ -30,6 +30,7 @@ from src.run_experiment import (
     compute_online_memory_horizon_gains,
     evaluate_rule_gate_candidates,
     evaluate_online_memory_gate_candidates,
+    evaluate_online_memory_learned_gate_regime_thresholds,
     evaluate_online_memory_learned_gate_thresholds,
     fit_delta_calibration_scales,
     fit_online_memory_learned_gate,
@@ -40,6 +41,7 @@ from src.run_experiment import (
     parse_name_list,
     predict_online_memory_learned_gate_scores,
     resolve_exogenous_feature_names,
+    build_online_memory_regime_bucket,
     select_online_memory_records,
     select_balanced_long_horizon_indices,
     select_counterexample_index,
@@ -542,6 +544,88 @@ def test_apply_online_memory_gate_features_applies_threshold_rule():
     assert decision["apply_llm"] is True
 
 
+def test_apply_online_memory_gate_features_blocks_outside_safe_regime():
+    decision = apply_online_memory_gate_features(
+        {
+            "warmup_ready": True,
+            "positive_count": 3,
+            "negative_count": 0,
+            "positive_signal": 0.08,
+            "negative_signal": 0.01,
+            "net_signal": 0.07,
+            "base_move_h20_pct": 3.2,
+            "base_move_h30_pct": 4.8,
+            "profile_vol_pct": 3.5,
+        },
+        {
+            "safe_regime": {
+                "enabled": True,
+                "max_abs_base_h20_pct": 2.5,
+                "max_abs_base_h30_pct": 4.0,
+                "max_profile_vol_pct": 4.0,
+            }
+        },
+    )
+    assert decision["apply_llm"] is False
+    assert decision["reason"] == "safe_regime_blocked"
+    assert decision["safe_regime_violations"] == ["base_move_h20_pct", "base_move_h30_pct"]
+
+
+def test_build_online_memory_regime_bucket_splits_move_and_volatility():
+    feature_df = pd.DataFrame(
+        [
+            {"base_move_h20_pct": 1.2, "base_move_h30_pct": 2.5, "profile_vol_pct": 3.0},
+            {"base_move_h20_pct": 3.1, "base_move_h30_pct": 2.5, "profile_vol_pct": 3.0},
+            {"base_move_h20_pct": 1.2, "base_move_h30_pct": 2.5, "profile_vol_pct": 4.2},
+        ]
+    )
+    buckets = build_online_memory_regime_bucket(
+        feature_df,
+        regime_cfg={
+            "max_abs_base_h20_pct": 2.5,
+            "max_abs_base_h30_pct": 4.0,
+            "use_profile_vol": True,
+            "max_profile_vol_pct": 3.8,
+        },
+    )
+    assert buckets.tolist() == [
+        "moderate_move|normal_vol",
+        "large_move|normal_vol",
+        "moderate_move|high_vol",
+    ]
+
+
+def test_apply_online_memory_gate_features_uses_regime_specific_threshold():
+    class StubModel:
+        def predict_proba(self, X):
+            probs = np.full((len(X), 2), 0.0, dtype=float)
+            probs[:, 1] = 0.55
+            probs[:, 0] = 0.45
+            return probs
+
+    decision = apply_online_memory_gate_features(
+        {
+            "warmup_ready": True,
+            "base_move_h20_pct": 1.2,
+            "base_move_h30_pct": 2.5,
+            "profile_vol_pct": 3.0,
+        },
+        learned_gate_bundle={
+            "model": StubModel(),
+            "feature_columns": ["base_move_h20_pct", "base_move_h30_pct", "profile_vol_pct"],
+            "threshold": 0.7,
+            "regime_thresholds": {"moderate_move": 0.5},
+            "regime_threshold_cfg": {
+                "max_abs_base_h20_pct": 2.5,
+                "max_abs_base_h30_pct": 4.0,
+            },
+        },
+    )
+    assert decision["apply_llm"] is True
+    assert decision["regime_bucket"] == "moderate_move"
+    assert decision["apply_threshold"] == 0.5
+
+
 def test_build_online_memory_gate_feature_row_tracks_horizon_specific_memory():
     row = build_online_memory_gate_feature_row(
         positive_records=[
@@ -667,6 +751,54 @@ def test_fit_online_memory_learned_gate_and_thresholding_work():
     )
     assert len(summary) == 2
     assert "p_ge_0.400" in gated
+
+
+def test_evaluate_online_memory_learned_gate_regime_thresholds_fits_bucket_thresholds():
+    feature_df = pd.DataFrame(
+        {
+            "warmup_ready": [True] * 8,
+            "base_move_h20_pct": [1.0] * 4 + [3.0] * 4,
+            "base_move_h30_pct": [2.0] * 4 + [5.0] * 4,
+            "profile_vol_pct": [3.0] * 8,
+        }
+    )
+    y_true = np.zeros((8, 30), dtype=float)
+    base_pred = np.zeros((8, 30), dtype=float)
+    base_pred[:4, :] = 1.0
+    llm_pred = np.zeros((8, 30), dtype=float)
+    llm_pred[:4, :] = 0.1
+    llm_pred[4:, :] = 1.0
+
+    class StubModel:
+        def predict_proba(self, X):
+            probs = np.zeros((len(X), 2), dtype=float)
+            values = np.where(X[:, 0] > 2.5, 0.4, 0.6).astype(float)
+            probs[:, 1] = values
+            probs[:, 0] = 1.0 - values
+            return probs
+
+    summary_df, threshold_df = evaluate_online_memory_learned_gate_regime_thresholds(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        feature_df=feature_df,
+        learned_gate_bundle={
+            "model": StubModel(),
+            "feature_columns": ["base_move_h20_pct", "base_move_h30_pct", "profile_vol_pct"],
+            "threshold": 0.5,
+        },
+        thresholds=[0.3, 0.5],
+        horizons=[1, 5, 20, 30],
+        regime_cfg={
+            "max_abs_base_h20_pct": 2.5,
+            "max_abs_base_h30_pct": 4.0,
+            "min_bucket_rows": 2,
+        },
+    )
+    chosen = dict(zip(threshold_df["regime_bucket"], threshold_df["selected_threshold"]))
+    assert chosen["moderate_move"] == 0.3
+    assert chosen["large_move"] == 0.5
+    assert float(summary_df.iloc[0]["mse_path"]) < 0.5
 
 
 def test_build_online_memory_gate_labels_respects_positive_rules():
