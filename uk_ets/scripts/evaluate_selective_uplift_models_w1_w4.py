@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +18,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_DATASET = (
+DEFAULT_SOURCE_DATASET = (
     PROJECT_ROOT
     / "reports"
     / "uk_ets_selective_residual_helpful_cases"
@@ -281,16 +282,24 @@ def _write_outputs(out_dir: Path, results: pd.DataFrame) -> None:
 
 
 def main() -> int:
-    out_dir = (
-        PROJECT_ROOT
-        / "reports"
-        / "uk_ets_selective_uplift_models_w1_w4"
-        / datetime.now().strftime("%Y%m%d_%H%M%S")
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-dataset", type=str, default=str(DEFAULT_SOURCE_DATASET))
+    parser.add_argument("--out-dir", type=str, default="")
+    args = parser.parse_args()
+
+    if args.out_dir:
+        out_dir = Path(args.out_dir).expanduser().resolve()
+    else:
+        out_dir = (
+            PROJECT_ROOT
+            / "reports"
+            / "uk_ets_selective_uplift_models_w1_w4"
+            / datetime.now().strftime("%Y%m%d_%H%M%S")
+        )
     out_dir.mkdir(parents=True, exist_ok=True)
     _write_plan(out_dir)
 
-    cases = pd.read_csv(SOURCE_DATASET)
+    cases = pd.read_csv(Path(args.source_dataset).expanduser().resolve())
 
     variants = [
         ("uplift_logistic_helpful_strict", _build_logistic(), "classifier", "helpful_strict"),

@@ -1,0 +1,604 @@
+2026-03-23 20:49:26 | INFO     | src.run_experiment | Run ID: 20260323_204926_10d877
+2026-03-23 20:49:26 | INFO     | src.run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877
+2026-03-23 20:49:26 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:49:26 | INFO     | src.run_experiment | STEP 2: Building data panel
+2026-03-23 20:49:26 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:49:26 | INFO     | src.run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk
+2026-03-23 20:49:26 | INFO     | data.panel | ============================================================
+2026-03-23 20:49:26 | INFO     | data.panel | Building panel dataset
+2026-03-23 20:49:26 | INFO     | data.panel | Target source: uka_futures (UKA_FUTURES)
+2026-03-23 20:49:26 | INFO     | data.panel | ============================================================
+2026-03-23 20:49:26 | INFO     | data.panel | 
+[1/7] Loading target series (UKA Futures)...
+2026-03-23 20:49:26 | INFO     | data.load_eua_futures | Loading UKA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-23 20:49:26 | INFO     | data.load_eua_futures | Loaded UKA futures: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:49:26 | INFO     | data.load_eua_futures | Combined UKA_FUTURES data: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:49:26 | INFO     | data.load_eua_futures | UKA_FUTURES target series: 1245 records, price range: 30.20 - 97.15 GBP
+2026-03-23 20:49:26 | INFO     | data.panel | UKA Futures loaded: 1245 records
+2026-03-23 20:49:26 | INFO     | data.panel | Applying target date filter: min_date=<none> max_date=2026-03-23
+2026-03-23 20:49:26 | INFO     | data.panel | Master calendar: 1245 days from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:49:26 | INFO     | data.panel | Target coverage: 1245 / 1245 days
+2026-03-23 20:49:26 | INFO     | data.panel | Adding UKA Futures OHLC and volume features...
+2026-03-23 20:49:26 | INFO     | data.panel | Added UKA Futures features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-23 20:49:26 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-03-23 20:49:27 | INFO     | data.fx | Loaded EUR/USD FX rates: 6970 observations from 1999-01-04 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 20:49:27 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-23 20:49:27 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-23 20:49:27 | INFO     | data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-23 20:49:27 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-23 20:49:27 | INFO     | data.load_energy | Loaded UK SAP gas: 2996 records from 2018-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 20:49:27 | INFO     | data.load_energy | Loaded UK system power: 2266 records from 2020-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 20:49:27 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-23 20:49:27 | INFO     | data.fx | Converted 6890 prices from USD to EUR
+2026-03-23 20:49:27 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-03-23 20:49:27 | INFO     | data.load_weather | Loaded weather feature pack: 1770 records from 2021-05-19 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 20:49:27 | INFO     | data.panel | Added UK weather feature pack columns: ['uk_temp_mean_c', 'uk_temp_min_c', 'uk_temp_max_c', 'uk_hdd18', 'uk_hdd18_7d_ma', 'uk_temp_mean_7d_ma']
+2026-03-23 20:49:27 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-03-23 20:49:27 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-03-23 20:49:27 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-23 20:49:27 | INFO     | data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-23 20:49:27 | INFO     | data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-23 20:49:27 | INFO     | data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-23 20:49:27 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-23 20:49:27 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-03-23 20:49:27 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877/data
+2026-03-23 20:49:27 | INFO     | data.panel | ============================================================
+2026-03-23 20:49:27 | INFO     | data.panel | Panel built: 1245 rows, 96 columns
+2026-03-23 20:49:27 | INFO     | data.panel | Target coverage: 100.0%
+2026-03-23 20:49:27 | INFO     | data.panel | ============================================================
+2026-03-23 20:49:29 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877/paper_snapshot/fig_data_coverage.png
+2026-03-23 20:49:29 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:49:29 | INFO     | src.run_experiment | STEP 3: Creating windows and splitting data
+2026-03-23 20:49:29 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:49:29 | INFO     | data.windows | Creating windows with 17 features, mode=MS
+2026-03-23 20:49:29 | INFO     | data.windows | Creating 1196 windows
+2026-03-23 20:49:30 | INFO     | data.windows | Window shapes: X_enc=(1196, 20, 17), X_dec=(1196, 40, 17), y=(1196, 30)
+2026-03-23 20:49:30 | INFO     | data.windows | train: 754 windows
+2026-03-23 20:49:30 | INFO     | data.windows | val: 228 windows
+2026-03-23 20:49:30 | INFO     | data.windows | test: 156 windows
+2026-03-23 20:49:30 | INFO     | data.windows | Dropped 58 boundary-crossing windows to prevent split leakage
+2026-03-23 20:49:30 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877/data/datasets
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:49:30 | INFO     | src.run_experiment | STEP 4: Training and evaluating baselines
+2026-03-23 20:49:30 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:49:30 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 20:49:30 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+Baseline Results (MSE by horizon):
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+naive_persistence:
+2026-03-23 20:49:30 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          1.230740   1.109387  0.823269   1.449673
+5          9.332126   3.054853  2.077949   3.727357
+20        66.547386   8.157659  5.462821  10.528292
+30       120.134529  10.960589  7.778205  16.178128
+2026-03-23 20:49:30 | INFO     | src.run_experiment | Path MSE (avg over 30d): 50.892853
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+seasonal_naive:
+2026-03-23 20:49:30 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          6.224871   2.494969  1.833077   3.201437
+5          9.332125   3.054853  2.077949   3.727358
+20        66.547377   8.157658  5.462820  10.528291
+30       120.134537  10.960590  7.778205  16.178130
+2026-03-23 20:49:30 | INFO     | src.run_experiment | Path MSE (avg over 30d): 56.171590
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+linear_ridge:
+2026-03-23 20:49:30 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          1.244148   1.115414  0.821843   1.440133
+5          9.167466   3.027782  1.997923   3.575667
+20        59.493579   7.713208  4.641685   9.196470
+30       105.178730  10.255668  6.448386  13.890160
+2026-03-23 20:49:30 | INFO     | src.run_experiment | Path MSE (avg over 30d): 45.926376
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+linear_lasso:
+2026-03-23 20:49:30 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          1.275183   1.129240  0.848184   1.501315
+5          9.078450   3.013047  2.004659   3.597787
+20        58.473945   7.646826  4.641868   9.079939
+30       106.426115  10.316303  6.775528  14.337948
+2026-03-23 20:49:30 | INFO     | src.run_experiment | Path MSE (avg over 30d): 45.733527
+2026-03-23 20:49:30 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:49:30 | INFO     | src.run_experiment | STEP 5: TSM model training
+2026-03-23 20:49:30 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:49:30 | INFO     | models.tsm | Building TSM model: type=dlinear, seq_len=20, pred_len=30
+2026-03-23 20:49:30 | INFO     | models.tsm | Built DLinear model with 1279 parameters (channel_mixer=residual_linear)
+2026-03-23 20:49:32 | INFO     | models.tsm | Epoch 1/40 - Train: 0.620863, Val: 0.414718
+2026-03-23 20:49:32 | INFO     | models.tsm | Epoch 2/40 - Train: 0.604557, Val: 0.405805
+2026-03-23 20:49:32 | INFO     | models.tsm | Epoch 3/40 - Train: 0.589651, Val: 0.397714
+2026-03-23 20:49:32 | INFO     | models.tsm | Epoch 4/40 - Train: 0.576416, Val: 0.390364
+2026-03-23 20:49:32 | INFO     | models.tsm | Epoch 5/40 - Train: 0.566415, Val: 0.383679
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 6/40 - Train: 0.555309, Val: 0.377630
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 7/40 - Train: 0.547049, Val: 0.372180
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 8/40 - Train: 0.536773, Val: 0.367298
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 9/40 - Train: 0.528920, Val: 0.362892
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 10/40 - Train: 0.522713, Val: 0.358918
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 11/40 - Train: 0.515496, Val: 0.355460
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 12/40 - Train: 0.510491, Val: 0.352286
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 13/40 - Train: 0.505079, Val: 0.349472
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 14/40 - Train: 0.499616, Val: 0.346992
+2026-03-23 20:49:33 | INFO     | models.tsm | Epoch 15/40 - Train: 0.496312, Val: 0.344652
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 16/40 - Train: 0.492170, Val: 0.342650
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 17/40 - Train: 0.489295, Val: 0.340842
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 18/40 - Train: 0.485999, Val: 0.339296
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 19/40 - Train: 0.482979, Val: 0.337890
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 20/40 - Train: 0.480496, Val: 0.336626
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 21/40 - Train: 0.476949, Val: 0.335511
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 22/40 - Train: 0.474526, Val: 0.334474
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 23/40 - Train: 0.473621, Val: 0.333581
+2026-03-23 20:49:34 | INFO     | models.tsm | Epoch 24/40 - Train: 0.472540, Val: 0.332753
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 25/40 - Train: 0.470995, Val: 0.332055
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 26/40 - Train: 0.469416, Val: 0.331457
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 27/40 - Train: 0.467428, Val: 0.330907
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 28/40 - Train: 0.466587, Val: 0.330411
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 29/40 - Train: 0.465701, Val: 0.330011
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 30/40 - Train: 0.464187, Val: 0.329716
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 31/40 - Train: 0.462757, Val: 0.329393
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 32/40 - Train: 0.462770, Val: 0.329007
+2026-03-23 20:49:35 | INFO     | models.tsm | Epoch 33/40 - Train: 0.461208, Val: 0.328805
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 34/40 - Train: 0.460765, Val: 0.328638
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 35/40 - Train: 0.459413, Val: 0.328486
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 36/40 - Train: 0.459980, Val: 0.328353
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 37/40 - Train: 0.458584, Val: 0.328177
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 38/40 - Train: 0.459729, Val: 0.328104
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 39/40 - Train: 0.458496, Val: 0.327966
+2026-03-23 20:49:36 | INFO     | models.tsm | Epoch 40/40 - Train: 0.458673, Val: 0.327938
+2026-03-23 20:49:36 | INFO     | src.run_experiment | 
+TSM Results:
+2026-03-23 20:49:36 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          1.322538   1.150016  0.838013   1.474371
+5          9.709166   3.115953  2.032839   3.654681
+20        72.511642   8.515377  5.388625  10.597025
+30       129.695343  11.388387  7.360782  15.771511
+2026-03-23 20:49:36 | INFO     | src.run_experiment | TSM Path MSE (avg over 30d): 55.373344
+2026-03-23 20:49:36 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:49:36 | INFO     | src.run_experiment | STEP 6: LLM refinement
+2026-03-23 20:49:36 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:49:36 | INFO     | src.run_experiment | LLM base forecast model: tsm
+2026-03-23 20:49:36 | INFO     | src.run_experiment | Running method: TSM+LLM-COT-RF-HDELTA
+2026-03-23 20:49:36 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA teaching pool mode=online_realized_memory (realized_memory_horizon=30)
+2026-03-23 20:49:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:49:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:50:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:51:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:52:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:53:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:54:53 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Results:
+2026-03-23 20:54:53 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1          1.322538   1.150016  0.838013   1.474371
+5          9.728353   3.119031  2.043708   3.678019
+20        72.298684   8.502863  5.357019  10.538532
+30       129.244400  11.368571  7.307010  15.673424
+2026-03-23 20:54:53 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA Path MSE (avg over 30d): 55.228344
+2026-03-23 20:54:53 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:54:53 | INFO     | src.run_experiment | STEP 7: Statistical significance tests
+2026-03-23 20:54:53 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:54:53 | INFO     | src.run_experiment | 
+Significance test results saved
+2026-03-23 20:54:53 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:54:53 | INFO     | src.run_experiment | STEP 8: Robustness suite
+2026-03-23 20:54:53 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:54:53 | INFO     | src.run_experiment | Robustness noise injection results saved
+2026-03-23 20:54:53 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:54:53 | INFO     | src.run_experiment | STEP 9: Drift/return and long-short portfolio evaluation
+2026-03-23 20:54:53 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:54:54 | INFO     | src.run_experiment | Drift metrics saved
+2026-03-23 20:54:54 | INFO     | src.run_experiment | Long-short portfolio metrics saved
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:54:54 | INFO     | src.run_experiment | STEP 10: Trend classification accuracy
+2026-03-23 20:54:54 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.397436
+5        0.211538
+20       0.115385
+30       0.070513
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.564103
+20       0.442308
+30       0.378205
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.371795
+5        0.211538
+20       0.115385
+30       0.070513
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.564103
+20       0.442308
+30       0.378205
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.403846
+5        0.442308
+20       0.660256
+30       0.769231
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.583333
+20       0.679487
+30       0.692308
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.384615
+5        0.384615
+20       0.660256
+30       0.698718
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.634615
+20       0.653846
+30       0.532051
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.403846
+5        0.429487
+20       0.557692
+30       0.634615
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.570513
+20       0.602564
+30       0.615385
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.403846
+5        0.423077
+20       0.583333
+30       0.641026
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.570513
+20       0.602564
+30       0.641026
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.397436
+5        0.211538
+20       0.115385
+30       0.070513
+2026-03-23 20:54:54 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:54 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.564103
+20       0.442308
+30       0.378205
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.371795
+5        0.211538
+20       0.115385
+30       0.070513
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.564103
+20       0.442308
+30       0.378205
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.403846
+5        0.442308
+20       0.660256
+30       0.769231
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.583333
+20       0.679487
+30       0.692308
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.384615
+5        0.384615
+20       0.660256
+30       0.698718
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.634615
+20       0.653846
+30       0.532051
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.403846
+5        0.429487
+20       0.557692
+30       0.634615
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 20:54:55 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.570513
+20       0.602564
+30       0.615385
+2026-03-23 20:54:55 | INFO     | src.run_experiment | Paper generation disabled by config
+2026-03-23 20:54:55 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 20:54:55 | INFO     | src.run_experiment | EXPERIMENT COMPLETE
+2026-03-23 20:54:55 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 20:54:55 | INFO     | src.run_experiment | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877
+2026-03-23 20:54:59 | INFO     | src.data.panel | ============================================================
+2026-03-23 20:54:59 | INFO     | src.data.panel | Building panel dataset
+2026-03-23 20:54:59 | INFO     | src.data.panel | Target source: uka_futures (UKA_FUTURES)
+2026-03-23 20:54:59 | INFO     | src.data.panel | ============================================================
+2026-03-23 20:54:59 | INFO     | src.data.panel | 
+[1/7] Loading target series (UKA Futures)...
+2026-03-23 20:54:59 | INFO     | src.data.load_eua_futures | Loading UKA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-23 20:54:59 | INFO     | src.data.load_eua_futures | Loaded UKA futures: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:54:59 | INFO     | src.data.load_eua_futures | Combined UKA_FUTURES data: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:54:59 | INFO     | src.data.load_eua_futures | UKA_FUTURES target series: 1245 records, price range: 30.20 - 97.15 GBP
+2026-03-23 20:54:59 | INFO     | src.data.panel | UKA Futures loaded: 1245 records
+2026-03-23 20:54:59 | INFO     | src.data.panel | Applying target date filter: min_date=<none> max_date=2026-03-23
+2026-03-23 20:54:59 | INFO     | src.data.panel | Master calendar: 1245 days from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 20:54:59 | INFO     | src.data.panel | Target coverage: 1245 / 1245 days
+2026-03-23 20:54:59 | INFO     | src.data.panel | Adding UKA Futures OHLC and volume features...
+2026-03-23 20:54:59 | INFO     | src.data.panel | Added UKA Futures features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-23 20:54:59 | INFO     | src.data.panel | 
+[2/7] Loading FX rates...
+2026-03-23 20:55:00 | INFO     | src.data.fx | Loaded EUR/USD FX rates: 6970 observations from 1999-01-04 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-23 20:55:00 | WARNING  | src.data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-23 20:55:00 | INFO     | src.data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.load_energy | Loaded UK SAP gas: 2996 records from 2018-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.load_energy | Loaded UK system power: 2266 records from 2020-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 20:55:00 | WARNING  | src.data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-23 20:55:00 | INFO     | src.data.fx | Converted 6890 prices from USD to EUR
+2026-03-23 20:55:00 | INFO     | src.data.fx | Converted 3677 prices from USD to EUR
+2026-03-23 20:55:00 | INFO     | src.data.load_weather | Loaded weather feature pack: 1770 records from 2021-05-19 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.panel | Added UK weather feature pack columns: ['uk_temp_mean_c', 'uk_temp_min_c', 'uk_temp_max_c', 'uk_hdd18', 'uk_hdd18_7d_ma', 'uk_temp_mean_7d_ma']
+2026-03-23 20:55:00 | INFO     | src.data.panel | 
+[4/7] Loading carbon indices...
+2026-03-23 20:55:00 | INFO     | src.data.panel | 
+[5/7] Loading auction data...
+2026-03-23 20:55:00 | INFO     | src.data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-23 20:55:00 | INFO     | src.data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-23 20:55:00 | INFO     | src.data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-23 20:55:00 | INFO     | src.data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-23 20:55:00 | INFO     | src.data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-23 20:55:00 | INFO     | src.data.panel | 
+[7/7] Creating target features...
+2026-03-23 20:55:00 | INFO     | src.data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_204926_10d877/data
+2026-03-23 20:55:00 | INFO     | src.data.panel | ============================================================
+2026-03-23 20:55:00 | INFO     | src.data.panel | Panel built: 1245 rows, 96 columns
+2026-03-23 20:55:00 | INFO     | src.data.panel | Target coverage: 100.0%
+2026-03-23 20:55:00 | INFO     | src.data.panel | ============================================================
+2026-03-23 20:55:00 | INFO     | src.models.tsm | Building TSM model: type=dlinear, seq_len=20, pred_len=30
+2026-03-23 20:55:00 | INFO     | src.models.tsm | Built DLinear model with 1273 parameters (channel_mixer=residual_linear)
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 1/40 - Train: 0.607429, Val: 0.334773
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 2/40 - Train: 0.587551, Val: 0.325741
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 3/40 - Train: 0.570317, Val: 0.317747
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 4/40 - Train: 0.555709, Val: 0.310854
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 5/40 - Train: 0.541317, Val: 0.304759
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 6/40 - Train: 0.530296, Val: 0.299447
+2026-03-23 20:55:01 | INFO     | src.models.tsm | Epoch 7/40 - Train: 0.520924, Val: 0.294976
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 8/40 - Train: 0.512404, Val: 0.291044
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 9/40 - Train: 0.504708, Val: 0.287669
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 10/40 - Train: 0.499320, Val: 0.284833
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 11/40 - Train: 0.492602, Val: 0.282431
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 12/40 - Train: 0.486680, Val: 0.280372
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 13/40 - Train: 0.483435, Val: 0.278671
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 14/40 - Train: 0.480026, Val: 0.277228
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 15/40 - Train: 0.478104, Val: 0.275974
+2026-03-23 20:55:02 | INFO     | src.models.tsm | Epoch 16/40 - Train: 0.474377, Val: 0.274920
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 17/40 - Train: 0.471865, Val: 0.274095
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 18/40 - Train: 0.470353, Val: 0.273391
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 19/40 - Train: 0.469296, Val: 0.272810
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 20/40 - Train: 0.467444, Val: 0.272280
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 21/40 - Train: 0.465934, Val: 0.271931
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 22/40 - Train: 0.463882, Val: 0.271604
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 23/40 - Train: 0.463851, Val: 0.271383
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 24/40 - Train: 0.463072, Val: 0.271175
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 25/40 - Train: 0.461654, Val: 0.271033
+2026-03-23 20:55:03 | INFO     | src.models.tsm | Epoch 26/40 - Train: 0.461461, Val: 0.270973
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 27/40 - Train: 0.462460, Val: 0.270869
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 28/40 - Train: 0.460670, Val: 0.270849
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 29/40 - Train: 0.459991, Val: 0.270826
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 30/40 - Train: 0.460065, Val: 0.270814
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 31/40 - Train: 0.459338, Val: 0.270833
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 32/40 - Train: 0.459076, Val: 0.270870
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 33/40 - Train: 0.458593, Val: 0.270893
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 34/40 - Train: 0.457642, Val: 0.270922
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 35/40 - Train: 0.458678, Val: 0.270967
+2026-03-23 20:55:04 | INFO     | src.models.tsm | Epoch 36/40 - Train: 0.457213, Val: 0.271079
+2026-03-23 20:55:05 | INFO     | src.models.tsm | Epoch 37/40 - Train: 0.457861, Val: 0.271080
+2026-03-23 20:55:05 | INFO     | src.models.tsm | Epoch 38/40 - Train: 0.457413, Val: 0.271181
+2026-03-23 20:55:05 | INFO     | src.models.tsm | Early stopping at epoch 38
+2026-03-23 20:55:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:55:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:55:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 20:55:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"

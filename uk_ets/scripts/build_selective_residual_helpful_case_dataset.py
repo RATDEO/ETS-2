@@ -47,12 +47,32 @@ class CaseRun:
     run_dir: Path
 
 
-RUNS = [
+DEFAULT_RUNS = [
     CaseRun("W1", "2023-10-27", "2024-10-26", "2025-06-30", PROJECT_ROOT / "runs" / "20260320_182015_da9e9d"),
     CaseRun("W2", "2023-02-22", "2024-02-22", "2024-10-26", PROJECT_ROOT / "runs" / "20260320_183041_c7484b"),
     CaseRun("W3", "2022-06-20", "2023-06-20", "2024-02-22", PROJECT_ROOT / "runs" / "20260320_183637_a4d80c"),
     CaseRun("W4", "2021-10-16", "2022-10-16", "2023-06-20", PROJECT_ROOT / "runs" / "20260320_184725_2cded6"),
 ]
+
+
+def _load_runs(runs_csv: str) -> list[CaseRun]:
+    if not runs_csv:
+        return list(DEFAULT_RUNS)
+    df = pd.read_csv(runs_csv)
+    required = {"window", "train_end", "val_end", "test_end", "run_dir"}
+    missing = required.difference(df.columns)
+    if missing:
+        raise ValueError(f"runs-csv missing columns: {sorted(missing)}")
+    return [
+        CaseRun(
+            window=str(row["window"]),
+            train_end=str(row["train_end"]),
+            val_end=str(row["val_end"]),
+            test_end=str(row["test_end"]),
+            run_dir=Path(str(row["run_dir"])).expanduser().resolve(),
+        )
+        for _, row in df.iterrows()
+    ]
 
 
 def _safe_pct_improvement(base: np.ndarray, refined: np.ndarray) -> np.ndarray:
@@ -201,7 +221,7 @@ def _build_case_frame(case_run: CaseRun) -> pd.DataFrame:
     return frame
 
 
-def _write_methodology(out_dir: Path) -> None:
+def _write_methodology(out_dir: Path, runs: list[CaseRun]) -> None:
     lines = [
         "# Selective Residual Refinement Methodology",
         "",
@@ -211,7 +231,7 @@ def _write_methodology(out_dir: Path) -> None:
         "",
         "## Phase I Scope",
         "- Use like-for-like improved-base UK runs only.",
-        "- Current source runs are the completed `effective_retrieval_wide8` W1-W4 runs.",
+        f"- Current source runs: {', '.join(run.window for run in runs)}.",
         "- Do not mix in older weaker-base runs when defining helpful regimes.",
         "",
         "## Case-Level Dataset",
@@ -239,7 +259,7 @@ def _write_methodology(out_dir: Path) -> None:
     (out_dir / "methodology.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def _write_summary(out_dir: Path, cases: pd.DataFrame) -> None:
+def _write_summary(out_dir: Path, cases: pd.DataFrame, runs: list[CaseRun]) -> None:
     window_summary = (
         cases.groupby("window")[["path_uplift_pct", "h20_uplift_pct", "h30_uplift_pct", "helpful_loose", "helpful_long_only", "helpful_strict", "harmful_strict"]]
         .mean()
@@ -267,7 +287,7 @@ def _write_summary(out_dir: Path, cases: pd.DataFrame) -> None:
         "",
         "## Source Runs",
     ]
-    for case_run in RUNS:
+    for case_run in runs:
         lines.append(f"- `{case_run.window}`: `{case_run.run_dir}`")
     lines.extend(
         [
@@ -303,7 +323,9 @@ def _write_summary(out_dir: Path, cases: pd.DataFrame) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out-dir", default="")
+    parser.add_argument("--runs-csv", default="")
     args = parser.parse_args()
+    runs = _load_runs(args.runs_csv)
 
     if args.out_dir:
         out_dir = Path(args.out_dir).expanduser().resolve()
@@ -315,15 +337,15 @@ def main() -> int:
             / datetime.now().strftime("%Y%m%d_%H%M%S")
         ).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
-    _write_methodology(out_dir)
+    _write_methodology(out_dir, runs)
 
-    cases = pd.concat([_build_case_frame(case_run) for case_run in RUNS], ignore_index=True)
+    cases = pd.concat([_build_case_frame(case_run) for case_run in runs], ignore_index=True)
     cases["vol_regime"] = _assign_quantile_bins(cases["y_vol_20d"], ["low_vol", "mid_vol", "high_vol"])
     cases["move_regime"] = _assign_quantile_bins(cases["base_move_h20_pct"].abs(), ["small_move", "mid_move", "large_move"])
     cases["retrieval_regime"] = _assign_quantile_bins(cases["matched_teaching_count"], ["low_support", "mid_support", "high_support"])
 
     cases.to_csv(out_dir / "helpful_case_dataset.csv", index=False)
-    _write_summary(out_dir, cases)
+    _write_summary(out_dir, cases, runs)
     print(out_dir)
     return 0
 

@@ -1,0 +1,1167 @@
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Run ID: 20260323_061428_146cd6
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_061428_146cd6
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 06:14:28 | INFO     | src.run_experiment | STEP 2: Building data panel
+2026-03-23 06:14:28 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk
+2026-03-23 06:14:28 | INFO     | data.panel | ============================================================
+2026-03-23 06:14:28 | INFO     | data.panel | Building panel dataset
+2026-03-23 06:14:28 | INFO     | data.panel | Target source: uka_futures (UKA_FUTURES)
+2026-03-23 06:14:28 | INFO     | data.panel | ============================================================
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[1/7] Loading target series (UKA Futures)...
+2026-03-23 06:14:28 | INFO     | data.load_eua_futures | Loading UKA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-23 06:14:28 | INFO     | data.load_eua_futures | Loaded UKA futures: 1240 records from 2021-05-19 00:00:00 to 2026-03-13 00:00:00
+2026-03-23 06:14:28 | INFO     | data.load_eua_futures | Combined UKA_FUTURES data: 1240 records from 2021-05-19 00:00:00 to 2026-03-13 00:00:00
+2026-03-23 06:14:28 | INFO     | data.load_eua_futures | UKA_FUTURES target series: 1240 records, price range: 30.20 - 97.15 GBP
+2026-03-23 06:14:28 | INFO     | data.panel | UKA Futures loaded: 1240 records
+2026-03-23 06:14:28 | INFO     | data.panel | Applying target date filter: min_date=<none> max_date=2023-06-20
+2026-03-23 06:14:28 | INFO     | data.panel | Master calendar: 538 days from 2021-05-19 00:00:00 to 2023-06-20 00:00:00
+2026-03-23 06:14:28 | INFO     | data.panel | Target coverage: 538 / 538 days
+2026-03-23 06:14:28 | INFO     | data.panel | Adding UKA Futures OHLC and volume features...
+2026-03-23 06:14:28 | INFO     | data.panel | Added UKA Futures features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-03-23 06:14:28 | INFO     | data.fx | Loaded EUR/USD FX rates: 6964 observations from 1999-01-04 00:00:00 to 2026-03-13 00:00:00
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-23 06:14:28 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-23 06:14:28 | INFO     | data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-23 06:14:28 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-23 06:14:28 | INFO     | data.load_energy | Loaded UK SAP gas: 2989 records from 2018-01-01 00:00:00 to 2026-03-08 00:00:00
+2026-03-23 06:14:28 | INFO     | data.load_energy | Loaded UK system power: 2259 records from 2020-01-01 00:00:00 to 2026-03-08 00:00:00
+2026-03-23 06:14:28 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-23 06:14:28 | INFO     | data.fx | Converted 6890 prices from USD to EUR
+2026-03-23 06:14:28 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-03-23 06:14:28 | INFO     | data.load_weather | Loaded weather feature pack: 1762 records from 2021-05-19 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 06:14:28 | INFO     | data.panel | Added UK weather feature pack columns: ['uk_temp_mean_c', 'uk_temp_min_c', 'uk_temp_max_c', 'uk_hdd18', 'uk_hdd18_7d_ma', 'uk_temp_mean_7d_ma']
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-03-23 06:14:28 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-23 06:14:28 | INFO     | data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-23 06:14:28 | INFO     | data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-23 06:14:28 | INFO     | data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-23 06:14:28 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-03-23 06:14:28 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_061428_146cd6/data
+2026-03-23 06:14:28 | INFO     | data.panel | ============================================================
+2026-03-23 06:14:28 | INFO     | data.panel | Panel built: 538 rows, 96 columns
+2026-03-23 06:14:28 | INFO     | data.panel | Target coverage: 100.0%
+2026-03-23 06:14:28 | INFO     | data.panel | ============================================================
+2026-03-23 06:14:28 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_061428_146cd6/paper_snapshot/fig_data_coverage.png
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 06:14:28 | INFO     | src.run_experiment | STEP 3: Creating windows and splitting data
+2026-03-23 06:14:28 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 06:14:28 | INFO     | data.windows | Creating windows with 17 features, mode=MS
+2026-03-23 06:14:28 | INFO     | data.windows | Creating 489 windows
+2026-03-23 06:14:28 | INFO     | data.windows | Window shapes: X_enc=(489, 20, 17), X_dec=(489, 40, 17), y=(489, 30)
+2026-03-23 06:14:28 | INFO     | data.windows | train: 59 windows
+2026-03-23 06:14:28 | INFO     | data.windows | val: 226 windows
+2026-03-23 06:14:28 | INFO     | data.windows | test: 146 windows
+2026-03-23 06:14:28 | INFO     | data.windows | Dropped 58 boundary-crossing windows to prevent split leakage
+2026-03-23 06:14:28 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_061428_146cd6/data/datasets
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 06:14:28 | INFO     | src.run_experiment | STEP 4: Training and evaluating baselines
+2026-03-23 06:14:28 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 06:14:28 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 06:14:28 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+Baseline Results (MSE by horizon):
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+naive_persistence:
+2026-03-23 06:14:28 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1         10.452413   3.233019  2.126849   3.004552
+5         18.776932   4.333236  3.285685   4.658023
+20        76.926582   8.770780  7.431917  11.100069
+30       113.370049  10.647537  9.168494  14.048313
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Path MSE (avg over 30d): 61.123837
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+seasonal_naive:
+2026-03-23 06:14:28 | INFO     | src.run_experiment |                 mse       rmse       mae       mape
+horizon                                            
+1         18.848436   4.341479  3.296507   4.654181
+5         18.776933   4.333236  3.285685   4.658023
+20        76.926584   8.770780  7.431917  11.100069
+30       113.370048  10.647537  9.168493  14.048311
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Path MSE (avg over 30d): 66.278953
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+linear_ridge:
+2026-03-23 06:14:28 | INFO     | src.run_experiment |                  mse       rmse        mae       mape
+horizon                                              
+1          11.728072   3.424627   2.450677   3.503654
+5          21.768237   4.665644   3.651535   5.212825
+20       1468.645879  38.322916  35.721626  53.448768
+30        371.118442  19.264435  15.337368  21.718163
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Path MSE (avg over 30d): 310.428533
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+linear_lasso:
+2026-03-23 06:14:28 | INFO     | src.run_experiment |                  mse       rmse        mae       mape
+horizon                                              
+1          86.751147   9.314030   8.692376  12.005383
+5          77.675100   8.813348   7.645286  10.437789
+20       1066.848994  32.662654  30.434939  45.808039
+30        197.508465  14.053770  10.519980  14.855542
+2026-03-23 06:14:28 | INFO     | src.run_experiment | Path MSE (avg over 30d): 265.761631
+2026-03-23 06:14:28 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 06:14:28 | INFO     | src.run_experiment | STEP 5: TSM model training
+2026-03-23 06:14:28 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 06:14:28 | INFO     | models.tsm | Building TSM model: type=dlinear, seq_len=20, pred_len=30
+2026-03-23 06:14:28 | INFO     | models.tsm | Built DLinear model with 1279 parameters (channel_mixer=residual_linear)
+2026-03-23 06:14:28 | INFO     | models.tsm | Epoch 1/40 - Train: 0.771530, Val: 1.003022
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 2/40 - Train: 0.767440, Val: 1.000007
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 3/40 - Train: 0.763486, Val: 0.997033
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 4/40 - Train: 0.759568, Val: 0.994106
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 5/40 - Train: 0.755686, Val: 0.991225
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 6/40 - Train: 0.751841, Val: 0.988391
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 7/40 - Train: 0.748032, Val: 0.985602
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 8/40 - Train: 0.744261, Val: 0.982861
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 9/40 - Train: 0.740528, Val: 0.980166
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 10/40 - Train: 0.736833, Val: 0.977518
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 11/40 - Train: 0.733178, Val: 0.974918
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 12/40 - Train: 0.729562, Val: 0.972367
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 13/40 - Train: 0.725987, Val: 0.969862
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 14/40 - Train: 0.722454, Val: 0.967405
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 15/40 - Train: 0.718961, Val: 0.964995
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 16/40 - Train: 0.715511, Val: 0.962632
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 17/40 - Train: 0.712103, Val: 0.960316
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 18/40 - Train: 0.708737, Val: 0.958047
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 19/40 - Train: 0.705413, Val: 0.955825
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 20/40 - Train: 0.702132, Val: 0.953648
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 21/40 - Train: 0.698893, Val: 0.951516
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 22/40 - Train: 0.695696, Val: 0.949428
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 23/40 - Train: 0.692540, Val: 0.947383
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 24/40 - Train: 0.689426, Val: 0.945383
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 25/40 - Train: 0.686351, Val: 0.943425
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 26/40 - Train: 0.683317, Val: 0.941512
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 27/40 - Train: 0.680322, Val: 0.939641
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 28/40 - Train: 0.677365, Val: 0.937813
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 29/40 - Train: 0.674448, Val: 0.936026
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 30/40 - Train: 0.671569, Val: 0.934280
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 31/40 - Train: 0.668729, Val: 0.932574
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 32/40 - Train: 0.665927, Val: 0.930907
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 33/40 - Train: 0.663164, Val: 0.929280
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 34/40 - Train: 0.660438, Val: 0.927691
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 35/40 - Train: 0.657750, Val: 0.926140
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 36/40 - Train: 0.655097, Val: 0.924627
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 37/40 - Train: 0.652481, Val: 0.923151
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 38/40 - Train: 0.649900, Val: 0.921713
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 39/40 - Train: 0.647354, Val: 0.920311
+2026-03-23 06:14:29 | INFO     | models.tsm | Epoch 40/40 - Train: 0.644841, Val: 0.918945
+2026-03-23 06:14:29 | INFO     | src.run_experiment | 
+TSM Results:
+2026-03-23 06:14:29 | INFO     | src.run_experiment |                 mse       rmse        mae       mape
+horizon                                             
+1         11.408800   3.377692   2.271601   3.191794
+5         27.140268   5.209632   4.215971   5.967573
+20       124.654350  11.164871   9.324476  14.202087
+30       216.043137  14.698406  11.835656  18.458936
+2026-03-23 06:14:29 | INFO     | src.run_experiment | TSM Path MSE (avg over 30d): 101.735275
+2026-03-23 06:14:29 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 06:14:29 | INFO     | src.run_experiment | STEP 6: LLM refinement
+2026-03-23 06:14:29 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 06:14:29 | INFO     | src.run_experiment | LLM base forecast model: tsm
+2026-03-23 06:14:29 | INFO     | src.run_experiment | Running method: TSM+LLM-COT-RF-HDELTA
+2026-03-23 06:14:29 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA teaching pool mode=frozen (realized_memory_horizon=30)
+2026-03-23 06:14:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:14:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:14:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:14:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:14:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:14:55 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:14:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:37 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:15:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:15:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:16:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:17:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:42 | INFO     | llm.refine | Processed 10/146 samples (0 resumed from checkpoint)
+2026-03-23 06:18:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:18:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:19:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:39 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:20:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:20:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:00 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:21:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:21 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:21:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:21:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:22:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:13 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:23:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:23:54 | INFO     | llm.refine | Processed 20/146 samples (0 resumed from checkpoint)
+2026-03-23 06:24:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:43 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:24:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:24:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:25:57 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:25:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:28 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:26:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:26:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:07 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:27:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:27:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:28:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:11 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:29:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:33 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:29:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:29:55 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:30:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:30:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:03 | INFO     | llm.refine | Processed 30/146 samples (0 resumed from checkpoint)
+2026-03-23 06:31:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:31:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:31 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:32:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:32:57 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:32:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:23 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:33:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:33:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:30 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:34:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:34:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:35:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:33 | INFO     | llm.refine | Processed 40/146 samples (0 resumed from checkpoint)
+2026-03-23 06:36:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:36:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:37:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:38:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:03 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:39:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:26 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:39:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:39:49 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:40:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:36 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:40:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:40:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:41:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:14 | INFO     | llm.refine | Processed 50/146 samples (0 resumed from checkpoint)
+2026-03-23 06:42:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:42:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:36 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:43:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:43:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:15 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:44:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:42 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:44:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:44:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:10 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:45:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:45:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:05 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:46:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:46:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:47:55 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:47:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:03 | INFO     | llm.refine | Processed 60/146 samples (0 resumed from checkpoint)
+2026-03-23 06:48:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:48:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:49:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:01 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:50:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:50:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:08 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:51:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:26 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:51:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:51:45 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:51:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:26 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:52:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:52:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:11 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:53:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:53:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:15 | INFO     | llm.refine | Processed 70/146 samples (0 resumed from checkpoint)
+2026-03-23 06:54:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:54:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:01 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:55:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:55:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:56:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:17 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:57:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:57:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:42 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 06:58:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:58:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:15 | INFO     | llm.refine | Processed 80/146 samples (0 resumed from checkpoint)
+2026-03-23 06:59:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 06:59:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:32 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:00:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:00:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:17 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:01:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:01:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:39 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:02:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:02:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:03:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:04:50 | INFO     | llm.refine | Processed 90/146 samples (0 resumed from checkpoint)
+2026-03-23 07:04:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:18 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:05:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:48 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:05:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:05:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:17 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:06:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:06:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:45 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:07:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:07:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:08 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:08:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:31 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:08:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:08:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:09:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:33 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:10:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:45 | INFO     | llm.refine | Processed 100/146 samples (0 resumed from checkpoint)
+2026-03-23 07:10:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:10:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:11:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:11 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:12:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:12:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:04 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:13:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:13:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:14:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:34 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:15:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:15:58 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:16:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:22 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:16:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:16:52 | INFO     | llm.refine | Processed 110/146 samples (0 resumed from checkpoint)
+2026-03-23 07:17:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:35 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:17:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:17:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:46 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:18:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:18:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:07 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:19:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:27 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:19:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:19:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:20:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:21:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:13 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:22:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:38 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:22:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:22:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:02 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:23:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:28 | INFO     | llm.refine | Processed 120/146 samples (0 resumed from checkpoint)
+2026-03-23 07:23:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:23:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:24:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:21 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:25:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:25:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:26:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:12 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:27:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:27:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:43 | INFO     | llm.refine | Processed 130/146 samples (0 resumed from checkpoint)
+2026-03-23 07:28:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:28:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:29:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:30:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:03 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:31:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:18 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:31:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:32 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:31:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:31:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:32:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:25 | INFO     | llm.refine | Processed 140/146 samples (0 resumed from checkpoint)
+2026-03-23 07:33:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:33:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:08 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:34:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:39 | WARNING  | llm.refine | LLM apply call failed (attempt 2): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:34:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:34:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:10 | WARNING  | llm.refine | LLM apply call failed (attempt 3): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:35:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:35:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:19 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:36:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:36:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:30 | WARNING  | llm.refine | LLM apply call failed (attempt 1): LLM tool-calling loop exceeded max_tool_rounds without final content.
+2026-03-23 07:37:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:37:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:38:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Results:
+2026-03-23 07:38:01 | INFO     | src.run_experiment |                 mse       rmse        mae       mape
+horizon                                             
+1         11.408800   3.377692   2.271601   3.191794
+5         26.164445   5.115119   4.128167   5.831047
+20       122.362076  11.061739   9.238723  14.052281
+30       213.071767  14.596978  11.756817  18.313307
+2026-03-23 07:38:01 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA Path MSE (avg over 30d): 99.931305
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | STEP 7: Statistical significance tests
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+Significance test results saved
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | STEP 8: Robustness suite
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | Robustness noise injection results saved
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | STEP 9: Drift/return and long-short portfolio evaluation
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | Drift metrics saved
+2026-03-23 07:38:01 | INFO     | src.run_experiment | Long-short portfolio metrics saved
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | STEP 10: Trend classification accuracy
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.171233
+5        0.116438
+20       0.027397
+30       0.041096
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.575342
+20       0.527397
+30       0.465753
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.493151
+5        0.116438
+20       0.027397
+30       0.041096
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.575342
+20       0.527397
+30       0.465753
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.383562
+5        0.376712
+20       0.321918
+30       0.554795
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.705479
+20       0.267123
+30       0.623288
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.424658
+5        0.568493
+20       0.321918
+30       0.547945
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.623288
+20       0.267123
+30       0.582192
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.383562
+5        0.356164
+20       0.376712
+30       0.445205
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.424658
+20       0.431507
+30       0.410959
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.383562
+5        0.328767
+20       0.383562
+30       0.431507
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.445205
+20       0.438356
+30       0.424658
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.171233
+5        0.116438
+20       0.027397
+30       0.041096
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.575342
+20       0.527397
+30       0.465753
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.493151
+5        0.116438
+20       0.027397
+30       0.041096
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.575342
+20       0.527397
+30       0.465753
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.383562
+5        0.376712
+20       0.321918
+30       0.554795
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.705479
+20       0.267123
+30       0.623288
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.424658
+5        0.568493
+20       0.321918
+30       0.547945
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.623288
+20       0.267123
+30       0.582192
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.383562
+5        0.356164
+20       0.376712
+30       0.445205
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 07:38:01 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.424658
+20       0.431507
+30       0.410959
+2026-03-23 07:38:01 | INFO     | src.run_experiment | Paper generation disabled by config
+2026-03-23 07:38:01 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | EXPERIMENT COMPLETE
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_061428_146cd6
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 07:38:01 | INFO     | src.run_experiment | EU ETS FUTURES FORECASTING EXPERIMENT
+2026-03-23 07:38:01 | INFO     | src.run_experiment | ======================================================================

@@ -784,6 +784,8 @@ def plot_coverage_heatmap(
         save_path: Optional path to save the figure
     """
     try:
+        import matplotlib
+        matplotlib.use("Agg", force=True)
         import matplotlib.pyplot as plt
         import seaborn as sns
     except ImportError:

@@ -1,0 +1,651 @@
+2026-03-23 18:39:32 | INFO     | src.run_experiment | Run ID: 20260323_183932_cdb8f3
+2026-03-23 18:39:32 | INFO     | src.run_experiment | Run directory: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_183932_cdb8f3
+2026-03-23 18:39:32 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:39:32 | INFO     | src.run_experiment | STEP 2: Building data panel
+2026-03-23 18:39:32 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:39:32 | INFO     | src.run_experiment | Using data directory: /Users/davidwilkinson/Desktop/ETS 2/uk_ets/Data_auto_uk
+2026-03-23 18:39:32 | INFO     | data.panel | ============================================================
+2026-03-23 18:39:32 | INFO     | data.panel | Building panel dataset
+2026-03-23 18:39:32 | INFO     | data.panel | Target source: uka_futures (UKA_FUTURES)
+2026-03-23 18:39:32 | INFO     | data.panel | ============================================================
+2026-03-23 18:39:32 | INFO     | data.panel | 
+[1/7] Loading target series (UKA Futures)...
+2026-03-23 18:39:32 | INFO     | data.load_eua_futures | Loading UKA futures file: UK Emissions Allowances (UKA) Futures Historical Data AUTO.csv
+2026-03-23 18:39:32 | INFO     | data.load_eua_futures | Loaded UKA futures: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 18:39:32 | INFO     | data.load_eua_futures | Combined UKA_FUTURES data: 1245 records from 2021-05-19 00:00:00 to 2026-03-20 00:00:00
+2026-03-23 18:39:32 | INFO     | data.load_eua_futures | UKA_FUTURES target series: 1245 records, price range: 30.20 - 97.15 GBP
+2026-03-23 18:39:32 | INFO     | data.panel | UKA Futures loaded: 1245 records
+2026-03-23 18:39:32 | INFO     | data.panel | Applying target date filter: min_date=<none> max_date=2026-03-04
+2026-03-23 18:39:32 | INFO     | data.panel | Master calendar: 1233 days from 2021-05-19 00:00:00 to 2026-03-04 00:00:00
+2026-03-23 18:39:32 | INFO     | data.panel | Target coverage: 1233 / 1233 days
+2026-03-23 18:39:32 | INFO     | data.panel | Adding UKA Futures OHLC and volume features...
+2026-03-23 18:39:32 | INFO     | data.panel | Added UKA Futures features: ['eua_high', 'eua_low', 'eua_volume', 'eua_range', 'eua_range_pct']
+2026-03-23 18:39:32 | INFO     | data.panel | 
+[2/7] Loading FX rates...
+2026-03-23 18:39:33 | INFO     | data.fx | Loaded EUR/USD FX rates: 6970 observations from 1999-01-04 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 18:39:34 | INFO     | data.panel | 
+[3/7] Loading energy benchmarks...
+2026-03-23 18:39:34 | WARNING  | data.load_energy | Brent: Dropped 1 rows with invalid dates
+2026-03-23 18:39:34 | INFO     | data.load_energy | Loaded Brent crude: 9841 records from 1987-05-20 00:00:00 to 2026-03-02 00:00:00
+2026-03-23 18:39:35 | INFO     | data.load_energy | Loaded Rotterdam coal: 3677 records from 2010-12-17 00:00:00 to 2025-12-26 00:00:00
+2026-03-23 18:39:35 | INFO     | data.load_energy | Loaded UK SAP gas: 2996 records from 2018-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 18:39:35 | INFO     | data.load_energy | Loaded UK system power: 2266 records from 2020-01-01 00:00:00 to 2026-03-15 00:00:00
+2026-03-23 18:39:35 | WARNING  | data.fx | FX conversion: 30.0% of rows still missing FX rate after forward-fill
+2026-03-23 18:39:35 | INFO     | data.fx | Converted 6890 prices from USD to EUR
+2026-03-23 18:39:35 | INFO     | data.fx | Converted 3677 prices from USD to EUR
+2026-03-23 18:39:35 | INFO     | data.load_weather | Loaded weather feature pack: 1770 records from 2021-05-19 00:00:00 to 2026-03-23 00:00:00
+2026-03-23 18:39:35 | INFO     | data.panel | Added UK weather feature pack columns: ['uk_temp_mean_c', 'uk_temp_min_c', 'uk_temp_max_c', 'uk_hdd18', 'uk_hdd18_7d_ma', 'uk_temp_mean_7d_ma']
+2026-03-23 18:39:35 | INFO     | data.panel | 
+[4/7] Loading carbon indices...
+2026-03-23 18:39:35 | INFO     | data.panel | 
+[5/7] Loading auction data...
+2026-03-23 18:39:35 | INFO     | data.load_auctions | Parsed emission-spot-primary-market-auction-report-uk-icap-primary-auto.csv: 116 auction records
+2026-03-23 18:39:35 | INFO     | data.load_auctions | Loaded 116 total auction records from 1 files
+2026-03-23 18:39:35 | INFO     | data.load_auctions | Date range: 2021-05-19 00:00:00 to 2025-12-10 00:00:00
+2026-03-23 18:39:36 | INFO     | data.panel | Added auction proxy feature pack columns: ['uk_icap_primary', 'uk_icap_secondary', 'uk_icap_primary_print_day', 'uk_icap_secondary_print_day', 'uk_icap_primary_ffill', 'uk_icap_secondary_ffill', 'uk_icap_primary_secondary_spread', 'uk_icap_primary_secondary_spread_pct', 'uk_icap_primary_days_since_print', 'uk_icap_primary_lag_1', 'uk_icap_spread_lag_1', 'uk_icap_primary_lag_5', 'uk_icap_spread_lag_5', 'uk_icap_primary_lag_20', 'uk_icap_spread_lag_20', 'uk_icap_spread_z20', 'uk_icap_dow_sin', 'uk_icap_dow_cos']
+2026-03-23 18:39:36 | INFO     | data.panel | 
+[6/7] Loading VSTOXX...
+2026-03-23 18:39:36 | INFO     | data.panel | 
+[7/7] Creating target features...
+2026-03-23 18:39:36 | INFO     | data.panel | Saved panel to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_183932_cdb8f3/data
+2026-03-23 18:39:36 | INFO     | data.panel | ============================================================
+2026-03-23 18:39:36 | INFO     | data.panel | Panel built: 1233 rows, 96 columns
+2026-03-23 18:39:36 | INFO     | data.panel | Target coverage: 100.0%
+2026-03-23 18:39:36 | INFO     | data.panel | ============================================================
+2026-03-23 18:39:42 | INFO     | data.panel | Saved coverage heatmap to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_183932_cdb8f3/paper_snapshot/fig_data_coverage.png
+2026-03-23 18:39:42 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:39:42 | INFO     | src.run_experiment | STEP 3: Creating windows and splitting data
+2026-03-23 18:39:42 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:39:42 | INFO     | data.windows | Creating windows with 17 features, mode=MS
+2026-03-23 18:39:42 | INFO     | data.windows | Creating 1184 windows
+2026-03-23 18:39:43 | INFO     | data.windows | Window shapes: X_enc=(1184, 20, 17), X_dec=(1184, 40, 17), y=(1184, 30)
+2026-03-23 18:39:43 | INFO     | data.windows | train: 754 windows
+2026-03-23 18:39:43 | INFO     | data.windows | val: 228 windows
+2026-03-23 18:39:43 | INFO     | data.windows | test: 144 windows
+2026-03-23 18:39:43 | INFO     | data.windows | Dropped 58 boundary-crossing windows to prevent split leakage
+2026-03-23 18:39:43 | INFO     | data.windows | Saved datasets to /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_183932_cdb8f3/data/datasets
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:39:43 | INFO     | src.run_experiment | STEP 4: Training and evaluating baselines
+2026-03-23 18:39:43 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:39:43 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 18:39:43 | INFO     | models.baselines | Fitted 30 linear models
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+Baseline Results (MSE by horizon):
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+naive_persistence:
+2026-03-23 18:39:43 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         1.060149  1.029635  0.782500   1.390566
+5         5.256047  2.292607  1.688194   2.939381
+20       44.413261  6.664328  4.419305   7.972312
+30       80.161682  8.953305  6.402708  12.116238
+2026-03-23 18:39:43 | INFO     | src.run_experiment | Path MSE (avg over 30d): 32.109985
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+seasonal_naive:
+2026-03-23 18:39:43 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         5.212681  2.283130  1.669514   2.937156
+5         5.256047  2.292607  1.688194   2.939381
+20       44.413262  6.664328  4.419305   7.972312
+30       80.161683  8.953306  6.402708  12.116239
+2026-03-23 18:39:43 | INFO     | src.run_experiment | Path MSE (avg over 30d): 34.300920
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+linear_ridge:
+2026-03-23 18:39:43 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         1.040789  1.020191  0.777201  1.374155
+5         4.617855  2.148920  1.564882  2.700456
+20       30.129374  5.489023  3.335215  6.092311
+30       57.065613  7.554178  4.812430  9.238910
+2026-03-23 18:39:43 | INFO     | src.run_experiment | Path MSE (avg over 30d): 22.417454
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+linear_lasso:
+2026-03-23 18:39:43 | INFO     | src.run_experiment |                mse      rmse       mae      mape
+horizon                                         
+1         1.117136  1.056947  0.816940  1.456936
+5         4.738143  2.176728  1.609665  2.792522
+20       31.884228  5.646612  3.418285  6.140112
+30       62.006528  7.874422  5.238392  9.903993
+2026-03-23 18:39:43 | INFO     | src.run_experiment | Path MSE (avg over 30d): 24.217558
+2026-03-23 18:39:43 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:39:43 | INFO     | src.run_experiment | STEP 5: TSM model training
+2026-03-23 18:39:43 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:39:43 | INFO     | models.tsm | Building TSM model: type=dlinear, seq_len=20, pred_len=30
+2026-03-23 18:39:43 | INFO     | models.tsm | Built DLinear model with 1279 parameters (channel_mixer=residual_linear)
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 1/40 - Train: 0.621484, Val: 0.456301
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 2/40 - Train: 0.606708, Val: 0.446345
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 3/40 - Train: 0.592895, Val: 0.437305
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 4/40 - Train: 0.580267, Val: 0.429032
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 5/40 - Train: 0.570770, Val: 0.421574
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 6/40 - Train: 0.560979, Val: 0.414755
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 7/40 - Train: 0.552876, Val: 0.408558
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 8/40 - Train: 0.543464, Val: 0.402968
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 9/40 - Train: 0.535830, Val: 0.397891
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 10/40 - Train: 0.529897, Val: 0.393303
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 11/40 - Train: 0.523000, Val: 0.389238
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 12/40 - Train: 0.518248, Val: 0.385578
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 13/40 - Train: 0.513167, Val: 0.382271
+2026-03-23 18:39:54 | INFO     | models.tsm | Epoch 14/40 - Train: 0.507582, Val: 0.379343
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 15/40 - Train: 0.504654, Val: 0.376593
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 16/40 - Train: 0.500064, Val: 0.374171
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 17/40 - Train: 0.497621, Val: 0.371970
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 18/40 - Train: 0.494310, Val: 0.370044
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 19/40 - Train: 0.491109, Val: 0.368280
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 20/40 - Train: 0.489121, Val: 0.366708
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 21/40 - Train: 0.485686, Val: 0.365296
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 22/40 - Train: 0.482968, Val: 0.363962
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 23/40 - Train: 0.482496, Val: 0.362813
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 24/40 - Train: 0.481244, Val: 0.361747
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 25/40 - Train: 0.479668, Val: 0.360853
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 26/40 - Train: 0.478028, Val: 0.360020
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 27/40 - Train: 0.475862, Val: 0.359283
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 28/40 - Train: 0.475651, Val: 0.358598
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 29/40 - Train: 0.474304, Val: 0.358043
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 30/40 - Train: 0.473267, Val: 0.357548
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 31/40 - Train: 0.471441, Val: 0.357064
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 32/40 - Train: 0.471256, Val: 0.356600
+2026-03-23 18:39:55 | INFO     | models.tsm | Epoch 33/40 - Train: 0.470152, Val: 0.356235
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 34/40 - Train: 0.470069, Val: 0.355903
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 35/40 - Train: 0.468425, Val: 0.355633
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 36/40 - Train: 0.468807, Val: 0.355385
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 37/40 - Train: 0.467469, Val: 0.355136
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 38/40 - Train: 0.469236, Val: 0.354952
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 39/40 - Train: 0.467642, Val: 0.354756
+2026-03-23 18:39:56 | INFO     | models.tsm | Epoch 40/40 - Train: 0.468390, Val: 0.354630
+2026-03-23 18:39:56 | INFO     | src.run_experiment | 
+TSM Results:
+2026-03-23 18:39:56 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         1.121462  1.058991  0.803771   1.420929
+5         5.154524  2.270358  1.650982   2.863817
+20       40.317642  6.349617  4.230938   7.649250
+30       73.283279  8.560565  5.840950  11.091088
+2026-03-23 18:39:56 | INFO     | src.run_experiment | TSM Path MSE (avg over 30d): 29.678020
+2026-03-23 18:39:56 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:39:56 | INFO     | src.run_experiment | STEP 6: LLM refinement
+2026-03-23 18:39:56 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:39:56 | INFO     | src.run_experiment | LLM base forecast model: tsm
+2026-03-23 18:39:56 | INFO     | src.run_experiment | Running method: TSM+LLM-COT-RF-HDELTA
+2026-03-23 18:39:56 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA teaching pool mode=online_realized_memory (realized_memory_horizon=30)
+2026-03-23 18:40:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:10 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:40:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:41:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:42:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:43:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:57 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:44:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:45:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:24 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:42 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:43 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:52 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:46:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:01 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:19 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:21 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:29 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:38 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:47 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:56 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:47:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:06 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:15 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:25 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:34 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:44 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:45 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:51 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:53 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:54 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:48:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:02 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:03 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:04 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:11 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:12 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:13 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:20 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:22 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:30 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:31 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:32 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:39 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:40 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:41 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:46 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:48 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:49 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:50 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:55 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:58 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:49:59 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:00 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:05 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:07 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:08 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:09 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:14 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:16 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:17 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:18 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:23 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:26 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:27 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:28 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:33 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:35 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:36 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:37 | INFO     | httpx | HTTP Request: POST http://192.168.1.140:9877/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Results:
+2026-03-23 18:50:37 | INFO     | src.run_experiment |                mse      rmse       mae       mape
+horizon                                          
+1         1.121462  1.058991  0.803771   1.420929
+5         5.170641  2.273904  1.662094   2.886378
+20       40.105378  6.332881  4.173915   7.546217
+30       72.437900  8.511046  5.754710  10.937838
+2026-03-23 18:50:37 | INFO     | src.run_experiment | TSM+LLM-COT-RF-HDELTA Path MSE (avg over 30d): 29.475274
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | STEP 7: Statistical significance tests
+2026-03-23 18:50:37 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+Significance test results saved
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | STEP 8: Robustness suite
+2026-03-23 18:50:37 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | Robustness noise injection results saved
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | STEP 9: Drift/return and long-short portfolio evaluation
+2026-03-23 18:50:37 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | Drift metrics saved
+2026-03-23 18:50:37 | INFO     | src.run_experiment | Long-short portfolio metrics saved
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | STEP 10: Trend classification accuracy
+2026-03-23 18:50:37 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.409722
+5        0.222222
+20       0.125000
+30       0.069444
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+naive_persistence Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.520833
+20       0.402778
+30       0.347222
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.375000
+5        0.222222
+20       0.125000
+30       0.069444
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+seasonal_naive Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.520833
+20       0.402778
+30       0.347222
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.423611
+5        0.423611
+20       0.715278
+30       0.840278
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_ridge Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.590278
+20       0.694444
+30       0.701389
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.423611
+5        0.388889
+20       0.708333
+30       0.736111
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_lasso Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.604167
+20       0.638889
+30       0.506944
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.395833
+5        0.444444
+20       0.486111
+30       0.534722
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+tsm Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.465278
+20       0.506944
+30       0.500000
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.395833
+5        0.458333
+20       0.576389
+30       0.583333
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+TSM+LLM-COT-RF-HDELTA Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.513889
+20       0.534722
+30       0.520833
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.409722
+5        0.222222
+20       0.125000
+30       0.069444
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+naive_persistence_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.520833
+20       0.402778
+30       0.347222
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.375000
+5        0.222222
+20       0.125000
+30       0.069444
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+seasonal_naive_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.520833
+20       0.402778
+30       0.347222
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.423611
+5        0.423611
+20       0.715278
+30       0.840278
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_ridge_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.590278
+20       0.694444
+30       0.701389
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.423611
+5        0.388889
+20       0.708333
+30       0.736111
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+linear_lasso_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.604167
+20       0.638889
+30       0.506944
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (legacy, fixed threshold):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+1        0.395833
+5        0.444444
+20       0.486111
+30       0.534722
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+tsm_llm_subset Trend Accuracy (paper-style: Th=18, α=0.020):
+2026-03-23 18:50:37 | INFO     | src.run_experiment |          accuracy
+horizon          
+10       0.465278
+20       0.506944
+30       0.500000
+2026-03-23 18:50:37 | INFO     | src.run_experiment | Paper generation disabled by config
+2026-03-23 18:50:37 | INFO     | src.run_experiment | 
+======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | EXPERIMENT COMPLETE
+2026-03-23 18:50:37 | INFO     | src.run_experiment | ======================================================================
+2026-03-23 18:50:37 | INFO     | src.run_experiment | Results saved to: /Users/davidwilkinson/Desktop/ETS 2/runs/20260323_183932_cdb8f3

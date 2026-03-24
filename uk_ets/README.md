@@ -96,6 +96,63 @@ python uk_ets/scripts/run_uk_automated_pipeline_once.py \
   --news-end 2026-03-04
 ```
 
+## Live Forecast Backend
+
+The portfolio/backend deployment path described in
+`docs/uk_ets_live_forecast_deployment_foundation.md` now has a dedicated runner:
+
+```bash
+python uk_ets/scripts/run_uk_live_forecast_backend.py \
+  --mode main \
+  --config uk_ets/config/uk_ets_llm_4b_canonical_default.yaml \
+  --data-dir uk_ets/Data_auto_uk \
+  --archive-path uk_ets/live_forecast/archive/forecast_history.csv \
+  --export-dir uk_ets/live_forecast/exports
+```
+
+What it does:
+
+1. refreshes UK ETS source data unless `--skip-bootstrap` is passed
+2. runs the canonical UK ETS backtest unless `--run-dir` is provided
+3. seeds/backfills a CSV archive from the canonical run outputs
+4. builds a current live forward forecast snapshot
+5. backfills realized actuals when target dates are now known
+6. exports website-ready files:
+   - `latest.json`
+   - `horizon_1d.json`
+   - `horizon_5d.json`
+   - `horizon_20d.json`
+   - `horizon_30d.json`
+
+For a fast local portfolio refresh on a development machine, reuse a completed
+canonical seed run and export directly into the portfolio app's `public/`
+directory:
+
+```bash
+python uk_ets/scripts/run_uk_live_forecast_backend.py \
+  --mode main \
+  --skip-bootstrap \
+  --skip-experiment \
+  --config uk_ets/config/uk_ets_llm_4b_canonical_default.yaml \
+  --run-dir runs/20260320_183637_a4d80c \
+  --data-dir uk_ets/Data_auto_uk \
+  --archive-path uk_ets/live_forecast/archive/forecast_history.csv \
+  --export-dir /Users/davidwilkinson/Desktop/portfolio/app/public/data/ukets
+```
+
+When `--run-dir` and `--skip-experiment` are used together, the runner now uses
+that run directory only as the historical seed artifact and still builds the
+current live snapshot from the config passed via `--config`.
+
+Optional VPS deployment is available with:
+
+```bash
+python uk_ets/scripts/run_uk_live_forecast_backend.py \
+  --remote-host your-vps-host \
+  --remote-staging-dir /srv/ukets-staging \
+  --remote-live-dir /var/www/davidwilkinson.space/data/ukets
+```
+
 ## Requirements
 
 - Python env with project dependencies in `requirements.txt`

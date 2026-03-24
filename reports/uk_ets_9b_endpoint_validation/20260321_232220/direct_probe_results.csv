@@ -1,0 +1,7 @@
+probe,request_type,result
+initial_model_list,GET_/models,success
+initial_json_probe,chat_completion_json,success
+retry_plain_probe,chat_completion_plain,APIConnectionError
+retry_json_probe,chat_completion_json,APIConnectionError
+post_wait_plain_probe,chat_completion_plain,APIConnectionError
+post_wait_json_probe,chat_completion_json,APIConnectionError
