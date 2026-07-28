@@ -1,71 +1,69 @@
-name: ETS2 frozen benchmark artifacts
+name: ETS2 frozen compact benchmark
 
 on:
   push:
     branches:
       - agent/ets2-workflow-benchmark
     paths:
-      - .github/workflows/ets2-frozen-artifacts.yml
-  pull_request:
-    paths:
+      - tools/benchmark_frozen_compact.py
       - .github/workflows/ets2-frozen-artifacts.yml
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: ets2-frozen-compact-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  package:
+  benchmark:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Check out repository
+      - name: Check out benchmark branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
-      - name: Collect frozen benchmark inputs
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install compact benchmark dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "numpy>=1.24,<3" \
+            "pandas>=2,<3" \
+            "pyarrow>=14,<22" \
+            "scikit-learn>=1.3,<2" \
+            "pyyaml>=6,<7" \
+            "tabulate>=0.9,<1"
+
+      - name: Run validation-selected frozen benchmark
+        run: python tools/benchmark_frozen_compact.py
+
+      - name: Upload benchmark evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ets2-frozen-compact-results
+          path: reports/agent_compact_benchmark
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit benchmark results to the branch
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p frozen
-          runs=(
-            20260321_231624_c4ef3c
-            20260322_002454_442bca
-            20260322_194840_381bee
-            20260322_213347_11a76f
-            20260322_230818_cd22ab
-            20260323_003616_212adb
-          )
-          for run_id in "${runs[@]}"; do
-            src="runs/${run_id}"
-            if [[ ! -d "${src}" ]]; then
-              echo "Skipping missing run ${run_id}"
-              continue
-            fi
-            dst="frozen/${run_id}"
-            mkdir -p "${dst}"
-            for rel in \
-              config_resolved.yaml \
-              data/panel.parquet \
-              data/panel_schema.json \
-              data/datasets/train.npz \
-              data/datasets/val.npz \
-              data/datasets/test.npz \
-              predictions/tsm_pred_val.parquet \
-              predictions/tsm_pred_test.parquet \
-              predictions/TSM+LLM-COT-RF-HDELTA_pred_test_subset.npz \
-              results/path_metrics.csv \
-              results/metrics_by_horizon.csv; do
-              if [[ -f "${src}/${rel}" ]]; then
-                mkdir -p "${dst}/$(dirname "${rel}")"
-                cp "${src}/${rel}" "${dst}/${rel}"
-              fi
-            done
-          done
-          find frozen -type f -print | sort
-
-      - name: Upload frozen benchmark bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: ets2-frozen-benchmark
-          path: frozen
-          if-no-files-found: error
-          retention-days: 7
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/agent_compact_benchmark
+          if git diff --cached --quiet; then
+            echo "No benchmark changes to commit."
+          else
+            git commit -m "Record frozen compact benchmark results"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
