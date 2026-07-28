@@ -1,5 +1,44 @@
-.env.local
+# macOS / editor state
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
 
-# large data files
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Packaging output
+build/
+dist/
+*.egg-info/
+
+# Generated experiment state. Curated evidence belongs under reports/ without
+# timestamp-only directories and can be force-added deliberately when needed.
+runs/
+reports/**/20*/
+tmp/
+cache/
+logs/
+
+# Model/checkpoint output outside runs/
+**/checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# Existing large news-data rules
 Data/news/*.csv
 Data/news/headlines_raw_eu_ets_multiquery_2017_2026.csv
