@@ -9,6 +9,7 @@ on:
       - tools/benchmark_selective_policy_v2.py
       - uk_ets/scripts/build_selective_residual_helpful_case_dataset_v2.py
       - tests/test_benchmark_frozen_compact.py
+      - tests/test_benchmark_frozen_object_dates.py
       - tests/test_selective_policy_v2.py
       - tests/test_selective_dataset_v2.py
       - .github/workflows/ets2-frozen-artifacts.yml
@@ -20,6 +21,7 @@ on:
       - tools/benchmark_selective_policy_v2.py
       - uk_ets/scripts/build_selective_residual_helpful_case_dataset_v2.py
       - tests/test_benchmark_frozen_compact.py
+      - tests/test_benchmark_frozen_object_dates.py
       - tests/test_selective_policy_v2.py
       - tests/test_selective_dataset_v2.py
       - .github/workflows/ets2-frozen-artifacts.yml
@@ -64,6 +66,7 @@ jobs:
         run: |
           python -m pytest -q \
             tests/test_benchmark_frozen_compact.py \
+            tests/test_benchmark_frozen_object_dates.py \
             tests/test_selective_policy_v2.py \
             tests/test_selective_dataset_v2.py
 
