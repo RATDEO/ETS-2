@@ -36,11 +36,16 @@ class Split:
 
 
 def load_split(path: Path, mean: float, std: float) -> Split:
-    with np.load(path, allow_pickle=False) as z:
+    # The historical NPZ files store dates as an object array, so NumPy must
+    # unpickle that field. These are repository-controlled frozen artifacts,
+    # just like the adjacent scaler.pkl; never point this benchmark at an
+    # untrusted run directory.
+    with np.load(path, allow_pickle=True) as z:
+        dates = pd.to_datetime(np.asarray(z["dates"]).reshape(-1), errors="raise")
         return Split(
             x=np.asarray(z["X_enc"], dtype=np.float64),
             y=np.asarray(z["y"], dtype=np.float64) * std + mean,
-            dates=np.asarray(z["dates"]).astype(str),
+            dates=dates.strftime("%Y-%m-%d").to_numpy(dtype=str),
         )
 
 
