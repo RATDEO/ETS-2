@@ -1,0 +1,68 @@
+name: ETS2 frozen benchmark artifacts
+
+on:
+  push:
+    branches:
+      - agent/ets2-workflow-benchmark
+    paths:
+      - .github/workflows/ets2-frozen-artifacts.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Collect frozen benchmark inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p frozen
+          runs=(
+            20260321_231624_c4ef3c
+            20260322_002454_442bca
+            20260322_194840_381bee
+            20260322_213347_11a76f
+            20260322_230818_cd22ab
+            20260323_003616_212adb
+          )
+          for run_id in "${runs[@]}"; do
+            src="runs/${run_id}"
+            if [[ ! -d "${src}" ]]; then
+              echo "Skipping missing run ${run_id}"
+              continue
+            fi
+            dst="frozen/${run_id}"
+            mkdir -p "${dst}"
+            for rel in \
+              config_resolved.yaml \
+              data/panel.parquet \
+              data/panel_schema.json \
+              data/datasets/train.npz \
+              data/datasets/val.npz \
+              data/datasets/test.npz \
+              predictions/tsm_pred_val.parquet \
+              predictions/tsm_pred_test.parquet \
+              predictions/TSM+LLM-COT-RF-HDELTA_pred_test_subset.npz \
+              results/path_metrics.csv \
+              results/metrics_by_horizon.csv; do
+              if [[ -f "${src}/${rel}" ]]; then
+                mkdir -p "${dst}/$(dirname "${rel}")"
+                cp "${src}/${rel}" "${dst}/${rel}"
+              fi
+            done
+          done
+          find frozen -type f -print | sort
+
+      - name: Upload frozen benchmark bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ets2-frozen-benchmark
+          path: frozen
+          if-no-files-found: error
+          retention-days: 7
