@@ -6,6 +6,9 @@ on:
       - agent/ets2-workflow-benchmark
     paths:
       - .github/workflows/ets2-frozen-artifacts.yml
+  pull_request:
+    paths:
+      - .github/workflows/ets2-frozen-artifacts.yml
   workflow_dispatch:
 
 permissions:
