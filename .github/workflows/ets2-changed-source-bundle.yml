@@ -1,0 +1,82 @@
+name: ETS2 changed-source bundle
+
+on:
+  push:
+    branches:
+      - agent/ets2-workflow-benchmark
+    paths:
+      - .github/workflows/ets2-changed-source-bundle.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ets2-changed-source-bundle.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+
+      - name: Collect changed handoff files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ets2_changed_source
+          files=(
+            .env.example
+            .gitignore
+            .github/workflows/ets2-frozen-artifacts.yml
+            .github/workflows/ets2-tiny-qwen-smoke.yml
+            .github/workflows/ets2-changed-source-bundle.yml
+            docs/HANDOFF_QWEN_27B.md
+            docs/WORKFLOW_AUDIT_2026-07-28.md
+            tests/test_benchmark_frozen_compact.py
+            tests/test_benchmark_frozen_object_dates.py
+            tests/test_selective_dataset_v2.py
+            tests/test_selective_policy_v2.py
+            tools/benchmark_frozen_compact.py
+            tools/benchmark_selective_policy_v2.py
+            tools/benchmark_tiny_qwen_refiner.py
+            uk_ets/config/uk_ets_qwen_27b_local_smoke.yaml
+            uk_ets/scripts/build_selective_residual_helpful_case_dataset_v2.py
+            reports/agent_compact_benchmark/summary.md
+            reports/agent_compact_benchmark/benchmark_results.csv
+            reports/agent_selective_dataset_v2/manifest.json
+            reports/agent_selective_dataset_v2/methodology.md
+            reports/agent_selective_policy_v2/summary.md
+            reports/agent_selective_policy_v2/aggregate.csv
+            reports/agent_selective_policy_v2/bootstrap.json
+            reports/agent_tiny_qwen_smoke/summary.md
+            reports/agent_tiny_qwen_smoke/results.json
+            reports/agent_tiny_qwen_smoke/per_case.csv
+            reports/agent_tiny_qwen_smoke/responses.jsonl
+          )
+          for file in "${files[@]}"; do
+            test -f "$file"
+            mkdir -p "ets2_changed_source/$(dirname "$file")"
+            cp "$file" "ets2_changed_source/$file"
+          done
+          printf '%s\n' \
+            'Repository: RATDEO/ETS-2' \
+            'Branch: agent/ets2-workflow-benchmark' \
+            "Commit: $(git rev-parse HEAD)" \
+            'This is a changed-file handoff bundle, not the full generated-run archive.' \
+            > ets2_changed_source/BUNDLE_MANIFEST.txt
+
+      - name: Upload changed-source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ets2-changed-source-bundle
+          path: ets2_changed_source
+          if-no-files-found: error
+          retention-days: 30
