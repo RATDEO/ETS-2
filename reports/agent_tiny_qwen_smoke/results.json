@@ -1,0 +1,30 @@
+{
+  "purpose": "CPU-only provisional LLM plumbing smoke test; not final model evidence",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "run_dir": "runs/20260320_182015_da9e9d",
+  "sample_count": 8,
+  "selection": "evenly spaced deterministic origins",
+  "bound_pct": 0.75,
+  "parse_success_count": 8,
+  "parse_success_rate": 1.0,
+  "fallback_count": 0,
+  "base": {
+    "mse_path": 25.280014167193546,
+    "mae_path": 3.5777352889378866,
+    "mse_h1": 1.0875574086171582,
+    "mse_h5": 11.972484308955245,
+    "mse_h20": 22.122196463633372,
+    "mse_h30": 38.86247742336491
+  },
+  "refined": {
+    "mse_path": 25.296492980495017,
+    "mae_path": 3.578836054438353,
+    "mse_h1": 1.0875574086171582,
+    "mse_h5": 11.989289822085473,
+    "mse_h20": 22.156037899098305,
+    "mse_h30": 38.87164043661754
+  },
+  "mse_path_improvement_pct": -0.06518514266837971,
+  "median_latency_seconds": 4.975273219999991,
+  "mean_abs_adjustment_pct": 0.011458333333333338
+}
