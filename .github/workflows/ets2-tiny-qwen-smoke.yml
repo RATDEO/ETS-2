@@ -1,0 +1,77 @@
+name: ETS2 tiny-Qwen CPU smoke
+
+on:
+  push:
+    branches:
+      - agent/ets2-workflow-benchmark
+    paths:
+      - tools/benchmark_tiny_qwen_refiner.py
+      - .github/workflows/ets2-tiny-qwen-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ets2-tiny-qwen-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HF_HUB_DISABLE_XET: "1"
+  TOKENIZERS_PARALLELISM: "false"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out benchmark branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU inference dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.6.0"
+          python -m pip install \
+            "numpy>=1.24,<3" \
+            "pandas>=2,<3" \
+            "pyarrow>=14,<22" \
+            "transformers==4.49.0" \
+            "safetensors>=0.4,<1"
+
+      - name: Run eight-origin tiny-Qwen refinement smoke test
+        run: |
+          python tools/benchmark_tiny_qwen_refiner.py \
+            --model-id Qwen/Qwen2.5-0.5B-Instruct \
+            --max-samples 8 \
+            --output-dir reports/agent_tiny_qwen_smoke
+
+      - name: Upload smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ets2-tiny-qwen-smoke
+          path: reports/agent_tiny_qwen_smoke
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit smoke evidence to the branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/agent_tiny_qwen_smoke
+          if git diff --cached --quiet; then
+            echo "No smoke-result changes to commit."
+          else
+            git commit -m "Record tiny-Qwen CPU smoke results"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
