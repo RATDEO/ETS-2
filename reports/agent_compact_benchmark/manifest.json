@@ -1,0 +1,11 @@
+{
+  "protocol": "select on validation, refit on train+validation, evaluate test once",
+  "seed": 42,
+  "run_ids": [
+    "20260322_194840_381bee",
+    "20260322_213347_11a76f",
+    "20260322_230818_cd22ab",
+    "20260323_003616_212adb"
+  ],
+  "errors": []
+}

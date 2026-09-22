@@ -137,3 +137,36 @@ def test_dlinear_residual_horizon_linear_can_use_horizon_specific_weights():
 
     assert out.shape == (1, 2, 1)
     assert torch.allclose(out.squeeze(-1), torch.tensor([[6.0, 11.0]]), atol=1e-3)
+
+
+def test_dlinear_moving_average_preserves_constant_endpoints():
+    model = DLinear(
+        seq_len=5,
+        pred_len=2,
+        enc_in=1,
+        individual=True,
+        kernel_size=3,
+    )
+    x = torch.full((2, 1, 5), 7.5, dtype=torch.float32)
+
+    trend = model._moving_average(x)
+
+    assert trend.shape == x.shape
+    assert torch.equal(trend, x)
+
+
+def test_dlinear_moving_average_uses_replicated_linear_endpoints():
+    model = DLinear(
+        seq_len=5,
+        pred_len=2,
+        enc_in=1,
+        individual=True,
+        kernel_size=3,
+    )
+    x = torch.arange(5, dtype=torch.float32).reshape(1, 1, 5)
+
+    trend = model._moving_average(x)
+
+    expected = torch.tensor([[[1.0 / 3.0, 1.0, 2.0, 3.0, 11.0 / 3.0]]])
+    assert trend.shape == x.shape
+    assert torch.allclose(trend, expected)

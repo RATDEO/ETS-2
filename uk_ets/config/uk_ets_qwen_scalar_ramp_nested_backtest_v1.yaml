@@ -1,0 +1,33 @@
+# Nested multi-regime robustness test for the Qwen scalar-ramp stacker.
+
+base_run: runs/20260810_004048_4ffc53
+events_path: data/news/headlines_labeled_qwen_votes3_daily3_importance_v2_indep_percall.csv
+
+event_features:
+  taxonomy_version: v2
+  rolling_windows: [3, 7]
+
+base_oof:
+  initial_apply_start: 250
+  fold_size: 30
+  purge_size: 30
+
+outer_folds:
+  # Six 60-origin tests separated by 30-origin target-resolution gaps.
+  starts: [650, 740, 830, 920, 1010, 1100]
+  test_size: 60
+  validation_size: 120
+  level_one_purge_size: 30
+
+candidates:
+  lookbacks: [150, 350, 504]
+  ridge_alphas: [100.0, 1000.0, 10000.0]
+  shrinkages: [1.0, 1.5]
+  max_adjustment_pct: 5.0
+  min_adjustment_pct: 0.0
+  ramp_power: 1.0
+
+selection:
+  min_improvement_pct: 1.0
+  min_fold_win_share: 0.5
+  score_fold_size: 30

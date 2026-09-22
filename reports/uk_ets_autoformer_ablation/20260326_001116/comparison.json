@@ -1,0 +1,182 @@
+{
+  "dlinear": {
+    "stage": "stage2_similarity_retrieval_tsm_transfer",
+    "description": "DLinear TSM transfer baseline.",
+    "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260325_164849_595329",
+    "base_model": "tsm",
+    "evaluated_model": "TSM+LLM-COT-RF-HDELTA",
+    "result_name": "TSM+LLM-COT-RF-HDELTA",
+    "blend_meta": {
+      "mode": "raw"
+    },
+    "path_mse": 40.78128930045565,
+    "base_path_mse": 40.85002517700195,
+    "delta_vs_base": -0.06873587654630597,
+    "delta_vs_prior_stage": null,
+    "mse_h5": 8.441840161070454,
+    "mse_h20": 50.6414986070834,
+    "mse_h30": 102.1835253231837,
+    "base_mse_h5": 8.441840171813965,
+    "base_mse_h20": 50.61847305297851,
+    "base_mse_h30": 102.41588592529295,
+    "sharpe_h20": 1.4327774754331073,
+    "sharpe_h30": 1.2213948429737795,
+    "base_sharpe_h20": 1.4327774754331073,
+    "base_sharpe_h30": 1.2213948429737795,
+    "mean_h20_adjustment": 0.11606378305875094,
+    "mean_h30_adjustment": 0.06734950480094085,
+    "h20_positive_frac": 0.4935897435897436,
+    "h20_negative_frac": 0.057692307692307696,
+    "h20_zero_frac": 0.44871794871794873,
+    "h30_positive_frac": 0.46153846153846156,
+    "h30_negative_frac": 0.04487179487179487,
+    "h30_zero_frac": 0.4935897435897436,
+    "top_harmful_dates": [
+      {
+        "date": "2026-02-09",
+        "path_harm": 6.5230964163890235,
+        "h20_adjustment": 0.29413173675536797,
+        "h30_adjustment": 0.28929737091063856
+      },
+      {
+        "date": "2026-02-05",
+        "path_harm": 5.45927772136514,
+        "h20_adjustment": 0.3088086509704553,
+        "h30_adjustment": 0.061138633728020864
+      },
+      {
+        "date": "2026-02-06",
+        "path_harm": 5.300666390382162,
+        "h20_adjustment": 0.29957527160643593,
+        "h30_adjustment": 0.11661263275146183
+      },
+      {
+        "date": "2026-02-02",
+        "path_harm": 5.080810629144423,
+        "h20_adjustment": 0.3088779258727996,
+        "h30_adjustment": 0.06073718643187931
+      },
+      {
+        "date": "2026-01-19",
+        "path_harm": 4.5585003214691255,
+        "h20_adjustment": 0.32621116638182457,
+        "h30_adjustment": 0.06417706298827852
+      }
+    ],
+    "dominant_apply_pattern_share": 0.41025641025641024,
+    "dominant_apply_pattern": [
+      [
+        "h1",
+        0.0
+      ],
+      [
+        "h5",
+        0.0
+      ],
+      [
+        "h20",
+        0.0
+      ],
+      [
+        "h30",
+        0.0
+      ]
+    ],
+    "apply_skip_count": 0,
+    "keep": true,
+    "keep_reason": "beat_base_and_sharpe_ok"
+  },
+  "autoformer": {
+    "stage": "stage2_similarity_retrieval_autoformer_transfer",
+    "description": "Matched Autoformer ablation using the Stage 2 retrieval configuration on the tsm base model.",
+    "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260326_001116_9d9da3",
+    "base_model": "tsm",
+    "evaluated_model": "TSM+LLM-COT-RF-HDELTA",
+    "result_name": "TSM+LLM-COT-RF-HDELTA",
+    "blend_meta": {
+      "mode": "raw"
+    },
+    "path_mse": 48.8181579124499,
+    "base_path_mse": 49.040225982666016,
+    "delta_vs_base": -0.22206807021611752,
+    "delta_vs_prior_stage": null,
+    "mse_h5": 9.346996202172589,
+    "mse_h20": 63.60201101863806,
+    "mse_h30": 115.887483513087,
+    "base_mse_h5": 9.34699535369873,
+    "base_mse_h20": 64.00347900390625,
+    "base_mse_h30": 116.24048614501952,
+    "sharpe_h20": 0.984117050868339,
+    "sharpe_h30": 0.7564348653682289,
+    "base_sharpe_h20": 0.9269369584059856,
+    "base_sharpe_h30": 0.6909417740277534,
+    "mean_h20_adjustment": 0.10127837454966819,
+    "mean_h30_adjustment": 0.058547078878449225,
+    "h20_positive_frac": 0.5448717948717948,
+    "h20_negative_frac": 0.04487179487179487,
+    "h20_zero_frac": 0.41025641025641024,
+    "h30_positive_frac": 0.5256410256410257,
+    "h30_negative_frac": 0.057692307692307696,
+    "h30_zero_frac": 0.4166666666666667,
+    "top_harmful_dates": [
+      {
+        "date": "2026-01-15",
+        "path_harm": 8.724701765620722,
+        "h20_adjustment": 0.5505712280273372,
+        "h30_adjustment": 0.13758967590331395
+      },
+      {
+        "date": "2026-01-27",
+        "path_harm": 3.704233963654872,
+        "h20_adjustment": 0.12961105346680313,
+        "h30_adjustment": 0.1942780838012652
+      },
+      {
+        "date": "2026-01-23",
+        "path_harm": 2.7639121166997143,
+        "h20_adjustment": 0.1336341705322326,
+        "h30_adjustment": 0.06675676727293478
+      },
+      {
+        "date": "2025-12-15",
+        "path_harm": 2.742557425697669,
+        "h20_adjustment": -0.2787736511230463,
+        "h30_adjustment": -0.05569080352783118
+      },
+      {
+        "date": "2026-01-19",
+        "path_harm": 2.562248853433175,
+        "h20_adjustment": 0.1358295135498082,
+        "h30_adjustment": 0.06786694335936261
+      }
+    ],
+    "dominant_apply_pattern_share": 0.391025641025641,
+    "dominant_apply_pattern": [
+      [
+        "h1",
+        0.0
+      ],
+      [
+        "h5",
+        0.0
+      ],
+      [
+        "h20",
+        0.0
+      ],
+      [
+        "h30",
+        0.0
+      ]
+    ],
+    "apply_skip_count": 0,
+    "keep": true,
+    "keep_reason": "beat_base_and_sharpe_ok"
+  },
+  "differences": {
+    "autoformer_llm_minus_dlinear_llm_path_mse": 8.036868611994251,
+    "autoformer_base_minus_dlinear_base_path_mse": 8.190200805664062,
+    "autoformer_llm_minus_dlinear_llm_sharpe_h20": -0.4486604245647683,
+    "autoformer_llm_minus_dlinear_llm_sharpe_h30": -0.46495997760555063
+  }
+}

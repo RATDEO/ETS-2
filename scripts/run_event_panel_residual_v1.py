@@ -335,7 +335,7 @@ def main() -> int:
     tsm_cfg["model"]["enc_in"] = int(X_train_enc.shape[-1])
     tsm_cfg["model"]["dec_in"] = int(X_train_dec.shape[-1])
     tsm = TSMForecaster(tsm_cfg, device=args.device)
-    tsm.load(base_run / "models" / "tsm_checkpoint.pt")
+    tsm.load(base_run / "models" / "tsm_checkpoint.pt", trusted_legacy=True)
 
     print("[TSM] Recomputing validation forecasts from saved checkpoint", flush=True)
     val_pred_returns = _predict_returns(tsm, scaler, X_val_enc, X_val_dec, y_val)

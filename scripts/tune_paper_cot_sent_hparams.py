@@ -347,7 +347,7 @@ def _prepare_bundle(base_run: Path) -> dict[str, Any]:
     tsm_cfg["model"]["enc_in"] = int(x_train_enc.shape[-1])
     tsm_cfg["model"]["dec_in"] = int(x_train_dec.shape[-1])
     tsm = TSMForecaster(tsm_cfg, device="auto")
-    tsm.load(base_run / "models" / "tsm_checkpoint.pt")
+    tsm.load(base_run / "models" / "tsm_checkpoint.pt", trusted_legacy=True)
 
     y_train_hist = x_train_enc[:, :, price_idx]
     y_val_hist = x_val_enc[:, :, price_idx]

@@ -275,7 +275,7 @@ def main() -> None:
     tsm_config["model"]["enc_in"] = int(X_enc_train.shape[-1])
     tsm_config["model"]["dec_in"] = int(X_dec_train.shape[-1])
     tsm = TSMForecaster(tsm_config, device="auto")
-    tsm.load(base_run / "models" / "tsm_checkpoint.pt")
+    tsm.load(base_run / "models" / "tsm_checkpoint.pt", trusted_legacy=True)
 
     if target_mode != "returns":
         raise ValueError("This comparison script currently expects target.mode=returns.")

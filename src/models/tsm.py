@@ -1,9 +1,8 @@
-"""
-Time Series Model (TSM) implementation.
+"""Time-series forecasting models used by the experiment pipeline.
 
-Implements Autoformer-style architecture for 30-step daily forecasting.
-Also includes DLinear as a simpler alternative that often outperforms
-complex transformer models on time series benchmarks.
+The module contains DLinear and a legacy simplified attention forecaster. The
+latter is retained for checkpoint compatibility, but is not an implementation
+of the published Autoformer architecture.
 """
 
 import numpy as np
@@ -11,7 +10,8 @@ import pandas as pd
 from typing import Dict, List, Optional, Tuple, Union
 from pathlib import Path
 import logging
-import pickle
+import platform
+import sys
 
 try:
     import torch
@@ -51,10 +51,13 @@ if TORCH_AVAILABLE:
             self.channels = enc_in
             self.channel_mixer = str(channel_mixer or "target_only").lower()
             
-            # Moving average for decomposition
+            # Moving average for decomposition. Padding is applied explicitly
+            # in ``_moving_average`` so endpoint values, rather than zeros,
+            # contribute near the sequence boundaries.
             self.kernel_size = kernel_size
-            padding = (kernel_size - 1) // 2
-            self.avg = nn.AvgPool1d(kernel_size=kernel_size, stride=1, padding=padding)
+            if self.kernel_size < 1:
+                raise ValueError("kernel_size must be positive")
+            self.avg = nn.AvgPool1d(kernel_size=kernel_size, stride=1, padding=0)
             
             if individual:
                 # Separate linear layers per channel
@@ -88,6 +91,18 @@ if TORCH_AVAILABLE:
             elif self.channel_mixer != "target_only":
                 raise ValueError(f"Unknown DLinear channel_mixer: {self.channel_mixer}")
         
+        def _moving_average(self, x: torch.Tensor) -> torch.Tensor:
+            """Return a length-preserving, replicate-padded moving average.
+
+            Args:
+                x: Tensor shaped ``(batch, channels, seq_len)``.
+            """
+            left = (self.kernel_size - 1) // 2
+            right = self.kernel_size - 1 - left
+            if left or right:
+                x = F.pad(x, (left, right), mode="replicate")
+            return self.avg(x)
+
         def forward(self, x_enc, x_dec=None):
             """
             Forward pass.
@@ -101,7 +116,7 @@ if TORCH_AVAILABLE:
             """
             # Decompose: trend and seasonal
             x = x_enc.permute(0, 2, 1)  # (batch, channels, seq_len)
-            trend = self.avg(x)
+            trend = self._moving_average(x)
             trend = trend.permute(0, 2, 1)  # (batch, seq_len, channels)
             seasonal = x_enc - trend
             
@@ -303,11 +318,16 @@ if TORCH_AVAILABLE:
             return x
     
     
-    class SimpleAutoformer(nn.Module):
+    class SimpleAttentionForecaster(nn.Module):
         """
-        Simplified Autoformer for time series forecasting.
-        
-        This is a streamlined version for 30-step prediction.
+        Legacy simplified attention forecaster for 30-step prediction.
+
+        Despite its historical configuration name, this is not Autoformer:
+        ``AutoCorrelation`` is scaled dot-product attention and the decoder is
+        a self-attention stack that does not consume encoder state. The unused
+        encoder branch is retained so existing trusted checkpoints remain
+        loadable. New experiments should prefer DLinear or a separately tested
+        encoder-decoder implementation.
         """
         
         def __init__(
@@ -381,6 +401,11 @@ if TORCH_AVAILABLE:
             
             # Return only prediction part
             return output[:, -self.pred_len:, :]
+
+
+    # Backward-compatible import alias. The factual class name prevents new
+    # code from accidentally presenting this implementation as Autoformer.
+    SimpleAutoformer = SimpleAttentionForecaster
     
     
     class TSMForecaster:
@@ -435,6 +460,10 @@ if TORCH_AVAILABLE:
                 weights = np.interp(x, anchor_x, anchor_y).astype(np.float32)
             else:
                 raise ValueError("loss_horizon_weights must be a list or dict")
+            if not np.isfinite(weights).all():
+                raise ValueError("loss_horizon_weights must be finite")
+            if (weights < 0).any() or float(weights.sum()) <= 0:
+                raise ValueError("loss_horizon_weights must be non-negative with a positive sum")
             return torch.tensor(weights, device=self.device, dtype=torch.float32).view(1, -1)
 
         def _build_loss(self):
@@ -446,8 +475,11 @@ if TORCH_AVAILABLE:
 
             def _reduce(loss_matrix: torch.Tensor) -> torch.Tensor:
                 if horizon_weights is not None:
-                    weighted = loss_matrix * horizon_weights
-                    return weighted.mean()
+                    weights = torch.broadcast_to(horizon_weights, loss_matrix.shape)
+                    weighted = loss_matrix * weights
+                    return weighted.sum() / weights.sum().clamp_min(
+                        torch.finfo(weighted.dtype).eps
+                    )
                 return loss_matrix.mean()
 
             if loss_type == "mse":
@@ -473,7 +505,7 @@ if TORCH_AVAILABLE:
             model_config = self.config.get("model", {})
             ts_config = self.config.get("time_series", {})
             
-            tsm_type = model_config.get("tsm_type", "autoformer").lower()
+            tsm_type = model_config.get("tsm_type", "simple_attention").lower()
             seq_len = ts_config.get("seq_len", 120)
             pred_len = ts_config.get("pred_len", 30)
             enc_in = model_config.get("enc_in", 10)
@@ -498,8 +530,14 @@ if TORCH_AVAILABLE:
                     model_config.get("dlinear_channel_mixer", "target_only"),
                 )
                 
-            else:  # autoformer or default
-                base_model = SimpleAutoformer(
+            elif tsm_type in {"simple_attention", "simple_attention_forecaster", "autoformer"}:
+                if tsm_type == "autoformer":
+                    logger.warning(
+                        "tsm_type='autoformer' is a legacy alias for "
+                        "SimpleAttentionForecaster; this is not the published "
+                        "Autoformer architecture"
+                    )
+                base_model = SimpleAttentionForecaster(
                     enc_in=enc_in,
                     dec_in=model_config.get("dec_in", enc_in),
                     c_out=1,
@@ -512,7 +550,12 @@ if TORCH_AVAILABLE:
                     d_ff=model_config.get("d_ff", 2048),
                     dropout=model_config.get("dropout", 0.05)
                 )
-                logger.info(f"Built Autoformer model with {sum(p.numel() for p in base_model.parameters())} parameters")
+                logger.info(
+                    "Built SimpleAttentionForecaster with %d parameters",
+                    sum(p.numel() for p in base_model.parameters()),
+                )
+            else:
+                raise ValueError(f"Unknown TSM model type: {tsm_type}")
             
             # Optionally wrap with residual connection to naive baseline
             if use_residual:
@@ -563,23 +606,32 @@ if TORCH_AVAILABLE:
                 weight_decay=weight_decay
             )
             
-            # Cosine annealing with warm restarts
+            # Step this scheduler once per optimizer update using fractional
+            # epochs. Validation loss is not an epoch index and must not be
+            # passed to CosineAnnealingWarmRestarts.
             self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-                self.optimizer, T_0=10, T_mult=2, eta_min=lr * 0.01
+                self.optimizer,
+                T_0=int(model_config.get("scheduler_t0_epochs", 10)),
+                T_mult=int(model_config.get("scheduler_t_mult", 2)),
+                eta_min=float(model_config.get("scheduler_eta_min", lr * 0.01)),
             )
             
             self.grad_clip = grad_clip
             criterion = self._build_loss()
             
-            history = {"train_loss": [], "val_loss": []}
+            history = {"train_loss": [], "val_loss": [], "learning_rate": []}
             no_improve = 0
+            self.best_val_loss = float("inf")
+            best_epoch: Optional[int] = None
+            best_state: Optional[Dict[str, torch.Tensor]] = None
+            batches_per_epoch = max(1, len(train_loader))
             
             for epoch in range(epochs):
                 # Training
                 self.model.train()
                 train_losses = []
                 
-                for batch in train_loader:
+                for batch_index, batch in enumerate(train_loader):
                     x_enc = batch["X_enc"].to(self.device)
                     x_dec = batch["X_dec"].to(self.device)
                     y = batch["y"].to(self.device)
@@ -592,25 +644,29 @@ if TORCH_AVAILABLE:
                     loss.backward()
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
                     self.optimizer.step()
-                    self.scheduler.step()
+                    self.scheduler.step(epoch + (batch_index + 1) / batches_per_epoch)
                     
                     train_losses.append(loss.item())
                 
-                train_loss = np.mean(train_losses)
+                train_loss = float(np.mean(train_losses))
                 
                 # Validation
-                val_loss = self.evaluate(val_loader)
-                
-                self.scheduler.step(val_loss)
+                val_loss = float(self.evaluate(val_loader))
                 
                 history["train_loss"].append(train_loss)
                 history["val_loss"].append(val_loss)
+                history["learning_rate"].append(float(self.optimizer.param_groups[0]["lr"]))
                 
                 logger.info(f"Epoch {epoch+1}/{epochs} - Train: {train_loss:.6f}, Val: {val_loss:.6f}")
                 
                 # Early stopping
                 if val_loss < self.best_val_loss:
-                    self.best_val_loss = val_loss
+                    self.best_val_loss = float(val_loss)
+                    best_epoch = epoch
+                    best_state = {
+                        key: value.detach().cpu().clone()
+                        for key, value in self.model.state_dict().items()
+                    }
                     no_improve = 0
                     if save_path:
                         self.save(save_path)
@@ -619,7 +675,16 @@ if TORCH_AVAILABLE:
                     if no_improve >= patience:
                         logger.info(f"Early stopping at epoch {epoch+1}")
                         break
-            
+
+            if best_state is not None:
+                self.model.load_state_dict(best_state)
+                logger.info(
+                    "Restored best validation state from epoch %d (loss=%.6f)",
+                    int(best_epoch) + 1,
+                    self.best_val_loss,
+                )
+            history["best_epoch"] = best_epoch
+            history["best_val_loss"] = self.best_val_loss
             return history
         
         def evaluate(self, loader: DataLoader) -> float:
@@ -668,33 +733,68 @@ if TORCH_AVAILABLE:
             return np.concatenate(predictions), np.concatenate(targets)
         
         def save(self, path: Union[str, Path]):
-            """Save model checkpoint."""
+            """Save a weights-only-compatible checkpoint.
+
+            The resolved experiment configuration is stored separately by the
+            pipeline. Avoiding arbitrary Python objects here lets the default
+            loader keep PyTorch's restricted unpickler enabled.
+            """
             path = Path(path)
             path.parent.mkdir(parents=True, exist_ok=True)
             
             torch.save({
+                "checkpoint_format_version": 2,
+                "model_class": type(self.model).__name__,
                 "model_state_dict": self.model.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict() if self.optimizer else None,
+                "scheduler_state_dict": self.scheduler.state_dict() if self.scheduler else None,
                 "best_val_loss": self.best_val_loss,
-                "config": self.config
+                "environment": {
+                    "python_version": platform.python_version(),
+                    "python_implementation": platform.python_implementation(),
+                    "platform": platform.platform(),
+                    "torch_version": str(torch.__version__),
+                    "numpy_version": str(np.__version__),
+                    "device": str(self.device),
+                    "byteorder": sys.byteorder,
+                },
             }, path)
         
-        def load(self, path: Union[str, Path]):
-            """Load model checkpoint."""
-            # PyTorch 2.6 defaults `weights_only=True`, which can fail for our
-            # legacy checkpoints that include non-tensor metadata. We trust our
-            # own checkpoints in this repo, so force a full load when supported.
+        def load(self, path: Union[str, Path], *, trusted_legacy: bool = False):
+            """Load with PyTorch's restricted unpickler by default.
+
+            Set ``trusted_legacy=True`` only for historical artifacts generated
+            and controlled by this project. It permits arbitrary pickle code.
+            """
             try:
-                checkpoint = torch.load(path, map_location=self.device, weights_only=False)
-            except TypeError:
+                checkpoint = torch.load(path, map_location=self.device, weights_only=True)
+            except TypeError as exc:
+                if not trusted_legacy:
+                    raise RuntimeError(
+                        "This PyTorch version cannot load checkpoints safely. "
+                        "Upgrade PyTorch or explicitly trust this legacy artifact."
+                    ) from exc
                 checkpoint = torch.load(path, map_location=self.device)
+            except Exception as exc:
+                if not trusted_legacy:
+                    raise RuntimeError(
+                        "Checkpoint was rejected by the restricted loader. "
+                        "Only retry with trusted_legacy=True for a project-owned artifact."
+                    ) from exc
+                checkpoint = torch.load(path, map_location=self.device, weights_only=False)
+            if not isinstance(checkpoint, dict) or not isinstance(
+                checkpoint.get("model_state_dict"), dict
+            ):
+                raise ValueError("Invalid TSM checkpoint: missing model_state_dict")
             self.model.load_state_dict(checkpoint["model_state_dict"])
             self.best_val_loss = checkpoint.get("best_val_loss", float("inf"))
 
 else:
-    class SimpleAutoformer:
+    class SimpleAttentionForecaster:
         def __init__(self, *args, **kwargs):
             raise ImportError("PyTorch is required for TSM models")
+
+    SimpleAutoformer = SimpleAttentionForecaster
     
     class TSMForecaster:
         def __init__(self, *args, **kwargs):

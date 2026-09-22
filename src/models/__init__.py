@@ -7,10 +7,11 @@ from .baselines import (
 )
 
 try:
-    from .tsm import SimpleAutoformer, TSMForecaster
+    from .tsm import SimpleAttentionForecaster, SimpleAutoformer, TSMForecaster
     TSM_AVAILABLE = True
 except ImportError:
     TSM_AVAILABLE = False
+    SimpleAttentionForecaster = None
     SimpleAutoformer = None
     TSMForecaster = None
 
@@ -19,6 +20,7 @@ __all__ = [
     "SeasonalNaive",
     "LinearBaseline",
     "ARIMABaseline",
+    "SimpleAttentionForecaster",
     "SimpleAutoformer",
     "TSMForecaster",
     "TSM_AVAILABLE",

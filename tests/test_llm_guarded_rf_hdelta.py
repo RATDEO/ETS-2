@@ -15,7 +15,9 @@ from src.llm.refine import (
     NUMERIC_ANALYSIS_TOOL_NAME,
     aggregate_horizon_adjustments,
     aggregate_structured_hdelta_guidance,
+    apply_continuous_evidence_guard,
     apply_discrete_hdelta_actions,
+    apply_post_scale_hdelta_adjustments,
     apply_structured_hdelta_coherence_guards,
     build_hdelta_retrieval_tag,
     build_hdelta_delta_verification_payload,
@@ -24,12 +26,73 @@ from src.llm.refine import (
     build_structured_case_retrieval_payload,
     derive_hdelta_freeze_counterexample,
     derive_hdelta_case_controls,
+    evaluate_pre_refinement_base_slope_gate,
+    evaluate_structured_hdelta_apply_skip_gate,
     enforce_structured_hdelta_adjustments,
     hdelta_guidance_to_rules_text,
     parse_horizon_deltas,
     parse_hdelta_reflection_guidance,
     select_structured_reflect_sample_budget,
 )
+
+
+def test_continuous_evidence_guard_caps_supported_sign_and_zeros_conflicts():
+    guarded = apply_continuous_evidence_guard(
+        {1: 0.0, 5: 0.4, 20: 0.8, 30: -0.6},
+        {1: 0.0, 5: 0.17, 20: -0.31, 30: -0.22},
+        config={"continuous_evidence_sizing": {"enabled": True}},
+    )
+    assert guarded == {1: 0.0, 5: 0.17, 20: 0.0, 30: -0.22}
+
+
+def test_pre_refinement_base_slope_gate_rejects_down_path():
+    skip, diagnostics = evaluate_pre_refinement_base_slope_gate(
+        np.array([10.0, 10.2, 9.5]),
+        config={
+            "pre_refinement_base_slope_gate": {
+                "enabled": True,
+                "reference_horizon": 1,
+                "target_horizon": 3,
+                "min_slope_pct": 0.0,
+            }
+        },
+    )
+    assert skip is True
+    assert np.isclose(diagnostics["slope_pct"], -5.0)
+
+
+def test_refine_batch_pre_gate_avoids_all_llm_calls(monkeypatch, tmp_path):
+    refiner = LLMRefiner(
+        {
+            "model": "stub",
+            "hdelta": {
+                "pre_refinement_base_slope_gate": {
+                    "enabled": True,
+                    "reference_horizon": 1,
+                    "target_horizon": 3,
+                    "min_slope_pct": 0.0,
+                }
+            },
+        }
+    )
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("LLM refinement should not run for a rejected base path")
+
+    monkeypatch.setattr(refiner, "refine", fail_if_called)
+    base = np.array([[10.0, 9.8, 9.5]], dtype=float)
+    forecasts, metadata = refiner.refine_batch(
+        method="TSM+LLM-COT-RF-HDELTA",
+        histories=np.array([[9.0, 9.5, 10.0]], dtype=float),
+        date_arrays=[["2026-01-01", "2026-01-02", "2026-01-03"]],
+        tsm_forecasts=base,
+        pred_len=3,
+        checkpoint_dir=tmp_path,
+    )
+
+    assert np.array_equal(forecasts, base)
+    assert metadata[0]["pre_refinement_skipped_by_gate"] is True
+    assert metadata[0]["llm_request_count"] == 0
 
 
 def test_cot_rf_hdelta_routes_reflection_to_override_and_freezes_h1(monkeypatch):
@@ -242,6 +305,43 @@ def test_derive_hdelta_case_controls_freezes_conflicted_horizons_and_scales_boun
     assert 0.10 <= controls["per_horizon_max_adjustment_pct"][1] <= 0.8
     assert any("actionable" in line for line in controls["horizon_guidance_summary"])
     assert any("freeze to 0.0" in line for line in controls["horizon_guidance_summary"])
+
+
+def test_derive_hdelta_case_controls_emits_continuous_robust_target():
+    examples = []
+    for offset, truth_level in enumerate((60.6, 60.8, 60.7)):
+        examples.append(
+            {
+                "history": np.linspace(50.0 + offset * 0.1, 55.0 + offset * 0.1, 30),
+                "forecast": np.full(30, 60.0),
+                "truth": np.full(30, truth_level),
+                "date": f"2025-12-0{offset + 1}",
+            }
+        )
+
+    controls = derive_hdelta_case_controls(
+        history=np.linspace(50.0, 55.0, 30),
+        forecast=np.full(30, 60.0),
+        teaching_examples=examples,
+        key_horizons=[1, 5, 20, 30],
+        config={
+            "max_adjustment_pct": 1.0,
+            "case_match_top_k": 3,
+            "case_min_examples": 2,
+            "case_min_sign_agreement": 0.66,
+            "case_min_mean_abs_error_pct": 0.1,
+            "continuous_evidence_sizing": {
+                "enabled": True,
+                "shrinkage": 0.5,
+                "min_action_pct": 0.01,
+            },
+        },
+    )
+
+    target = controls["evidence_target_adjustment_pct"][20]
+    assert 0.0 < target < 1.0
+    assert controls["per_horizon_max_adjustment_pct"][20] == abs(target)
+    assert controls["continuous_evidence_diagnostics"][20]["weighted_sign_agreement"] == 1.0
 
 
 def test_parse_hdelta_reflection_guidance_and_rules_text():
@@ -1126,6 +1226,25 @@ def test_response_format_policy_can_disable_specific_reasoning_endpoint():
     assert allowed is None
 
 
+def test_non_thinking_controls_prefix_system_and_append_assistant_prefill():
+    refiner = LLMRefiner(
+        {
+            "provider": "openai",
+            "model": "qwen3.5-27b-ud-q4-k-xl",
+            "non_thinking_prompt_tag": "/no_think",
+            "non_thinking_assistant_prefill": "<think>\n\n</think>\n\n",
+        }
+    )
+
+    messages, system_message = refiner._apply_non_thinking_controls(
+        [{"role": "user", "content": "Return JSON only."}],
+        system_message="You are a strict forecaster.",
+    )
+
+    assert system_message.startswith("/no_think\n")
+    assert messages[-1] == {"role": "assistant", "content": "<think>\n\n</think>\n\n"}
+
+
 def test_aggregate_structured_hdelta_guidance_freezes_conflicted_horizon():
     guidance = aggregate_structured_hdelta_guidance(
         [
@@ -1401,6 +1520,360 @@ def test_cot_rf_hdelta_structured_reflection_routes_guidance_into_apply(monkeypa
     assert metadata["structured_horizon_guidance"][5]["preferred_sign"] == "positive"
 
 
+def test_cot_rf_hdelta_apply_skip_gate_skips_when_long_confidence_is_below_threshold(monkeypatch):
+    calls = []
+
+    def fake_call(
+        self,
+        prompt,
+        system_message,
+        response_format=None,
+        model_override=None,
+        api_key_override=None,
+        base_url_override=None,
+        **kwargs,
+    ):
+        calls.append(prompt)
+        return (
+            '{"horizons": {'
+            '"h1": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+            '"h5": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+            '"h20": {"mode": "adjust", "preferred_sign": "positive", "confidence": "high", "magnitude": "small", "reason": "Supportive long-horizon evidence."}, '
+            '"h30": {"mode": "adjust", "preferred_sign": "positive", "confidence": "medium", "magnitude": "small", "reason": "Evidence is not strong enough."}'
+            "}}"
+        )
+
+    monkeypatch.setattr(LLMRefiner, "_call_llm", fake_call)
+
+    refiner = LLMRefiner(
+        {
+            "provider": "openai",
+            "model": "stub-model",
+            "api_key": "deo",
+            "base_url": "http://stub.local/v1",
+            "cot_rf": {
+                "retain_context": False,
+                "strict_json_prompt": True,
+                "strict_json_response_format": True,
+                "structured_horizon_reflection": True,
+                "apply_skip_gate": {
+                    "enabled": True,
+                    "required_horizons": [20, 30],
+                    "min_confidence": "high",
+                    "require_same_nonzero_preferred_sign": True,
+                },
+            },
+            "hdelta": {
+                "key_horizons": [1, 5, 20, 30],
+                "freeze_horizons": [1, 5],
+                "max_adjustment_pct": 1.0,
+            },
+        }
+    )
+
+    base_forecast = np.full(30, 60.0)
+    forecast, metadata = refiner.refine(
+        method="TSM+LLM-COT-RF-HDELTA",
+        history=np.linspace(50.0, 55.0, 30),
+        dates=[f"2026-02-{day:02d}" for day in range(1, 31)],
+        tsm_forecast=base_forecast,
+        pred_len=30,
+        teaching_examples=[
+            {
+                "history": np.linspace(48.0, 54.0, 30),
+                "forecast": np.full(30, 58.0),
+                "truth": np.full(30, 57.0),
+                "date": "2025-12-01",
+            }
+        ],
+    )
+
+    assert len(calls) == 1
+    assert np.allclose(forecast, base_forecast)
+    assert metadata["apply_skipped_by_gate"] is True
+    assert metadata["apply_attempts"] == 0
+    reasons = metadata["apply_skip_gate_diagnostics"]["reasons"]
+    assert any("confidence=medium" in reason for reason in reasons)
+
+
+def test_cot_rf_hdelta_apply_skip_gate_skips_when_long_signs_disagree(monkeypatch):
+    calls = []
+
+    def fake_call(
+        self,
+        prompt,
+        system_message,
+        response_format=None,
+        model_override=None,
+        api_key_override=None,
+        base_url_override=None,
+        **kwargs,
+    ):
+        calls.append(prompt)
+        return (
+            '{"horizons": {'
+            '"h1": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+            '"h5": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+            '"h20": {"mode": "adjust", "preferred_sign": "positive", "confidence": "high", "magnitude": "small", "reason": "Supportive long-horizon evidence."}, '
+            '"h30": {"mode": "adjust", "preferred_sign": "negative", "confidence": "high", "magnitude": "small", "reason": "Opposing long-horizon evidence."}'
+            "}}"
+        )
+
+    monkeypatch.setattr(LLMRefiner, "_call_llm", fake_call)
+
+    refiner = LLMRefiner(
+        {
+            "provider": "openai",
+            "model": "stub-model",
+            "api_key": "deo",
+            "base_url": "http://stub.local/v1",
+            "cot_rf": {
+                "retain_context": False,
+                "strict_json_prompt": True,
+                "strict_json_response_format": True,
+                "structured_horizon_reflection": True,
+                "apply_skip_gate": {
+                    "enabled": True,
+                    "required_horizons": [20, 30],
+                    "min_confidence": "high",
+                    "require_same_nonzero_preferred_sign": True,
+                },
+            },
+            "hdelta": {
+                "key_horizons": [1, 5, 20, 30],
+                "freeze_horizons": [1, 5],
+                "max_adjustment_pct": 1.0,
+            },
+        }
+    )
+
+    base_forecast = np.full(30, 60.0)
+    forecast, metadata = refiner.refine(
+        method="TSM+LLM-COT-RF-HDELTA",
+        history=np.linspace(50.0, 55.0, 30),
+        dates=[f"2026-02-{day:02d}" for day in range(1, 31)],
+        tsm_forecast=base_forecast,
+        pred_len=30,
+        teaching_examples=[
+            {
+                "history": np.linspace(48.0, 54.0, 30),
+                "forecast": np.full(30, 58.0),
+                "truth": np.full(30, 57.0),
+                "date": "2025-12-01",
+            }
+        ],
+    )
+
+    assert len(calls) == 1
+    assert np.allclose(forecast, base_forecast)
+    assert metadata["apply_skipped_by_gate"] is True
+    reasons = metadata["apply_skip_gate_diagnostics"]["reasons"]
+    assert "required horizons disagree on preferred_sign" in reasons
+
+
+def test_cot_rf_hdelta_apply_skip_gate_allows_apply_when_long_guidance_is_aligned(monkeypatch):
+    calls = []
+
+    def fake_call(
+        self,
+        prompt,
+        system_message,
+        response_format=None,
+        model_override=None,
+        api_key_override=None,
+        base_url_override=None,
+        **kwargs,
+    ):
+        calls.append(prompt)
+        if len(calls) == 1:
+            return (
+                '{"horizons": {'
+                '"h1": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+                '"h5": {"mode": "freeze", "preferred_sign": "zero", "confidence": "high", "magnitude": "zero", "reason": "Keep unchanged."}, '
+                '"h20": {"mode": "adjust", "preferred_sign": "positive", "confidence": "high", "magnitude": "small", "reason": "Supportive long-horizon evidence."}, '
+                '"h30": {"mode": "adjust", "preferred_sign": "positive", "confidence": "high", "magnitude": "small", "reason": "Supportive long-horizon evidence."}'
+                "}}"
+            )
+        return '{"adjustments": {"h1": 0.0, "h5": 0.0, "h20": 0.5, "h30": 0.5}}'
+
+    monkeypatch.setattr(LLMRefiner, "_call_llm", fake_call)
+
+    refiner = LLMRefiner(
+        {
+            "provider": "openai",
+            "model": "stub-model",
+            "api_key": "deo",
+            "base_url": "http://stub.local/v1",
+            "cot_rf": {
+                "retain_context": False,
+                "strict_json_prompt": True,
+                "strict_json_response_format": True,
+                "structured_horizon_reflection": True,
+                "apply_skip_gate": {
+                    "enabled": True,
+                    "required_horizons": [20, 30],
+                    "min_confidence": "high",
+                    "require_same_nonzero_preferred_sign": True,
+                },
+            },
+            "hdelta": {
+                "key_horizons": [1, 5, 20, 30],
+                "freeze_horizons": [1, 5],
+                "max_adjustment_pct": 1.0,
+            },
+        }
+    )
+
+    base_forecast = np.full(30, 60.0)
+    forecast, metadata = refiner.refine(
+        method="TSM+LLM-COT-RF-HDELTA",
+        history=np.linspace(50.0, 55.0, 30),
+        dates=[f"2026-02-{day:02d}" for day in range(1, 31)],
+        tsm_forecast=base_forecast,
+        pred_len=30,
+        teaching_examples=[
+            {
+                "history": np.linspace(48.0, 54.0, 30),
+                "forecast": np.full(30, 58.0),
+                "truth": np.full(30, 57.0),
+                "date": "2025-12-01",
+            }
+        ],
+    )
+
+    assert len(calls) == 2
+    assert metadata["apply_skipped_by_gate"] is False
+    assert np.isclose(forecast[19], 60.0 * 1.005)
+    assert np.isclose(forecast[29], 60.0 * 1.005)
+
+
+def test_structured_hdelta_apply_skip_gate_skips_when_long_evidence_targets_are_zero():
+    guidance = {
+        20: {
+            "mode": "adjust",
+            "preferred_sign": "positive",
+            "confidence": "medium",
+        },
+        30: {
+            "mode": "adjust",
+            "preferred_sign": "positive",
+            "confidence": "medium",
+        },
+    }
+    config = {
+        "apply_skip_gate": {
+            "enabled": True,
+            "required_horizons": [20, 30],
+            "min_confidence": "medium",
+            "require_same_nonzero_preferred_sign": True,
+            "minimum_actionable_evidence_horizons": 1,
+            "evidence_target_min_abs_pct": 0.05,
+            "require_evidence_sign_alignment": True,
+        }
+    }
+
+    skipped, diagnostics = evaluate_structured_hdelta_apply_skip_gate(
+        guidance,
+        config,
+        {20: 0.0, 30: 0.0},
+    )
+
+    assert skipped is True
+    assert diagnostics["actionable_evidence_horizons"] == []
+    assert any("need 1" in reason for reason in diagnostics["reasons"])
+
+
+def test_structured_hdelta_apply_skip_gate_accepts_one_aligned_evidence_target():
+    guidance = {
+        20: {
+            "mode": "adjust",
+            "preferred_sign": "negative",
+            "confidence": "medium",
+        },
+        30: {
+            "mode": "adjust",
+            "preferred_sign": "negative",
+            "confidence": "medium",
+        },
+    }
+    config = {
+        "apply_skip_gate": {
+            "enabled": True,
+            "required_horizons": [20, 30],
+            "min_confidence": "medium",
+            "require_same_nonzero_preferred_sign": True,
+            "minimum_actionable_evidence_horizons": 1,
+            "evidence_target_min_abs_pct": 0.05,
+            "require_evidence_sign_alignment": True,
+        }
+    }
+
+    skipped, diagnostics = evaluate_structured_hdelta_apply_skip_gate(
+        guidance,
+        config,
+        {20: 0.0, 30: -0.4},
+    )
+
+    assert skipped is False
+    assert diagnostics["actionable_evidence_horizons"] == [30]
+
+
+def test_structured_hdelta_apply_skip_gate_blocks_medium_confidence_on_steep_base_path():
+    guidance = {
+        20: {"mode": "adjust", "preferred_sign": "negative", "confidence": "medium"},
+        30: {"mode": "adjust", "preferred_sign": "negative", "confidence": "medium"},
+    }
+    config = {
+        "apply_skip_gate": {
+            "enabled": True,
+            "required_horizons": [20, 30],
+            "min_confidence": "medium",
+            "require_same_nonzero_preferred_sign": True,
+            "minimum_actionable_evidence_horizons": 1,
+            "non_high_confidence_max_abs_base_slope_pct": 1.0,
+        }
+    }
+
+    skipped, diagnostics = evaluate_structured_hdelta_apply_skip_gate(
+        guidance,
+        config,
+        {20: -0.4, 30: -0.6},
+        np.linspace(60.0, 63.0, 30),
+    )
+
+    assert skipped is True
+    assert diagnostics["all_required_horizons_high_confidence"] is False
+    assert diagnostics["base_slope_pct"] > 4.9
+    assert any("cannot override base slope" in reason for reason in diagnostics["reasons"])
+
+
+def test_structured_hdelta_apply_skip_gate_allows_high_confidence_on_steep_base_path():
+    guidance = {
+        20: {"mode": "adjust", "preferred_sign": "positive", "confidence": "high"},
+        30: {"mode": "adjust", "preferred_sign": "positive", "confidence": "high"},
+    }
+    config = {
+        "apply_skip_gate": {
+            "enabled": True,
+            "required_horizons": [20, 30],
+            "min_confidence": "medium",
+            "require_same_nonzero_preferred_sign": True,
+            "minimum_actionable_evidence_horizons": 1,
+            "non_high_confidence_max_abs_base_slope_pct": 1.0,
+        }
+    }
+
+    skipped, diagnostics = evaluate_structured_hdelta_apply_skip_gate(
+        guidance,
+        config,
+        {20: 0.4, 30: 0.6},
+        np.linspace(60.0, 63.0, 30),
+    )
+
+    assert skipped is False
+    assert diagnostics["all_required_horizons_high_confidence"] is True
+
+
 def test_derive_hdelta_case_controls_supports_horizon_overrides():
     history = np.linspace(50.0, 55.0, 30)
     forecast = np.full(30, 60.0)
@@ -1574,6 +2047,23 @@ def test_apply_discrete_hdelta_actions_respects_confidence_floor():
     )
 
     assert snapped[20] == 0.0
+
+
+def test_apply_post_scale_hdelta_adjustments_supports_per_horizon_scaling():
+    scaled = apply_post_scale_hdelta_adjustments(
+        adjustments_pct={5: 0.2, 20: 0.8, 30: -0.9},
+        per_horizon_max={5: 1.0, 20: 1.0, 30: 1.0},
+        config={
+            "post_apply_scale_by_horizon": {
+                "h20": 0.7,
+                "30": 0.5,
+            }
+        },
+    )
+
+    assert np.isclose(scaled[5], 0.2)
+    assert np.isclose(scaled[20], 0.56)
+    assert np.isclose(scaled[30], -0.45)
 
 
 def test_aggregate_horizon_adjustments_median():

@@ -17,6 +17,7 @@ from src.uk_ets_live_deployment import (
     _fit_live_learned_gate_bundle,
     _simulate_live_online_memory_history,
     build_backtest_seed_rows,
+    build_current_live_rows,
     backfill_archive_actuals,
     build_recent_live_history_rows,
     export_public_site_files,
@@ -185,6 +186,7 @@ def test_backfill_and_export_public_site_files(tmp_path: Path) -> None:
     latest = json.loads((export_dir / "latest.json").read_text(encoding="utf-8"))
     horizon_1d = json.loads((export_dir / "horizon_1d.json").read_text(encoding="utf-8"))
     horizon_5d = json.loads((export_dir / "horizon_5d.json").read_text(encoding="utf-8"))
+    metrics = json.loads((export_dir / "metrics.json").read_text(encoding="utf-8"))
     status = json.loads((export_dir / "status.json").read_text(encoding="utf-8"))
 
     assert latest["latest_observed_date"] == "2026-03-24"
@@ -196,6 +198,11 @@ def test_backfill_and_export_public_site_files(tmp_path: Path) -> None:
     assert horizon_1d["series"][-1]["actual"] == 55.0
     assert horizon_1d["series"][-1]["llm_tsm_forecast"] == 54.8
     assert horizon_5d["series"] == []
+    assert metrics["settled_row_count"] == 4
+    assert metrics["path"]["complete_origin_count"] == 1
+    assert metrics["path"]["horizon_count"] == 3
+    assert metrics["horizons"]["1d"]["settled_count"] == 2
+    assert metrics["horizons"]["1d"]["uplift_pct"] > 0
     assert status["horizon_counts"]["h1"] == 2
     assert status["horizon_counts"]["h5"] == 0
 
@@ -372,6 +379,187 @@ def test_build_recent_live_history_rows_can_include_latest_origin(
 
     assert seen_origins == ["2026-03-20", "2026-03-23", "2026-03-24"]
     assert rows["latest_observed_date"].tolist() == ["2026-03-20", "2026-03-23", "2026-03-24"]
+
+
+def test_build_recent_live_history_rows_uses_previous_llm_system_by_default(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    panel = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2026-03-20", "2026-03-23", "2026-03-24"]),
+            "y": [52.0, 53.0, 54.0],
+        }
+    )
+    config_raw = {
+        "time_series": {"pred_len": 1, "seq_len": 1},
+        "frontend_live_bundle": {"min_train_windows": 0, "min_val_windows": 0},
+        "llm": {
+            "methods": ["TSM+LLM-COT-RF-HDELTA"],
+            "cot_rf": {
+                "test_pool_mode": "online_realized_memory",
+                "online_memory_policy": {"enabled": True},
+            },
+        },
+    }
+
+    monkeypatch.setattr(
+        live_deployment,
+        "_load_live_feature_panel",
+        lambda **kwargs: panel.copy(),
+    )
+
+    seen_cfgs: list[dict] = []
+
+    def _fake_build_live_rows_from_feature_panel(
+        *,
+        config_raw: dict,
+        panel: pd.DataFrame,
+        run_dir: str | Path,
+        artifact_run_dir: str | Path | None = None,
+        model_version: str = "model",
+        record_source: str = "historical_live_backfill",
+        enable_llm: bool = True,
+    ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+        seen_cfgs.append(config_raw)
+        origin = str(pd.Timestamp(panel["date"].iloc[-1]).date())
+        return (
+            pd.DataFrame(
+                [
+                    {
+                        "run_id": f"run-{origin}",
+                        "forecast_made_on": origin,
+                        "latest_observed_date": origin,
+                        "latest_observed_price": float(panel["y"].iloc[-1]),
+                        "target_date": origin,
+                        "step_index": 1,
+                        "actual": None,
+                        "base_tsm_forecast": float(panel["y"].iloc[-1]) + 0.1,
+                        "llm_tsm_forecast": float(panel["y"].iloc[-1]) + 0.2,
+                        "model_version": model_version,
+                        "model_commit": "",
+                        "data_version": origin,
+                        "is_realized": False,
+                        "generated_at": "2026-03-24T12:00:00+00:00",
+                        "record_source": record_source,
+                        "source_run_id": "fake",
+                    }
+                ]
+            ),
+            panel[["date", "y"]].copy(),
+            {"origin_date": origin},
+        )
+
+    monkeypatch.setattr(
+        live_deployment,
+        "_build_live_rows_from_feature_panel",
+        _fake_build_live_rows_from_feature_panel,
+    )
+
+    build_recent_live_history_rows(
+        config_raw=config_raw,
+        data_dir=tmp_path,
+        run_dir=tmp_path / "live-run",
+        start_after_date="2026-03-19",
+    )
+
+    assert len(seen_cfgs) == 2
+    for seen_cfg in seen_cfgs:
+        cot_cfg = seen_cfg["llm"]["cot_rf"]
+        assert cot_cfg["test_pool_mode"] == ""
+        assert cot_cfg["online_memory_policy"]["enabled"] is False
+    assert config_raw["llm"]["cot_rf"]["test_pool_mode"] == "online_realized_memory"
+    assert config_raw["llm"]["cot_rf"]["online_memory_policy"]["enabled"] is True
+
+
+def test_build_current_live_rows_can_use_previous_llm_system(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    panel = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2026-03-20", "2026-03-23", "2026-03-24"]),
+            "y": [52.0, 53.0, 54.0],
+        }
+    )
+    config_raw = {
+        "time_series": {"pred_len": 1, "seq_len": 1},
+        "frontend_live_bundle": {"min_train_windows": 0, "min_val_windows": 0},
+        "llm": {
+            "methods": ["TSM+LLM-COT-RF-HDELTA"],
+            "cot_rf": {
+                "test_pool_mode": "online_realized_memory",
+                "online_memory_policy": {"enabled": True},
+            },
+        },
+    }
+
+    monkeypatch.setattr(
+        live_deployment,
+        "_load_live_feature_panel",
+        lambda **kwargs: panel.copy(),
+    )
+
+    seen_cfgs: list[dict] = []
+
+    def _fake_build_live_rows_from_feature_panel(
+        *,
+        config_raw: dict,
+        panel: pd.DataFrame,
+        run_dir: str | Path,
+        artifact_run_dir: str | Path | None = None,
+        model_version: str = "model",
+        record_source: str = "live_run",
+        enable_llm: bool = True,
+    ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+        seen_cfgs.append(config_raw)
+        origin = str(pd.Timestamp(panel["date"].iloc[-1]).date())
+        return (
+            pd.DataFrame(
+                [
+                    {
+                        "run_id": f"run-{origin}",
+                        "forecast_made_on": origin,
+                        "latest_observed_date": origin,
+                        "latest_observed_price": float(panel["y"].iloc[-1]),
+                        "target_date": origin,
+                        "step_index": 1,
+                        "actual": None,
+                        "base_tsm_forecast": float(panel["y"].iloc[-1]) + 0.1,
+                        "llm_tsm_forecast": float(panel["y"].iloc[-1]) + 0.2,
+                        "model_version": model_version,
+                        "model_commit": "",
+                        "data_version": origin,
+                        "is_realized": False,
+                        "generated_at": "2026-03-24T12:00:00+00:00",
+                        "record_source": record_source,
+                        "source_run_id": "fake",
+                    }
+                ]
+            ),
+            panel[["date", "y"]].copy(),
+            {"origin_date": origin},
+        )
+
+    monkeypatch.setattr(
+        live_deployment,
+        "_build_live_rows_from_feature_panel",
+        _fake_build_live_rows_from_feature_panel,
+    )
+
+    build_current_live_rows(
+        config_raw=config_raw,
+        data_dir=tmp_path,
+        run_dir=tmp_path / "live-run",
+        use_previous_llm_system=True,
+    )
+
+    assert len(seen_cfgs) == 1
+    cot_cfg = seen_cfgs[0]["llm"]["cot_rf"]
+    assert cot_cfg["test_pool_mode"] == ""
+    assert cot_cfg["online_memory_policy"]["enabled"] is False
+    assert config_raw["llm"]["cot_rf"]["test_pool_mode"] == "online_realized_memory"
+    assert config_raw["llm"]["cot_rf"]["online_memory_policy"]["enabled"] is True
 
 
 class _FakeRefiner:

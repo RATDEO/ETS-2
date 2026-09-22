@@ -1,0 +1,36 @@
+# Production-candidate supervised Qwen refinement.
+#
+# The Qwen labels are treated as features, not as numerical forecast commands.
+# Ridge remains the frozen base. A second-stage ridge predicts one bounded
+# H1-to-H30 percentage ramp from recent, genuinely out-of-sample base errors.
+
+base_run: runs/20260810_004048_4ffc53
+events_path: data/news/headlines_labeled_qwen_votes3_daily3_importance_v2_indep_percall.csv
+
+event_features:
+  taxonomy_version: v2
+  rolling_windows: [3, 7]
+
+base_oof:
+  initial_apply_start: 250
+  fold_size: 50
+  # Prevent targets from preceding, overlapping forecasts entering a base fit.
+  purge_size: 30
+
+candidates:
+  lookbacks: [150, 350, 504]
+  ridge_alphas: [100.0, 1000.0, 10000.0]
+  shrinkages: [1.0, 1.5]
+  max_adjustment_pct: 5.0
+  min_adjustment_pct: 0.0
+  ramp_power: 1.0
+
+selection:
+  min_improvement_pct: 1.0
+  min_fold_win_share: 0.5
+  score_fold_size: 38
+
+comparison_runs:
+  - runs/20260810_004048_4ffc53
+  - runs/20260810_004912_e61cf8
+  - runs/20260810_005615_dc7e66

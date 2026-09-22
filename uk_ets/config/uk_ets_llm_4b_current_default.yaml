@@ -1,5 +1,5 @@
 # UK ETS Forecasting Configuration
-# Current 4B default: numeric-tool baseline plus deterministic horizon-delta verifier tool.
+# Current default for the legacy 4B config family, now pointed at the Qwen3.5 9B local endpoint.
 
 project:
   name: "UK_ETS_Forecasting"
@@ -96,7 +96,7 @@ model:
 
 llm:
   provider: "openai"
-  model: "qwen3-vl-4b-gpu"
+  model: "qwen3.5-9b-ud-q4-k-xl"
   base_model: "tsm"
   temperature: 0.0
   max_tokens: 512
@@ -114,11 +114,11 @@ llm:
     val_seed: 42
   max_exogenous_features: 6
   cot_rf:
-    k_examples: 4
-    example_selection: recent_high_error
+    k_examples: 5
+    example_selection: similarity_error_hybrid
     n_similarity_examples: 3
     feature_window: 18
-    lookback_days: 180
+    lookback_days: 365
     retain_context: false
     strict_json_prompt: true
     strict_json_response_format: true
@@ -131,6 +131,11 @@ llm:
     enable_delta_verifier_tool: true
     force_delta_verifier_tool: true
     max_tool_rounds: 4
+    apply_skip_gate:
+      enabled: true
+      required_horizons: [20, 30]
+      min_confidence: medium
+      require_same_nonzero_preferred_sign: true
   prompt_history_points: 18
   gating:
     enabled: false
@@ -151,7 +156,7 @@ hdelta:
   key_horizons: [1, 5, 20, 30]
   case_conditioned: true
   max_adjustment_pct: 1.0
-  freeze_horizons: [1]
+  freeze_horizons: [1, 5]
   case_match_top_k: 3
   case_min_examples: 2
   case_min_sign_agreement: 0.60
@@ -159,10 +164,10 @@ hdelta:
   case_bound_scale: 0.85
   case_min_bound_pct: 0.15
   structured_coherence_guards: true
-  structured_zero_negative_long_when_h5_positive: true
-  structured_zero_h20_negative_when_h30_zero: true
+  structured_zero_negative_long_when_h5_positive: false
+  structured_zero_h20_negative_when_h30_zero: false
   structured_zero_mixed_long_signs: true
-  structured_prefer_positive_long_conflicts: true
+  structured_prefer_positive_long_conflicts: false
 
 evaluation:
   primary_metric: "mse"

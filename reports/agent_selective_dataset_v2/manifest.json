@@ -1,0 +1,19 @@
+{
+  "generated_utc": "2026-08-09T20:05:02.397516+00:00",
+  "rows": 581,
+  "windows": {
+    "W1": 143,
+    "W2": 146,
+    "W3": 146,
+    "W4": 146
+  },
+  "min_date": "2022-10-17",
+  "max_date": "2025-05-20",
+  "alignment": "strictly previous panel row",
+  "removed_future_error_columns": [
+    "base_bias_h20",
+    "base_bias_h30",
+    "llm_bias_h20",
+    "llm_bias_h30"
+  ]
+}

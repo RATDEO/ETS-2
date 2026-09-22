@@ -443,7 +443,7 @@ def generate_regime_gate_bundle(
     output_dir: str | Path | None = None,
     publish_dir: str | Path | None = None,
     llm_api_key: str | None = None,
-    llm4b_model: str = "qwen3-vl-4b-gpu",
+    llm4b_model: str = "qwen3.5-9b-ud-q4-k-xl",
     llm4b_base_url: str = DEFAULT_LOCAL_LLM_BASE_URL,
     llm35b_model: str = "qwen3.5-35b-a3b-ud-q4-k-xl",
     llm35b_base_url: str = "http://192.168.1.140:9881/v1",

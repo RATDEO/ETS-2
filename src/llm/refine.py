@@ -13,6 +13,7 @@ import math
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 from pathlib import Path
 import logging
+import time
 from collections import Counter
 
 from .prompts import get_template, PromptTemplate
@@ -34,6 +35,59 @@ CASE_RETRIEVAL_TOOL_NAME = "get_structured_case_retrieval"
 DELTA_VERIFIER_TOOL_NAME = "verify_hdelta_adjustments"
 MARKET_MICROSTRUCTURE_TOOL_NAME = "get_market_microstructure_state"
 COUNTEREXAMPLE_TOOL_NAME = "get_freeze_counterexample"
+
+LLM_OBSERVABILITY_SUM_FIELDS = (
+    "request_count",
+    "prompt_tokens",
+    "completion_tokens",
+    "total_tokens",
+    "latency_seconds",
+    "cache_hit_count",
+)
+
+
+def _extract_llm_observability(
+    response: object,
+    *,
+    latency_seconds: float,
+    base_url: str,
+) -> Dict[str, object]:
+    """Extract portable usage and timing fields from an SDK response."""
+    usage = getattr(response, "usage", None)
+
+    def _usage_int(name: str) -> int:
+        value = getattr(usage, name, 0) if usage is not None else 0
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    return {
+        "request_count": 1,
+        "prompt_tokens": _usage_int("prompt_tokens"),
+        "completion_tokens": _usage_int("completion_tokens"),
+        "total_tokens": _usage_int("total_tokens"),
+        "latency_seconds": float(max(0.0, latency_seconds)),
+        "cache_hit": False,
+        "cache_hit_count": 0,
+        "base_url": str(base_url or ""),
+    }
+
+
+def _merge_llm_observability(
+    total: Dict[str, object],
+    observation: Dict[str, object],
+) -> Dict[str, object]:
+    """Add usage from one logical call into a request-stage total."""
+    for field in LLM_OBSERVABILITY_SUM_FIELDS:
+        total[field] = float(total.get(field, 0) or 0) + float(
+            observation.get(field, 0) or 0
+        )
+    for field in ("request_count", "prompt_tokens", "completion_tokens", "total_tokens", "cache_hit_count"):
+        total[field] = int(total[field])
+    if observation.get("base_url"):
+        total["base_url"] = observation["base_url"]
+    return total
 
 
 def blend_mode_from_config(config: Optional[dict]) -> str:
@@ -1314,6 +1368,7 @@ def build_hdelta_delta_verification_payload(
     key_horizons: Sequence[int],
     *,
     per_horizon_max_adjustment_pct: Optional[Dict[int, float]] = None,
+    evidence_target_adjustment_pct: Optional[Dict[int, float]] = None,
     structured_horizon_guidance: Optional[Dict[int, Dict[str, str]]] = None,
     frozen_horizons: Optional[Sequence[int]] = None,
     config: Optional[Dict[str, Any]] = None,
@@ -1332,6 +1387,11 @@ def build_hdelta_delta_verification_payload(
         clipped,
         structured_guidance=structured_horizon_guidance,
         per_horizon_max=bounds,
+        config=config,
+    )
+    enforced = apply_continuous_evidence_guard(
+        enforced,
+        evidence_target_adjustment_pct,
         config=config,
     )
     verified = apply_structured_hdelta_coherence_guards(
@@ -1372,6 +1432,9 @@ def build_hdelta_delta_verification_payload(
             "clipped_pct": round(clipped_value, 6),
             "verified_pct": round(verified_value, 6),
             "bound_pct": round(float(bounds.get(horizon, 0.0)), 6),
+            "evidence_target_pct": round(
+                float((evidence_target_adjustment_pct or {}).get(horizon, 0.0)), 6
+            ),
             "status": status,
             "mode": mode,
             "preferred_sign": preferred_sign,
@@ -1656,6 +1719,48 @@ def _confidence_rank(value: str) -> int:
     return {"low": 0, "medium": 1, "high": 2}.get(str(value or "").strip().lower(), -1)
 
 
+def _weighted_median(values: np.ndarray, weights: np.ndarray) -> float:
+    """Return a finite weighted median with a deterministic fallback."""
+    values = np.asarray(values, dtype=float).reshape(-1)
+    weights = np.asarray(weights, dtype=float).reshape(-1)
+    valid = np.isfinite(values) & np.isfinite(weights) & (weights > 0.0)
+    if not np.any(valid):
+        finite = values[np.isfinite(values)]
+        return float(np.median(finite)) if finite.size else 0.0
+    values = values[valid]
+    weights = weights[valid]
+    order = np.argsort(values)
+    values = values[order]
+    weights = weights[order]
+    cutoff = 0.5 * float(np.sum(weights))
+    pos = int(np.searchsorted(np.cumsum(weights), cutoff, side="left"))
+    return float(values[min(pos, len(values) - 1)])
+
+
+def apply_continuous_evidence_guard(
+    adjustments_pct: Dict[int, float],
+    evidence_targets_pct: Optional[Dict[int, float]],
+    config: Optional[Dict] = None,
+) -> Dict[int, float]:
+    """Constrain LLM deltas to the sign and size supported by robust evidence."""
+    cfg = dict((config or {}).get("continuous_evidence_sizing", {}) or {})
+    if not bool(cfg.get("enabled", False)) or not evidence_targets_pct:
+        return {int(h): float(v) for h, v in adjustments_pct.items()}
+    guarded: Dict[int, float] = {}
+    for raw_h, raw_v in adjustments_pct.items():
+        horizon = int(raw_h)
+        value = float(raw_v)
+        target = float((evidence_targets_pct or {}).get(horizon, 0.0))
+        if not np.isfinite(target) or abs(target) <= 1e-12:
+            guarded[horizon] = 0.0
+            continue
+        if value * target <= 0.0:
+            guarded[horizon] = 0.0
+            continue
+        guarded[horizon] = float(np.sign(target) * min(abs(value), abs(target)))
+    return guarded
+
+
 def enforce_structured_hdelta_adjustments(
     adjustments_pct: Dict[int, float],
     structured_guidance: Optional[Dict[int, Dict[str, str]]],
@@ -1802,6 +1907,223 @@ def apply_structured_hdelta_coherence_guards(
     return guarded
 
 
+def evaluate_structured_hdelta_apply_skip_gate(
+    structured_guidance: Optional[Dict[int, Dict[str, str]]],
+    config: Optional[Dict] = None,
+    evidence_target_adjustment_pct: Optional[Dict[int, float]] = None,
+    base_forecast: Optional[np.ndarray] = None,
+) -> tuple[bool, Dict[str, object]]:
+    """Determine whether structured HDELTA guidance is confident enough to justify an apply call."""
+    cfg = dict((config or {}).get("apply_skip_gate", {}) or {})
+    enabled = bool(cfg.get("enabled", False))
+    diagnostics: Dict[str, object] = {
+        "enabled": enabled,
+        "required_horizons": [],
+        "min_confidence": str(cfg.get("min_confidence", "high")).strip().lower() or "high",
+        "require_same_nonzero_preferred_sign": bool(
+            cfg.get("require_same_nonzero_preferred_sign", True)
+        ),
+        "minimum_actionable_evidence_horizons": int(
+            cfg.get("minimum_actionable_evidence_horizons", 0)
+        ),
+        "evidence_target_min_abs_pct": float(
+            cfg.get("evidence_target_min_abs_pct", 0.05)
+        ),
+        "require_evidence_sign_alignment": bool(
+            cfg.get("require_evidence_sign_alignment", True)
+        ),
+        "non_high_confidence_max_abs_base_slope_pct": cfg.get(
+            "non_high_confidence_max_abs_base_slope_pct"
+        ),
+        "horizon_checks": {},
+        "reasons": [],
+    }
+    if not enabled:
+        return False, diagnostics
+
+    raw_required = cfg.get("required_horizons", [20, 30]) or [20, 30]
+    required_horizons: list[int] = []
+    for value in raw_required:
+        try:
+            required_horizons.append(int(value))
+        except Exception:
+            continue
+    if not required_horizons:
+        required_horizons = [20, 30]
+    diagnostics["required_horizons"] = list(required_horizons)
+
+    required_conf = str(cfg.get("min_confidence", "high")).strip().lower() or "high"
+    require_same_sign = bool(cfg.get("require_same_nonzero_preferred_sign", True))
+    minimum_actionable_evidence = max(
+        0, int(cfg.get("minimum_actionable_evidence_horizons", 0))
+    )
+    evidence_target_min_abs_pct = max(
+        0.0, float(cfg.get("evidence_target_min_abs_pct", 0.05))
+    )
+    require_evidence_sign_alignment = bool(
+        cfg.get("require_evidence_sign_alignment", True)
+    )
+    observed_signs: list[str] = []
+    observed_confidences: list[str] = []
+    actionable_evidence_horizons: list[int] = []
+
+    for horizon in required_horizons:
+        guidance = dict((structured_guidance or {}).get(int(horizon)) or {})
+        confidence = str(guidance.get("confidence", "")).strip().lower()
+        preferred_sign = str(guidance.get("preferred_sign", "")).strip().lower()
+        mode = str(guidance.get("mode", "")).strip().lower()
+        evidence_target = float(
+            (evidence_target_adjustment_pct or {}).get(int(horizon), 0.0)
+        )
+        evidence_sign = (
+            "positive"
+            if evidence_target > evidence_target_min_abs_pct
+            else "negative"
+            if evidence_target < -evidence_target_min_abs_pct
+            else "zero"
+        )
+        if evidence_sign != "zero":
+            actionable_evidence_horizons.append(int(horizon))
+        passed = True
+        reasons: list[str] = []
+
+        if _confidence_rank(confidence) < _confidence_rank(required_conf):
+            passed = False
+            reasons.append(f"h{int(horizon)} confidence={confidence or 'missing'} below {required_conf}")
+        if require_same_sign and preferred_sign not in {"positive", "negative"}:
+            passed = False
+            reasons.append(f"h{int(horizon)} preferred_sign={preferred_sign or 'missing'} not actionable")
+        if mode == "freeze":
+            passed = False
+            reasons.append(f"h{int(horizon)} mode=freeze")
+        if (
+            require_evidence_sign_alignment
+            and evidence_sign != "zero"
+            and preferred_sign in {"positive", "negative"}
+            and preferred_sign != evidence_sign
+        ):
+            passed = False
+            reasons.append(
+                f"h{int(horizon)} guidance sign={preferred_sign} conflicts with "
+                f"evidence target {evidence_target:+.3f}%"
+            )
+
+        diagnostics["horizon_checks"][f"h{int(horizon)}"] = {
+            "mode": mode,
+            "preferred_sign": preferred_sign,
+            "confidence": confidence,
+            "evidence_target_pct": evidence_target,
+            "evidence_sign": evidence_sign,
+            "passed": passed,
+            "reasons": list(reasons),
+        }
+        diagnostics["reasons"].extend(reasons)
+        if preferred_sign in {"positive", "negative"}:
+            observed_signs.append(preferred_sign)
+        observed_confidences.append(confidence)
+
+    if require_same_sign and len(set(observed_signs)) > 1:
+        diagnostics["reasons"].append("required horizons disagree on preferred_sign")
+    diagnostics["actionable_evidence_horizons"] = list(actionable_evidence_horizons)
+    if len(actionable_evidence_horizons) < minimum_actionable_evidence:
+        diagnostics["reasons"].append(
+            "only "
+            f"{len(actionable_evidence_horizons)} required horizon(s) have an evidence target "
+            f"above {evidence_target_min_abs_pct:.3f}%; need {minimum_actionable_evidence}"
+        )
+
+    slope_limit_raw = cfg.get("non_high_confidence_max_abs_base_slope_pct")
+    if slope_limit_raw is not None and observed_confidences:
+        slope_limit = max(0.0, float(slope_limit_raw))
+        all_high_confidence = all(
+            _confidence_rank(value) >= _confidence_rank("high")
+            for value in observed_confidences
+        )
+        diagnostics["all_required_horizons_high_confidence"] = all_high_confidence
+        forecast_values = (
+            np.asarray(base_forecast, dtype=float).reshape(-1)
+            if base_forecast is not None
+            else np.array([], dtype=float)
+        )
+        if forecast_values.size:
+            reference_horizon = max(1, int(cfg.get("base_slope_reference_horizon", 1)))
+            target_horizon = max(
+                1,
+                int(cfg.get("base_slope_target_horizon", max(required_horizons))),
+            )
+            reference_idx = min(reference_horizon, forecast_values.size) - 1
+            target_idx = min(target_horizon, forecast_values.size) - 1
+            reference_value = float(forecast_values[reference_idx])
+            target_value = float(forecast_values[target_idx])
+            denominator = max(abs(reference_value), 1e-8)
+            base_slope_pct = 100.0 * (target_value - reference_value) / denominator
+            diagnostics["base_slope_reference_horizon"] = reference_idx + 1
+            diagnostics["base_slope_target_horizon"] = target_idx + 1
+            diagnostics["base_slope_pct"] = base_slope_pct
+            if not all_high_confidence and abs(base_slope_pct) > slope_limit:
+                diagnostics["reasons"].append(
+                    f"non-high-confidence guidance cannot override base slope "
+                    f"{base_slope_pct:+.3f}% beyond ±{slope_limit:.3f}%"
+                )
+        else:
+            diagnostics["base_slope_pct"] = None
+            diagnostics["reasons"].append(
+                "base forecast missing for non-high-confidence slope gate"
+            )
+
+    skip = bool(diagnostics["reasons"])
+    diagnostics["skip"] = skip
+    return skip, diagnostics
+
+
+def evaluate_pre_refinement_base_slope_gate(
+    forecast: Optional[np.ndarray],
+    config: Optional[Dict] = None,
+) -> tuple[bool, Dict[str, object]]:
+    """Skip all LLM calls when the observable base path fails a slope policy."""
+    cfg = dict((config or {}).get("pre_refinement_base_slope_gate", {}) or {})
+    enabled = bool(cfg.get("enabled", False))
+    diagnostics: Dict[str, object] = {
+        "enabled": enabled,
+        "reference_horizon": int(cfg.get("reference_horizon", 1)),
+        "target_horizon": int(cfg.get("target_horizon", 30)),
+        "min_slope_pct": float(cfg.get("min_slope_pct", 0.0)),
+        "slope_pct": None,
+        "reasons": [],
+    }
+    if not enabled:
+        return False, diagnostics
+    values = np.asarray(forecast if forecast is not None else [], dtype=float).reshape(-1)
+    reference_horizon = int(diagnostics["reference_horizon"])
+    target_horizon = int(diagnostics["target_horizon"])
+    if (
+        reference_horizon < 1
+        or target_horizon < 1
+        or reference_horizon > values.size
+        or target_horizon > values.size
+    ):
+        diagnostics["reasons"].append(
+            f"requested horizons h{reference_horizon}/h{target_horizon} unavailable"
+        )
+        diagnostics["skip"] = True
+        return True, diagnostics
+    reference = float(values[reference_horizon - 1])
+    target = float(values[target_horizon - 1])
+    if not np.isfinite(reference) or not np.isfinite(target) or abs(reference) <= 1e-8:
+        diagnostics["reasons"].append("base anchors are non-finite or reference is zero")
+        diagnostics["skip"] = True
+        return True, diagnostics
+    slope_pct = float((target / reference - 1.0) * 100.0)
+    diagnostics["slope_pct"] = slope_pct
+    if slope_pct < float(diagnostics["min_slope_pct"]):
+        diagnostics["reasons"].append(
+            f"base slope {slope_pct:+.3f}% is below {float(diagnostics['min_slope_pct']):+.3f}%"
+        )
+    skip = bool(diagnostics["reasons"])
+    diagnostics["skip"] = skip
+    return skip, diagnostics
+
+
 def apply_discrete_hdelta_actions(
     adjustments_pct: Dict[int, float],
     structured_guidance: Optional[Dict[int, Dict[str, str]]],
@@ -1883,6 +2205,33 @@ def apply_discrete_hdelta_actions(
         snapped[horizon] = float(np.clip(snapped_value, -per_h_max, per_h_max))
 
     return snapped
+
+
+def apply_post_scale_hdelta_adjustments(
+    adjustments_pct: Dict[int, float],
+    per_horizon_max: Dict[int, float],
+    config: Optional[Dict] = None,
+) -> Dict[int, float]:
+    """Apply a final per-horizon scaling layer to bounded HDELTA adjustments."""
+    cfg = config or {}
+    raw_scale_by_h = cfg.get("post_apply_scale_by_horizon", {}) or {}
+    default_scale = float(cfg.get("post_apply_scale", 1.0))
+    scaled: Dict[int, float] = {}
+    for raw_h, raw_v in adjustments_pct.items():
+        horizon = int(raw_h)
+        value = float(raw_v)
+        scale = default_scale
+        for key in (horizon, str(horizon), f"h{horizon}"):
+            if key in raw_scale_by_h:
+                try:
+                    scale = float(raw_scale_by_h[key])
+                except (TypeError, ValueError):
+                    scale = default_scale
+                break
+        per_h_max = float(per_horizon_max.get(horizon, abs(value)))
+        scaled_value = float(value * scale)
+        scaled[horizon] = float(np.clip(scaled_value, -per_h_max, per_h_max))
+    return scaled
 
 
 def build_hdelta_case_summary(
@@ -2008,6 +2357,21 @@ def derive_hdelta_case_controls(
         )
     )
     global_max_pct = float(cfg.get("max_adjustment_pct", 3.0))
+    continuous_cfg = dict(cfg.get("continuous_evidence_sizing", {}) or {})
+    continuous_enabled = bool(continuous_cfg.get("enabled", False))
+    continuous_shrinkage = float(continuous_cfg.get("shrinkage", 0.35))
+    continuous_distance_temperature = max(
+        float(continuous_cfg.get("distance_temperature", 1.5)), 1e-6
+    )
+    continuous_dispersion_floor = max(
+        float(continuous_cfg.get("dispersion_floor_pct", 0.10)), 1e-8
+    )
+    continuous_min_action = max(
+        float(continuous_cfg.get("min_action_pct", 0.05)), 0.0
+    )
+    continuous_agreement_power = max(
+        float(continuous_cfg.get("agreement_power", 1.0)), 0.0
+    )
 
     case_summary = build_hdelta_case_summary(history, forecast, key_horizons, currency=currency)
     if include_retrieval_tag:
@@ -2146,6 +2510,8 @@ def derive_hdelta_case_controls(
 
     dynamic_freeze: List[int] = []
     per_horizon_max = {int(h): global_max_pct for h in key_horizons}
+    evidence_targets = {int(h): 0.0 for h in key_horizons}
+    evidence_diagnostics: Dict[int, Dict[str, float]] = {}
     for horizon in key_horizons:
         horizon_cfg = _hdelta_horizon_cfg(cfg, int(horizon))
         min_examples = int(horizon_cfg.get("case_min_examples", 2))
@@ -2178,11 +2544,32 @@ def derive_hdelta_case_controls(
             )
             continue
         err_arr = np.asarray(err_values, dtype=float)
-        mean_abs = float(np.mean(np.abs(err_arr)))
-        mean_err = float(np.mean(err_arr))
-        sign_agreement = float(
-            max(np.mean(err_arr > 0.0), np.mean(err_arr < 0.0))
-        )
+        match_distances = np.asarray(
+            [float(ex.get("match_distance", 0.0) or 0.0) for ex in horizon_matches],
+            dtype=float,
+        )[: len(err_arr)]
+        weights = np.exp(-np.maximum(match_distances, 0.0) / continuous_distance_temperature)
+        if not np.any(np.isfinite(weights) & (weights > 0.0)):
+            weights = np.ones(len(err_arr), dtype=float)
+        weights = np.where(np.isfinite(weights) & (weights > 0.0), weights, 0.0)
+        mean_abs = float(np.average(np.abs(err_arr), weights=weights))
+        mean_err = float(np.average(err_arr, weights=weights))
+        correction_arr = -err_arr
+        target_center = _weighted_median(correction_arr, weights)
+        target_sign = float(np.sign(target_center))
+        if target_sign == 0.0:
+            sign_agreement = float(np.average(np.abs(correction_arr) <= 1e-12, weights=weights))
+        else:
+            sign_agreement = float(
+                np.average(np.sign(correction_arr) == target_sign, weights=weights)
+            )
+        dispersion = _weighted_median(np.abs(correction_arr - target_center), weights)
+        evidence_diagnostics[int(horizon)] = {
+            "robust_correction_center_pct": float(target_center),
+            "weighted_sign_agreement": float(sign_agreement),
+            "weighted_mad_pct": float(dispersion),
+            "mean_abs_error_pct": float(mean_abs),
+        }
         if mean_abs < min_mean_abs_error_pct or sign_agreement < min_sign_agreement:
             dynamic_freeze.append(int(horizon))
             per_horizon_max[int(horizon)] = 0.0
@@ -2190,17 +2577,54 @@ def derive_hdelta_case_controls(
                 f"h{int(horizon)}: freeze to 0.0, weak/conflicted evidence (mean_err={mean_err:+.2f}%, sign_agreement={sign_agreement:.2f})."
             )
             continue
-        per_horizon_max[int(horizon)] = float(
-            min(global_max_pct, max(min_bound_pct, mean_abs * bound_scale))
-        )
-        preferred_sign = "negative" if mean_err > 0.0 else "positive"
+        if continuous_enabled:
+            dispersion_reliability = abs(target_center) / (
+                abs(target_center) + dispersion + continuous_dispersion_floor
+            )
+            agreement_reliability = float(sign_agreement) ** continuous_agreement_power
+            target = float(
+                np.clip(
+                    target_center
+                    * continuous_shrinkage
+                    * dispersion_reliability
+                    * agreement_reliability,
+                    -global_max_pct,
+                    global_max_pct,
+                )
+            )
+            evidence_targets[int(horizon)] = target
+            evidence_diagnostics[int(horizon)].update(
+                {
+                    "dispersion_reliability": float(dispersion_reliability),
+                    "agreement_reliability": float(agreement_reliability),
+                    "evidence_target_pct": float(target),
+                }
+            )
+            if abs(target) < continuous_min_action:
+                dynamic_freeze.append(int(horizon))
+                per_horizon_max[int(horizon)] = 0.0
+                evidence_targets[int(horizon)] = 0.0
+                horizon_guidance_summary.append(
+                    f"h{int(horizon)}: freeze to 0.0, robust continuous target {target:+.3f}% is below the {continuous_min_action:.3f}% action floor."
+                )
+                continue
+            per_horizon_max[int(horizon)] = abs(target)
+            preferred_sign = "positive" if target > 0.0 else "negative"
+        else:
+            per_horizon_max[int(horizon)] = float(
+                min(global_max_pct, max(min_bound_pct, mean_abs * bound_scale))
+            )
+            evidence_targets[int(horizon)] = float(
+                np.sign(-mean_err) * per_horizon_max[int(horizon)]
+            )
+            preferred_sign = "negative" if mean_err > 0.0 else "positive"
         source_text = (
             f"{len(horizon_matches)} horizon-specific matches"
             if horizon_specific_matching
             else f"{len(matched)} matched examples"
         )
         horizon_guidance_summary.append(
-            f"h{int(horizon)}: actionable, {source_text} show mean_err={mean_err:+.2f}% with sign_agreement={sign_agreement:.2f}; prefer a small {preferred_sign} adjustment within +/-{per_horizon_max[int(horizon)]:.2f}%."
+            f"h{int(horizon)}: actionable, {source_text} support a robust {preferred_sign} target of {evidence_targets[int(horizon)]:+.3f}% with sign_agreement={sign_agreement:.2f}; any move must stay between 0.0 and that target."
         )
 
     return {
@@ -2210,6 +2634,8 @@ def derive_hdelta_case_controls(
         "horizon_guidance_summary": horizon_guidance_summary,
         "dynamic_freeze_horizons": sorted(set(dynamic_freeze)),
         "per_horizon_max_adjustment_pct": per_horizon_max,
+        "evidence_target_adjustment_pct": evidence_targets,
+        "continuous_evidence_diagnostics": evidence_diagnostics,
         "matched_dates": [str(ex.get("date", "")) for ex in matched],
     }
 
@@ -2264,6 +2690,13 @@ class LLMRefiner:
             str(item).strip().lower()
             for item in (config.get("disable_response_format_models", []) or [])
             if str(item).strip()
+        )
+        self.openai_extra_body = dict(config.get("extra_body", {}) or {})
+        self.non_thinking_prompt_tag = str(
+            config.get("non_thinking_prompt_tag", "")
+        ).strip()
+        self.non_thinking_assistant_prefill = str(
+            config.get("non_thinking_assistant_prefill", "")
         )
         self.currency = str(config.get("currency", "EUR"))
         self.market_name = str(config.get("market_name", "carbon allowance market"))
@@ -2364,6 +2797,40 @@ class LLMRefiner:
         self._response_format_support[
             self._response_format_key(model_override, base_url_override)
         ] = False
+
+    def _apply_non_thinking_controls(
+        self,
+        messages: List[Dict[str, Any]],
+        system_message: str = "",
+    ) -> Tuple[List[Dict[str, Any]], str]:
+        """Inject per-request non-thinking controls for Qwen-style reasoning models."""
+        updated_system = str(system_message or "")
+        updated_messages = [dict(message) for message in (messages or [])]
+
+        tag = self.non_thinking_prompt_tag
+        if tag:
+            if updated_system:
+                if tag not in updated_system:
+                    updated_system = f"{tag}\n{updated_system}"
+            else:
+                for idx, message in enumerate(updated_messages):
+                    if str(message.get("role", "")).lower() == "user":
+                        content = message.get("content")
+                        if isinstance(content, str) and tag not in content:
+                            updated_messages[idx] = {
+                                **message,
+                                "content": f"{tag}\n{content}",
+                            }
+                        break
+
+        assistant_prefill = self.non_thinking_assistant_prefill
+        if assistant_prefill:
+            if not updated_messages or str(updated_messages[-1].get("role", "")).lower() != "assistant" or str(updated_messages[-1].get("content", "")) != assistant_prefill:
+                updated_messages.append(
+                    {"role": "assistant", "content": assistant_prefill}
+                )
+
+        return updated_messages, updated_system
     
     def _get_client(
         self,
@@ -2432,6 +2899,13 @@ class LLMRefiner:
         temperature = float(self.temperature if temperature_override is None else temperature_override)
         max_tokens = int(self.max_tokens if max_tokens_override is None else max_tokens_override)
         prompt_key = prompt if cache_key_suffix is None else f"{prompt}\n<!-- {cache_key_suffix} -->"
+        request_messages = [
+            {"role": "user", "content": prompt},
+        ]
+        request_messages, system_message = self._apply_non_thinking_controls(
+            request_messages,
+            system_message=system_message,
+        )
         response_format = self._response_format_allowed(
             response_format,
             model_override=model_override,
@@ -2444,6 +2918,7 @@ class LLMRefiner:
                 "provider": self.provider,
                 "base_url": base_url,
                 "system_message": system_message,
+                "messages": request_messages,
                 "max_tokens": max_tokens,
                 "response_format": response_format,
             }
@@ -2452,6 +2927,18 @@ class LLMRefiner:
             )
             if cached:
                 self._last_llm_response = dict(cached)
+                self._last_llm_response.update(
+                    {
+                        "request_count": 0,
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                        "latency_seconds": 0.0,
+                        "cache_hit": True,
+                        "cache_hit_count": 1,
+                        "base_url": base_url,
+                    }
+                )
                 return cached.get("content", "")
         
         client = self._get_client(
@@ -2462,19 +2949,27 @@ class LLMRefiner:
         if self.provider == "openai":
             request = {
                 "model": model_name,
-                "messages": [
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt}
-                ],
+                "messages": (
+                    ([{"role": "system", "content": system_message}] if system_message else [])
+                    + request_messages
+                ),
                 "temperature": temperature
             }
             if response_format is not None:
                 request["response_format"] = response_format
+            if self.openai_extra_body:
+                request["extra_body"] = dict(self.openai_extra_body)
             if model_name.startswith("gpt-5"):
                 request["max_completion_tokens"] = max_tokens
             else:
                 request["max_tokens"] = max_tokens
+            started_at = time.perf_counter()
             response = client.chat.completions.create(**request)
+            observability = _extract_llm_observability(
+                response,
+                latency_seconds=time.perf_counter() - started_at,
+                base_url=base_url,
+            )
             choice = response.choices[0]
             message = choice.message
             content = _extract_openai_message_text(message)
@@ -2489,9 +2984,11 @@ class LLMRefiner:
                 "finish_reason": getattr(choice, "finish_reason", None),
                 "response_model": getattr(response, "model", model_name),
                 "used_reasoning_fallback": used_reasoning_fallback,
+                **observability,
             }
         
         elif self.provider == "anthropic":
+            started_at = time.perf_counter()
             response = client.messages.create(
                 model=model_name,
                 max_tokens=max_tokens,
@@ -2501,12 +2998,18 @@ class LLMRefiner:
                 ]
             )
             content = response.content[0].text
+            observability = _extract_llm_observability(
+                response,
+                latency_seconds=time.perf_counter() - started_at,
+                base_url=base_url,
+            )
             self._last_llm_response = {
                 "content": content,
                 "reasoning_content": "",
                 "finish_reason": None,
                 "response_model": model_name,
                 "used_reasoning_fallback": False,
+                **observability,
             }
         
         else:
@@ -2539,7 +3042,11 @@ class LLMRefiner:
         """Call the LLM API with an explicit multi-message chat history."""
         import os
 
-        payload = {"messages": messages}
+        request_messages, system_message = self._apply_non_thinking_controls(
+            messages,
+            system_message=system_message,
+        )
+        payload = {"messages": request_messages}
         if system_message:
             payload["system_message"] = system_message
         prompt_key = json.dumps(payload, sort_keys=True, ensure_ascii=False)
@@ -2561,6 +3068,7 @@ class LLMRefiner:
                 "provider": self.provider,
                 "base_url": base_url,
                 "system_message": system_message,
+                "messages": request_messages,
                 "max_tokens": max_tokens,
                 "response_format": response_format,
             }
@@ -2569,6 +3077,18 @@ class LLMRefiner:
             )
             if cached:
                 self._last_llm_response = dict(cached)
+                self._last_llm_response.update(
+                    {
+                        "request_count": 0,
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                        "latency_seconds": 0.0,
+                        "cache_hit": True,
+                        "cache_hit_count": 1,
+                        "base_url": base_url,
+                    }
+                )
                 return cached.get("content", "")
 
         client = self._get_client(
@@ -2577,24 +3097,32 @@ class LLMRefiner:
         )
 
         if self.provider == "openai":
-            request_messages: List[Dict[str, str]] = []
+            request_message_list: List[Dict[str, str]] = []
             if system_message:
-                request_messages.append({"role": "system", "content": system_message})
-            request_messages.extend(messages)
+                request_message_list.append({"role": "system", "content": system_message})
+            request_message_list.extend(request_messages)
 
             request = {
                 "model": model_name,
-                "messages": request_messages,
+                "messages": request_message_list,
                 "temperature": temperature,
             }
             if response_format is not None:
                 request["response_format"] = response_format
+            if self.openai_extra_body:
+                request["extra_body"] = dict(self.openai_extra_body)
             if model_name.startswith("gpt-5"):
                 request["max_completion_tokens"] = max_tokens
             else:
                 request["max_tokens"] = max_tokens
 
+            started_at = time.perf_counter()
             response = client.chat.completions.create(**request)
+            observability = _extract_llm_observability(
+                response,
+                latency_seconds=time.perf_counter() - started_at,
+                base_url=base_url,
+            )
             choice = response.choices[0]
             message = choice.message
             content = _extract_openai_message_text(message)
@@ -2609,9 +3137,11 @@ class LLMRefiner:
                 "finish_reason": getattr(choice, "finish_reason", None),
                 "response_model": getattr(response, "model", model_name),
                 "used_reasoning_fallback": used_reasoning_fallback,
+                **observability,
             }
 
         elif self.provider == "anthropic":
+            started_at = time.perf_counter()
             response = client.messages.create(
                 model=model_name,
                 max_tokens=max_tokens,
@@ -2619,12 +3149,18 @@ class LLMRefiner:
                 messages=messages,
             )
             content = response.content[0].text
+            observability = _extract_llm_observability(
+                response,
+                latency_seconds=time.perf_counter() - started_at,
+                base_url=base_url,
+            )
             self._last_llm_response = {
                 "content": content,
                 "reasoning_content": "",
                 "finish_reason": None,
                 "response_model": model_name,
                 "used_reasoning_fallback": False,
+                **observability,
             }
         else:
             raise ValueError(f"Unknown provider: {self.provider}")
@@ -2671,30 +3207,47 @@ class LLMRefiner:
             base_url_override=base_url_override,
         )
 
-        request_messages: List[Dict[str, Any]] = []
-        if system_message:
-            request_messages.append({"role": "system", "content": system_message})
-        request_messages.extend(list(messages))
+        request_messages: List[Dict[str, Any]] = list(messages)
 
         executed_tool_names: List[str] = []
         tool_rounds = 0
         required_names = [str(name) for name in (required_tool_names or []) if str(name)]
+        observability_total: Dict[str, object] = {}
 
         for round_idx in range(max(1, int(max_tool_rounds) + 1)):
+            round_messages, round_system_message = self._apply_non_thinking_controls(
+                request_messages,
+                system_message=system_message,
+            )
+            outbound_messages: List[Dict[str, Any]] = []
+            if round_system_message:
+                outbound_messages.append({"role": "system", "content": round_system_message})
+            outbound_messages.extend(round_messages)
             request: Dict[str, Any] = {
                 "model": model_name,
-                "messages": request_messages,
+                "messages": outbound_messages,
                 "temperature": temperature,
                 "tools": tools,
             }
             if round_idx == 0 and tool_choice is not None:
                 request["tool_choice"] = tool_choice
+            if self.openai_extra_body:
+                request["extra_body"] = dict(self.openai_extra_body)
             if model_name.startswith("gpt-5"):
                 request["max_completion_tokens"] = max_tokens
             else:
                 request["max_tokens"] = max_tokens
 
+            started_at = time.perf_counter()
             response = client.chat.completions.create(**request)
+            _merge_llm_observability(
+                observability_total,
+                _extract_llm_observability(
+                    response,
+                    latency_seconds=time.perf_counter() - started_at,
+                    base_url=base_url,
+                ),
+            )
             choice = response.choices[0]
             message = choice.message
             content = _extract_openai_message_text(message)
@@ -2795,6 +3348,8 @@ class LLMRefiner:
                 "tool_invocations": int(len(executed_tool_names)),
                 "missing_required_tool_calls": missing_required,
                 "base_url": base_url,
+                "cache_hit": False,
+                **observability_total,
             }
             return content
 
@@ -3326,6 +3881,7 @@ class LLMRefiner:
             reflect_sample_responses: List[str] = []
             reflect_prompt_current = prompt
             reflect_llm_debug: Dict[str, object] = {}
+            reflect_observability: Dict[str, object] = {}
             reflect_response_format_current = reflect_response_format
             reflect_response_format_fallback = False
             for reflect_attempt in range(self.max_retries):
@@ -3345,6 +3901,10 @@ class LLMRefiner:
                         max_tokens_override=reflect_max_tokens,
                     )
                     reflect_llm_debug = dict(self._last_llm_response)
+                    _merge_llm_observability(
+                        reflect_observability,
+                        reflect_llm_debug,
+                    )
                     if structured_hdelta_reflection and reflect_samples > 1:
                         sampled_guidance: List[Dict[int, Dict[str, str]]] = []
                         sampled_responses = []
@@ -3369,6 +3929,10 @@ class LLMRefiner:
                                 max_tokens_override=reflect_max_tokens,
                             )
                             reflect_llm_debug = dict(self._last_llm_response)
+                            _merge_llm_observability(
+                                reflect_observability,
+                                reflect_llm_debug,
+                            )
                             candidate_guidance = parse_hdelta_reflection_guidance(
                                 (candidate_response or "").strip(),
                                 key_horizons=key_horizons,
@@ -3470,7 +4034,16 @@ class LLMRefiner:
                         "reflect_uncertainty_routed": reflect_uncertainty_routed,
                         "reflect_uncertainty_diagnostics": reflect_uncertainty_diagnostics,
                         "reflect_model": cot_rf_cfg.get("reflect_model", self.model),
-                        "reflect_base_url": cot_rf_cfg.get("reflect_base_url", self.base_url),
+                        "reflect_base_url": (
+                            reflect_observability.get("base_url")
+                            or cot_rf_cfg.get("reflect_base_url", self.base_url)
+                        ),
+                        "request_count": reflect_observability.get("request_count", 0),
+                        "prompt_tokens": reflect_observability.get("prompt_tokens", 0),
+                        "completion_tokens": reflect_observability.get("completion_tokens", 0),
+                        "total_tokens": reflect_observability.get("total_tokens", 0),
+                        "latency_seconds": reflect_observability.get("latency_seconds", 0.0),
+                        "cache_hit_count": reflect_observability.get("cache_hit_count", 0),
                         "llm_finish_reason": reflect_llm_debug.get("finish_reason"),
                         "llm_response_model": reflect_llm_debug.get("response_model"),
                         "llm_reasoning_present": bool(reflect_llm_debug.get("reasoning_content")),
@@ -3503,6 +4076,12 @@ class LLMRefiner:
                     "llm_response_model": reflect_llm_debug.get("response_model"),
                     "llm_reasoning_present": bool(reflect_llm_debug.get("reasoning_content")),
                     "llm_used_reasoning_fallback": bool(reflect_llm_debug.get("used_reasoning_fallback")),
+                    "request_count": reflect_observability.get("request_count", 0),
+                    "prompt_tokens": reflect_observability.get("prompt_tokens", 0),
+                    "completion_tokens": reflect_observability.get("completion_tokens", 0),
+                    "total_tokens": reflect_observability.get("total_tokens", 0),
+                    "latency_seconds": reflect_observability.get("latency_seconds", 0.0),
+                    "cache_hit_count": reflect_observability.get("cache_hit_count", 0),
                 }
                 return None, metadata
 
@@ -3563,6 +4142,9 @@ class LLMRefiner:
                     apply_kwargs["per_horizon_max_adjustment_pct"] = hdelta_case_controls.get(
                         "per_horizon_max_adjustment_pct"
                     )
+                    apply_kwargs["evidence_target_adjustment_pct"] = hdelta_case_controls.get(
+                        "evidence_target_adjustment_pct"
+                    )
                     apply_kwargs["current_case_summary"] = hdelta_case_controls.get(
                         "current_case_summary"
                     )
@@ -3582,6 +4164,15 @@ class LLMRefiner:
                     apply_kwargs["structured_horizon_guidance"] = hdelta_structured_guidance
                     apply_kwargs["apply_style"] = cot_rf_cfg.get("apply_style", "default")
                     apply_kwargs["reflection_memory"] = cot_rf_cfg.get("reflection_memory")
+                    apply_kwargs["allow_zero_actionable_horizons"] = bool(
+                        cot_rf_cfg.get("allow_zero_actionable_horizons", False)
+                    )
+                    apply_kwargs["explicit_h30_independence"] = bool(
+                        cot_rf_cfg.get("explicit_h30_independence", False)
+                    )
+                    apply_kwargs["apply_example_adjustments"] = (
+                        cot_rf_cfg.get("apply_example_adjustments") or {}
+                    )
                     apply_kwargs["numeric_tool_enabled"] = numeric_tool_enabled
                     apply_kwargs["numeric_tool_name"] = NUMERIC_ANALYSIS_TOOL_NAME
                     apply_kwargs["case_retrieval_tool_enabled"] = case_retrieval_tool_enabled
@@ -3628,6 +4219,7 @@ class LLMRefiner:
             apply_temperature = float(self.temperature)
             apply_max_tokens = int(cot_rf_cfg.get("apply_max_tokens", self.max_tokens))
             apply_llm_debug: Dict[str, object] = {}
+            apply_observability: Dict[str, object] = {}
             if method in ("TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HDELTA"):
                 apply_samples = max(1, int(cot_rf_cfg.get("apply_samples", 1)))
                 apply_aggregation = str(cot_rf_cfg.get("apply_aggregation", "median")).strip().lower()
@@ -3713,277 +4305,336 @@ class LLMRefiner:
                 2,
                 int(cot_rf_cfg.get("max_tool_rounds", len(hdelta_tool_specs) + 1 if hdelta_tool_specs else 2)),
             )
+            apply_skip_gate_triggered, apply_skip_gate_diagnostics = (False, {})
+            if method in ("TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HDELTA"):
+                apply_skip_gate_triggered, apply_skip_gate_diagnostics = (
+                    evaluate_structured_hdelta_apply_skip_gate(
+                        hdelta_structured_guidance,
+                        cot_rf_cfg,
+                        hdelta_case_controls.get("evidence_target_adjustment_pct"),
+                        tsm_forecast,
+                    )
+                )
 
-            for apply_attempt in range(self.max_retries):
-                apply_attempts = apply_attempt + 1
-                try:
-                    def _apply_once(sample_idx: int = 0) -> str:
-                        cache_suffix = None if apply_samples <= 1 else f"apply_sample_{sample_idx}"
-                        any_hdelta_tools_enabled = bool(hdelta_tool_specs)
-                        if any_hdelta_tools_enabled:
+            if apply_skip_gate_triggered:
+                forecast = np.array(tsm_forecast, copy=True) if tsm_forecast is not None else None
+                apply_response = json.dumps(
+                    {
+                        "skipped": True,
+                        "reason": "apply_skip_gate",
+                        "diagnostics": apply_skip_gate_diagnostics,
+                    },
+                    ensure_ascii=False,
+                )
+                apply_attempts = 0
+                if retain_context:
+                    apply_prompt_for_log = json.dumps(
+                        {
+                            "system": apply_system,
+                            "messages": [
+                                {"role": "user", "content": prompt},
+                                {"role": "assistant", "content": rules_text},
+                                {"role": "user", "content": apply_prompt},
+                            ],
+                        },
+                        sort_keys=True,
+                        ensure_ascii=False,
+                    )
+                else:
+                    apply_prompt_for_log = apply_prompt
+            else:
+                for apply_attempt in range(self.max_retries):
+                    apply_attempts = apply_attempt + 1
+                    try:
+                        def _apply_once(sample_idx: int = 0) -> str:
+                            cache_suffix = None if apply_samples <= 1 else f"apply_sample_{sample_idx}"
+                            any_hdelta_tools_enabled = bool(hdelta_tool_specs)
+                            if any_hdelta_tools_enabled:
+                                if retain_context:
+                                    messages: List[Dict[str, Any]] = [
+                                        {"role": "user", "content": prompt},
+                                        {"role": "assistant", "content": rules_text},
+                                        {"role": "user", "content": apply_prompt},
+                                    ]
+                                else:
+                                    messages = [{"role": "user", "content": apply_prompt}]
+
+                                def _tool_executor(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+                                    if not isinstance(arguments, dict):
+                                        arguments = {}
+                                    if tool_name == NUMERIC_ANALYSIS_TOOL_NAME:
+                                        requested = arguments.get("requested_horizons") or []
+                                        if requested:
+                                            requested_horizons = [
+                                                int(h)
+                                                for h in requested
+                                                if str(h).strip().lstrip("-").isdigit() and int(h) in key_horizons
+                                            ]
+                                        else:
+                                            requested_horizons = list(key_horizons)
+                                        return build_numeric_analysis_payload(
+                                            history=history,
+                                            tsm_forecast=tsm_forecast,
+                                            key_horizons=requested_horizons,
+                                            per_horizon_max_adjustment_pct=hdelta_case_controls.get(
+                                                "per_horizon_max_adjustment_pct"
+                                            ),
+                                            structured_horizon_guidance=hdelta_structured_guidance,
+                                            current_case_summary=hdelta_case_controls.get("current_case_summary"),
+                                            currency=self.currency,
+                                        )
+                                    if tool_name == MARKET_MICROSTRUCTURE_TOOL_NAME:
+                                        requested_features = arguments.get("requested_features") or []
+                                        return build_market_microstructure_payload(
+                                            exogenous_summary,
+                                            current_case_summary=hdelta_case_controls.get("current_case_summary"),
+                                            requested_features=requested_features,
+                                        )
+                                    if tool_name == COUNTEREXAMPLE_TOOL_NAME:
+                                        return derive_hdelta_freeze_counterexample(
+                                            history=history,
+                                            forecast=tsm_forecast,
+                                            teaching_examples=teaching_examples or [],
+                                            key_horizons=key_horizons,
+                                            quantile=float(cot_rf_cfg.get("freeze_counterexample_quantile", 0.35)),
+                                        )
+                                    if tool_name == CASE_RETRIEVAL_TOOL_NAME:
+                                        requested = arguments.get("requested_horizons") or []
+                                        if requested:
+                                            requested_horizons = [
+                                                int(h)
+                                                for h in requested
+                                                if str(h).strip().lstrip("-").isdigit() and int(h) in key_horizons
+                                            ]
+                                        else:
+                                            requested_horizons = list(key_horizons)
+                                        max_examples = arguments.get("max_examples")
+                                        return build_structured_case_retrieval_payload(
+                                            hdelta_case_controls,
+                                            key_horizons,
+                                            requested_horizons=requested_horizons,
+                                            max_examples=max_examples,
+                                        )
+                                    if tool_name == DELTA_VERIFIER_TOOL_NAME:
+                                        return build_hdelta_delta_verification_payload(
+                                            arguments.get("proposed_adjustments"),
+                                            key_horizons,
+                                            per_horizon_max_adjustment_pct=hdelta_case_controls.get(
+                                                "per_horizon_max_adjustment_pct"
+                                            ),
+                                            evidence_target_adjustment_pct=hdelta_case_controls.get(
+                                                "evidence_target_adjustment_pct"
+                                            ),
+                                            structured_horizon_guidance=hdelta_structured_guidance,
+                                            frozen_horizons=frozen_horizons,
+                                            config=hdelta_cfg,
+                                        )
+                                    raise ValueError(f"Unsupported tool requested: {tool_name}")
+
+                                return self._call_llm_messages_with_tools(
+                                    messages,
+                                    tools=hdelta_tool_specs,
+                                    tool_executor=_tool_executor,
+                                    system_message=apply_system,
+                                    temperature_override=apply_temperature,
+                                    max_tokens_override=apply_max_tokens,
+                                    tool_choice=hdelta_tool_choice,
+                                    max_tool_rounds=hdelta_max_tool_rounds,
+                                    required_tool_names=forced_tool_names,
+                                )
                             if retain_context:
-                                messages: List[Dict[str, Any]] = [
+                                messages = [
                                     {"role": "user", "content": prompt},
                                     {"role": "assistant", "content": rules_text},
                                     {"role": "user", "content": apply_prompt},
                                 ]
-                            else:
-                                messages = [{"role": "user", "content": apply_prompt}]
-
-                            def _tool_executor(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-                                if not isinstance(arguments, dict):
-                                    arguments = {}
-                                if tool_name == NUMERIC_ANALYSIS_TOOL_NAME:
-                                    requested = arguments.get("requested_horizons") or []
-                                    if requested:
-                                        requested_horizons = [
-                                            int(h)
-                                            for h in requested
-                                            if str(h).strip().lstrip("-").isdigit() and int(h) in key_horizons
-                                        ]
-                                    else:
-                                        requested_horizons = list(key_horizons)
-                                    return build_numeric_analysis_payload(
-                                        history=history,
-                                        tsm_forecast=tsm_forecast,
-                                        key_horizons=requested_horizons,
-                                        per_horizon_max_adjustment_pct=hdelta_case_controls.get(
-                                            "per_horizon_max_adjustment_pct"
-                                        ),
-                                        structured_horizon_guidance=hdelta_structured_guidance,
-                                        current_case_summary=hdelta_case_controls.get("current_case_summary"),
-                                        currency=self.currency,
-                                    )
-                                if tool_name == MARKET_MICROSTRUCTURE_TOOL_NAME:
-                                    requested_features = arguments.get("requested_features") or []
-                                    return build_market_microstructure_payload(
-                                        exogenous_summary,
-                                        current_case_summary=hdelta_case_controls.get("current_case_summary"),
-                                        requested_features=requested_features,
-                                    )
-                                if tool_name == COUNTEREXAMPLE_TOOL_NAME:
-                                    return derive_hdelta_freeze_counterexample(
-                                        history=history,
-                                        forecast=tsm_forecast,
-                                        teaching_examples=teaching_examples or [],
-                                        key_horizons=key_horizons,
-                                        quantile=float(cot_rf_cfg.get("freeze_counterexample_quantile", 0.35)),
-                                    )
-                                if tool_name == CASE_RETRIEVAL_TOOL_NAME:
-                                    requested = arguments.get("requested_horizons") or []
-                                    if requested:
-                                        requested_horizons = [
-                                            int(h)
-                                            for h in requested
-                                            if str(h).strip().lstrip("-").isdigit() and int(h) in key_horizons
-                                        ]
-                                    else:
-                                        requested_horizons = list(key_horizons)
-                                    max_examples = arguments.get("max_examples")
-                                    return build_structured_case_retrieval_payload(
-                                        hdelta_case_controls,
-                                        key_horizons,
-                                        requested_horizons=requested_horizons,
-                                        max_examples=max_examples,
-                                    )
-                                if tool_name == DELTA_VERIFIER_TOOL_NAME:
-                                    return build_hdelta_delta_verification_payload(
-                                        arguments.get("proposed_adjustments"),
-                                        key_horizons,
-                                        per_horizon_max_adjustment_pct=hdelta_case_controls.get(
-                                            "per_horizon_max_adjustment_pct"
-                                        ),
-                                        structured_horizon_guidance=hdelta_structured_guidance,
-                                        frozen_horizons=frozen_horizons,
-                                        config=hdelta_cfg,
-                                    )
-                                raise ValueError(f"Unsupported tool requested: {tool_name}")
-
-                            return self._call_llm_messages_with_tools(
-                                messages,
-                                tools=hdelta_tool_specs,
-                                tool_executor=_tool_executor,
-                                system_message=apply_system,
-                                temperature_override=apply_temperature,
-                                max_tokens_override=apply_max_tokens,
-                                tool_choice=hdelta_tool_choice,
-                                max_tool_rounds=hdelta_max_tool_rounds,
-                                required_tool_names=forced_tool_names,
-                            )
-                        if retain_context:
-                            messages = [
-                                {"role": "user", "content": prompt},
-                                {"role": "assistant", "content": rules_text},
-                                {"role": "user", "content": apply_prompt},
-                            ]
-                            return self._call_llm_messages(
-                                messages,
+                                return self._call_llm_messages(
+                                    messages,
+                                    apply_system,
+                                    response_format=apply_response_format_current,
+                                    temperature_override=apply_temperature,
+                                    cache_key_suffix=cache_suffix,
+                                    max_tokens_override=apply_max_tokens,
+                                )
+                            return self._call_llm(
+                                apply_prompt,
                                 apply_system,
                                 response_format=apply_response_format_current,
                                 temperature_override=apply_temperature,
                                 cache_key_suffix=cache_suffix,
                                 max_tokens_override=apply_max_tokens,
                             )
-                        return self._call_llm(
-                            apply_prompt,
-                            apply_system,
-                            response_format=apply_response_format_current,
-                            temperature_override=apply_temperature,
-                            cache_key_suffix=cache_suffix,
-                            max_tokens_override=apply_max_tokens,
-                        )
 
-                    if retain_context:
-                        apply_prompt_for_log = json.dumps(
-                            {
-                                "system": apply_system,
-                                "messages": [
-                                    {"role": "user", "content": prompt},
-                                    {"role": "assistant", "content": rules_text},
-                                    {"role": "user", "content": apply_prompt},
-                                ],
-                            },
-                            sort_keys=True,
-                            ensure_ascii=False,
-                        )
-                    else:
-                        apply_prompt_for_log = apply_prompt
-
-                    if method == "TSM+LLM-COT-SENT-RF-DELTA":
-                        apply_response = _apply_once()
-                        apply_llm_debug = dict(self._last_llm_response)
-                        delta = parse_json_array(
-                            apply_response,
-                            expected_len=pred_len,
-                            keys=("delta", "delta_price", "adjustment"),
-                            allow_bare_array=False,
-                        )
-                        if delta is not None:
-                            max_delta = apply_kwargs.get("max_delta", 0.0)
-                            if max_delta and max_delta > 0:
-                                delta = np.clip(delta, -max_delta, max_delta)
-                            refined = tsm_forecast + delta
-                            forecast = self._blend_forecast(tsm_forecast, refined)
-                    elif method in ("TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HDELTA"):
-                        sampled_adjustments: List[Dict[int, float]] = []
-                        sampled_responses: List[str] = []
-                        for sample_idx in range(apply_samples):
-                            candidate_response = _apply_once(sample_idx)
-                            apply_llm_debug = dict(self._last_llm_response)
-                            candidate_adjustments = parse_horizon_deltas(
-                                candidate_response,
-                                key_horizons=key_horizons,
-                            )
-                            if candidate_adjustments is not None:
-                                sampled_adjustments.append(candidate_adjustments)
-                                sampled_responses.append(candidate_response)
-                        adjustments_pct = aggregate_horizon_adjustments(
-                            sampled_adjustments,
-                            key_horizons=key_horizons,
-                            mode=apply_aggregation,
-                        )
-                        if sampled_responses:
-                            apply_response = json.dumps(
+                        if retain_context:
+                            apply_prompt_for_log = json.dumps(
                                 {
-                                    "aggregation": apply_aggregation,
-                                    "n_valid": len(sampled_responses),
-                                    "samples": sampled_responses,
-                                    "aggregated_adjustments": adjustments_pct,
+                                    "system": apply_system,
+                                    "messages": [
+                                        {"role": "user", "content": prompt},
+                                        {"role": "assistant", "content": rules_text},
+                                        {"role": "user", "content": apply_prompt},
+                                    ],
                                 },
+                                sort_keys=True,
                                 ensure_ascii=False,
                             )
-                        if adjustments_pct is not None:
-                            hdelta_cfg = self.config.get("hdelta", {}) or {}
-                            max_adjustment_pct = float(hdelta_cfg.get("max_adjustment_pct", 3.0))
-                            per_horizon_max = {
-                                int(h): float(
-                                    hdelta_case_controls.get(
-                                        "per_horizon_max_adjustment_pct",
-                                        {},
-                                    ).get(int(h), max_adjustment_pct)
+                        else:
+                            apply_prompt_for_log = apply_prompt
+
+                        if method == "TSM+LLM-COT-SENT-RF-DELTA":
+                            apply_response = _apply_once()
+                            apply_llm_debug = dict(self._last_llm_response)
+                            _merge_llm_observability(apply_observability, apply_llm_debug)
+                            delta = parse_json_array(
+                                apply_response,
+                                expected_len=pred_len,
+                                keys=("delta", "delta_price", "adjustment"),
+                                allow_bare_array=False,
+                            )
+                            if delta is not None:
+                                max_delta = apply_kwargs.get("max_delta", 0.0)
+                                if max_delta and max_delta > 0:
+                                    delta = np.clip(delta, -max_delta, max_delta)
+                                refined = tsm_forecast + delta
+                                forecast = self._blend_forecast(tsm_forecast, refined)
+                        elif method in ("TSM+LLM-COT-RF-HDELTA", "TSM+LLM-COT-SENT-RF-HDELTA"):
+                            sampled_adjustments: List[Dict[int, float]] = []
+                            sampled_responses: List[str] = []
+                            for sample_idx in range(apply_samples):
+                                candidate_response = _apply_once(sample_idx)
+                                apply_llm_debug = dict(self._last_llm_response)
+                                _merge_llm_observability(
+                                    apply_observability,
+                                    apply_llm_debug,
                                 )
-                                for h in key_horizons
-                            }
-                            clipped = {
-                                int(h): float(
-                                    np.clip(
-                                        v,
-                                        -per_horizon_max.get(int(h), max_adjustment_pct),
-                                        per_horizon_max.get(int(h), max_adjustment_pct),
+                                candidate_adjustments = parse_horizon_deltas(
+                                    candidate_response,
+                                    key_horizons=key_horizons,
+                                )
+                                if candidate_adjustments is not None:
+                                    sampled_adjustments.append(candidate_adjustments)
+                                    sampled_responses.append(candidate_response)
+                            adjustments_pct = aggregate_horizon_adjustments(
+                                sampled_adjustments,
+                                key_horizons=key_horizons,
+                                mode=apply_aggregation,
+                            )
+                            if sampled_responses:
+                                apply_response = json.dumps(
+                                    {
+                                        "aggregation": apply_aggregation,
+                                        "n_valid": len(sampled_responses),
+                                        "samples": sampled_responses,
+                                        "aggregated_adjustments": adjustments_pct,
+                                    },
+                                    ensure_ascii=False,
+                                )
+                            if adjustments_pct is not None:
+                                hdelta_cfg = self.config.get("hdelta", {}) or {}
+                                max_adjustment_pct = float(hdelta_cfg.get("max_adjustment_pct", 3.0))
+                                per_horizon_max = {
+                                    int(h): float(
+                                        hdelta_case_controls.get(
+                                            "per_horizon_max_adjustment_pct",
+                                            {},
+                                        ).get(int(h), max_adjustment_pct)
                                     )
+                                    for h in key_horizons
+                                }
+                                clipped = {
+                                    int(h): float(
+                                        np.clip(
+                                            v,
+                                            -per_horizon_max.get(int(h), max_adjustment_pct),
+                                            per_horizon_max.get(int(h), max_adjustment_pct),
+                                        )
+                                    )
+                                    for h, v in adjustments_pct.items()
+                                }
+                                clipped = enforce_structured_hdelta_adjustments(
+                                    clipped,
+                                    structured_guidance=hdelta_structured_guidance,
+                                    per_horizon_max=per_horizon_max,
+                                    config=hdelta_cfg,
                                 )
-                                for h, v in adjustments_pct.items()
-                            }
-                            clipped = enforce_structured_hdelta_adjustments(
-                                clipped,
-                                structured_guidance=hdelta_structured_guidance,
-                                per_horizon_max=per_horizon_max,
-                                config=hdelta_cfg,
+                                clipped = apply_continuous_evidence_guard(
+                                    clipped,
+                                    hdelta_case_controls.get(
+                                        "evidence_target_adjustment_pct"
+                                    ),
+                                    config=hdelta_cfg,
+                                )
+                                clipped = apply_structured_hdelta_coherence_guards(
+                                    clipped,
+                                    config=hdelta_cfg,
+                                )
+                                for h in frozen_horizons:
+                                    clipped[int(h)] = 0.0
+                                clipped = apply_discrete_hdelta_actions(
+                                    clipped,
+                                    structured_guidance=hdelta_structured_guidance,
+                                    per_horizon_max=per_horizon_max,
+                                    config=hdelta_cfg,
+                                )
+                                clipped = apply_post_scale_hdelta_adjustments(
+                                    clipped,
+                                    per_horizon_max=per_horizon_max,
+                                    config=hdelta_cfg,
+                                )
+                                path_pct = interpolate_horizon_adjustments(pred_len, clipped)
+                                forecast = np.asarray(tsm_forecast, dtype=float) * (1.0 + path_pct / 100.0)
+                        elif method == "TSM+LLM-COT-SENT-RF-HPRICE":
+                            apply_response = _apply_once()
+                            apply_llm_debug = dict(self._last_llm_response)
+                            _merge_llm_observability(apply_observability, apply_llm_debug)
+                            anchor_prices = parse_horizon_anchor_prices(
+                                apply_response,
+                                key_horizons=key_horizons,
                             )
-                            clipped = apply_structured_hdelta_coherence_guards(
-                                clipped,
-                                config=hdelta_cfg,
+                            if anchor_prices is not None:
+                                hprice_cfg = self.config.get("hprice", {}) or {}
+                                max_adjustment_pct = float(hprice_cfg.get("max_adjustment_pct", 1.0))
+                                base_forecast = np.asarray(tsm_forecast, dtype=float)
+                                clipped_anchors: Dict[int, float] = {}
+                                for h, anchor in anchor_prices.items():
+                                    base_price = float(base_forecast[int(h) - 1])
+                                    if int(h) in frozen_horizons:
+                                        clipped_anchors[int(h)] = base_price
+                                        continue
+                                    lower = base_price * (1.0 - max_adjustment_pct / 100.0)
+                                    upper = base_price * (1.0 + max_adjustment_pct / 100.0)
+                                    clipped_anchors[int(h)] = float(np.clip(anchor, lower, upper))
+                                forecast = interpolate_horizon_anchor_prices(pred_len, clipped_anchors)
+                        else:
+                            apply_response = _apply_once()
+                            apply_llm_debug = dict(self._last_llm_response)
+                            _merge_llm_observability(apply_observability, apply_llm_debug)
+                            forecast = parse_json_forecast(apply_response, expected_len=pred_len)
+
+                        if forecast is not None:
+                            break
+
+                        if apply_attempt < self.max_retries - 1:
+                            apply_prompt += "\n\nIMPORTANT: Respond ONLY with valid JSON. No other text."
+
+                    except Exception as e:
+                        last_error = str(e)
+                        if (
+                            apply_response_format_current is not None
+                            and _should_retry_without_response_format(last_error)
+                        ):
+                            self._mark_response_format_unsupported()
+                            apply_response_format_current = None
+                            apply_response_format_fallback = True
+                            logger.warning(
+                                "LLM apply response_format rejected; retrying without response_format."
                             )
-                            for h in frozen_horizons:
-                                clipped[int(h)] = 0.0
-                            clipped = apply_discrete_hdelta_actions(
-                                clipped,
-                                structured_guidance=hdelta_structured_guidance,
-                                per_horizon_max=per_horizon_max,
-                                config=hdelta_cfg,
-                            )
-                            path_pct = interpolate_horizon_adjustments(pred_len, clipped)
-                            forecast = np.asarray(tsm_forecast, dtype=float) * (1.0 + path_pct / 100.0)
-                    elif method == "TSM+LLM-COT-SENT-RF-HPRICE":
-                        apply_response = _apply_once()
-                        apply_llm_debug = dict(self._last_llm_response)
-                        anchor_prices = parse_horizon_anchor_prices(
-                            apply_response,
-                            key_horizons=key_horizons,
-                        )
-                        if anchor_prices is not None:
-                            hprice_cfg = self.config.get("hprice", {}) or {}
-                            max_adjustment_pct = float(hprice_cfg.get("max_adjustment_pct", 1.0))
-                            base_forecast = np.asarray(tsm_forecast, dtype=float)
-                            clipped_anchors: Dict[int, float] = {}
-                            for h, anchor in anchor_prices.items():
-                                base_price = float(base_forecast[int(h) - 1])
-                                if int(h) in frozen_horizons:
-                                    clipped_anchors[int(h)] = base_price
-                                    continue
-                                lower = base_price * (1.0 - max_adjustment_pct / 100.0)
-                                upper = base_price * (1.0 + max_adjustment_pct / 100.0)
-                                clipped_anchors[int(h)] = float(np.clip(anchor, lower, upper))
-                            forecast = interpolate_horizon_anchor_prices(pred_len, clipped_anchors)
-                    else:
-                        apply_response = _apply_once()
-                        apply_llm_debug = dict(self._last_llm_response)
-                        forecast = parse_json_forecast(apply_response, expected_len=pred_len)
-
-                    if forecast is not None:
-                        break
-
-                    if apply_attempt < self.max_retries - 1:
-                        apply_prompt += "\n\nIMPORTANT: Respond ONLY with valid JSON. No other text."
-
-                except Exception as e:
-                    last_error = str(e)
-                    if (
-                        apply_response_format_current is not None
-                        and _should_retry_without_response_format(last_error)
-                    ):
-                        self._mark_response_format_unsupported()
-                        apply_response_format_current = None
-                        apply_response_format_fallback = True
+                            continue
                         logger.warning(
-                            "LLM apply response_format rejected; retrying without response_format."
+                            "LLM apply call failed (attempt %d): %s",
+                            apply_attempt + 1,
+                            e,
                         )
-                        continue
-                    logger.warning(
-                        "LLM apply call failed (attempt %d): %s",
-                        apply_attempt + 1,
-                        e,
-                    )
 
             metadata = {
                 "method": method,
@@ -4009,6 +4660,15 @@ class LLMRefiner:
                 "matched_teaching_dates": hdelta_case_controls.get("matched_dates"),
                 "dynamic_frozen_horizons": hdelta_case_controls.get("dynamic_freeze_horizons"),
                 "per_horizon_max_adjustment_pct": hdelta_case_controls.get("per_horizon_max_adjustment_pct"),
+                "evidence_target_adjustment_pct": hdelta_case_controls.get(
+                    "evidence_target_adjustment_pct"
+                ),
+                "continuous_evidence_diagnostics": hdelta_case_controls.get(
+                    "continuous_evidence_diagnostics"
+                ),
+                "post_apply_scale_by_horizon": (self.config.get("hdelta", {}) or {}).get(
+                    "post_apply_scale_by_horizon"
+                ),
                 "structured_horizon_guidance": hdelta_structured_guidance,
                 "reflect_samples": reflect_samples,
                 "reflect_valid_samples": reflect_valid_samples,
@@ -4018,7 +4678,15 @@ class LLMRefiner:
                 "reflect_uncertainty_routed": reflect_uncertainty_routed,
                 "reflect_uncertainty_diagnostics": reflect_uncertainty_diagnostics,
                 "reflect_model": cot_rf_cfg.get("reflect_model", self.model),
-                "reflect_base_url": cot_rf_cfg.get("reflect_base_url", self.base_url),
+                "reflect_base_url": (
+                    reflect_observability.get("base_url")
+                    or cot_rf_cfg.get("reflect_base_url", self.base_url)
+                ),
+                "apply_skip_gate_enabled": bool(
+                    dict(cot_rf_cfg.get("apply_skip_gate", {}) or {}).get("enabled", False)
+                ),
+                "apply_skipped_by_gate": apply_skip_gate_triggered,
+                "apply_skip_gate_diagnostics": apply_skip_gate_diagnostics,
                 "numeric_tool_enabled": numeric_tool_enabled,
                 "market_microstructure_tool_enabled": market_microstructure_tool_enabled,
                 "freeze_counterexample_tool_enabled": freeze_counterexample_tool_enabled,
@@ -4036,6 +4704,28 @@ class LLMRefiner:
                 "llm_response_model": apply_llm_debug.get("response_model") or reflect_llm_debug.get("response_model"),
                 "llm_reasoning_present": bool(apply_llm_debug.get("reasoning_content") or reflect_llm_debug.get("reasoning_content")),
                 "llm_used_reasoning_fallback": bool(apply_llm_debug.get("used_reasoning_fallback") or reflect_llm_debug.get("used_reasoning_fallback")),
+                "reflect_request_count": reflect_observability.get("request_count", 0),
+                "reflect_prompt_tokens": reflect_observability.get("prompt_tokens", 0),
+                "reflect_completion_tokens": reflect_observability.get("completion_tokens", 0),
+                "reflect_total_tokens": reflect_observability.get("total_tokens", 0),
+                "reflect_latency_seconds": reflect_observability.get("latency_seconds", 0.0),
+                "apply_request_count": apply_observability.get("request_count", 0),
+                "apply_prompt_tokens": apply_observability.get("prompt_tokens", 0),
+                "apply_completion_tokens": apply_observability.get("completion_tokens", 0),
+                "apply_total_tokens": apply_observability.get("total_tokens", 0),
+                "apply_latency_seconds": apply_observability.get("latency_seconds", 0.0),
+                "llm_request_count": int(reflect_observability.get("request_count", 0))
+                + int(apply_observability.get("request_count", 0)),
+                "llm_prompt_tokens": int(reflect_observability.get("prompt_tokens", 0))
+                + int(apply_observability.get("prompt_tokens", 0)),
+                "llm_completion_tokens": int(reflect_observability.get("completion_tokens", 0))
+                + int(apply_observability.get("completion_tokens", 0)),
+                "llm_total_tokens": int(reflect_observability.get("total_tokens", 0))
+                + int(apply_observability.get("total_tokens", 0)),
+                "llm_latency_seconds": float(reflect_observability.get("latency_seconds", 0.0))
+                + float(apply_observability.get("latency_seconds", 0.0)),
+                "llm_cache_hit_count": int(reflect_observability.get("cache_hit_count", 0))
+                + int(apply_observability.get("cache_hit_count", 0)),
             }
             if last_error:
                 metadata["error"] = last_error
@@ -4102,6 +4792,12 @@ class LLMRefiner:
             "temperature": self.temperature,
             "success": forecast is not None,
             "attempts": attempt + 1,
+            "request_count": self._last_llm_response.get("request_count", 0),
+            "prompt_tokens": self._last_llm_response.get("prompt_tokens", 0),
+            "completion_tokens": self._last_llm_response.get("completion_tokens", 0),
+            "total_tokens": self._last_llm_response.get("total_tokens", 0),
+            "latency_seconds": self._last_llm_response.get("latency_seconds", 0.0),
+            "cache_hit_count": self._last_llm_response.get("cache_hit_count", 0),
         }
         if last_error:
             metadata["error"] = last_error
@@ -4232,6 +4928,38 @@ class LLMRefiner:
             sentiment_history = (
                 sentiment_histories[i] if sentiment_histories is not None else None
             )
+
+            pre_skip = False
+            pre_skip_diagnostics: Dict[str, object] = {}
+            if method in (
+                "TSM+LLM-COT-RF-HDELTA",
+                "TSM+LLM-COT-SENT-RF-HDELTA",
+            ):
+                pre_skip, pre_skip_diagnostics = evaluate_pre_refinement_base_slope_gate(
+                    tsm_forecast,
+                    self.config.get("hdelta", {}) or {},
+                )
+            if pre_skip and tsm_forecast is not None:
+                forecasts[i] = np.asarray(tsm_forecast, dtype=float)
+                metadata = {
+                    "method": method,
+                    "model": self.model,
+                    "temperature": self.temperature,
+                    "success": True,
+                    "pre_refinement_skipped_by_gate": True,
+                    "pre_refinement_gate_diagnostics": pre_skip_diagnostics,
+                    "reflect_attempts": 0,
+                    "apply_attempts": 0,
+                    "llm_request_count": 0,
+                    "llm_prompt_tokens": 0,
+                    "llm_completion_tokens": 0,
+                    "llm_total_tokens": 0,
+                    "llm_latency_seconds": 0.0,
+                    "sample_key": sample_key,
+                }
+                _save_checkpoint(checkpoint_dir_path, sample_key, forecasts[i], metadata)
+                metadata_list[i] = metadata
+                continue
             
             forecast, metadata = self.refine(
                 method=method,

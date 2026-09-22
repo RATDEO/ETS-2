@@ -254,6 +254,84 @@ def build_retrieval_feature_vector(
     return np.asarray(values, dtype=float)
 
 
+def build_known_future_evidence(
+    panel: pd.DataFrame,
+    forecast_start_dates: Sequence[object],
+    pred_len: int,
+    binary_feature_columns: Optional[Sequence[str]] = None,
+) -> list[dict[str, str]]:
+    """Build explicitly allow-listed, origin-known calendar evidence.
+
+    Only deterministic calendar fields and binary columns explicitly declared
+    by the caller as known at forecast time are exposed. Continuous future
+    panel values are deliberately unsupported to prevent accidental leakage.
+    """
+    if "date" not in panel.columns:
+        raise ValueError("panel must contain a date column")
+    pred_len = int(pred_len)
+    if pred_len <= 0:
+        raise ValueError(f"pred_len must be positive, got {pred_len}")
+
+    frame = panel.copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    frame = frame.sort_values("date").drop_duplicates("date", keep="last")
+    requested = parse_name_list(binary_feature_columns)
+    missing = [name for name in requested if name not in frame.columns]
+    if missing:
+        raise ValueError(f"Known-future feature columns are missing: {missing}")
+
+    for name in requested:
+        numeric = pd.to_numeric(frame[name], errors="coerce").dropna()
+        unique = set(np.round(numeric.to_numpy(dtype=float), 8).tolist())
+        if not unique.issubset({0.0, 1.0}):
+            raise ValueError(
+                f"Known-future feature {name!r} must be binary; observed values include "
+                f"{sorted(unique)[:5]}"
+            )
+
+    results: list[dict[str, str]] = []
+    dates = frame["date"].to_numpy()
+    for raw_start in forecast_start_dates:
+        start = pd.Timestamp(raw_start)
+        pos = int(np.searchsorted(dates, start.to_datetime64(), side="left"))
+        future = frame.iloc[pos : pos + pred_len]
+        if future.empty:
+            results.append({})
+            continue
+
+        future_dates = pd.DatetimeIndex(future["date"])
+        month_transitions = [
+            future_dates[idx].strftime("%Y-%m-%d")
+            for idx in range(len(future_dates) - 1)
+            if future_dates[idx].to_period("M") != future_dates[idx + 1].to_period("M")
+        ]
+        weekday_counts = future_dates.day_name().str[:3].value_counts().sort_index()
+        evidence: dict[str, str] = {
+            "known_forecast_window": (
+                f"{future_dates[0].date()} to {future_dates[-1].date()} "
+                f"({len(future_dates)} observed-market dates)"
+            ),
+            "known_weekday_mix": ", ".join(
+                f"{day}={int(count)}" for day, count in weekday_counts.items()
+            ),
+            "known_month_transitions": (
+                ", ".join(month_transitions) if month_transitions else "none"
+            ),
+        }
+        for name in requested:
+            active = future.loc[
+                pd.to_numeric(future[name], errors="coerce").fillna(0.0) >= 0.5,
+                "date",
+            ]
+            active_dates = [pd.Timestamp(value).strftime("%Y-%m-%d") for value in active]
+            evidence[f"scheduled_{name}"] = (
+                f"count={len(active_dates)}; dates="
+                + (", ".join(active_dates) if active_dates else "none")
+            )
+        results.append(evidence)
+    return results
+
+
 def compute_history_volatility(history: np.ndarray, window: int = 20) -> float:
     """Compute volatility of log returns for gating LLM refinement."""
     series = history[-window:] if len(history) >= window else history
@@ -482,6 +560,172 @@ def fit_delta_calibration_scales(
     for h in selected:
         scales[int(h)] = scale
     return scales
+
+
+def _interpolated_scale_basis(
+    pred_len: int,
+    anchor_horizons: Sequence[int],
+) -> tuple[np.ndarray, list[int]]:
+    """Build a piecewise-linear basis mapping anchor scales to every horizon."""
+    pred_len = int(pred_len)
+    anchors = sorted({int(h) for h in anchor_horizons})
+    if pred_len <= 0:
+        raise ValueError(f"pred_len must be positive, got {pred_len}")
+    if not anchors:
+        raise ValueError("anchor_horizons must contain at least one horizon")
+    if anchors[0] < 1 or anchors[-1] > pred_len:
+        raise ValueError(
+            f"anchor_horizons must be within [1, {pred_len}], got {anchors}"
+        )
+
+    x = np.arange(1, pred_len + 1, dtype=float)
+    anchor_x = np.asarray(anchors, dtype=float)
+    basis = np.column_stack(
+        [
+            np.interp(
+                x,
+                anchor_x,
+                np.eye(len(anchors), dtype=float)[:, col],
+            )
+            for col in range(len(anchors))
+        ]
+    )
+    return basis, anchors
+
+
+def fit_interpolated_delta_calibration_scales(
+    y_true: np.ndarray,
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    anchor_horizons: Sequence[int],
+    min_scale: float = 0.0,
+    max_scale: float = 1.0,
+    ridge_strength: float = 0.0,
+    fixed_scales: Optional[dict[int, float]] = None,
+    max_iter: int = 1000,
+    tolerance: float = 1e-10,
+) -> dict[int, float]:
+    """Fit a bounded piecewise-linear LLM-delta scale curve on validation paths.
+
+    The small set of anchor scales is fitted jointly against every forecast day,
+    rather than fitting one independent parameter per horizon. This matches the
+    interpolated path produced by HDELTA while keeping the calibration low
+    dimensional and validation-only.
+    """
+    y_arr = np.asarray(y_true, dtype=float)
+    base_arr = np.asarray(base_pred, dtype=float)
+    llm_arr = np.asarray(llm_pred, dtype=float)
+    if y_arr.shape != base_arr.shape or y_arr.shape != llm_arr.shape:
+        raise ValueError(
+            "y_true, base_pred, and llm_pred must have identical shapes; "
+            f"got {y_arr.shape}, {base_arr.shape}, and {llm_arr.shape}"
+        )
+    if y_arr.ndim != 2:
+        raise ValueError(f"Expected 2D forecast paths, got shape {y_arr.shape}")
+    min_scale = float(min_scale)
+    max_scale = float(max_scale)
+    if not np.isfinite(min_scale) or not np.isfinite(max_scale) or min_scale > max_scale:
+        raise ValueError(
+            f"Invalid calibration bounds: min_scale={min_scale}, max_scale={max_scale}"
+        )
+    ridge_strength = float(ridge_strength)
+    if not np.isfinite(ridge_strength) or ridge_strength < 0.0:
+        raise ValueError(f"ridge_strength must be finite and non-negative, got {ridge_strength}")
+
+    basis, anchors = _interpolated_scale_basis(y_arr.shape[1], anchor_horizons)
+    fixed_raw = fixed_scales or {}
+    fixed = {int(h): float(v) for h, v in fixed_raw.items()}
+    unknown_fixed = sorted(set(fixed).difference(anchors))
+    if unknown_fixed:
+        raise ValueError(f"fixed_scales contains non-anchor horizons: {unknown_fixed}")
+    for horizon, value in fixed.items():
+        if not np.isfinite(value) or value < min_scale or value > max_scale:
+            raise ValueError(
+                f"Fixed scale for h{horizon}={value} is outside [{min_scale}, {max_scale}]"
+            )
+
+    delta = llm_arr - base_arr
+    target = y_arr - base_arr
+    anchor_pos = {h: idx for idx, h in enumerate(anchors)}
+    if fixed:
+        fixed_curve = sum(
+            basis[:, anchor_pos[h]] * value for h, value in fixed.items()
+        )
+        target = target - delta * fixed_curve[None, :]
+
+    free_anchors = [h for h in anchors if h not in fixed]
+    if not free_anchors:
+        return {h: float(fixed[h]) for h in anchors}
+
+    free_pos = [anchor_pos[h] for h in free_anchors]
+    design = (delta[:, :, None] * basis[None, :, free_pos]).reshape(-1, len(free_anchors))
+    response = target.reshape(-1)
+    finite_rows = np.isfinite(response) & np.all(np.isfinite(design), axis=1)
+    design = design[finite_rows]
+    response = response[finite_rows]
+    if design.size == 0:
+        fitted = np.full(len(free_anchors), min_scale, dtype=float)
+    else:
+        xtx = design.T @ design
+        xty = design.T @ response
+        diagonal = np.diag(xtx)
+        positive_diagonal = diagonal[diagonal > 1e-12]
+        ridge = (
+            ridge_strength * float(np.mean(positive_diagonal))
+            if positive_diagonal.size
+            else 0.0
+        )
+        system = xtx + ridge * np.eye(len(free_anchors), dtype=float)
+        try:
+            fitted = np.linalg.solve(system, xty)
+        except np.linalg.LinAlgError:
+            fitted = np.linalg.lstsq(system, xty, rcond=None)[0]
+        fitted = np.clip(fitted, min_scale, max_scale)
+
+        # Box-constrained coordinate descent finishes the bounded convex fit;
+        # clipping the unconstrained solution alone is not generally optimal.
+        for _ in range(int(max_iter)):
+            previous = fitted.copy()
+            for col in range(len(free_anchors)):
+                denom = float(xtx[col, col] + ridge)
+                if denom <= 1e-12:
+                    fitted[col] = min_scale
+                    continue
+                cross = float(xtx[col] @ fitted - xtx[col, col] * fitted[col])
+                fitted[col] = float(
+                    np.clip((xty[col] - cross) / denom, min_scale, max_scale)
+                )
+            if float(np.max(np.abs(fitted - previous))) <= float(tolerance):
+                break
+
+    scales = {h: float(fixed[h]) for h in anchors if h in fixed}
+    scales.update({h: float(v) for h, v in zip(free_anchors, fitted)})
+    return {h: scales[h] for h in anchors}
+
+
+def apply_interpolated_delta_calibration(
+    base_pred: np.ndarray,
+    llm_pred: np.ndarray,
+    anchor_scales: dict[int, float],
+    pred_len: int,
+) -> np.ndarray:
+    """Apply a piecewise-linear anchor scale curve to the full LLM delta path."""
+    base_arr = np.asarray(base_pred, dtype=float)
+    llm_arr = np.asarray(llm_pred, dtype=float)
+    if base_arr.shape != llm_arr.shape:
+        raise ValueError(
+            f"base_pred and llm_pred must have identical shapes, got {base_arr.shape} and {llm_arr.shape}"
+        )
+    if base_arr.ndim != 2 or base_arr.shape[1] != int(pred_len):
+        raise ValueError(
+            f"Expected 2D paths with pred_len={int(pred_len)}, got shape {base_arr.shape}"
+        )
+    basis, anchors = _interpolated_scale_basis(pred_len, anchor_scales.keys())
+    scale_values = np.asarray([float(anchor_scales[h]) for h in anchors], dtype=float)
+    if not np.all(np.isfinite(scale_values)):
+        raise ValueError("anchor_scales must all be finite")
+    scale_curve = basis @ scale_values
+    return base_arr + (llm_arr - base_arr) * scale_curve[None, :]
 
 
 def apply_delta_calibration(
@@ -900,6 +1144,139 @@ def select_utility_mmr_indices(
         selected_pos.append(int(scored[0][3]))
 
     selected = candidate_indices[np.asarray(selected_pos, dtype=int)]
+    return selected[np.argsort(pool_dates[selected])]
+
+
+def select_regime_sign_balanced_indices(
+    candidate_indices: np.ndarray,
+    pool_dates: np.ndarray,
+    pool_case_profiles: np.ndarray,
+    pool_long_correction_pct: np.ndarray,
+    reference_profile: np.ndarray,
+    reference_date: object,
+    k_examples: int,
+    *,
+    reuse_counts: Optional[np.ndarray] = None,
+    max_reuse: int = 2,
+    half_life_days: float = 120.0,
+    sign_tolerance_pct: float = 0.10,
+    similarity_weight: float = 0.45,
+    regime_weight: float = 0.25,
+    recency_weight: float = 0.20,
+    correction_weight: float = 0.05,
+    reuse_weight: float = 0.05,
+    mmr_lambda: float = 0.80,
+) -> np.ndarray:
+    """Select regime-relevant analogues while balancing correction signs.
+
+    The selector avoids the positive-bias collapse caused by ranking only the
+    largest historical errors. It seeds the result with the strongest
+    positive, negative, and near-zero residual analogue when available, then
+    fills remaining slots with MMR diversity. Reuse counts are observable
+    selection state only; they never depend on evaluation outcomes.
+    """
+    candidates = np.asarray(candidate_indices, dtype=int)
+    if candidates.size == 0 or int(k_examples) <= 0:
+        return np.array([], dtype=int)
+    target_k = int(min(int(k_examples), candidates.size))
+
+    counts = (
+        np.zeros(len(pool_dates), dtype=float)
+        if reuse_counts is None
+        else np.asarray(reuse_counts, dtype=float)
+    )
+    if counts.shape[0] != len(pool_dates):
+        raise ValueError(
+            f"reuse_counts length {counts.shape[0]} does not match pool size {len(pool_dates)}"
+        )
+    max_reuse = int(max_reuse)
+    if max_reuse > 0:
+        under_cap = candidates[counts[candidates] < max_reuse]
+        if under_cap.size >= target_k:
+            candidates = under_cap
+
+    profiles = np.asarray(pool_case_profiles[candidates], dtype=float)
+    reference = np.asarray(reference_profile, dtype=float).reshape(1, -1)
+    if profiles.ndim != 2 or profiles.shape[1] != reference.shape[1]:
+        raise ValueError(
+            f"Profile width mismatch: candidates={profiles.shape}, reference={reference.shape}"
+        )
+    center = np.mean(profiles, axis=0, keepdims=True)
+    scale = np.std(profiles, axis=0, keepdims=True)
+    scale[scale < 1e-6] = 1.0
+    normalized = (profiles - center) / scale
+    reference_normalized = (reference - center) / scale
+    distances = np.linalg.norm(normalized - reference_normalized, axis=1)
+    similarity = 1.0 - _minmax_scale(distances)
+    regime = _minmax_scale(
+        np.asarray(
+            [_regime_match_score(profile, reference.reshape(-1)) for profile in profiles],
+            dtype=float,
+        )
+    )
+
+    age_days = np.asarray(
+        [
+            max(0.0, float((pd.Timestamp(reference_date) - pd.Timestamp(pool_dates[idx])).days))
+            for idx in candidates
+        ],
+        dtype=float,
+    )
+    half_life_days = max(float(half_life_days), 1.0)
+    recency = np.exp(-np.log(2.0) * age_days / half_life_days)
+    correction_values = np.asarray(pool_long_correction_pct[candidates], dtype=float)
+    correction_magnitude = _minmax_scale(np.abs(correction_values))
+    if max_reuse > 0:
+        reuse_score = np.clip(1.0 - counts[candidates] / float(max_reuse), 0.0, 1.0)
+    else:
+        reuse_score = 1.0 / (1.0 + counts[candidates])
+
+    utility = (
+        float(similarity_weight) * similarity
+        + float(regime_weight) * regime
+        + float(recency_weight) * recency
+        + float(correction_weight) * correction_magnitude
+        + float(reuse_weight) * reuse_score
+    )
+
+    tolerance = abs(float(sign_tolerance_pct))
+    buckets = np.where(
+        correction_values > tolerance,
+        1,
+        np.where(correction_values < -tolerance, -1, 0),
+    )
+    selected_pos: list[int] = []
+    # Seed with contrasting evidence. Flat comes last because it is useful as
+    # an abstention example but should not displace both directional analogues.
+    for bucket in (1, -1, 0):
+        positions = np.where(buckets == bucket)[0]
+        if positions.size == 0 or len(selected_pos) >= target_k:
+            continue
+        best = int(positions[int(np.argmax(utility[positions]))])
+        selected_pos.append(best)
+
+    vector_norms = np.linalg.norm(normalized, axis=1, keepdims=True)
+    vector_norms[vector_norms < 1e-6] = 1.0
+    unit_profiles = normalized / vector_norms
+    while len(selected_pos) < target_k:
+        remaining = [pos for pos in range(len(candidates)) if pos not in selected_pos]
+        if not remaining:
+            break
+        scored: list[tuple[float, float, float, int]] = []
+        for pos in remaining:
+            redundancy = (
+                max(float(np.dot(unit_profiles[pos], unit_profiles[sel])) for sel in selected_pos)
+                if selected_pos
+                else 0.0
+            )
+            score = float(mmr_lambda) * float(utility[pos]) - (
+                1.0 - float(mmr_lambda)
+            ) * redundancy
+            scored.append((score, float(utility[pos]), -float(age_days[pos]), int(pos)))
+        scored.sort(reverse=True)
+        selected_pos.append(scored[0][3])
+
+    selected = candidates[np.asarray(selected_pos, dtype=int)]
     return selected[np.argsort(pool_dates[selected])]
 
 
@@ -2486,6 +2863,38 @@ def apply_rule_gate(
     return gated
 
 
+def build_base_path_slope_reject_mask(
+    base_pred: np.ndarray,
+    reference_horizon: int = 1,
+    target_horizon: int = 30,
+    min_slope_pct: float = 0.0,
+) -> np.ndarray:
+    """Reject LLM refinement when the observable base path lacks enough slope."""
+    base_arr = np.asarray(base_pred, dtype=float)
+    if base_arr.ndim != 2:
+        raise ValueError(f"Expected 2D base forecasts, got shape {base_arr.shape}")
+    reference_horizon = int(reference_horizon)
+    target_horizon = int(target_horizon)
+    if not 1 <= reference_horizon <= base_arr.shape[1]:
+        raise ValueError(
+            f"reference_horizon must be within [1, {base_arr.shape[1]}], got {reference_horizon}"
+        )
+    if not 1 <= target_horizon <= base_arr.shape[1]:
+        raise ValueError(
+            f"target_horizon must be within [1, {base_arr.shape[1]}], got {target_horizon}"
+        )
+    min_slope_pct = float(min_slope_pct)
+    if not np.isfinite(min_slope_pct):
+        raise ValueError(f"min_slope_pct must be finite, got {min_slope_pct}")
+
+    reference = base_arr[:, reference_horizon - 1]
+    target = base_arr[:, target_horizon - 1]
+    valid = np.isfinite(reference) & np.isfinite(target) & (np.abs(reference) > 1e-8)
+    slope_pct = np.full(base_arr.shape[0], np.nan, dtype=float)
+    slope_pct[valid] = (target[valid] / reference[valid] - 1.0) * 100.0
+    return (~valid) | (slope_pct < min_slope_pct)
+
+
 def evaluate_rule_gate_candidates(
     y_true: np.ndarray,
     base_pred: np.ndarray,
@@ -3597,7 +4006,12 @@ def run_experiment(
             llm_retrieval_feature_columns = parse_name_list(
                 llm_cot_cfg.get("retrieval_feature_columns")
             )
-            exogenous_summaries = [
+            known_future_cfg = dict(config.llm.get("known_future_context", {}) or {})
+            known_future_enabled = bool(known_future_cfg.get("enabled", False))
+            known_future_binary_columns = parse_name_list(
+                known_future_cfg.get("binary_feature_columns")
+            )
+            historical_exogenous_summaries = [
                 build_exogenous_summary(
                     llm_context_splits["test"]["X_enc"][i, -history_points:, :],
                     llm_context_feature_cols,
@@ -3607,6 +4021,24 @@ def run_experiment(
                     include_features=llm_retrieval_feature_columns,
                 )
                 for i in range(len(llm_histories))
+            ]
+            test_known_future = (
+                build_known_future_evidence(
+                    panel,
+                    splits["test"]["dates"],
+                    config.pred_len,
+                    binary_feature_columns=known_future_binary_columns,
+                )
+                if known_future_enabled
+                else [{} for _ in range(len(llm_histories))]
+            )
+            exogenous_summaries = [
+                {**historical, **future}
+                for historical, future in zip(
+                    historical_exogenous_summaries,
+                    test_known_future,
+                    strict=False,
+                )
             ]
             
             gating_config = config.llm.get("gating", {})
@@ -3773,6 +4205,14 @@ def run_experiment(
             delta_calib_min_scale = float(delta_calib_cfg.get("min_scale", 0.0))
             delta_calib_max_scale = float(delta_calib_cfg.get("max_scale", 1.0))
             delta_calib_shared = bool(delta_calib_cfg.get("shared", False))
+            delta_calib_mode = str(delta_calib_cfg.get("mode", "pointwise")).lower()
+            delta_calib_ridge_strength = float(
+                delta_calib_cfg.get("ridge_strength", 0.0)
+            )
+            delta_calib_fixed_scales = {
+                int(str(key).lower().removeprefix("h")): float(value)
+                for key, value in (delta_calib_cfg.get("fixed_scales", {}) or {}).items()
+            }
             delta_calib_tune_scope = str(delta_calib_cfg.get("tune_scope", "full")).lower()
             delta_calib_recent_tail_fraction = float(
                 delta_calib_cfg.get("recent_tail_fraction", 1.0)
@@ -3908,7 +4348,7 @@ def run_experiment(
                     splits["val"]["dates"],
                     history_points
                 )
-                val_exogenous_summaries = [
+                val_historical_exogenous = [
                     build_exogenous_summary(
                         llm_context_splits["val"]["X_enc"][i, -history_points:, :],
                         llm_context_feature_cols,
@@ -3918,6 +4358,24 @@ def run_experiment(
                         include_features=llm_retrieval_feature_columns,
                     )
                     for i in range(len(val_histories))
+                ]
+                val_known_future = (
+                    build_known_future_evidence(
+                        panel,
+                        splits["val"]["dates"],
+                        config.pred_len,
+                        binary_feature_columns=known_future_binary_columns,
+                    )
+                    if known_future_enabled
+                    else [{} for _ in range(len(val_histories))]
+                )
+                val_exogenous_summaries = [
+                    {**historical, **future}
+                    for historical, future in zip(
+                        val_historical_exogenous,
+                        val_known_future,
+                        strict=False,
+                    )
                 ]
                 if sentiment_cfg.get("enabled", False) and sentiment_map:
                     val_sentiment_histories = build_sentiment_histories(
@@ -4123,6 +4581,13 @@ def run_experiment(
                     skill_tag_min_overlap = int(
                         cot_cfg.get("skill_tag_min_overlap", 3)
                     )
+                    retrieval_max_reuse = int(cot_cfg.get("retrieval_max_reuse", 2))
+                    retrieval_half_life_days = float(
+                        cot_cfg.get("retrieval_half_life_days", 120.0)
+                    )
+                    retrieval_sign_tolerance_pct = float(
+                        cot_cfg.get("retrieval_sign_tolerance_pct", 0.10)
+                    )
                     include_aux_teacher_summary = bool(
                         cot_cfg.get("include_aux_teacher_summary", False)
                     )
@@ -4229,6 +4694,9 @@ def run_experiment(
                         prepared["h30_mse"] = _anchor_sqerr(29, prepared["forecasts"])
                         prepared["err_pct_h20"] = _anchor_err_pct(19, prepared["forecasts"])
                         prepared["err_pct_h30"] = _anchor_err_pct(29, prepared["forecasts"])
+                        prepared["long_correction_pct"] = -0.5 * (
+                            prepared["err_pct_h20"] + prepared["err_pct_h30"]
+                        )
                         prepared["long_error_score"] = 0.5 * (
                             prepared["h20_mse"] + prepared["h30_mse"]
                         )
@@ -4313,6 +4781,19 @@ def run_experiment(
                             ],
                             dtype=object,
                         )
+                        prepared["reuse_counts"] = np.zeros(
+                            len(prepared["dates"]), dtype=int
+                        )
+                        prepared["known_future_evidence"] = (
+                            build_known_future_evidence(
+                                panel,
+                                prepared["dates"],
+                                config.pred_len,
+                                binary_feature_columns=known_future_binary_columns,
+                            )
+                            if known_future_enabled
+                            else [{} for _ in range(len(prepared["dates"]))]
+                        )
                         if aux_teacher_available:
                             teacher_forecasts = prepared["aux_forecasts"].get(aux_teacher_model_name)
                             if teacher_forecasts is not None:
@@ -4381,6 +4862,7 @@ def run_experiment(
                             "utility_score",
                             "utility_mmr",
                             "regime_mmr",
+                            "regime_sign_balanced",
                         ) and lookback_days is not None:
                             cutoff = np.datetime64(
                                 pd.Timestamp(reference_date) - pd.Timedelta(days=lookback_days)
@@ -4586,12 +5068,58 @@ def run_experiment(
                                     regime_scores=regime_scores,
                                     regime_weight=float(cot_cfg.get("utility_regime_weight", 0.15)),
                                 )
+                        elif selection_mode == "regime_sign_balanced":
+                            reference_profile = _reference_case_profile(
+                                reference_history,
+                                reference_forecast,
+                                reference_window,
+                            )
+                            example_indices = select_regime_sign_balanced_indices(
+                                candidate_indices=candidate_indices,
+                                pool_dates=pool["dates"],
+                                pool_case_profiles=pool["case_profiles"],
+                                pool_long_correction_pct=pool["long_correction_pct"],
+                                reference_profile=reference_profile,
+                                reference_date=reference_date,
+                                k_examples=primary_k,
+                                reuse_counts=pool.get("reuse_counts"),
+                                max_reuse=retrieval_max_reuse,
+                                half_life_days=retrieval_half_life_days,
+                                sign_tolerance_pct=retrieval_sign_tolerance_pct,
+                                similarity_weight=float(
+                                    cot_cfg.get("balanced_similarity_weight", 0.45)
+                                ),
+                                regime_weight=float(
+                                    cot_cfg.get("balanced_regime_weight", 0.25)
+                                ),
+                                recency_weight=float(
+                                    cot_cfg.get("balanced_recency_weight", 0.20)
+                                ),
+                                correction_weight=float(
+                                    cot_cfg.get("balanced_correction_weight", 0.05)
+                                ),
+                                reuse_weight=float(
+                                    cot_cfg.get("balanced_reuse_weight", 0.05)
+                                ),
+                                mmr_lambda=float(cot_cfg.get("mmr_lambda", 0.80)),
+                            )
                         else:
                             start = max(0, pos - primary_k)
                             example_indices = np.arange(start, pos, dtype=int)
 
                         for idx in np.asarray(example_indices, dtype=int):
-                            roles[int(idx)] = "support"
+                            role = "support"
+                            if selection_mode == "regime_sign_balanced":
+                                correction = float(pool["long_correction_pct"][int(idx)])
+                                if correction > retrieval_sign_tolerance_pct:
+                                    role = "positive_residual_analogue"
+                                elif correction < -retrieval_sign_tolerance_pct:
+                                    role = "negative_residual_analogue"
+                                else:
+                                    role = "freeze_analogue"
+                            roles[int(idx)] = role
+                            if selection_mode == "regime_sign_balanced":
+                                pool["reuse_counts"][int(idx)] += 1
 
                         if include_counterexample_freeze and candidate_indices.size > len(example_indices):
                             reference_profile = _reference_case_profile(
@@ -4654,6 +5182,11 @@ def run_experiment(
                                     preferred_features=exogenous_feature_priority,
                                     include_features=retrieval_feature_columns,
                                 )
+                            if pool.get("known_future_evidence") is not None:
+                                exogenous_summary = {
+                                    **(exogenous_summary or {}),
+                                    **dict(pool["known_future_evidence"][int(idx)] or {}),
+                                }
                             example_case_summary: dict[str, str] = {}
                             role = example_roles.get(int(idx))
                             if role:
@@ -5812,6 +6345,97 @@ def run_experiment(
                         'online_memory_gate_cfg': selected_online_memory_gate_cfg,
                     }
 
+                    base_path_gate_cfg = config.llm.get("base_path_slope_gate", {}) or {}
+                    base_path_gated_name = None
+                    base_path_gated_predictions = None
+                    base_path_reject_mask = None
+                    if (
+                        bool(base_path_gate_cfg.get("enabled", False))
+                        and method_requires_base
+                        and base_forecast is not None
+                    ):
+                        reference_horizon = int(
+                            base_path_gate_cfg.get("reference_horizon", 1)
+                        )
+                        target_horizon = int(
+                            base_path_gate_cfg.get("target_horizon", config.pred_len)
+                        )
+                        min_slope_pct = float(
+                            base_path_gate_cfg.get("min_slope_pct", 0.0)
+                        )
+                        base_path_reject_mask = build_base_path_slope_reject_mask(
+                            base_forecast,
+                            reference_horizon=reference_horizon,
+                            target_horizon=target_horizon,
+                            min_slope_pct=min_slope_pct,
+                        )
+                        base_path_gated_predictions = apply_rule_gate(
+                            base_forecast,
+                            predictions,
+                            base_path_reject_mask,
+                        )
+                        suffix = str(
+                            base_path_gate_cfg.get("name_suffix", "base_path_slope_gate")
+                        ).strip()
+                        base_path_gated_name = f"{result_name}_{suffix}"
+                        llm_results[base_path_gated_name] = {
+                            "predictions": base_path_gated_predictions,
+                            "metrics": compute_metrics_by_horizon(
+                                y_test_future[llm_eval_indices],
+                                base_path_gated_predictions,
+                                horizons,
+                            ),
+                            "path_metrics": compute_path_metrics(
+                                y_test_future[llm_eval_indices],
+                                base_path_gated_predictions,
+                            ),
+                            "errors": get_per_sample_errors(
+                                y_test_future[llm_eval_indices],
+                                base_path_gated_predictions,
+                                horizons,
+                            ),
+                            "eval_indices": llm_eval_indices,
+                            "base_model": llm_base_model_name,
+                            "method_template": method,
+                            "base_path_slope_gate": {
+                                "reference_horizon": reference_horizon,
+                                "target_horizon": target_horizon,
+                                "min_slope_pct": min_slope_pct,
+                                "rejected_count": int(np.sum(base_path_reject_mask)),
+                                "applied_count": int(
+                                    len(base_path_reject_mask) - np.sum(base_path_reject_mask)
+                                ),
+                            },
+                        }
+                        with (
+                            run_dir / "llm" / f"base_path_slope_gate_{result_slug}.json"
+                        ).open("w", encoding="utf-8") as f:
+                            json.dump(
+                                llm_results[base_path_gated_name]["base_path_slope_gate"],
+                                f,
+                                indent=2,
+                            )
+                        logger.info(
+                            "Base-path slope gate: applied %d/%d samples (h%d→h%d slope >= %.3f%%)",
+                            int(len(base_path_reject_mask) - np.sum(base_path_reject_mask)),
+                            int(len(base_path_reject_mask)),
+                            reference_horizon,
+                            target_horizon,
+                            min_slope_pct,
+                        )
+                        logger.info("\n%s Results:", base_path_gated_name)
+                        logger.info(llm_results[base_path_gated_name]["metrics"])
+                        logger.info(
+                            "%s Path MSE (avg over %dd): %.6f",
+                            base_path_gated_name,
+                            config.pred_len,
+                            float(
+                                llm_results[base_path_gated_name]["path_metrics"][
+                                    "mse_path"
+                                ]
+                            ),
+                        )
+
                     # Persist subset predictions so we can debug deltas vs the
                     # configured base forecast and reproduce paper-style plots
                     # without re-running the LLM.
@@ -5835,7 +6459,42 @@ def run_experiment(
                             if llm_base_model_name == "tsm" and base_forecast is not None
                             else np.empty((0, 0), dtype=float),
                             yhat=np.asarray(predictions, dtype=float),
+                            base_path_slope_gate_pred=(
+                                np.asarray(base_path_gated_predictions, dtype=float)
+                                if base_path_gated_predictions is not None
+                                else np.empty((0, 0), dtype=float)
+                            ),
+                            base_path_slope_gate_reject_mask=(
+                                np.asarray(base_path_reject_mask, dtype=bool)
+                                if base_path_reject_mask is not None
+                                else np.empty(0, dtype=bool)
+                            ),
                         )
+                        meta_path = run_dir / "llm" / f"{result_slug}_test_metadata.jsonl"
+                        with meta_path.open("w", encoding="utf-8") as f:
+                            for idx, meta in zip(llm_eval_indices, metadata or []):
+                                safe_meta = dict(meta or {})
+                                record = {
+                                    "sample_index": int(idx),
+                                    "date": str(splits["test"]["dates"][idx]),
+                                    "apply_skipped_by_gate": bool(
+                                        safe_meta.get("apply_skipped_by_gate", False)
+                                    ),
+                                    "apply_skip_gate_enabled": bool(
+                                        safe_meta.get("apply_skip_gate_enabled", False)
+                                    ),
+                                    "apply_skip_gate_diagnostics": safe_meta.get(
+                                        "apply_skip_gate_diagnostics"
+                                    ),
+                                    "structured_horizon_guidance": safe_meta.get(
+                                        "structured_horizon_guidance"
+                                    ),
+                                    "reflect_valid_samples": safe_meta.get(
+                                        "reflect_valid_samples"
+                                    ),
+                                    "apply_attempts": safe_meta.get("apply_attempts"),
+                                }
+                                f.write(json.dumps(record) + "\n")
                     except Exception as e:
                         logger.warning("Failed to save LLM subset predictions: %s", e)
 
@@ -6180,22 +6839,47 @@ def run_experiment(
                                 val_eval_indices_delta,
                                 val_teaching_examples_delta,
                             )
-                            scales = fit_delta_calibration_scales(
-                                y_true=y_val_future[val_eval_indices_delta],
-                                base_pred=llm_base_val_eval[val_eval_indices_delta],
-                                llm_pred=val_llm_pred,
-                                horizons=horizons,
-                                target_horizons=delta_calib_target_horizons,
-                                min_scale=delta_calib_min_scale,
-                                max_scale=delta_calib_max_scale,
-                                shared=delta_calib_shared,
-                            )
-                            calibrated = apply_delta_calibration(
-                                base_pred=llm_base_test_eval[llm_eval_indices],
-                                llm_pred=predictions,
-                                scales=scales,
-                                pred_len=config.pred_len,
-                            )
+                            if delta_calib_mode in {
+                                "interpolated_joint",
+                                "joint_interpolated",
+                            }:
+                                scales = fit_interpolated_delta_calibration_scales(
+                                    y_true=y_val_future[val_eval_indices_delta],
+                                    base_pred=llm_base_val_eval[val_eval_indices_delta],
+                                    llm_pred=val_llm_pred,
+                                    anchor_horizons=delta_calib_target_horizons,
+                                    min_scale=delta_calib_min_scale,
+                                    max_scale=delta_calib_max_scale,
+                                    ridge_strength=delta_calib_ridge_strength,
+                                    fixed_scales=delta_calib_fixed_scales,
+                                )
+                                calibrated = apply_interpolated_delta_calibration(
+                                    base_pred=llm_base_test_eval[llm_eval_indices],
+                                    llm_pred=predictions,
+                                    anchor_scales=scales,
+                                    pred_len=config.pred_len,
+                                )
+                            elif delta_calib_mode == "pointwise":
+                                scales = fit_delta_calibration_scales(
+                                    y_true=y_val_future[val_eval_indices_delta],
+                                    base_pred=llm_base_val_eval[val_eval_indices_delta],
+                                    llm_pred=val_llm_pred,
+                                    horizons=horizons,
+                                    target_horizons=delta_calib_target_horizons,
+                                    min_scale=delta_calib_min_scale,
+                                    max_scale=delta_calib_max_scale,
+                                    shared=delta_calib_shared,
+                                )
+                                calibrated = apply_delta_calibration(
+                                    base_pred=llm_base_test_eval[llm_eval_indices],
+                                    llm_pred=predictions,
+                                    scales=scales,
+                                    pred_len=config.pred_len,
+                                )
+                            else:
+                                raise ValueError(
+                                    f"Unknown llm.delta_calibration.mode: {delta_calib_mode}"
+                                )
                             calib_name = f"{result_name}_delta_calibrated"
                             llm_results[calib_name] = {
                                 "predictions": calibrated,
@@ -6210,10 +6894,16 @@ def run_experiment(
                                 ),
                                 "eval_indices": llm_eval_indices,
                                 "delta_calibration": {
+                                    "mode": delta_calib_mode,
                                     "target_horizons": delta_calib_target_horizons,
                                     "min_scale": delta_calib_min_scale,
                                     "max_scale": delta_calib_max_scale,
                                     "shared": delta_calib_shared,
+                                    "ridge_strength": delta_calib_ridge_strength,
+                                    "fixed_scales": {
+                                        str(k): float(v)
+                                        for k, v in delta_calib_fixed_scales.items()
+                                    },
                                     "tune_scope": delta_calib_tune_scope,
                                     "recent_tail_fraction": delta_calib_recent_tail_fraction,
                                     "recent_tail_min_samples": delta_calib_recent_tail_min_samples,

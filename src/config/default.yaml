@@ -65,7 +65,7 @@ features:
 # Model Configuration
 model:
   # TSM Model Selection
-  tsm_type: "autoformer"  # Options: autoformer, informer, transformer, dlinear
+  tsm_type: "simple_attention"  # Legacy attention baseline (not published Autoformer); prefer dlinear
   
   # Training parameters
   batch_size: 32

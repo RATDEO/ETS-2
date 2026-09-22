@@ -1,0 +1,40 @@
+# Supervised refinement over the frozen UK ETS ridge base.
+# Qwen is used as a feature extractor over historical headlines; the residual
+# model, magnitude, and whether to abstain are selected without test labels.
+
+base_run: runs/20260810_004048_4ffc53
+events_path: data/news/headlines_labeled_qwen_votes3_daily3_importance_v2_indep_percall.csv
+
+anchor_horizons: [5, 10, 20, 30]
+
+event_features:
+  taxonomy_version: v2
+  rolling_windows: [3, 7]
+
+validation:
+  # OOF predictions cover the final 132 of 228 validation origins.
+  initial_train_size: 96
+  fold_size: 24
+  # Adjacent targets overlap for 30 rows, so exclude unresolved outcomes.
+  purge_size: 30
+
+candidates:
+  max_adjustment_pct: 5.0
+  ridge_alphas: [10.0, 100.0, 1000.0]
+  shrinkages: [0.25, 0.5, 1.0]
+  hgb:
+    enabled: true
+    learning_rate: 0.04
+    max_depth: 2
+    max_iter: 200
+    min_samples_leaf: 12
+    l2_regularization: 2.0
+
+selection:
+  min_improvement_pct: 0.0
+  min_fold_win_share: 0.5
+
+comparison_runs:
+  - runs/20260810_004048_4ffc53
+  - runs/20260810_004912_e61cf8
+  - runs/20260810_005615_dc7e66

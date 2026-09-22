@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-03-24T21:01:29.723437+00:00",
+  "files": [
+    "latest.json",
+    "horizon_1d.json",
+    "horizon_5d.json",
+    "horizon_20d.json",
+    "horizon_30d.json",
+    "manifest.json",
+    "status.json"
+  ],
+  "latest_observed_date": "2026-03-20",
+  "model_version": "uk_ets_llm_4b_canonical_default"
+}

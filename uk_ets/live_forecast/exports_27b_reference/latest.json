@@ -1,0 +1,37 @@
+{
+  "market": "UK ETS",
+  "generated_at": "2026-04-01T22:21:05.720796+00:00",
+  "latest_observed_date": "2026-03-04",
+  "latest_observed_price": 42.599998474121094,
+  "model_version": "uk_ets_llm_27b_current_default_reference",
+  "forecasts": {
+    "1d": {
+      "target_date": "2026-03-05",
+      "base_tsm_value": 43.45079040527344,
+      "llm_tsm_value": 43.45079040527344,
+      "predicted_change_abs": 0.8507919311523438,
+      "predicted_change_pct": 1.9971642291705338
+    },
+    "5d": {
+      "target_date": "2026-03-11",
+      "base_tsm_value": 42.59868240356445,
+      "llm_tsm_value": 42.59868240356445,
+      "predicted_change_abs": -0.001316070556640625,
+      "predicted_change_pct": -0.0030893676145060667
+    },
+    "20d": {
+      "target_date": "2026-04-01",
+      "base_tsm_value": 44.59307098388672,
+      "llm_tsm_value": 44.25862295150757,
+      "predicted_change_abs": 1.658624477386475,
+      "predicted_change_pct": 3.8934848281604095
+    },
+    "30d": {
+      "target_date": "2026-04-15",
+      "base_tsm_value": 45.33983612060547,
+      "llm_tsm_value": 44.99978734970093,
+      "predicted_change_abs": 2.399788875579837,
+      "predicted_change_pct": 5.63330742144903
+    }
+  }
+}

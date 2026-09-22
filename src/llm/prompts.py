@@ -596,6 +596,7 @@ class CoTRFHorizonDeltaReflectionStrictJSONTemplate(PromptTemplate):
             match_rank = ex.get("match_rank")
             match_distance = ex.get("match_distance")
             case_summary = ex.get("case_summary") or {}
+            example_exogenous = ex.get("exogenous_summary") or {}
             anchor_error_pct = ex.get("anchor_error_pct") or {}
             hist_window = history[-history_points:] if len(history) >= history_points else history
             last_price = float(hist_window[-1]) if len(hist_window) else 0.0
@@ -624,6 +625,13 @@ class CoTRFHorizonDeltaReflectionStrictJSONTemplate(PromptTemplate):
                 extra_lines.append(f"- match_distance: {float(match_distance):.2f}")
             for key, value in case_summary.items():
                 extra_lines.append(f"- {key}: {value}")
+            if example_exogenous:
+                extra_lines.append(
+                    "- origin_known_context: "
+                    + "; ".join(
+                        f"{key}={value}" for key, value in example_exogenous.items()
+                    )
+                )
             extra_block = ("\n" + "\n".join(extra_lines)) if extra_lines else ""
 
             blocks.append(
@@ -716,6 +724,7 @@ class CoTRFHorizonDeltaStructuredReflectionStrictJSONTemplate(PromptTemplate):
             match_rank = ex.get("match_rank")
             match_distance = ex.get("match_distance")
             case_summary = ex.get("case_summary") or {}
+            example_exogenous = ex.get("exogenous_summary") or {}
             anchor_error_pct = ex.get("anchor_error_pct") or {}
             hist_window = history[-history_points:] if len(history) >= history_points else history
             last_price = float(hist_window[-1]) if len(hist_window) else 0.0
@@ -741,6 +750,13 @@ class CoTRFHorizonDeltaStructuredReflectionStrictJSONTemplate(PromptTemplate):
                 extra_lines.append(f"- match_distance: {float(match_distance):.2f}")
             for key, value in case_summary.items():
                 extra_lines.append(f"- {key}: {value}")
+            if example_exogenous:
+                extra_lines.append(
+                    "- origin_known_context: "
+                    + "; ".join(
+                        f"{key}={value}" for key, value in example_exogenous.items()
+                    )
+                )
             extra_block = ("\n" + "\n".join(extra_lines)) if extra_lines else ""
             blocks.append(
                 f"""Example {idx} (date={ex_date})
@@ -927,6 +943,13 @@ Constraints:
 - No extra keys.
 - No text outside JSON.
 - Keep each reason short.
+- The teaching set may be deliberately sign-balanced. Do not treat the number
+  of positive versus negative examples as a vote; prioritize regime similarity,
+  match distance, and origin-known context.
+- `positive_residual_analogue`, `negative_residual_analogue`, and
+  `freeze_analogue` are contrastive roles, not instructions for the current case.
+- Current scheduled/calendar evidence may justify a move only when its link to
+  the matched historical residuals is explicit; otherwise freeze.
 - Make one pass through the evidence and stop after the first complete horizon plan.
 - Do not re-open earlier horizon decisions once chosen unless the matched examples directly contradict them.
 - Keep internal reasoning compact; avoid long self-critique loops.
@@ -1409,6 +1432,7 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
         matched_examples_summary: Optional[List[str]] = None,
         horizon_guidance_summary: Optional[List[str]] = None,
         structured_horizon_guidance: Optional[Dict[int, Dict[str, str]]] = None,
+        evidence_target_adjustment_pct: Optional[Dict[int, float]] = None,
         numeric_tool_enabled: bool = False,
         numeric_tool_name: str = "get_numeric_analysis",
         case_retrieval_tool_enabled: bool = False,
@@ -1474,6 +1498,20 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
                 )
             if structured_lines:
                 structured_block = "\n## Structured Horizon Decisions\n" + "\n".join(structured_lines) + "\n"
+        evidence_target_block = ""
+        if evidence_target_adjustment_pct:
+            target_lines = []
+            for h in horizons:
+                if int(h) not in evidence_target_adjustment_pct:
+                    continue
+                value = float(evidence_target_adjustment_pct[int(h)])
+                target_lines.append(
+                    f"- h{int(h)}: robust evidence target={value:+.3f}%; this is a signed maximum, not a requirement to move."
+                )
+            if target_lines:
+                evidence_target_block = (
+                    "\n## Continuous Evidence Targets\n" + "\n".join(target_lines) + "\n"
+                )
         discrete_block = ""
         raw_discrete_by_h = kwargs.get("discrete_action_fractions_by_horizon") or {}
         raw_discrete_default = kwargs.get("discrete_action_fractions") or []
@@ -1515,6 +1553,13 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
                 )
             if discrete_lines:
                 discrete_block = "\n## Discrete Action Menu\n" + "\n".join(discrete_lines) + "\n"
+        allow_zero_actionable_horizons = bool(
+            kwargs.get("allow_zero_actionable_horizons", False)
+        )
+        explicit_h30_independence = bool(
+            kwargs.get("explicit_h30_independence", False)
+        )
+        raw_apply_example_adjustments = kwargs.get("apply_example_adjustments") or {}
         tool_block = ""
         tool_lines = []
         if case_retrieval_tool_enabled:
@@ -1603,6 +1648,13 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
                 "Default to 0.0 unless the matched evidence clearly supports a same-sign residual correction.",
                 "Prefer tiny or small long-horizon fixes; avoid medium actions unless the evidence is unusually strong and consistent.",
             ]
+        elif apply_style == "continuous_evidence":
+            style_lines = [
+                "Treat the robust evidence target as the maximum signed residual correction, not as a default action.",
+                "Return a continuous decimal value between 0.0 and that target when the structured decision supports it.",
+                "Return 0.0 when origin-known context does not distinguish the current case from the opposing or freeze analogues.",
+                "Do not round to a stock 0.25, 0.50, or 0.75 percentage adjustment.",
+            ]
         else:
             style_lines = [
                 "Use small corrections. If uncertain, prefer values near 0.",
@@ -1611,13 +1663,44 @@ class CoTRFHorizonDeltaApplyTemplate(PromptTemplate):
             ]
         style_block = "\n".join([f"- {line}" for line in style_lines])
 
+        example_adjustments: Dict[int, float] = {}
+        if isinstance(raw_apply_example_adjustments, dict):
+            for h in horizons:
+                for key in (int(h), str(int(h)), f"h{int(h)}"):
+                    if key not in raw_apply_example_adjustments:
+                        continue
+                    try:
+                        example_adjustments[int(h)] = float(raw_apply_example_adjustments[key])
+                    except (TypeError, ValueError):
+                        pass
+                    break
+        if not example_adjustments:
+            example_adjustments = {int(h): 0.0 for h in horizons}
+        example_json = ", ".join(
+            [f"\"h{int(h)}\": {float(example_adjustments.get(int(h), 0.0)):.3f}" for h in horizons]
+        )
+
+        zero_bias_line = (
+            "- Returning 0.0 for one or more actionable horizons is acceptable when expected edge is marginal, evidence is mixed, or support is indirect."
+            if allow_zero_actionable_horizons
+            else "- Do not return all zeros unless every actionable horizon is genuinely unsupported by the guidance."
+        )
+        h30_independence_line = (
+            "- Treat h30 as independent from h20. Do not mirror h20 sign or size at h30 unless the h30 evidence itself is explicit and strong."
+            if explicit_h30_independence and 20 in horizons and 30 in horizons
+            else ""
+        )
+        extra_constraint_block = "\n".join(
+            [line for line in (zero_bias_line, h30_independence_line) if line]
+        )
+
         prompt = f"""Refine the model forecast using the provided rules by proposing small percentage adjustments at key horizons only.
 
 ## Context
 Current price: {history[-1]:.2f} {currency}
 Recent prices: [{history_str}]
 {exo_block}
-{current_case_block}{memory_block}{matched_block}{guidance_block}{structured_block}
+{current_case_block}{memory_block}{matched_block}{guidance_block}{structured_block}{evidence_target_block}
 {discrete_block}
 {tool_block}
 
@@ -1643,14 +1726,15 @@ Constraints:
 - Respect the structured `mode`: `freeze` means 0.0, `adjust` means make a bounded move.
 - Respect the structured `magnitude`: `zero` means 0.0, `tiny` means very close to 0, `small` means well below the bound, `medium` means still below the bound.
 - If a discrete action menu is provided, every non-zero output must be one of the signed menu values implied by that horizon's bound.
-- Do not return all zeros unless every actionable horizon is genuinely unsupported by the guidance.
+- Prefer zero over a weak or speculative move.
+{extra_constraint_block}
 - If tools are available, use tool outputs as the source of truth for matched cases, arithmetic, bounds, and verified adjustments.
 
 Return ONLY one JSON object:
 {{"adjustments": {{{horizon_keys}}}}}
 
 Example:
-{{"adjustments": {{"h1": 0.3, "h5": -0.5, "h20": 0.8, "h30": -0.2}}}}
+{{"adjustments": {{{example_json}}}}}
 
 JSON only:"""
 

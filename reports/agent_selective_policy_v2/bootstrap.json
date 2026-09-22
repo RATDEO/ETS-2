@@ -1,0 +1,22 @@
+{
+  "precall": {
+    "vs_base_ci_low": -0.09244384791788206,
+    "vs_base_ci_high": 0.16560656015427538,
+    "vs_base_conclusion": "inconclusive",
+    "vs_always_ci_low": 0.0,
+    "vs_always_ci_high": 0.0,
+    "vs_always_conclusion": "inconclusive",
+    "block_size": 30,
+    "n_bootstrap": 2000
+  },
+  "postcall": {
+    "vs_base_ci_low": -0.1043826764833336,
+    "vs_base_ci_high": 0.17795874191835848,
+    "vs_base_conclusion": "inconclusive",
+    "vs_always_ci_low": -0.024267500652621756,
+    "vs_always_ci_high": 0.02728804565967436,
+    "vs_always_conclusion": "inconclusive",
+    "block_size": 30,
+    "n_bootstrap": 2000
+  }
+}

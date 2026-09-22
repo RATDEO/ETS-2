@@ -11,7 +11,9 @@ from src.run_experiment import (
     _profile_regime_tag,
     apply_rule_gate,
     build_aux_teacher_case_summary,
+    build_base_path_slope_reject_mask,
     build_exogenous_summary,
+    build_known_future_evidence,
     build_online_memory_gate_candidate_cfgs,
     build_online_memory_gate_feature_frame,
     build_online_memory_gate_feature_row,
@@ -19,6 +21,7 @@ from src.run_experiment import (
     apply_online_memory_gate_features,
     build_online_memory_gate_decision,
     apply_delta_calibration,
+    apply_interpolated_delta_calibration,
     build_llm_refiner_config,
     build_realized_availability_dates,
     build_retrieval_feature_vector,
@@ -33,6 +36,7 @@ from src.run_experiment import (
     evaluate_online_memory_learned_gate_regime_thresholds,
     evaluate_online_memory_learned_gate_thresholds,
     fit_delta_calibration_scales,
+    fit_interpolated_delta_calibration_scales,
     fit_online_memory_learned_gate,
     infer_llm_market_name,
     llm_method_requires_base_forecast,
@@ -48,6 +52,7 @@ from src.run_experiment import (
     select_error_stratified_indices,
     select_skill_tag_recent_high_error_indices,
     select_similarity_error_hybrid_indices,
+    select_regime_sign_balanced_indices,
     select_top_score_indices,
     select_utility_mmr_indices,
     select_utility_score_indices,
@@ -85,6 +90,44 @@ def test_infer_llm_market_name_maps_known_instruments():
 def test_parse_name_list_handles_strings_and_sequences():
     assert parse_name_list("a, b ,c") == ["a", "b", "c"]
     assert parse_name_list(["a", None, " b "]) == ["a", "b"]
+
+
+def test_build_known_future_evidence_only_exposes_allowlisted_binary_schedule():
+    panel = pd.DataFrame(
+        {
+            "date": pd.date_range("2026-01-01", periods=6, freq="D"),
+            "is_auction_day": [0, 1, 0, 0, 1, 0],
+            "future_price": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0],
+        }
+    )
+    evidence = build_known_future_evidence(
+        panel,
+        ["2026-01-02"],
+        pred_len=4,
+        binary_feature_columns=["is_auction_day"],
+    )[0]
+
+    assert evidence["known_forecast_window"].startswith("2026-01-02 to 2026-01-05")
+    assert evidence["scheduled_is_auction_day"] == (
+        "count=2; dates=2026-01-02, 2026-01-05"
+    )
+    assert "future_price" not in evidence
+
+
+def test_build_known_future_evidence_rejects_nonbinary_future_feature():
+    panel = pd.DataFrame(
+        {
+            "date": pd.date_range("2026-01-01", periods=3, freq="D"),
+            "not_known_binary": [0.0, 0.5, 1.0],
+        }
+    )
+    with np.testing.assert_raises(ValueError):
+        build_known_future_evidence(
+            panel,
+            ["2026-01-01"],
+            pred_len=2,
+            binary_feature_columns=["not_known_binary"],
+        )
 
 
 def test_resolve_exogenous_feature_names_prefers_uk_specific_features():
@@ -207,6 +250,71 @@ def test_apply_delta_calibration_scales_selected_horizons_only():
         pred_len=4,
     )
     assert np.allclose(calibrated[0], np.array([10.0, 11.0, 12.0, 11.5]))
+
+
+def test_base_path_slope_gate_rejects_downward_or_nonfinite_long_paths():
+    base_pred = np.array(
+        [
+            [10.0, 10.5, 11.0],
+            [10.0, 10.0, 10.0],
+            [10.0, 9.5, 9.0],
+            [np.nan, 10.0, 11.0],
+        ],
+        dtype=float,
+    )
+    reject = build_base_path_slope_reject_mask(
+        base_pred,
+        reference_horizon=1,
+        target_horizon=3,
+        min_slope_pct=0.0,
+    )
+    assert reject.tolist() == [False, False, True, True]
+
+
+def test_interpolated_delta_calibration_recovers_joint_anchor_curve():
+    base_pred = np.full((3, 4), 10.0, dtype=float)
+    llm_pred = base_pred + 2.0
+    expected_curve = np.array([1.0, 2.0 / 3.0, 1.0 / 3.0, 0.0])
+    y_true = base_pred + 2.0 * expected_curve[None, :]
+
+    scales = fit_interpolated_delta_calibration_scales(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        anchor_horizons=[1, 4],
+        min_scale=0.0,
+        max_scale=1.0,
+    )
+    calibrated = apply_interpolated_delta_calibration(
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        anchor_scales=scales,
+        pred_len=4,
+    )
+
+    assert np.isclose(scales[1], 1.0)
+    assert np.isclose(scales[4], 0.0)
+    assert np.allclose(calibrated, y_true)
+
+
+def test_interpolated_delta_calibration_honors_fixed_anchor_scale():
+    base_pred = np.zeros((2, 5), dtype=float)
+    llm_pred = np.ones((2, 5), dtype=float)
+    y_true = np.ones((2, 5), dtype=float)
+
+    scales = fit_interpolated_delta_calibration_scales(
+        y_true=y_true,
+        base_pred=base_pred,
+        llm_pred=llm_pred,
+        anchor_horizons=[1, 3, 5],
+        min_scale=0.0,
+        max_scale=1.0,
+        fixed_scales={1: 0.0},
+    )
+
+    assert scales[1] == 0.0
+    assert 0.0 <= scales[3] <= 1.0
+    assert 0.0 <= scales[5] <= 1.0
 
 
 def test_select_top_score_indices_prefers_higher_scores_then_recency():
@@ -396,6 +504,44 @@ def test_select_similarity_error_hybrid_indices_keeps_nearest_and_diverse_exampl
         n_similarity=2,
     )
     assert selected.tolist() == [0, 1, 3, 4]
+
+
+def test_regime_sign_balanced_selector_includes_contrasting_residuals_and_reuse_cap():
+    candidate_indices = np.arange(6, dtype=int)
+    pool_dates = pd.date_range("2025-01-01", periods=6, freq="D").to_numpy()
+    profiles = np.array(
+        [
+            [50.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.5],
+            [50.0, 1.1, 2.1, 0.5, 0.5, 1.1, 1.6],
+            [50.0, 0.9, 1.9, 0.5, 0.5, 0.9, 1.4],
+            [50.0, 1.2, 2.2, 0.5, 0.5, 1.2, 1.7],
+            [50.0, 0.8, 1.8, 0.5, 0.5, 0.8, 1.3],
+            [50.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.5],
+        ],
+        dtype=float,
+    )
+    corrections = np.array([1.0, -1.0, 0.0, 2.0, -2.0, 0.05], dtype=float)
+    reuse_counts = np.array([2, 0, 0, 0, 0, 0], dtype=int)
+
+    selected = select_regime_sign_balanced_indices(
+        candidate_indices=candidate_indices,
+        pool_dates=pool_dates,
+        pool_case_profiles=profiles,
+        pool_long_correction_pct=corrections,
+        reference_profile=profiles[-1],
+        reference_date="2025-01-10",
+        k_examples=3,
+        reuse_counts=reuse_counts,
+        max_reuse=2,
+        sign_tolerance_pct=0.10,
+    )
+
+    assert 0 not in selected
+    buckets = {
+        "pos" if corrections[idx] > 0.10 else "neg" if corrections[idx] < -0.10 else "flat"
+        for idx in selected
+    }
+    assert buckets == {"pos", "neg", "flat"}
 
 
 def test_select_utility_score_indices_favors_recent_similar_hard_cases():

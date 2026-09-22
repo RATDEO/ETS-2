@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-04-01T22:35:46.315579+00:00",
+  "latest_observed_date": "2026-03-20",
+  "model_version": "uk_ets_llm_27b_live_reference",
+  "archive_rows": 5550,
+  "realized_rows": 5085,
+  "current_live_rows": 30,
+  "horizon_counts": {
+    "h1": 184,
+    "h5": 180,
+    "h20": 165,
+    "h30": 155
+  }
+}

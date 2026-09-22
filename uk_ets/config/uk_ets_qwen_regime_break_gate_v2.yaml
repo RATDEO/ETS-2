@@ -1,0 +1,25 @@
+nested_report: reports/qwen_scalar_ramp_nested_backtest_v1/20260810_primary
+decision_cache_source: reports/qwen_regime_break_gate_v1/20260810_primary
+
+decision_block_size: 30
+headline_lookback_days: 30
+max_headlines: 18
+min_confidence: medium
+gate_mode: confirmed_countertrend_break
+
+event_features:
+  taxonomy_version: v2
+  rolling_windows: [3, 7]
+
+qwen:
+  base_url: http://192.168.68.140:9881/v1
+  api_key: deo
+  model: qwen3.6-27b-q4-k-m
+  temperature: 0.0
+  max_tokens: 384
+  timeout_seconds: 180
+  max_retries: 1
+  non_thinking_prompt_tag: /no_think
+  extra_body:
+    chat_template_kwargs:
+      enable_thinking: false

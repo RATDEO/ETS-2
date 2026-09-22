@@ -1,0 +1,197 @@
+{
+  "market": "UK ETS",
+  "generated_at": "2026-04-02T22:58:42.386425+00:00",
+  "latest_observed_date": "2026-04-01",
+  "model_version": "uk_ets_llm_27b_live_reference",
+  "settled_origin_count": 773,
+  "settled_row_count": 22755,
+  "path": {
+    "complete_origin_count": 744,
+    "horizon_count": 30,
+    "base_tsm_mse": 56.201472272910095,
+    "llm_tsm_mse": 55.16937787884074,
+    "uplift_pct": 1.8364187846495936
+  },
+  "horizons": {
+    "1d": {
+      "settled_count": 773,
+      "base_tsm_mse": 4.122983650451401,
+      "llm_tsm_mse": 4.122983650451401,
+      "uplift_pct": 0.0
+    },
+    "2d": {
+      "settled_count": 772,
+      "base_tsm_mse": 6.435906386318875,
+      "llm_tsm_mse": 6.435906386318875,
+      "uplift_pct": 0.0
+    },
+    "3d": {
+      "settled_count": 771,
+      "base_tsm_mse": 9.25618691665687,
+      "llm_tsm_mse": 9.25618691665687,
+      "uplift_pct": 0.0
+    },
+    "4d": {
+      "settled_count": 770,
+      "base_tsm_mse": 11.55091579327529,
+      "llm_tsm_mse": 11.55091579327529,
+      "uplift_pct": 0.0
+    },
+    "5d": {
+      "settled_count": 769,
+      "base_tsm_mse": 13.778301907552487,
+      "llm_tsm_mse": 13.778301907552487,
+      "uplift_pct": 0.0
+    },
+    "6d": {
+      "settled_count": 768,
+      "base_tsm_mse": 17.355691351590604,
+      "llm_tsm_mse": 17.33149167247092,
+      "uplift_pct": 0.1394336798773777
+    },
+    "7d": {
+      "settled_count": 767,
+      "base_tsm_mse": 20.651469491537473,
+      "llm_tsm_mse": 20.60151602676213,
+      "uplift_pct": 0.2418881852248431
+    },
+    "8d": {
+      "settled_count": 766,
+      "base_tsm_mse": 24.045354022041767,
+      "llm_tsm_mse": 23.95422415691252,
+      "uplift_pct": 0.37899157170117137
+    },
+    "9d": {
+      "settled_count": 765,
+      "base_tsm_mse": 27.69319007462568,
+      "llm_tsm_mse": 27.561158385339024,
+      "uplift_pct": 0.4767659086254272
+    },
+    "10d": {
+      "settled_count": 764,
+      "base_tsm_mse": 31.545706908544076,
+      "llm_tsm_mse": 31.352112347266385,
+      "uplift_pct": 0.6136954287914762
+    },
+    "11d": {
+      "settled_count": 763,
+      "base_tsm_mse": 35.229680078736706,
+      "llm_tsm_mse": 34.97888191748127,
+      "uplift_pct": 0.7118945181872687
+    },
+    "12d": {
+      "settled_count": 762,
+      "base_tsm_mse": 39.6737548200894,
+      "llm_tsm_mse": 39.34175406894956,
+      "uplift_pct": 0.8368271484395112
+    },
+    "13d": {
+      "settled_count": 761,
+      "base_tsm_mse": 43.941791047955235,
+      "llm_tsm_mse": 43.481974132827155,
+      "uplift_pct": 1.0464227883343797
+    },
+    "14d": {
+      "settled_count": 760,
+      "base_tsm_mse": 47.80890151286451,
+      "llm_tsm_mse": 47.24258747367014,
+      "uplift_pct": 1.184536814848135
+    },
+    "15d": {
+      "settled_count": 759,
+      "base_tsm_mse": 51.70456863745588,
+      "llm_tsm_mse": 51.018799354468236,
+      "uplift_pct": 1.3263224141683623
+    },
+    "16d": {
+      "settled_count": 758,
+      "base_tsm_mse": 55.47768103331767,
+      "llm_tsm_mse": 54.60633221767892,
+      "uplift_pct": 1.5706294845227162
+    },
+    "17d": {
+      "settled_count": 757,
+      "base_tsm_mse": 60.17601325049202,
+      "llm_tsm_mse": 59.11150698087637,
+      "uplift_pct": 1.7689876947887453
+    },
+    "18d": {
+      "settled_count": 756,
+      "base_tsm_mse": 64.4521817926802,
+      "llm_tsm_mse": 63.131354672413,
+      "uplift_pct": 2.0493132792863737
+    },
+    "19d": {
+      "settled_count": 755,
+      "base_tsm_mse": 68.90235696535069,
+      "llm_tsm_mse": 67.40413275861651,
+      "uplift_pct": 2.174416482570544
+    },
+    "20d": {
+      "settled_count": 754,
+      "base_tsm_mse": 75.11891789608578,
+      "llm_tsm_mse": 73.34075438852707,
+      "uplift_pct": 2.3671314195692865
+    },
+    "21d": {
+      "settled_count": 753,
+      "base_tsm_mse": 78.92579085857518,
+      "llm_tsm_mse": 77.03697233267954,
+      "uplift_pct": 2.393157553885222
+    },
+    "22d": {
+      "settled_count": 752,
+      "base_tsm_mse": 83.76166979507445,
+      "llm_tsm_mse": 81.7216755681142,
+      "uplift_pct": 2.43547464126631
+    },
+    "23d": {
+      "settled_count": 751,
+      "base_tsm_mse": 86.29439669527649,
+      "llm_tsm_mse": 84.22742232679856,
+      "uplift_pct": 2.3952590754841787
+    },
+    "24d": {
+      "settled_count": 750,
+      "base_tsm_mse": 90.91285898744366,
+      "llm_tsm_mse": 88.7800039707527,
+      "uplift_pct": 2.3460432775362734
+    },
+    "25d": {
+      "settled_count": 749,
+      "base_tsm_mse": 94.41334407153302,
+      "llm_tsm_mse": 92.19293639897732,
+      "uplift_pct": 2.351794329913137
+    },
+    "26d": {
+      "settled_count": 748,
+      "base_tsm_mse": 101.12348827258973,
+      "llm_tsm_mse": 98.84681878393387,
+      "uplift_pct": 2.2513755483976547
+    },
+    "27d": {
+      "settled_count": 747,
+      "base_tsm_mse": 104.71614654110579,
+      "llm_tsm_mse": 102.46246138324398,
+      "uplift_pct": 2.152184961253456
+    },
+    "28d": {
+      "settled_count": 746,
+      "base_tsm_mse": 109.8540207382277,
+      "llm_tsm_mse": 107.54041569904359,
+      "uplift_pct": 2.1060722435432973
+    },
+    "29d": {
+      "settled_count": 745,
+      "base_tsm_mse": 113.57534373536481,
+      "llm_tsm_mse": 111.18949227845305,
+      "uplift_pct": 2.1006772935425997
+    },
+    "30d": {
+      "settled_count": 744,
+      "base_tsm_mse": 117.79605044116326,
+      "llm_tsm_mse": 115.29832586042212,
+      "uplift_pct": 2.1203805826993305
+    }
+  }
+}

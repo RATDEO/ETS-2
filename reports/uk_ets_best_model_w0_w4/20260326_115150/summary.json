@@ -1,0 +1,41 @@
+{
+  "w0": {
+    "window": "W0",
+    "train_end": "2024-06-30",
+    "val_end": "2025-06-30",
+    "test_end": "2026-03-04",
+    "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260326_115150_bf9989",
+    "origin_start": "2025-07-01",
+    "origin_end": "2026-01-22",
+    "n_origins": 144,
+    "tsm_path_mse": 20.824586868286133,
+    "llm_path_mse": 20.561470234051253,
+    "path_improvement_pct": 0.012634902958655214,
+    "tsm_h20_mse": 25.991470336914062,
+    "llm_h20_mse": 25.545971524452572,
+    "h20_improvement_pct": 0.017140192789662057,
+    "tsm_h30_mse": 61.42319869995117,
+    "llm_h30_mse": 60.917808835583614,
+    "h30_improvement_pct": 0.00822799650725381,
+    "tsm_h20_sharpe": 2.0474791604240123,
+    "llm_h20_sharpe": 2.0474791604240123,
+    "tsm_h30_sharpe": 1.456618998851026,
+    "llm_h30_sharpe": 1.456618998851026
+  },
+  "w1_4_mean": {
+    "llm_path_mse": 59.12989492263639,
+    "tsm_path_mse": 59.91713571548462,
+    "path_improvement_pct": 0.010189475507687534,
+    "llm_h20_mse": 79.37939924619207,
+    "tsm_h20_mse": 80.55645751953125,
+    "h20_improvement_pct": 0.011292751977090593,
+    "llm_h30_mse": 119.83913608251524,
+    "tsm_h30_mse": 121.95289707183838,
+    "h30_improvement_pct": 0.012513878105086168,
+    "llm_h20_sharpe": 0.0010864156962249183,
+    "tsm_h20_sharpe": -0.01976726917640495,
+    "llm_h30_sharpe": -0.36015002448163225,
+    "tsm_h30_sharpe": -0.3866040083575153,
+    "n_windows": 4
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "protocol": "causal expanding-window",
+  "features": {
+    "precall": [
+      "asof_y",
+      "asof_y_return",
+      "asof_target_range_pct",
+      "asof_target_volume",
+      "asof_y_vol_20d",
+      "asof_y_ma_5d",
+      "asof_y_momentum_20d",
+      "asof_is_auction_day",
+      "asof_uk_icap_secondary_print_day",
+      "asof_coal_brent_ratio",
+      "asof_coal_brent_ratio_z20",
+      "asof_uk_power_gas_vol_ratio_20d",
+      "asof_uk_gas_hdd18_surprise_interaction",
+      "asof_uk_hdd18_7d_ma",
+      "asof_uka_brent_ratio",
+      "asof_uka_brent_ratio_z20",
+      "asof_uk_gas_vol_20d",
+      "asof_uk_temp_mean_c",
+      "base_move_h20_pct",
+      "base_move_h30_pct"
+    ],
+    "postcall": [
+      "apply_prompt_length",
+      "teaching_examples",
+      "matched_teaching_count",
+      "support_example_count",
+      "positive_memory_count",
+      "negative_memory_count",
+      "dynamic_frozen_horizons",
+      "adjust_h1",
+      "adjust_h5",
+      "adjust_h20",
+      "adjust_h30"
+    ]
+  },
+  "seed": 42
+}

@@ -1,0 +1,5160 @@
+{
+  "market": "UK ETS",
+  "horizon_days": 30,
+  "generated_at": "2026-04-01T22:35:46.315579+00:00",
+  "model_version": "uk_ets_llm_27b_live_reference",
+  "series": [
+    {
+      "target_date": "2022-11-28",
+      "forecast_made_on": "2022-10-17",
+      "actual": 69.02000427246094,
+      "base_tsm_forecast": 74.49897766113281,
+      "llm_tsm_forecast": 75.05771999359132
+    },
+    {
+      "target_date": "2022-11-29",
+      "forecast_made_on": "2022-10-18",
+      "actual": 72.69999694824219,
+      "base_tsm_forecast": 79.22547149658203,
+      "llm_tsm_forecast": 79.22547149658203
+    },
+    {
+      "target_date": "2022-11-30",
+      "forecast_made_on": "2022-10-19",
+      "actual": 69.07999420166016,
+      "base_tsm_forecast": 76.4449462890625,
+      "llm_tsm_forecast": 77.01828338623048
+    },
+    {
+      "target_date": "2022-12-01",
+      "forecast_made_on": "2022-10-20",
+      "actual": 71.31999969482422,
+      "base_tsm_forecast": 67.54872131347656,
+      "llm_tsm_forecast": 68.05533672332764
+    },
+    {
+      "target_date": "2022-12-02",
+      "forecast_made_on": "2022-10-21",
+      "actual": 75.17000579833984,
+      "base_tsm_forecast": 72.46900939941406,
+      "llm_tsm_forecast": 73.01252696990967
+    },
+    {
+      "target_date": "2022-12-05",
+      "forecast_made_on": "2022-10-24",
+      "actual": 79.18000030517578,
+      "base_tsm_forecast": 77.1580581665039,
+      "llm_tsm_forecast": 77.1580581665039
+    },
+    {
+      "target_date": "2022-12-06",
+      "forecast_made_on": "2022-10-25",
+      "actual": 77.54999542236328,
+      "base_tsm_forecast": 75.04114532470703,
+      "llm_tsm_forecast": 75.04114532470703
+    },
+    {
+      "target_date": "2022-12-07",
+      "forecast_made_on": "2022-10-26",
+      "actual": 79.16999816894531,
+      "base_tsm_forecast": 80.14249420166016,
+      "llm_tsm_forecast": 80.14249420166016
+    },
+    {
+      "target_date": "2022-12-08",
+      "forecast_made_on": "2022-10-27",
+      "actual": 77.91000366210938,
+      "base_tsm_forecast": 83.57313537597656,
+      "llm_tsm_forecast": 83.57313537597656
+    },
+    {
+      "target_date": "2022-12-09",
+      "forecast_made_on": "2022-10-28",
+      "actual": 76.10999298095703,
+      "base_tsm_forecast": 88.69384765625,
+      "llm_tsm_forecast": 88.69384765625
+    },
+    {
+      "target_date": "2022-12-12",
+      "forecast_made_on": "2022-10-31",
+      "actual": 74.72000122070312,
+      "base_tsm_forecast": 88.60120391845703,
+      "llm_tsm_forecast": 88.60120391845703
+    },
+    {
+      "target_date": "2022-12-13",
+      "forecast_made_on": "2022-11-01",
+      "actual": 74.58999633789062,
+      "base_tsm_forecast": 79.06793212890625,
+      "llm_tsm_forecast": 79.06793212890625
+    },
+    {
+      "target_date": "2022-12-14",
+      "forecast_made_on": "2022-11-02",
+      "actual": 72.56999969482422,
+      "base_tsm_forecast": 78.54861450195312,
+      "llm_tsm_forecast": 79.13772911071779
+    },
+    {
+      "target_date": "2022-12-15",
+      "forecast_made_on": "2022-11-03",
+      "actual": 68.0,
+      "base_tsm_forecast": 83.01978302001953,
+      "llm_tsm_forecast": 83.64243139266968
+    },
+    {
+      "target_date": "2022-12-16",
+      "forecast_made_on": "2022-11-04",
+      "actual": 70.61000061035156,
+      "base_tsm_forecast": 80.16825103759766,
+      "llm_tsm_forecast": 79.76740978240967
+    },
+    {
+      "target_date": "2022-12-19",
+      "forecast_made_on": "2022-11-07",
+      "actual": 70.90999603271484,
+      "base_tsm_forecast": 75.9671401977539,
+      "llm_tsm_forecast": 76.53689374923707
+    },
+    {
+      "target_date": "2022-12-20",
+      "forecast_made_on": "2022-11-08",
+      "actual": 69.1500015258789,
+      "base_tsm_forecast": 80.6845932006836,
+      "llm_tsm_forecast": 81.28972764968873
+    },
+    {
+      "target_date": "2022-12-21",
+      "forecast_made_on": "2022-11-09",
+      "actual": 69.5,
+      "base_tsm_forecast": 88.12757110595703,
+      "llm_tsm_forecast": 87.46661432266235
+    },
+    {
+      "target_date": "2022-12-22",
+      "forecast_made_on": "2022-11-10",
+      "actual": 68.18000030517578,
+      "base_tsm_forecast": 77.53829193115234,
+      "llm_tsm_forecast": 77.9259833908081
+    },
+    {
+      "target_date": "2022-12-23",
+      "forecast_made_on": "2022-11-11",
+      "actual": 70.25,
+      "base_tsm_forecast": 75.69170379638672,
+      "llm_tsm_forecast": 76.25939157485962
+    },
+    {
+      "target_date": "2022-12-26",
+      "forecast_made_on": "2022-11-14",
+      "actual": 71.55999755859375,
+      "base_tsm_forecast": 78.54725646972656,
+      "llm_tsm_forecast": 79.13636089324952
+    },
+    {
+      "target_date": "2022-12-28",
+      "forecast_made_on": "2022-11-15",
+      "actual": 69.23999786376953,
+      "base_tsm_forecast": 76.88123321533203,
+      "llm_tsm_forecast": 76.88123321533203
+    },
+    {
+      "target_date": "2022-12-29",
+      "forecast_made_on": "2022-11-16",
+      "actual": 69.22000122070312,
+      "base_tsm_forecast": 76.7380142211914,
+      "llm_tsm_forecast": 77.31354932785035
+    },
+    {
+      "target_date": "2022-12-30",
+      "forecast_made_on": "2022-11-17",
+      "actual": 68.20999908447266,
+      "base_tsm_forecast": 74.42086791992188,
+      "llm_tsm_forecast": 74.42086791992188
+    },
+    {
+      "target_date": "2023-01-02",
+      "forecast_made_on": "2022-11-18",
+      "actual": 69.05000305175781,
+      "base_tsm_forecast": 71.29145812988281,
+      "llm_tsm_forecast": 71.82614406585694
+    },
+    {
+      "target_date": "2023-01-03",
+      "forecast_made_on": "2022-11-21",
+      "actual": 67.80999755859375,
+      "base_tsm_forecast": 73.82923889160156,
+      "llm_tsm_forecast": 74.38295818328858
+    },
+    {
+      "target_date": "2023-01-04",
+      "forecast_made_on": "2022-11-22",
+      "actual": 66.52999877929688,
+      "base_tsm_forecast": 73.15899658203125,
+      "llm_tsm_forecast": 73.15899658203125
+    },
+    {
+      "target_date": "2023-01-05",
+      "forecast_made_on": "2022-11-23",
+      "actual": 63.46999740600586,
+      "base_tsm_forecast": 67.72754669189453,
+      "llm_tsm_forecast": 68.23550329208375
+    },
+    {
+      "target_date": "2023-01-06",
+      "forecast_made_on": "2022-11-24",
+      "actual": 63.72999954223633,
+      "base_tsm_forecast": 70.05487823486328,
+      "llm_tsm_forecast": 70.05487823486328
+    },
+    {
+      "target_date": "2023-01-09",
+      "forecast_made_on": "2022-11-25",
+      "actual": 64.31999969482422,
+      "base_tsm_forecast": 72.92424011230469,
+      "llm_tsm_forecast": 72.92424011230469
+    },
+    {
+      "target_date": "2023-01-10",
+      "forecast_made_on": "2022-11-28",
+      "actual": 67.7199935913086,
+      "base_tsm_forecast": 73.60466766357422,
+      "llm_tsm_forecast": 73.60466766357422
+    },
+    {
+      "target_date": "2023-01-11",
+      "forecast_made_on": "2022-11-29",
+      "actual": 64.69999694824219,
+      "base_tsm_forecast": 75.01380157470703,
+      "llm_tsm_forecast": 75.01380157470703
+    },
+    {
+      "target_date": "2023-01-12",
+      "forecast_made_on": "2022-11-30",
+      "actual": 62.500003814697266,
+      "base_tsm_forecast": 76.64513397216797,
+      "llm_tsm_forecast": 76.64513397216797
+    },
+    {
+      "target_date": "2023-01-13",
+      "forecast_made_on": "2022-12-01",
+      "actual": 63.91999816894531,
+      "base_tsm_forecast": 73.69780731201172,
+      "llm_tsm_forecast": 73.69780731201172
+    },
+    {
+      "target_date": "2023-01-16",
+      "forecast_made_on": "2022-12-02",
+      "actual": 63.709999084472656,
+      "base_tsm_forecast": 79.42672729492188,
+      "llm_tsm_forecast": 79.42672729492188
+    },
+    {
+      "target_date": "2023-01-17",
+      "forecast_made_on": "2022-12-05",
+      "actual": 62.2599983215332,
+      "base_tsm_forecast": 86.24703979492188,
+      "llm_tsm_forecast": 86.24703979492188
+    },
+    {
+      "target_date": "2023-01-18",
+      "forecast_made_on": "2022-12-06",
+      "actual": 63.48000717163086,
+      "base_tsm_forecast": 85.0909423828125,
+      "llm_tsm_forecast": 85.0909423828125
+    },
+    {
+      "target_date": "2023-01-19",
+      "forecast_made_on": "2022-12-07",
+      "actual": 65.66999816894531,
+      "base_tsm_forecast": 90.96924591064453,
+      "llm_tsm_forecast": 90.2869765663147
+    },
+    {
+      "target_date": "2023-01-20",
+      "forecast_made_on": "2022-12-08",
+      "actual": 65.41000366210938,
+      "base_tsm_forecast": 85.27947998046875,
+      "llm_tsm_forecast": 84.63988388061524
+    },
+    {
+      "target_date": "2023-01-23",
+      "forecast_made_on": "2022-12-09",
+      "actual": 64.75000762939453,
+      "base_tsm_forecast": 79.51961517333984,
+      "llm_tsm_forecast": 78.92321805953979
+    },
+    {
+      "target_date": "2023-01-24",
+      "forecast_made_on": "2022-12-12",
+      "actual": 63.63999938964844,
+      "base_tsm_forecast": 80.07572937011719,
+      "llm_tsm_forecast": 79.47516139984131
+    },
+    {
+      "target_date": "2023-01-25",
+      "forecast_made_on": "2022-12-13",
+      "actual": 62.1099967956543,
+      "base_tsm_forecast": 88.66329193115234,
+      "llm_tsm_forecast": 88.21997547149658
+    },
+    {
+      "target_date": "2023-01-26",
+      "forecast_made_on": "2022-12-14",
+      "actual": 61.560001373291016,
+      "base_tsm_forecast": 74.41035461425781,
+      "llm_tsm_forecast": 74.96843227386475
+    },
+    {
+      "target_date": "2023-01-27",
+      "forecast_made_on": "2022-12-15",
+      "actual": 68.87000274658203,
+      "base_tsm_forecast": 74.4997329711914,
+      "llm_tsm_forecast": 74.87223163604736
+    },
+    {
+      "target_date": "2023-01-30",
+      "forecast_made_on": "2022-12-16",
+      "actual": 69.87999725341797,
+      "base_tsm_forecast": 78.77720642089844,
+      "llm_tsm_forecast": 79.36803546905519
+    },
+    {
+      "target_date": "2023-01-31",
+      "forecast_made_on": "2022-12-19",
+      "actual": 82.1300048828125,
+      "base_tsm_forecast": 80.79000091552734,
+      "llm_tsm_forecast": 81.3959259223938
+    },
+    {
+      "target_date": "2023-02-01",
+      "forecast_made_on": "2022-12-20",
+      "actual": 73.26000213623047,
+      "base_tsm_forecast": 75.7566146850586,
+      "llm_tsm_forecast": 76.32478929519654
+    },
+    {
+      "target_date": "2023-02-02",
+      "forecast_made_on": "2022-12-21",
+      "actual": 75.5999984741211,
+      "base_tsm_forecast": 76.4888916015625,
+      "llm_tsm_forecast": 76.4888916015625
+    },
+    {
+      "target_date": "2023-02-03",
+      "forecast_made_on": "2022-12-22",
+      "actual": 76.12000274658203,
+      "base_tsm_forecast": 71.64216613769531,
+      "llm_tsm_forecast": 72.17948238372803
+    },
+    {
+      "target_date": "2023-02-06",
+      "forecast_made_on": "2022-12-23",
+      "actual": 80.47000122070312,
+      "base_tsm_forecast": 77.61043548583984,
+      "llm_tsm_forecast": 78.19251375198365
+    },
+    {
+      "target_date": "2023-02-07",
+      "forecast_made_on": "2022-12-26",
+      "actual": 83.0,
+      "base_tsm_forecast": 79.93675231933594,
+      "llm_tsm_forecast": 79.93675231933594
+    },
+    {
+      "target_date": "2023-02-08",
+      "forecast_made_on": "2022-12-28",
+      "actual": 77.97999572753906,
+      "base_tsm_forecast": 72.67001342773438,
+      "llm_tsm_forecast": 73.21503852844239
+    },
+    {
+      "target_date": "2023-02-09",
+      "forecast_made_on": "2022-12-29",
+      "actual": 78.43000030517578,
+      "base_tsm_forecast": 75.06398010253906,
+      "llm_tsm_forecast": 75.06398010253906
+    },
+    {
+      "target_date": "2023-02-10",
+      "forecast_made_on": "2022-12-30",
+      "actual": 79.22000122070312,
+      "base_tsm_forecast": 71.16120910644531,
+      "llm_tsm_forecast": 71.69491817474366
+    },
+    {
+      "target_date": "2023-02-13",
+      "forecast_made_on": "2023-01-02",
+      "actual": 80.30999755859375,
+      "base_tsm_forecast": 67.37571716308594,
+      "llm_tsm_forecast": 67.88103504180908
+    },
+    {
+      "target_date": "2023-02-14",
+      "forecast_made_on": "2023-01-03",
+      "actual": 83.73999786376953,
+      "base_tsm_forecast": 69.50019836425781,
+      "llm_tsm_forecast": 70.02144985198976
+    },
+    {
+      "target_date": "2023-02-15",
+      "forecast_made_on": "2023-01-04",
+      "actual": 78.45999908447266,
+      "base_tsm_forecast": 71.6180191040039,
+      "llm_tsm_forecast": 72.15515424728395
+    },
+    {
+      "target_date": "2023-02-16",
+      "forecast_made_on": "2023-01-05",
+      "actual": 79.77999877929688,
+      "base_tsm_forecast": 62.81174850463867,
+      "llm_tsm_forecast": 63.28283661842347
+    },
+    {
+      "target_date": "2023-02-17",
+      "forecast_made_on": "2023-01-06",
+      "actual": 79.94999694824219,
+      "base_tsm_forecast": 58.124473571777344,
+      "llm_tsm_forecast": 58.560407123565675
+    },
+    {
+      "target_date": "2023-02-20",
+      "forecast_made_on": "2023-01-09",
+      "actual": 79.44000244140625,
+      "base_tsm_forecast": 66.83850860595703,
+      "llm_tsm_forecast": 67.33979742050171
+    },
+    {
+      "target_date": "2023-02-21",
+      "forecast_made_on": "2023-01-10",
+      "actual": 80.95000457763672,
+      "base_tsm_forecast": 75.16949462890625,
+      "llm_tsm_forecast": 75.16949462890625
+    },
+    {
+      "target_date": "2023-02-22",
+      "forecast_made_on": "2023-01-11",
+      "actual": 81.80998992919922,
+      "base_tsm_forecast": 65.21122741699219,
+      "llm_tsm_forecast": 65.70031162261964
+    },
+    {
+      "target_date": "2023-02-23",
+      "forecast_made_on": "2023-01-12",
+      "actual": 78.65999603271484,
+      "base_tsm_forecast": 65.91211700439453,
+      "llm_tsm_forecast": 66.4064578819275
+    },
+    {
+      "target_date": "2023-02-24",
+      "forecast_made_on": "2023-01-13",
+      "actual": 78.95999908447266,
+      "base_tsm_forecast": 65.03235626220703,
+      "llm_tsm_forecast": 65.35751804351806
+    },
+    {
+      "target_date": "2023-02-27",
+      "forecast_made_on": "2023-01-16",
+      "actual": 79.80998992919922,
+      "base_tsm_forecast": 66.49017333984375,
+      "llm_tsm_forecast": 66.98884963989258
+    },
+    {
+      "target_date": "2023-02-28",
+      "forecast_made_on": "2023-01-17",
+      "actual": 81.44000244140625,
+      "base_tsm_forecast": 65.5217056274414,
+      "llm_tsm_forecast": 65.5217056274414
+    },
+    {
+      "target_date": "2023-03-01",
+      "forecast_made_on": "2023-01-18",
+      "actual": 81.2199935913086,
+      "base_tsm_forecast": 68.45722961425781,
+      "llm_tsm_forecast": 68.45722961425781
+    },
+    {
+      "target_date": "2023-03-02",
+      "forecast_made_on": "2023-01-19",
+      "actual": 79.99999237060547,
+      "base_tsm_forecast": 66.1187744140625,
+      "llm_tsm_forecast": 66.1187744140625
+    },
+    {
+      "target_date": "2023-03-03",
+      "forecast_made_on": "2023-01-20",
+      "actual": 78.13999938964844,
+      "base_tsm_forecast": 68.52861022949219,
+      "llm_tsm_forecast": 68.52861022949219
+    },
+    {
+      "target_date": "2023-03-06",
+      "forecast_made_on": "2023-01-23",
+      "actual": 76.76000213623047,
+      "base_tsm_forecast": 69.27396392822266,
+      "llm_tsm_forecast": 69.27396392822266
+    },
+    {
+      "target_date": "2023-03-07",
+      "forecast_made_on": "2023-01-24",
+      "actual": 75.64999389648438,
+      "base_tsm_forecast": 71.2027587890625,
+      "llm_tsm_forecast": 71.2027587890625
+    },
+    {
+      "target_date": "2023-03-08",
+      "forecast_made_on": "2023-01-25",
+      "actual": 77.69999694824219,
+      "base_tsm_forecast": 61.72340393066406,
+      "llm_tsm_forecast": 61.72340393066406
+    },
+    {
+      "target_date": "2023-03-09",
+      "forecast_made_on": "2023-01-26",
+      "actual": 79.69000244140625,
+      "base_tsm_forecast": 59.243309020996094,
+      "llm_tsm_forecast": 59.68763383865357
+    },
+    {
+      "target_date": "2023-03-10",
+      "forecast_made_on": "2023-01-27",
+      "actual": 80.24000549316406,
+      "base_tsm_forecast": 71.42202758789062,
+      "llm_tsm_forecast": 71.42202758789062
+    },
+    {
+      "target_date": "2023-03-13",
+      "forecast_made_on": "2023-01-30",
+      "actual": 81.5199966430664,
+      "base_tsm_forecast": 78.90110778808594,
+      "llm_tsm_forecast": 78.90110778808594
+    },
+    {
+      "target_date": "2023-03-14",
+      "forecast_made_on": "2023-01-31",
+      "actual": 73.61000061035156,
+      "base_tsm_forecast": 98.1081771850586,
+      "llm_tsm_forecast": 97.37236585617066
+    },
+    {
+      "target_date": "2023-03-15",
+      "forecast_made_on": "2023-02-01",
+      "actual": 76.70000457763672,
+      "base_tsm_forecast": 83.84159088134766,
+      "llm_tsm_forecast": 83.42238292694091
+    },
+    {
+      "target_date": "2023-03-16",
+      "forecast_made_on": "2023-02-02",
+      "actual": 73.41999816894531,
+      "base_tsm_forecast": 80.43498992919922,
+      "llm_tsm_forecast": 80.43498992919922
+    },
+    {
+      "target_date": "2023-03-17",
+      "forecast_made_on": "2023-02-03",
+      "actual": 70.6500015258789,
+      "base_tsm_forecast": 87.01473999023438,
+      "llm_tsm_forecast": 86.36212944030763
+    },
+    {
+      "target_date": "2023-03-20",
+      "forecast_made_on": "2023-02-06",
+      "actual": 70.76000213623047,
+      "base_tsm_forecast": 89.5896987915039,
+      "llm_tsm_forecast": 88.91777605056762
+    },
+    {
+      "target_date": "2023-03-21",
+      "forecast_made_on": "2023-02-07",
+      "actual": 72.94000244140625,
+      "base_tsm_forecast": 84.36936950683594,
+      "llm_tsm_forecast": 84.7912163543701
+    },
+    {
+      "target_date": "2023-03-22",
+      "forecast_made_on": "2023-02-08",
+      "actual": 71.16000366210938,
+      "base_tsm_forecast": 99.9264907836914,
+      "llm_tsm_forecast": 99.17704210281373
+    },
+    {
+      "target_date": "2023-03-23",
+      "forecast_made_on": "2023-02-09",
+      "actual": 70.70000457763672,
+      "base_tsm_forecast": 88.3841323852539,
+      "llm_tsm_forecast": 87.72125139236451
+    },
+    {
+      "target_date": "2023-03-24",
+      "forecast_made_on": "2023-02-10",
+      "actual": 72.45999908447266,
+      "base_tsm_forecast": 93.93458557128906,
+      "llm_tsm_forecast": 93.2300761795044
+    },
+    {
+      "target_date": "2023-03-27",
+      "forecast_made_on": "2023-02-13",
+      "actual": 69.87000274658203,
+      "base_tsm_forecast": 83.36881256103516,
+      "llm_tsm_forecast": 82.7435464668274
+    },
+    {
+      "target_date": "2023-03-28",
+      "forecast_made_on": "2023-02-14",
+      "actual": 75.31999969482422,
+      "base_tsm_forecast": 112.7173843383789,
+      "llm_tsm_forecast": 111.87200395584107
+    },
+    {
+      "target_date": "2023-03-29",
+      "forecast_made_on": "2023-02-15",
+      "actual": 70.47999572753906,
+      "base_tsm_forecast": 86.35765838623047,
+      "llm_tsm_forecast": 87.0053408241272
+    },
+    {
+      "target_date": "2023-03-30",
+      "forecast_made_on": "2023-02-16",
+      "actual": 70.62000274658203,
+      "base_tsm_forecast": 89.28553009033203,
+      "llm_tsm_forecast": 88.61588861465455
+    },
+    {
+      "target_date": "2023-03-31",
+      "forecast_made_on": "2023-02-17",
+      "actual": 71.29999542236328,
+      "base_tsm_forecast": 91.22694396972656,
+      "llm_tsm_forecast": 90.54274188995362
+    },
+    {
+      "target_date": "2023-04-03",
+      "forecast_made_on": "2023-02-20",
+      "actual": 71.54000091552734,
+      "base_tsm_forecast": 96.89661407470703,
+      "llm_tsm_forecast": 96.16988946914674
+    },
+    {
+      "target_date": "2023-04-04",
+      "forecast_made_on": "2023-02-21",
+      "actual": 72.52999877929688,
+      "base_tsm_forecast": 106.59420013427734,
+      "llm_tsm_forecast": 105.79474363327027
+    },
+    {
+      "target_date": "2023-04-05",
+      "forecast_made_on": "2023-02-22",
+      "actual": 73.50999450683594,
+      "base_tsm_forecast": 94.28601837158203,
+      "llm_tsm_forecast": 93.57887323379516
+    },
+    {
+      "target_date": "2023-04-06",
+      "forecast_made_on": "2023-02-23",
+      "actual": 69.51000213623047,
+      "base_tsm_forecast": 80.74217987060547,
+      "llm_tsm_forecast": 80.13661352157594
+    },
+    {
+      "target_date": "2023-04-10",
+      "forecast_made_on": "2023-02-24",
+      "actual": 71.44999694824219,
+      "base_tsm_forecast": 95.41220092773438,
+      "llm_tsm_forecast": 94.69660942077637
+    },
+    {
+      "target_date": "2023-04-11",
+      "forecast_made_on": "2023-02-27",
+      "actual": 66.8699951171875,
+      "base_tsm_forecast": 94.0801010131836,
+      "llm_tsm_forecast": 93.37450025558472
+    },
+    {
+      "target_date": "2023-04-12",
+      "forecast_made_on": "2023-02-28",
+      "actual": 71.72000122070312,
+      "base_tsm_forecast": 92.52617645263672,
+      "llm_tsm_forecast": 91.83223012924195
+    },
+    {
+      "target_date": "2023-04-13",
+      "forecast_made_on": "2023-03-01",
+      "actual": 70.16000366210938,
+      "base_tsm_forecast": 82.85721588134766,
+      "llm_tsm_forecast": 82.23578676223755
+    },
+    {
+      "target_date": "2023-04-14",
+      "forecast_made_on": "2023-03-02",
+      "actual": 68.66000366210938,
+      "base_tsm_forecast": 88.8619613647461,
+      "llm_tsm_forecast": 88.1954966545105
+    },
+    {
+      "target_date": "2023-04-17",
+      "forecast_made_on": "2023-03-03",
+      "actual": 68.18000030517578,
+      "base_tsm_forecast": 86.63232421875,
+      "llm_tsm_forecast": 85.98258178710938
+    },
+    {
+      "target_date": "2023-04-18",
+      "forecast_made_on": "2023-03-06",
+      "actual": 67.21000671386719,
+      "base_tsm_forecast": 82.4771499633789,
+      "llm_tsm_forecast": 82.4771499633789
+    },
+    {
+      "target_date": "2023-04-19",
+      "forecast_made_on": "2023-03-07",
+      "actual": 66.77999877929688,
+      "base_tsm_forecast": 81.46041107177734,
+      "llm_tsm_forecast": 81.46041107177734
+    },
+    {
+      "target_date": "2023-04-20",
+      "forecast_made_on": "2023-03-08",
+      "actual": 64.5,
+      "base_tsm_forecast": 81.17530059814453,
+      "llm_tsm_forecast": 80.56648584365846
+    },
+    {
+      "target_date": "2023-04-21",
+      "forecast_made_on": "2023-03-09",
+      "actual": 62.30000305175781,
+      "base_tsm_forecast": 83.53778076171875,
+      "llm_tsm_forecast": 82.91124740600587
+    },
+    {
+      "target_date": "2023-04-24",
+      "forecast_made_on": "2023-03-10",
+      "actual": 60.839996337890625,
+      "base_tsm_forecast": 91.22407531738281,
+      "llm_tsm_forecast": 90.53989475250245
+    },
+    {
+      "target_date": "2023-04-25",
+      "forecast_made_on": "2023-03-13",
+      "actual": 59.87999725341797,
+      "base_tsm_forecast": 87.2581558227539,
+      "llm_tsm_forecast": 86.60371965408325
+    },
+    {
+      "target_date": "2023-04-26",
+      "forecast_made_on": "2023-03-14",
+      "actual": 61.13999938964844,
+      "base_tsm_forecast": 80.87662506103516,
+      "llm_tsm_forecast": 81.48319974899293
+    },
+    {
+      "target_date": "2023-04-27",
+      "forecast_made_on": "2023-03-15",
+      "actual": 59.96999740600586,
+      "base_tsm_forecast": 82.3211669921875,
+      "llm_tsm_forecast": 81.7037582397461
+    },
+    {
+      "target_date": "2023-04-28",
+      "forecast_made_on": "2023-03-16",
+      "actual": 59.810001373291016,
+      "base_tsm_forecast": 73.45121002197266,
+      "llm_tsm_forecast": 74.00209409713746
+    },
+    {
+      "target_date": "2023-05-01",
+      "forecast_made_on": "2023-03-17",
+      "actual": 59.290000915527344,
+      "base_tsm_forecast": 70.01457214355469,
+      "llm_tsm_forecast": 70.53968143463135
+    },
+    {
+      "target_date": "2023-05-02",
+      "forecast_made_on": "2023-03-20",
+      "actual": 59.76000213623047,
+      "base_tsm_forecast": 77.30107116699219,
+      "llm_tsm_forecast": 77.88082920074463
+    },
+    {
+      "target_date": "2023-05-03",
+      "forecast_made_on": "2023-03-21",
+      "actual": 58.45000076293945,
+      "base_tsm_forecast": 78.85237121582031,
+      "llm_tsm_forecast": 79.24663307189941
+    },
+    {
+      "target_date": "2023-05-04",
+      "forecast_made_on": "2023-03-22",
+      "actual": 56.80000305175781,
+      "base_tsm_forecast": 70.80046081542969,
+      "llm_tsm_forecast": 71.15446311950683
+    },
+    {
+      "target_date": "2023-05-05",
+      "forecast_made_on": "2023-03-23",
+      "actual": 57.15999984741211,
+      "base_tsm_forecast": 77.63033294677734,
+      "llm_tsm_forecast": 77.63033294677734
+    },
+    {
+      "target_date": "2023-05-08",
+      "forecast_made_on": "2023-03-24",
+      "actual": 58.089996337890625,
+      "base_tsm_forecast": 76.66468811035156,
+      "llm_tsm_forecast": 76.66468811035156
+    },
+    {
+      "target_date": "2023-05-09",
+      "forecast_made_on": "2023-03-27",
+      "actual": 59.570003509521484,
+      "base_tsm_forecast": 72.32255554199219,
+      "llm_tsm_forecast": 72.86497470855713
+    },
+    {
+      "target_date": "2023-05-10",
+      "forecast_made_on": "2023-03-28",
+      "actual": 57.369998931884766,
+      "base_tsm_forecast": 71.61306762695312,
+      "llm_tsm_forecast": 71.61306762695312
+    },
+    {
+      "target_date": "2023-05-11",
+      "forecast_made_on": "2023-03-29",
+      "actual": 58.96000289916992,
+      "base_tsm_forecast": 79.01837158203125,
+      "llm_tsm_forecast": 78.62327972412109
+    },
+    {
+      "target_date": "2023-05-12",
+      "forecast_made_on": "2023-03-30",
+      "actual": 58.27000427246094,
+      "base_tsm_forecast": 73.05555725097656,
+      "llm_tsm_forecast": 73.60347393035889
+    },
+    {
+      "target_date": "2023-05-15",
+      "forecast_made_on": "2023-03-31",
+      "actual": 56.83000183105469,
+      "base_tsm_forecast": 76.51122283935547,
+      "llm_tsm_forecast": 76.51122283935547
+    },
+    {
+      "target_date": "2023-05-16",
+      "forecast_made_on": "2023-04-03",
+      "actual": 55.06999969482422,
+      "base_tsm_forecast": 73.78128051757812,
+      "llm_tsm_forecast": 74.33464012145997
+    },
+    {
+      "target_date": "2023-05-17",
+      "forecast_made_on": "2023-04-04",
+      "actual": 55.249996185302734,
+      "base_tsm_forecast": 70.59075164794922,
+      "llm_tsm_forecast": 70.59075164794922
+    },
+    {
+      "target_date": "2023-05-18",
+      "forecast_made_on": "2023-04-05",
+      "actual": 58.17000198364258,
+      "base_tsm_forecast": 84.24232482910156,
+      "llm_tsm_forecast": 84.24232482910156
+    },
+    {
+      "target_date": "2023-05-19",
+      "forecast_made_on": "2023-04-06",
+      "actual": 60.31999969482422,
+      "base_tsm_forecast": 73.50675201416016,
+      "llm_tsm_forecast": 74.05805265426636
+    },
+    {
+      "target_date": "2023-05-22",
+      "forecast_made_on": "2023-04-10",
+      "actual": 59.41999816894531,
+      "base_tsm_forecast": 69.04959106445312,
+      "llm_tsm_forecast": 68.53171913146973
+    },
+    {
+      "target_date": "2023-05-23",
+      "forecast_made_on": "2023-04-11",
+      "actual": 51.470001220703125,
+      "base_tsm_forecast": 67.03617858886719,
+      "llm_tsm_forecast": 67.5389499282837
+    },
+    {
+      "target_date": "2023-05-24",
+      "forecast_made_on": "2023-04-12",
+      "actual": 53.83000183105469,
+      "base_tsm_forecast": 83.16475677490234,
+      "llm_tsm_forecast": 82.74893299102783
+    },
+    {
+      "target_date": "2023-05-25",
+      "forecast_made_on": "2023-04-13",
+      "actual": 53.62000274658203,
+      "base_tsm_forecast": 70.70951843261719,
+      "llm_tsm_forecast": 70.70951843261719
+    },
+    {
+      "target_date": "2023-05-26",
+      "forecast_made_on": "2023-04-14",
+      "actual": 51.68000030517578,
+      "base_tsm_forecast": 73.68460845947266,
+      "llm_tsm_forecast": 74.2372430229187
+    },
+    {
+      "target_date": "2023-05-29",
+      "forecast_made_on": "2023-04-17",
+      "actual": 51.679996490478516,
+      "base_tsm_forecast": 73.75203704833984,
+      "llm_tsm_forecast": 73.75203704833984
+    },
+    {
+      "target_date": "2023-05-30",
+      "forecast_made_on": "2023-04-18",
+      "actual": 52.68000030517578,
+      "base_tsm_forecast": 73.01802062988281,
+      "llm_tsm_forecast": 73.56565578460693
+    },
+    {
+      "target_date": "2023-05-31",
+      "forecast_made_on": "2023-04-19",
+      "actual": 48.349998474121094,
+      "base_tsm_forecast": 69.68699645996094,
+      "llm_tsm_forecast": 70.20964893341065
+    },
+    {
+      "target_date": "2023-06-01",
+      "forecast_made_on": "2023-04-20",
+      "actual": 50.779998779296875,
+      "base_tsm_forecast": 71.33492279052734,
+      "llm_tsm_forecast": 71.86993471145631
+    },
+    {
+      "target_date": "2023-06-02",
+      "forecast_made_on": "2023-04-21",
+      "actual": 49.589996337890625,
+      "base_tsm_forecast": 59.86412048339844,
+      "llm_tsm_forecast": 59.415139579772955
+    },
+    {
+      "target_date": "2023-06-05",
+      "forecast_made_on": "2023-04-24",
+      "actual": 49.749996185302734,
+      "base_tsm_forecast": 67.15257263183594,
+      "llm_tsm_forecast": 67.65621692657471
+    },
+    {
+      "target_date": "2023-06-06",
+      "forecast_made_on": "2023-04-25",
+      "actual": 57.60000228881836,
+      "base_tsm_forecast": 58.06229019165039,
+      "llm_tsm_forecast": 58.497757368087775
+    },
+    {
+      "target_date": "2023-06-07",
+      "forecast_made_on": "2023-04-26",
+      "actual": 50.05999755859375,
+      "base_tsm_forecast": 65.29398345947266,
+      "llm_tsm_forecast": 65.29398345947266
+    },
+    {
+      "target_date": "2023-06-08",
+      "forecast_made_on": "2023-04-27",
+      "actual": 51.790000915527344,
+      "base_tsm_forecast": 63.67548370361328,
+      "llm_tsm_forecast": 64.15304983139039
+    },
+    {
+      "target_date": "2023-06-09",
+      "forecast_made_on": "2023-04-28",
+      "actual": 51.650001525878906,
+      "base_tsm_forecast": 61.23822021484375,
+      "llm_tsm_forecast": 61.54441131591796
+    },
+    {
+      "target_date": "2023-06-12",
+      "forecast_made_on": "2023-05-01",
+      "actual": 52.09000015258789,
+      "base_tsm_forecast": 60.231971740722656,
+      "llm_tsm_forecast": 60.231971740722656
+    },
+    {
+      "target_date": "2023-06-13",
+      "forecast_made_on": "2023-05-02",
+      "actual": 52.46999740600586,
+      "base_tsm_forecast": 59.09799575805664,
+      "llm_tsm_forecast": 59.09799575805664
+    },
+    {
+      "target_date": "2023-06-14",
+      "forecast_made_on": "2023-05-03",
+      "actual": 53.87999725341797,
+      "base_tsm_forecast": 60.82722854614258,
+      "llm_tsm_forecast": 61.283432760238654
+    },
+    {
+      "target_date": "2023-06-15",
+      "forecast_made_on": "2023-05-04",
+      "actual": 57.30999755859375,
+      "base_tsm_forecast": 60.12843704223633,
+      "llm_tsm_forecast": 60.579400320053104
+    },
+    {
+      "target_date": "2023-06-16",
+      "forecast_made_on": "2023-05-05",
+      "actual": 58.97999954223633,
+      "base_tsm_forecast": 54.347442626953125,
+      "llm_tsm_forecast": 54.75504844665528
+    },
+    {
+      "target_date": "2023-06-19",
+      "forecast_made_on": "2023-05-08",
+      "actual": 57.869998931884766,
+      "base_tsm_forecast": 57.97398376464844,
+      "llm_tsm_forecast": 58.26385368347167
+    },
+    {
+      "target_date": "2023-06-20",
+      "forecast_made_on": "2023-05-09",
+      "actual": 52.939998626708984,
+      "base_tsm_forecast": 61.16594696044922,
+      "llm_tsm_forecast": 61.16594696044922
+    },
+    {
+      "target_date": "2023-06-21",
+      "forecast_made_on": "2023-05-10",
+      "actual": 57.999996185302734,
+      "base_tsm_forecast": 61.17591094970703,
+      "llm_tsm_forecast": 61.17591094970703
+    },
+    {
+      "target_date": "2023-08-02",
+      "forecast_made_on": "2023-06-21",
+      "actual": 41.34000015258789,
+      "base_tsm_forecast": 60.15655517578125,
+      "llm_tsm_forecast": 60.15655517578125
+    },
+    {
+      "target_date": "2023-08-03",
+      "forecast_made_on": "2023-06-22",
+      "actual": 39.79999923706055,
+      "base_tsm_forecast": 60.82659149169922,
+      "llm_tsm_forecast": 60.37039205551148
+    },
+    {
+      "target_date": "2023-08-04",
+      "forecast_made_on": "2023-06-23",
+      "actual": 39.75,
+      "base_tsm_forecast": 62.48074722290039,
+      "llm_tsm_forecast": 62.168343486785886
+    },
+    {
+      "target_date": "2023-08-07",
+      "forecast_made_on": "2023-06-26",
+      "actual": 40.43000411987305,
+      "base_tsm_forecast": 67.74270629882812,
+      "llm_tsm_forecast": 67.23463600158692
+    },
+    {
+      "target_date": "2023-08-08",
+      "forecast_made_on": "2023-06-27",
+      "actual": 39.470001220703125,
+      "base_tsm_forecast": 62.122947692871094,
+      "llm_tsm_forecast": 62.58886980056763
+    },
+    {
+      "target_date": "2023-08-09",
+      "forecast_made_on": "2023-06-28",
+      "actual": 39.72999954223633,
+      "base_tsm_forecast": 56.08391189575195,
+      "llm_tsm_forecast": 56.5045412349701
+    },
+    {
+      "target_date": "2023-08-10",
+      "forecast_made_on": "2023-06-29",
+      "actual": 39.220001220703125,
+      "base_tsm_forecast": 60.63418197631836,
+      "llm_tsm_forecast": 60.17942561149597
+    },
+    {
+      "target_date": "2023-08-11",
+      "forecast_made_on": "2023-06-30",
+      "actual": 38.959999084472656,
+      "base_tsm_forecast": 64.80152893066406,
+      "llm_tsm_forecast": 64.31551746368409
+    },
+    {
+      "target_date": "2023-08-14",
+      "forecast_made_on": "2023-07-03",
+      "actual": 39.51000213623047,
+      "base_tsm_forecast": 63.346435546875,
+      "llm_tsm_forecast": 63.82153381347656
+    },
+    {
+      "target_date": "2023-08-15",
+      "forecast_made_on": "2023-07-04",
+      "actual": 48.25,
+      "base_tsm_forecast": 61.94952392578125,
+      "llm_tsm_forecast": 61.484902496337895
+    },
+    {
+      "target_date": "2023-08-16",
+      "forecast_made_on": "2023-07-05",
+      "actual": 39.36000061035156,
+      "base_tsm_forecast": 64.83289337158203,
+      "llm_tsm_forecast": 64.50872890472412
+    },
+    {
+      "target_date": "2023-08-17",
+      "forecast_made_on": "2023-07-06",
+      "actual": 40.150001525878906,
+      "base_tsm_forecast": 64.28526306152344,
+      "llm_tsm_forecast": 63.803123588562016
+    },
+    {
+      "target_date": "2023-08-18",
+      "forecast_made_on": "2023-07-07",
+      "actual": 41.3599967956543,
+      "base_tsm_forecast": 61.5770263671875,
+      "llm_tsm_forecast": 61.115198669433596
+    },
+    {
+      "target_date": "2023-08-21",
+      "forecast_made_on": "2023-07-10",
+      "actual": 42.59000015258789,
+      "base_tsm_forecast": 56.4476203918457,
+      "llm_tsm_forecast": 56.02426323890686
+    },
+    {
+      "target_date": "2023-08-22",
+      "forecast_made_on": "2023-07-11",
+      "actual": 44.849998474121094,
+      "base_tsm_forecast": 59.2957878112793,
+      "llm_tsm_forecast": 58.851069402694705
+    },
+    {
+      "target_date": "2023-08-23",
+      "forecast_made_on": "2023-07-12",
+      "actual": 49.61000061035156,
+      "base_tsm_forecast": 64.26355743408203,
+      "llm_tsm_forecast": 63.781580753326416
+    },
+    {
+      "target_date": "2023-08-24",
+      "forecast_made_on": "2023-07-13",
+      "actual": 49.18000411987305,
+      "base_tsm_forecast": 66.9218978881836,
+      "llm_tsm_forecast": 66.41998365402222
+    },
+    {
+      "target_date": "2023-08-25",
+      "forecast_made_on": "2023-07-14",
+      "actual": 46.66999816894531,
+      "base_tsm_forecast": 61.03279113769531,
+      "llm_tsm_forecast": 60.5750452041626
+    },
+    {
+      "target_date": "2023-08-28",
+      "forecast_made_on": "2023-07-17",
+      "actual": 47.380001068115234,
+      "base_tsm_forecast": 59.51877212524414,
+      "llm_tsm_forecast": 59.072381334304815
+    },
+    {
+      "target_date": "2023-08-29",
+      "forecast_made_on": "2023-07-18",
+      "actual": 43.470001220703125,
+      "base_tsm_forecast": 63.04070281982422,
+      "llm_tsm_forecast": 62.56789754867554
+    },
+    {
+      "target_date": "2023-08-30",
+      "forecast_made_on": "2023-07-19",
+      "actual": 46.6400032043457,
+      "base_tsm_forecast": 62.55189895629883,
+      "llm_tsm_forecast": 62.08275971412659
+    },
+    {
+      "target_date": "2023-08-31",
+      "forecast_made_on": "2023-07-20",
+      "actual": 46.560001373291016,
+      "base_tsm_forecast": 60.852073669433594,
+      "llm_tsm_forecast": 60.39568311691284
+    },
+    {
+      "target_date": "2023-09-01",
+      "forecast_made_on": "2023-07-21",
+      "actual": 46.6099967956543,
+      "base_tsm_forecast": 58.293270111083984,
+      "llm_tsm_forecast": 57.856070585250855
+    },
+    {
+      "target_date": "2023-09-04",
+      "forecast_made_on": "2023-07-24",
+      "actual": 44.560001373291016,
+      "base_tsm_forecast": 59.83544921875,
+      "llm_tsm_forecast": 59.38668334960938
+    },
+    {
+      "target_date": "2023-09-05",
+      "forecast_made_on": "2023-07-25",
+      "actual": 39.22999954223633,
+      "base_tsm_forecast": 58.574012756347656,
+      "llm_tsm_forecast": 58.134707660675055
+    },
+    {
+      "target_date": "2023-09-06",
+      "forecast_made_on": "2023-07-26",
+      "actual": 43.38999938964844,
+      "base_tsm_forecast": 55.657814025878906,
+      "llm_tsm_forecast": 55.240380420684815
+    },
+    {
+      "target_date": "2023-09-07",
+      "forecast_made_on": "2023-07-27",
+      "actual": 42.75,
+      "base_tsm_forecast": 53.357269287109375,
+      "llm_tsm_forecast": 52.957089767456054
+    },
+    {
+      "target_date": "2023-09-08",
+      "forecast_made_on": "2023-07-28",
+      "actual": 42.310001373291016,
+      "base_tsm_forecast": 56.66462326049805,
+      "llm_tsm_forecast": 56.239638586044315
+    },
+    {
+      "target_date": "2023-09-11",
+      "forecast_made_on": "2023-07-31",
+      "actual": 41.6099967956543,
+      "base_tsm_forecast": 60.19881820678711,
+      "llm_tsm_forecast": 59.74732707023621
+    },
+    {
+      "target_date": "2023-09-12",
+      "forecast_made_on": "2023-08-01",
+      "actual": 39.849998474121094,
+      "base_tsm_forecast": 58.48109436035156,
+      "llm_tsm_forecast": 58.04248615264893
+    },
+    {
+      "target_date": "2023-09-13",
+      "forecast_made_on": "2023-08-02",
+      "actual": 38.790000915527344,
+      "base_tsm_forecast": 53.61775588989258,
+      "llm_tsm_forecast": 53.215622720718386
+    },
+    {
+      "target_date": "2023-09-14",
+      "forecast_made_on": "2023-08-03",
+      "actual": 38.46999740600586,
+      "base_tsm_forecast": 53.197357177734375,
+      "llm_tsm_forecast": 52.79837699890137
+    },
+    {
+      "target_date": "2023-09-15",
+      "forecast_made_on": "2023-08-04",
+      "actual": 38.46999740600586,
+      "base_tsm_forecast": 54.27509307861328,
+      "llm_tsm_forecast": 53.868029880523686
+    },
+    {
+      "target_date": "2023-09-18",
+      "forecast_made_on": "2023-08-07",
+      "actual": 37.779998779296875,
+      "base_tsm_forecast": 53.79343795776367,
+      "llm_tsm_forecast": 53.38998717308045
+    },
+    {
+      "target_date": "2023-09-19",
+      "forecast_made_on": "2023-08-08",
+      "actual": 36.08000183105469,
+      "base_tsm_forecast": 51.124122619628906,
+      "llm_tsm_forecast": 50.74069169998169
+    },
+    {
+      "target_date": "2023-09-20",
+      "forecast_made_on": "2023-08-09",
+      "actual": 36.029998779296875,
+      "base_tsm_forecast": 51.598121643066406,
+      "llm_tsm_forecast": 51.21113573074341
+    },
+    {
+      "target_date": "2023-09-21",
+      "forecast_made_on": "2023-08-10",
+      "actual": 35.13999938964844,
+      "base_tsm_forecast": 51.76896667480469,
+      "llm_tsm_forecast": 51.38069942474365
+    },
+    {
+      "target_date": "2023-09-22",
+      "forecast_made_on": "2023-08-11",
+      "actual": 33.75,
+      "base_tsm_forecast": 53.631465911865234,
+      "llm_tsm_forecast": 53.22922991752625
+    },
+    {
+      "target_date": "2023-09-25",
+      "forecast_made_on": "2023-08-14",
+      "actual": 36.13999557495117,
+      "base_tsm_forecast": 49.02769088745117,
+      "llm_tsm_forecast": 48.65998320579529
+    },
+    {
+      "target_date": "2023-09-26",
+      "forecast_made_on": "2023-08-15",
+      "actual": 41.56999969482422,
+      "base_tsm_forecast": 50.346256256103516,
+      "llm_tsm_forecast": 49.96865933418274
+    },
+    {
+      "target_date": "2023-09-27",
+      "forecast_made_on": "2023-08-16",
+      "actual": 35.380001068115234,
+      "base_tsm_forecast": 52.06828689575195,
+      "llm_tsm_forecast": 51.67777474403382
+    },
+    {
+      "target_date": "2023-09-28",
+      "forecast_made_on": "2023-08-17",
+      "actual": 35.95000076293945,
+      "base_tsm_forecast": 53.92799758911133,
+      "llm_tsm_forecast": 53.523537607193
+    },
+    {
+      "target_date": "2023-09-29",
+      "forecast_made_on": "2023-08-18",
+      "actual": 36.459999084472656,
+      "base_tsm_forecast": 50.906517028808594,
+      "llm_tsm_forecast": 50.52471815109253
+    },
+    {
+      "target_date": "2023-10-02",
+      "forecast_made_on": "2023-08-21",
+      "actual": 38.87999725341797,
+      "base_tsm_forecast": 45.789005279541016,
+      "llm_tsm_forecast": 46.132422819137574
+    },
+    {
+      "target_date": "2023-10-03",
+      "forecast_made_on": "2023-08-22",
+      "actual": 39.31999969482422,
+      "base_tsm_forecast": 49.15635681152344,
+      "llm_tsm_forecast": 48.78768413543701
+    },
+    {
+      "target_date": "2023-10-04",
+      "forecast_made_on": "2023-08-23",
+      "actual": 41.189998626708984,
+      "base_tsm_forecast": 57.26410675048828,
+      "llm_tsm_forecast": 56.83462594985962
+    },
+    {
+      "target_date": "2023-10-05",
+      "forecast_made_on": "2023-08-24",
+      "actual": 40.0,
+      "base_tsm_forecast": 53.86094284057617,
+      "llm_tsm_forecast": 53.45698576927185
+    },
+    {
+      "target_date": "2023-10-06",
+      "forecast_made_on": "2023-08-25",
+      "actual": 41.32999801635742,
+      "base_tsm_forecast": 51.48577117919922,
+      "llm_tsm_forecast": 51.099627895355226
+    },
+    {
+      "target_date": "2023-10-09",
+      "forecast_made_on": "2023-08-28",
+      "actual": 43.48999786376953,
+      "base_tsm_forecast": 52.90839767456055,
+      "llm_tsm_forecast": 52.51158469200134
+    },
+    {
+      "target_date": "2023-10-10",
+      "forecast_made_on": "2023-08-29",
+      "actual": 46.16999816894531,
+      "base_tsm_forecast": 52.654258728027344,
+      "llm_tsm_forecast": 52.25935178756714
+    },
+    {
+      "target_date": "2023-10-11",
+      "forecast_made_on": "2023-08-30",
+      "actual": 48.1199951171875,
+      "base_tsm_forecast": 48.68940734863281,
+      "llm_tsm_forecast": 49.054577903747564
+    },
+    {
+      "target_date": "2023-10-12",
+      "forecast_made_on": "2023-08-31",
+      "actual": 49.15999984741211,
+      "base_tsm_forecast": 50.82421875,
+      "llm_tsm_forecast": 50.443037109375005
+    },
+    {
+      "target_date": "2023-10-13",
+      "forecast_made_on": "2023-09-01",
+      "actual": 49.29999923706055,
+      "base_tsm_forecast": 50.22161865234375,
+      "llm_tsm_forecast": 49.844956512451176
+    },
+    {
+      "target_date": "2023-10-16",
+      "forecast_made_on": "2023-09-04",
+      "actual": 51.54999542236328,
+      "base_tsm_forecast": 54.36038589477539,
+      "llm_tsm_forecast": 53.952683000564576
+    },
+    {
+      "target_date": "2023-10-17",
+      "forecast_made_on": "2023-09-05",
+      "actual": 39.459999084472656,
+      "base_tsm_forecast": 52.08055114746094,
+      "llm_tsm_forecast": 51.68994701385498
+    },
+    {
+      "target_date": "2023-10-18",
+      "forecast_made_on": "2023-09-06",
+      "actual": 48.3699951171875,
+      "base_tsm_forecast": 48.42450714111328,
+      "llm_tsm_forecast": 48.78769094467163
+    },
+    {
+      "target_date": "2023-10-19",
+      "forecast_made_on": "2023-09-07",
+      "actual": 46.119998931884766,
+      "base_tsm_forecast": 46.94090270996094,
+      "llm_tsm_forecast": 46.94090270996094
+    },
+    {
+      "target_date": "2023-10-20",
+      "forecast_made_on": "2023-09-08",
+      "actual": 42.619998931884766,
+      "base_tsm_forecast": 52.70231628417969,
+      "llm_tsm_forecast": 52.307048912048344
+    },
+    {
+      "target_date": "2023-10-23",
+      "forecast_made_on": "2023-09-11",
+      "actual": 42.339996337890625,
+      "base_tsm_forecast": 56.230472564697266,
+      "llm_tsm_forecast": 55.808744020462036
+    },
+    {
+      "target_date": "2023-10-24",
+      "forecast_made_on": "2023-09-12",
+      "actual": 38.019996643066406,
+      "base_tsm_forecast": 52.570125579833984,
+      "llm_tsm_forecast": 52.17584963798523
+    },
+    {
+      "target_date": "2023-10-25",
+      "forecast_made_on": "2023-09-13",
+      "actual": 40.27000045776367,
+      "base_tsm_forecast": 49.35207748413086,
+      "llm_tsm_forecast": 48.98193690299988
+    },
+    {
+      "target_date": "2023-10-26",
+      "forecast_made_on": "2023-09-14",
+      "actual": 38.880001068115234,
+      "base_tsm_forecast": 49.24738693237305,
+      "llm_tsm_forecast": 48.87803153038025
+    },
+    {
+      "target_date": "2023-10-27",
+      "forecast_made_on": "2023-09-15",
+      "actual": 38.34000015258789,
+      "base_tsm_forecast": 50.525611877441406,
+      "llm_tsm_forecast": 50.1466697883606
+    },
+    {
+      "target_date": "2023-10-30",
+      "forecast_made_on": "2023-09-18",
+      "actual": 37.27000045776367,
+      "base_tsm_forecast": 48.02732849121094,
+      "llm_tsm_forecast": 47.667123527526854
+    },
+    {
+      "target_date": "2023-10-31",
+      "forecast_made_on": "2023-09-19",
+      "actual": 42.2400016784668,
+      "base_tsm_forecast": 49.509883880615234,
+      "llm_tsm_forecast": 49.13855975151062
+    },
+    {
+      "target_date": "2023-11-01",
+      "forecast_made_on": "2023-09-20",
+      "actual": 38.96999740600586,
+      "base_tsm_forecast": 53.504737854003906,
+      "llm_tsm_forecast": 53.10345232009888
+    },
+    {
+      "target_date": "2023-11-02",
+      "forecast_made_on": "2023-09-21",
+      "actual": 38.619998931884766,
+      "base_tsm_forecast": 51.867984771728516,
+      "llm_tsm_forecast": 51.47897488594055
+    },
+    {
+      "target_date": "2023-11-03",
+      "forecast_made_on": "2023-09-22",
+      "actual": 36.8599967956543,
+      "base_tsm_forecast": 50.71462631225586,
+      "llm_tsm_forecast": 50.33426661491394
+    },
+    {
+      "target_date": "2023-11-06",
+      "forecast_made_on": "2023-09-25",
+      "actual": 37.55999755859375,
+      "base_tsm_forecast": 46.52711486816406,
+      "llm_tsm_forecast": 46.178161506652835
+    },
+    {
+      "target_date": "2023-11-07",
+      "forecast_made_on": "2023-09-26",
+      "actual": 41.58000183105469,
+      "base_tsm_forecast": 47.732303619384766,
+      "llm_tsm_forecast": 47.37431134223938
+    },
+    {
+      "target_date": "2023-11-08",
+      "forecast_made_on": "2023-09-27",
+      "actual": 41.02000427246094,
+      "base_tsm_forecast": 49.98612594604492,
+      "llm_tsm_forecast": 49.611230001449584
+    },
+    {
+      "target_date": "2023-11-09",
+      "forecast_made_on": "2023-09-28",
+      "actual": 42.820003509521484,
+      "base_tsm_forecast": 52.32258224487305,
+      "llm_tsm_forecast": 51.930162878036505
+    },
+    {
+      "target_date": "2023-11-10",
+      "forecast_made_on": "2023-09-29",
+      "actual": 43.88999938964844,
+      "base_tsm_forecast": 47.58116912841797,
+      "llm_tsm_forecast": 47.224310359954835
+    },
+    {
+      "target_date": "2023-11-13",
+      "forecast_made_on": "2023-10-02",
+      "actual": 44.49000549316406,
+      "base_tsm_forecast": 43.40919876098633,
+      "llm_tsm_forecast": 43.73476775169373
+    },
+    {
+      "target_date": "2023-11-14",
+      "forecast_made_on": "2023-10-03",
+      "actual": 40.720001220703125,
+      "base_tsm_forecast": 46.1748161315918,
+      "llm_tsm_forecast": 45.82850501060486
+    },
+    {
+      "target_date": "2023-11-15",
+      "forecast_made_on": "2023-10-04",
+      "actual": 41.159996032714844,
+      "base_tsm_forecast": 51.38044357299805,
+      "llm_tsm_forecast": 50.99509024620056
+    },
+    {
+      "target_date": "2023-11-16",
+      "forecast_made_on": "2023-10-05",
+      "actual": 41.869998931884766,
+      "base_tsm_forecast": 46.936763763427734,
+      "llm_tsm_forecast": 46.58473803520203
+    },
+    {
+      "target_date": "2023-11-17",
+      "forecast_made_on": "2023-10-06",
+      "actual": 41.380001068115234,
+      "base_tsm_forecast": 45.25017547607422,
+      "llm_tsm_forecast": 45.589551792144775
+    },
+    {
+      "target_date": "2023-11-20",
+      "forecast_made_on": "2023-10-09",
+      "actual": 42.1400032043457,
+      "base_tsm_forecast": 47.76546859741211,
+      "llm_tsm_forecast": 47.40722758293152
+    },
+    {
+      "target_date": "2023-11-21",
+      "forecast_made_on": "2023-10-10",
+      "actual": 41.310001373291016,
+      "base_tsm_forecast": 50.128273010253906,
+      "llm_tsm_forecast": 49.75231096267701
+    },
+    {
+      "target_date": "2023-11-22",
+      "forecast_made_on": "2023-10-11",
+      "actual": 43.53999710083008,
+      "base_tsm_forecast": 47.493221282958984,
+      "llm_tsm_forecast": 47.73068738937378
+    },
+    {
+      "target_date": "2023-11-23",
+      "forecast_made_on": "2023-10-12",
+      "actual": 43.52000045776367,
+      "base_tsm_forecast": 47.8423957824707,
+      "llm_tsm_forecast": 48.20121375083924
+    },
+    {
+      "target_date": "2023-11-24",
+      "forecast_made_on": "2023-10-13",
+      "actual": 45.130001068115234,
+      "base_tsm_forecast": 46.81423568725586,
+      "llm_tsm_forecast": 47.16534245491028
+    },
+    {
+      "target_date": "2023-11-27",
+      "forecast_made_on": "2023-10-16",
+      "actual": 45.93000030517578,
+      "base_tsm_forecast": 52.07088851928711,
+      "llm_tsm_forecast": 52.07088851928711
+    },
+    {
+      "target_date": "2023-11-28",
+      "forecast_made_on": "2023-10-17",
+      "actual": 34.32999801635742,
+      "base_tsm_forecast": 48.70200729370117,
+      "llm_tsm_forecast": 48.33674223899842
+    },
+    {
+      "target_date": "2023-11-29",
+      "forecast_made_on": "2023-10-18",
+      "actual": 42.869998931884766,
+      "base_tsm_forecast": 47.030941009521484,
+      "llm_tsm_forecast": 47.3836730670929
+    },
+    {
+      "target_date": "2023-11-30",
+      "forecast_made_on": "2023-10-19",
+      "actual": 41.58000183105469,
+      "base_tsm_forecast": 42.54507064819336,
+      "llm_tsm_forecast": 42.33234529495239
+    },
+    {
+      "target_date": "2023-12-01",
+      "forecast_made_on": "2023-10-20",
+      "actual": 40.59000015258789,
+      "base_tsm_forecast": 48.41389083862305,
+      "llm_tsm_forecast": 48.050786657333376
+    },
+    {
+      "target_date": "2023-12-04",
+      "forecast_made_on": "2023-10-23",
+      "actual": 38.4900016784668,
+      "base_tsm_forecast": 54.121089935302734,
+      "llm_tsm_forecast": 53.715181760787964
+    },
+    {
+      "target_date": "2023-12-05",
+      "forecast_made_on": "2023-10-24",
+      "actual": 33.70000076293945,
+      "base_tsm_forecast": 51.00477981567383,
+      "llm_tsm_forecast": 50.62224396705628
+    },
+    {
+      "target_date": "2023-12-06",
+      "forecast_made_on": "2023-10-25",
+      "actual": 35.33000183105469,
+      "base_tsm_forecast": 44.097816467285156,
+      "llm_tsm_forecast": 44.4285500907898
+    },
+    {
+      "target_date": "2023-12-07",
+      "forecast_made_on": "2023-10-26",
+      "actual": 33.160003662109375,
+      "base_tsm_forecast": 46.53538513183594,
+      "llm_tsm_forecast": 46.18636974334717
+    },
+    {
+      "target_date": "2023-12-08",
+      "forecast_made_on": "2023-10-27",
+      "actual": 33.349998474121094,
+      "base_tsm_forecast": 51.626136779785156,
+      "llm_tsm_forecast": 51.23894075393677
+    },
+    {
+      "target_date": "2023-12-11",
+      "forecast_made_on": "2023-10-30",
+      "actual": 32.560001373291016,
+      "base_tsm_forecast": 49.755104064941406,
+      "llm_tsm_forecast": 49.38194078445435
+    },
+    {
+      "target_date": "2023-12-12",
+      "forecast_made_on": "2023-10-31",
+      "actual": 33.27000045776367,
+      "base_tsm_forecast": 47.37289810180664,
+      "llm_tsm_forecast": 47.017601366043095
+    },
+    {
+      "target_date": "2023-12-13",
+      "forecast_made_on": "2023-11-01",
+      "actual": 33.52000045776367,
+      "base_tsm_forecast": 50.34309768676758,
+      "llm_tsm_forecast": 49.965524454116824
+    },
+    {
+      "target_date": "2023-12-14",
+      "forecast_made_on": "2023-11-02",
+      "actual": 34.25,
+      "base_tsm_forecast": 49.49125671386719,
+      "llm_tsm_forecast": 49.120072288513185
+    },
+    {
+      "target_date": "2023-12-15",
+      "forecast_made_on": "2023-11-03",
+      "actual": 33.34000015258789,
+      "base_tsm_forecast": 51.592411041259766,
+      "llm_tsm_forecast": 51.20546795845032
+    },
+    {
+      "target_date": "2023-12-18",
+      "forecast_made_on": "2023-11-06",
+      "actual": 34.130001068115234,
+      "base_tsm_forecast": 45.045902252197266,
+      "llm_tsm_forecast": 44.708057985305786
+    },
+    {
+      "target_date": "2023-12-19",
+      "forecast_made_on": "2023-11-07",
+      "actual": 35.220001220703125,
+      "base_tsm_forecast": 47.12068176269531,
+      "llm_tsm_forecast": 46.7672766494751
+    },
+    {
+      "target_date": "2023-12-20",
+      "forecast_made_on": "2023-11-08",
+      "actual": 37.7599983215332,
+      "base_tsm_forecast": 56.98733901977539,
+      "llm_tsm_forecast": 56.55993397712708
+    },
+    {
+      "target_date": "2023-12-21",
+      "forecast_made_on": "2023-11-09",
+      "actual": 40.769996643066406,
+      "base_tsm_forecast": 57.332542419433594,
+      "llm_tsm_forecast": 56.90254835128785
+    },
+    {
+      "target_date": "2023-12-22",
+      "forecast_made_on": "2023-11-10",
+      "actual": 40.92000198364258,
+      "base_tsm_forecast": 52.15864562988281,
+      "llm_tsm_forecast": 51.7674557876587
+    },
+    {
+      "target_date": "2023-12-27",
+      "forecast_made_on": "2023-11-13",
+      "actual": 40.61000061035156,
+      "base_tsm_forecast": 46.99014663696289,
+      "llm_tsm_forecast": 47.34257273674012
+    },
+    {
+      "target_date": "2023-12-28",
+      "forecast_made_on": "2023-11-14",
+      "actual": 42.61000061035156,
+      "base_tsm_forecast": 50.76976013183594,
+      "llm_tsm_forecast": 50.38898693084717
+    },
+    {
+      "target_date": "2023-12-29",
+      "forecast_made_on": "2023-11-15",
+      "actual": 43.630001068115234,
+      "base_tsm_forecast": 53.649009704589844,
+      "llm_tsm_forecast": 53.24664213180542
+    },
+    {
+      "target_date": "2024-01-01",
+      "forecast_made_on": "2023-11-16",
+      "actual": 43.66999816894531,
+      "base_tsm_forecast": 50.72663879394531,
+      "llm_tsm_forecast": 50.34618900299073
+    },
+    {
+      "target_date": "2024-01-02",
+      "forecast_made_on": "2023-11-17",
+      "actual": 44.05000305175781,
+      "base_tsm_forecast": 46.26511001586914,
+      "llm_tsm_forecast": 45.91812169075013
+    },
+    {
+      "target_date": "2024-01-03",
+      "forecast_made_on": "2023-11-20",
+      "actual": 40.279998779296875,
+      "base_tsm_forecast": 49.91603088378906,
+      "llm_tsm_forecast": 49.541660652160644
+    },
+    {
+      "target_date": "2024-01-04",
+      "forecast_made_on": "2023-11-21",
+      "actual": 42.790000915527344,
+      "base_tsm_forecast": 50.99225616455078,
+      "llm_tsm_forecast": 50.609814243316656
+    },
+    {
+      "target_date": "2024-01-05",
+      "forecast_made_on": "2023-11-22",
+      "actual": 42.060001373291016,
+      "base_tsm_forecast": 47.32822036743164,
+      "llm_tsm_forecast": 47.68318202018738
+    },
+    {
+      "target_date": "2024-01-08",
+      "forecast_made_on": "2023-11-23",
+      "actual": 42.380001068115234,
+      "base_tsm_forecast": 45.22618103027344,
+      "llm_tsm_forecast": 45.4523119354248
+    },
+    {
+      "target_date": "2024-01-09",
+      "forecast_made_on": "2023-11-24",
+      "actual": 38.939998626708984,
+      "base_tsm_forecast": 47.21085739135742,
+      "llm_tsm_forecast": 47.56493882179261
+    },
+    {
+      "target_date": "2024-01-10",
+      "forecast_made_on": "2023-11-27",
+      "actual": 37.72999954223633,
+      "base_tsm_forecast": 51.28470993041992,
+      "llm_tsm_forecast": 51.669345254898076
+    },
+    {
+      "target_date": "2024-01-11",
+      "forecast_made_on": "2023-11-28",
+      "actual": 36.65999984741211,
+      "base_tsm_forecast": 47.880741119384766,
+      "llm_tsm_forecast": 47.52163556098938
+    },
+    {
+      "target_date": "2024-01-12",
+      "forecast_made_on": "2023-11-29",
+      "actual": 35.15999984741211,
+      "base_tsm_forecast": 47.51192092895508,
+      "llm_tsm_forecast": 47.868260335922244
+    },
+    {
+      "target_date": "2024-01-15",
+      "forecast_made_on": "2023-11-30",
+      "actual": 34.44000244140625,
+      "base_tsm_forecast": 44.42186737060547,
+      "llm_tsm_forecast": 44.08870336532593
+    },
+    {
+      "target_date": "2024-01-16",
+      "forecast_made_on": "2023-12-01",
+      "actual": 34.04999923706055,
+      "base_tsm_forecast": 47.66686248779297,
+      "llm_tsm_forecast": 47.30936101913452
+    },
+    {
+      "target_date": "2024-01-17",
+      "forecast_made_on": "2023-12-04",
+      "actual": 33.18000030517578,
+      "base_tsm_forecast": 49.136199951171875,
+      "llm_tsm_forecast": 48.76767845153809
+    },
+    {
+      "target_date": "2024-01-18",
+      "forecast_made_on": "2023-12-05",
+      "actual": 31.830001831054688,
+      "base_tsm_forecast": 45.123573303222656,
+      "llm_tsm_forecast": 44.78514650344849
+    },
+    {
+      "target_date": "2024-01-19",
+      "forecast_made_on": "2023-12-06",
+      "actual": 32.45000076293945,
+      "base_tsm_forecast": 42.19399642944336,
+      "llm_tsm_forecast": 42.51045140266419
+    },
+    {
+      "target_date": "2024-01-22",
+      "forecast_made_on": "2023-12-07",
+      "actual": 34.18000030517578,
+      "base_tsm_forecast": 46.519737243652344,
+      "llm_tsm_forecast": 46.17083921432496
+    },
+    {
+      "target_date": "2024-01-23",
+      "forecast_made_on": "2023-12-08",
+      "actual": 34.38999938964844,
+      "base_tsm_forecast": 52.513999938964844,
+      "llm_tsm_forecast": 52.12014493942261
+    },
+    {
+      "target_date": "2024-01-24",
+      "forecast_made_on": "2023-12-11",
+      "actual": 32.959999084472656,
+      "base_tsm_forecast": 46.14266586303711,
+      "llm_tsm_forecast": 45.79659586906433
+    },
+    {
+      "target_date": "2024-01-25",
+      "forecast_made_on": "2023-12-12",
+      "actual": 32.61000061035156,
+      "base_tsm_forecast": 40.93898391723633,
+      "llm_tsm_forecast": 40.63194153785706
+    },
+    {
+      "target_date": "2024-01-26",
+      "forecast_made_on": "2023-12-13",
+      "actual": 32.26000213623047,
+      "base_tsm_forecast": 44.74677276611328,
+      "llm_tsm_forecast": 44.411171970367434
+    },
+    {
+      "target_date": "2024-01-29",
+      "forecast_made_on": "2023-12-14",
+      "actual": 31.729999542236328,
+      "base_tsm_forecast": 45.80095291137695,
+      "llm_tsm_forecast": 45.45744576454163
+    },
+    {
+      "target_date": "2024-01-30",
+      "forecast_made_on": "2023-12-15",
+      "actual": 34.54999923706055,
+      "base_tsm_forecast": 48.379024505615234,
+      "llm_tsm_forecast": 48.016181821823125
+    },
+    {
+      "target_date": "2024-01-31",
+      "forecast_made_on": "2023-12-18",
+      "actual": 31.630001068115234,
+      "base_tsm_forecast": 40.27653121948242,
+      "llm_tsm_forecast": 39.9744572353363
+    },
+    {
+      "target_date": "2024-02-01",
+      "forecast_made_on": "2023-12-19",
+      "actual": 33.04999923706055,
+      "base_tsm_forecast": 39.77361297607422,
+      "llm_tsm_forecast": 39.47531087875367
+    },
+    {
+      "target_date": "2024-02-02",
+      "forecast_made_on": "2023-12-20",
+      "actual": 34.6199951171875,
+      "base_tsm_forecast": 46.759342193603516,
+      "llm_tsm_forecast": 46.40864712715149
+    },
+    {
+      "target_date": "2024-02-05",
+      "forecast_made_on": "2023-12-21",
+      "actual": 35.939998626708984,
+      "base_tsm_forecast": 50.209068298339844,
+      "llm_tsm_forecast": 49.832500286102295
+    },
+    {
+      "target_date": "2024-02-06",
+      "forecast_made_on": "2023-12-22",
+      "actual": 35.69999694824219,
+      "base_tsm_forecast": 48.630157470703125,
+      "llm_tsm_forecast": 48.265431289672854
+    },
+    {
+      "target_date": "2024-02-07",
+      "forecast_made_on": "2023-12-27",
+      "actual": 34.01000213623047,
+      "base_tsm_forecast": 41.2266960144043,
+      "llm_tsm_forecast": 41.53589623451233
+    },
+    {
+      "target_date": "2024-02-08",
+      "forecast_made_on": "2023-12-28",
+      "actual": 32.75,
+      "base_tsm_forecast": 42.225101470947266,
+      "llm_tsm_forecast": 42.54178973197937
+    },
+    {
+      "target_date": "2024-02-09",
+      "forecast_made_on": "2023-12-29",
+      "actual": 33.099998474121094,
+      "base_tsm_forecast": 46.09421920776367,
+      "llm_tsm_forecast": 45.74851256370545
+    },
+    {
+      "target_date": "2024-02-12",
+      "forecast_made_on": "2024-01-01",
+      "actual": 33.64999771118164,
+      "base_tsm_forecast": 47.97382736206055,
+      "llm_tsm_forecast": 47.61402365684509
+    },
+    {
+      "target_date": "2024-02-13",
+      "forecast_made_on": "2024-01-02",
+      "actual": 32.95000076293945,
+      "base_tsm_forecast": 46.9489631652832,
+      "llm_tsm_forecast": 46.596845941543585
+    },
+    {
+      "target_date": "2024-02-14",
+      "forecast_made_on": "2024-01-03",
+      "actual": 33.75,
+      "base_tsm_forecast": 43.29217529296875,
+      "llm_tsm_forecast": 42.96748397827149
+    },
+    {
+      "target_date": "2024-02-15",
+      "forecast_made_on": "2024-01-04",
+      "actual": 34.099998474121094,
+      "base_tsm_forecast": 42.36141586303711,
+      "llm_tsm_forecast": 42.57322294235229
+    },
+    {
+      "target_date": "2024-02-16",
+      "forecast_made_on": "2024-01-05",
+      "actual": 34.4900016784668,
+      "base_tsm_forecast": 43.7701530456543,
+      "llm_tsm_forecast": 44.098429193496706
+    },
+    {
+      "target_date": "2024-02-19",
+      "forecast_made_on": "2024-01-08",
+      "actual": 33.33000183105469,
+      "base_tsm_forecast": 44.44614028930664,
+      "llm_tsm_forecast": 44.112794237136846
+    },
+    {
+      "target_date": "2024-02-20",
+      "forecast_made_on": "2024-01-09",
+      "actual": 31.970001220703125,
+      "base_tsm_forecast": 42.75872802734375,
+      "llm_tsm_forecast": 43.07941848754883
+    },
+    {
+      "target_date": "2024-02-21",
+      "forecast_made_on": "2024-01-10",
+      "actual": 32.45000076293945,
+      "base_tsm_forecast": 41.62034606933594,
+      "llm_tsm_forecast": 41.93249866485596
+    },
+    {
+      "target_date": "2024-02-22",
+      "forecast_made_on": "2024-01-11",
+      "actual": 32.599998474121094,
+      "base_tsm_forecast": 41.635196685791016,
+      "llm_tsm_forecast": 41.322932710647585
+    },
+    {
+      "target_date": "2024-02-23",
+      "forecast_made_on": "2024-01-12",
+      "actual": 32.369998931884766,
+      "base_tsm_forecast": 43.54109573364258,
+      "llm_tsm_forecast": 43.21453751564026
+    },
+    {
+      "target_date": "2024-04-08",
+      "forecast_made_on": "2024-02-23",
+      "actual": 34.189998626708984,
+      "base_tsm_forecast": 39.33247756958008,
+      "llm_tsm_forecast": 39.03748398780823
+    },
+    {
+      "target_date": "2024-04-09",
+      "forecast_made_on": "2024-02-26",
+      "actual": 34.65999984741211,
+      "base_tsm_forecast": 39.872249603271484,
+      "llm_tsm_forecast": 39.57320773124695
+    },
+    {
+      "target_date": "2024-04-10",
+      "forecast_made_on": "2024-02-27",
+      "actual": 34.150001525878906,
+      "base_tsm_forecast": 38.11858367919922,
+      "llm_tsm_forecast": 37.83269430160523
+    },
+    {
+      "target_date": "2024-04-11",
+      "forecast_made_on": "2024-02-28",
+      "actual": 33.67000198364258,
+      "base_tsm_forecast": 36.553741455078125,
+      "llm_tsm_forecast": 36.27958839416504
+    },
+    {
+      "target_date": "2024-04-12",
+      "forecast_made_on": "2024-02-29",
+      "actual": 35.92000198364258,
+      "base_tsm_forecast": 38.4449462890625,
+      "llm_tsm_forecast": 38.15660919189453
+    },
+    {
+      "target_date": "2024-04-15",
+      "forecast_made_on": "2024-03-01",
+      "actual": 36.82999801635742,
+      "base_tsm_forecast": 39.85871887207031,
+      "llm_tsm_forecast": 39.559778480529786
+    },
+    {
+      "target_date": "2024-04-16",
+      "forecast_made_on": "2024-03-04",
+      "actual": 35.790000915527344,
+      "base_tsm_forecast": 39.64894104003906,
+      "llm_tsm_forecast": 39.35157398223877
+    },
+    {
+      "target_date": "2024-04-17",
+      "forecast_made_on": "2024-03-05",
+      "actual": 35.63999938964844,
+      "base_tsm_forecast": 39.27872085571289,
+      "llm_tsm_forecast": 38.984130449295044
+    },
+    {
+      "target_date": "2024-04-18",
+      "forecast_made_on": "2024-03-06",
+      "actual": 33.5,
+      "base_tsm_forecast": 38.49214172363281,
+      "llm_tsm_forecast": 38.20345066070557
+    },
+    {
+      "target_date": "2024-04-19",
+      "forecast_made_on": "2024-03-07",
+      "actual": 33.97999954223633,
+      "base_tsm_forecast": 39.22512435913086,
+      "llm_tsm_forecast": 38.93093592643738
+    },
+    {
+      "target_date": "2024-04-22",
+      "forecast_made_on": "2024-03-08",
+      "actual": 33.83000183105469,
+      "base_tsm_forecast": 39.24465560913086,
+      "llm_tsm_forecast": 38.95032069206238
+    },
+    {
+      "target_date": "2024-04-23",
+      "forecast_made_on": "2024-03-11",
+      "actual": 34.709999084472656,
+      "base_tsm_forecast": 37.40351486206055,
+      "llm_tsm_forecast": 37.12298850059509
+    },
+    {
+      "target_date": "2024-04-24",
+      "forecast_made_on": "2024-03-12",
+      "actual": 35.459999084472656,
+      "base_tsm_forecast": 37.82958221435547,
+      "llm_tsm_forecast": 37.545860347747805
+    },
+    {
+      "target_date": "2024-04-25",
+      "forecast_made_on": "2024-03-13",
+      "actual": 35.87000274658203,
+      "base_tsm_forecast": 39.94890594482422,
+      "llm_tsm_forecast": 39.64928915023804
+    },
+    {
+      "target_date": "2024-04-26",
+      "forecast_made_on": "2024-03-14",
+      "actual": 35.17000198364258,
+      "base_tsm_forecast": 40.48552322387695,
+      "llm_tsm_forecast": 40.18188179969788
+    },
+    {
+      "target_date": "2024-04-29",
+      "forecast_made_on": "2024-03-15",
+      "actual": 34.8599967956543,
+      "base_tsm_forecast": 39.40176773071289,
+      "llm_tsm_forecast": 39.106254472732545
+    },
+    {
+      "target_date": "2024-04-30",
+      "forecast_made_on": "2024-03-18",
+      "actual": 36.470001220703125,
+      "base_tsm_forecast": 38.51961135864258,
+      "llm_tsm_forecast": 38.23071427345276
+    },
+    {
+      "target_date": "2024-05-01",
+      "forecast_made_on": "2024-03-19",
+      "actual": 34.679996490478516,
+      "base_tsm_forecast": 39.41769027709961,
+      "llm_tsm_forecast": 39.122057600021364
+    },
+    {
+      "target_date": "2024-05-02",
+      "forecast_made_on": "2024-03-20",
+      "actual": 35.58000183105469,
+      "base_tsm_forecast": 39.60783767700195,
+      "llm_tsm_forecast": 39.31077889442444
+    },
+    {
+      "target_date": "2024-05-03",
+      "forecast_made_on": "2024-03-21",
+      "actual": 36.30000305175781,
+      "base_tsm_forecast": 38.903568267822266,
+      "llm_tsm_forecast": 38.70905042648315
+    },
+    {
+      "target_date": "2024-05-06",
+      "forecast_made_on": "2024-03-22",
+      "actual": 35.93000030517578,
+      "base_tsm_forecast": 37.02338790893555,
+      "llm_tsm_forecast": 37.02338790893555
+    },
+    {
+      "target_date": "2024-05-07",
+      "forecast_made_on": "2024-03-25",
+      "actual": 37.77000045776367,
+      "base_tsm_forecast": 39.49406814575195,
+      "llm_tsm_forecast": 39.19786263465882
+    },
+    {
+      "target_date": "2024-05-08",
+      "forecast_made_on": "2024-03-26",
+      "actual": 36.439998626708984,
+      "base_tsm_forecast": 42.7064323425293,
+      "llm_tsm_forecast": 42.38613409996033
+    },
+    {
+      "target_date": "2024-05-09",
+      "forecast_made_on": "2024-03-27",
+      "actual": 36.5099983215332,
+      "base_tsm_forecast": 40.79127883911133,
+      "llm_tsm_forecast": 40.485344247818
+    },
+    {
+      "target_date": "2024-05-10",
+      "forecast_made_on": "2024-03-28",
+      "actual": 37.019996643066406,
+      "base_tsm_forecast": 40.056087493896484,
+      "llm_tsm_forecast": 39.75566683769226
+    },
+    {
+      "target_date": "2024-05-13",
+      "forecast_made_on": "2024-04-01",
+      "actual": 37.26000213623047,
+      "base_tsm_forecast": 39.03266525268555,
+      "llm_tsm_forecast": 38.73992026329041
+    },
+    {
+      "target_date": "2024-05-14",
+      "forecast_made_on": "2024-04-02",
+      "actual": 38.62000274658203,
+      "base_tsm_forecast": 39.821250915527344,
+      "llm_tsm_forecast": 39.821250915527344
+    },
+    {
+      "target_date": "2024-05-15",
+      "forecast_made_on": "2024-04-03",
+      "actual": 35.840003967285156,
+      "base_tsm_forecast": 41.24887466430664,
+      "llm_tsm_forecast": 40.93950810432434
+    },
+    {
+      "target_date": "2024-05-16",
+      "forecast_made_on": "2024-04-04",
+      "actual": 37.72999954223633,
+      "base_tsm_forecast": 39.560123443603516,
+      "llm_tsm_forecast": 39.26342251777649
+    },
+    {
+      "target_date": "2024-05-17",
+      "forecast_made_on": "2024-04-05",
+      "actual": 38.47999954223633,
+      "base_tsm_forecast": 38.787628173828125,
+      "llm_tsm_forecast": 38.496720962524414
+    },
+    {
+      "target_date": "2024-05-20",
+      "forecast_made_on": "2024-04-08",
+      "actual": 38.55999755859375,
+      "base_tsm_forecast": 39.54506301879883,
+      "llm_tsm_forecast": 39.248475046157836
+    },
+    {
+      "target_date": "2024-05-21",
+      "forecast_made_on": "2024-04-09",
+      "actual": 43.970001220703125,
+      "base_tsm_forecast": 41.528564453125,
+      "llm_tsm_forecast": 41.21710021972657
+    },
+    {
+      "target_date": "2024-05-22",
+      "forecast_made_on": "2024-04-10",
+      "actual": 42.099998474121094,
+      "base_tsm_forecast": 41.23756790161133,
+      "llm_tsm_forecast": 40.92828614234924
+    },
+    {
+      "target_date": "2024-05-23",
+      "forecast_made_on": "2024-04-11",
+      "actual": 42.11000061035156,
+      "base_tsm_forecast": 38.68501663208008,
+      "llm_tsm_forecast": 38.394879007339476
+    },
+    {
+      "target_date": "2024-05-24",
+      "forecast_made_on": "2024-04-12",
+      "actual": 43.179996490478516,
+      "base_tsm_forecast": 39.2615966796875,
+      "llm_tsm_forecast": 38.967134704589846
+    },
+    {
+      "target_date": "2024-05-27",
+      "forecast_made_on": "2024-04-15",
+      "actual": 44.4900016784668,
+      "base_tsm_forecast": 41.07972717285156,
+      "llm_tsm_forecast": 40.77162921905518
+    },
+    {
+      "target_date": "2024-05-28",
+      "forecast_made_on": "2024-04-16",
+      "actual": 46.22999954223633,
+      "base_tsm_forecast": 42.5970458984375,
+      "llm_tsm_forecast": 42.27756805419922
+    },
+    {
+      "target_date": "2024-05-29",
+      "forecast_made_on": "2024-04-17",
+      "actual": 43.82999801635742,
+      "base_tsm_forecast": 41.84138870239258,
+      "llm_tsm_forecast": 41.52757828712463
+    },
+    {
+      "target_date": "2024-05-30",
+      "forecast_made_on": "2024-04-18",
+      "actual": 43.75,
+      "base_tsm_forecast": 38.037803649902344,
+      "llm_tsm_forecast": 37.752520122528075
+    },
+    {
+      "target_date": "2024-05-31",
+      "forecast_made_on": "2024-04-19",
+      "actual": 45.05999755859375,
+      "base_tsm_forecast": 37.83449935913086,
+      "llm_tsm_forecast": 37.55074061393738
+    },
+    {
+      "target_date": "2024-06-03",
+      "forecast_made_on": "2024-04-22",
+      "actual": 47.160003662109375,
+      "base_tsm_forecast": 39.68927001953125,
+      "llm_tsm_forecast": 39.39160049438477
+    },
+    {
+      "target_date": "2024-06-04",
+      "forecast_made_on": "2024-04-23",
+      "actual": 47.369998931884766,
+      "base_tsm_forecast": 40.86377716064453,
+      "llm_tsm_forecast": 40.5572988319397
+    },
+    {
+      "target_date": "2024-06-05",
+      "forecast_made_on": "2024-04-24",
+      "actual": 45.86000061035156,
+      "base_tsm_forecast": 40.4528694152832,
+      "llm_tsm_forecast": 40.149472894668584
+    },
+    {
+      "target_date": "2024-06-06",
+      "forecast_made_on": "2024-04-25",
+      "actual": 45.179996490478516,
+      "base_tsm_forecast": 40.12809371948242,
+      "llm_tsm_forecast": 39.82713301658631
+    },
+    {
+      "target_date": "2024-06-07",
+      "forecast_made_on": "2024-04-26",
+      "actual": 45.62999725341797,
+      "base_tsm_forecast": 41.12919998168945,
+      "llm_tsm_forecast": 40.820730981826785
+    },
+    {
+      "target_date": "2024-06-10",
+      "forecast_made_on": "2024-04-29",
+      "actual": 46.09000015258789,
+      "base_tsm_forecast": 41.0130729675293,
+      "llm_tsm_forecast": 40.70547492027283
+    },
+    {
+      "target_date": "2024-06-11",
+      "forecast_made_on": "2024-04-30",
+      "actual": 45.09000015258789,
+      "base_tsm_forecast": 40.168148040771484,
+      "llm_tsm_forecast": 39.866886930465704
+    },
+    {
+      "target_date": "2024-06-12",
+      "forecast_made_on": "2024-05-01",
+      "actual": 46.630001068115234,
+      "base_tsm_forecast": 37.97563552856445,
+      "llm_tsm_forecast": 37.69081826210022
+    },
+    {
+      "target_date": "2024-06-13",
+      "forecast_made_on": "2024-05-02",
+      "actual": 47.40999984741211,
+      "base_tsm_forecast": 38.749366760253906,
+      "llm_tsm_forecast": 38.45874650955201
+    },
+    {
+      "target_date": "2024-06-14",
+      "forecast_made_on": "2024-05-03",
+      "actual": 47.970001220703125,
+      "base_tsm_forecast": 41.33060073852539,
+      "llm_tsm_forecast": 41.02062123298645
+    },
+    {
+      "target_date": "2024-06-17",
+      "forecast_made_on": "2024-05-06",
+      "actual": 47.220001220703125,
+      "base_tsm_forecast": 40.28181076049805,
+      "llm_tsm_forecast": 39.979697179794314
+    },
+    {
+      "target_date": "2024-06-18",
+      "forecast_made_on": "2024-05-07",
+      "actual": 47.81999969482422,
+      "base_tsm_forecast": 40.565704345703125,
+      "llm_tsm_forecast": 40.26146156311035
+    },
+    {
+      "target_date": "2024-06-19",
+      "forecast_made_on": "2024-05-08",
+      "actual": 48.599998474121094,
+      "base_tsm_forecast": 39.63733673095703,
+      "llm_tsm_forecast": 39.34005670547486
+    },
+    {
+      "target_date": "2024-06-20",
+      "forecast_made_on": "2024-05-09",
+      "actual": 47.909996032714844,
+      "base_tsm_forecast": 39.18248748779297,
+      "llm_tsm_forecast": 38.888618831634524
+    },
+    {
+      "target_date": "2024-06-21",
+      "forecast_made_on": "2024-05-10",
+      "actual": 44.28999710083008,
+      "base_tsm_forecast": 40.55721664428711,
+      "llm_tsm_forecast": 40.253037519454956
+    },
+    {
+      "target_date": "2024-06-24",
+      "forecast_made_on": "2024-05-13",
+      "actual": 43.53999328613281,
+      "base_tsm_forecast": 41.70819854736328,
+      "llm_tsm_forecast": 41.39538705825806
+    },
+    {
+      "target_date": "2024-06-25",
+      "forecast_made_on": "2024-05-14",
+      "actual": 44.63999938964844,
+      "base_tsm_forecast": 42.43490219116211,
+      "llm_tsm_forecast": 42.116640424728395
+    },
+    {
+      "target_date": "2024-06-26",
+      "forecast_made_on": "2024-05-15",
+      "actual": 46.51000213623047,
+      "base_tsm_forecast": 40.85731887817383,
+      "llm_tsm_forecast": 40.55088898658752
+    },
+    {
+      "target_date": "2024-06-27",
+      "forecast_made_on": "2024-05-16",
+      "actual": 44.95999526977539,
+      "base_tsm_forecast": 40.562442779541016,
+      "llm_tsm_forecast": 40.25822445869446
+    },
+    {
+      "target_date": "2024-06-28",
+      "forecast_made_on": "2024-05-17",
+      "actual": 45.0,
+      "base_tsm_forecast": 39.82317352294922,
+      "llm_tsm_forecast": 39.5244997215271
+    },
+    {
+      "target_date": "2024-07-01",
+      "forecast_made_on": "2024-05-20",
+      "actual": 45.2400016784668,
+      "base_tsm_forecast": 40.64440155029297,
+      "llm_tsm_forecast": 40.33956853866577
+    },
+    {
+      "target_date": "2024-07-02",
+      "forecast_made_on": "2024-05-21",
+      "actual": 46.040000915527344,
+      "base_tsm_forecast": 44.4837760925293,
+      "llm_tsm_forecast": 44.15014777183533
+    },
+    {
+      "target_date": "2024-07-03",
+      "forecast_made_on": "2024-05-22",
+      "actual": 45.720001220703125,
+      "base_tsm_forecast": 42.52436447143555,
+      "llm_tsm_forecast": 42.20543173789978
+    },
+    {
+      "target_date": "2024-07-04",
+      "forecast_made_on": "2024-05-23",
+      "actual": 44.910003662109375,
+      "base_tsm_forecast": 42.56887435913086,
+      "llm_tsm_forecast": 42.24960780143738
+    },
+    {
+      "target_date": "2024-07-05",
+      "forecast_made_on": "2024-05-24",
+      "actual": 45.56999969482422,
+      "base_tsm_forecast": 43.6064567565918,
+      "llm_tsm_forecast": 43.27940833091736
+    },
+    {
+      "target_date": "2024-07-08",
+      "forecast_made_on": "2024-05-27",
+      "actual": 44.36000061035156,
+      "base_tsm_forecast": 43.56649398803711,
+      "llm_tsm_forecast": 43.348661518096925
+    },
+    {
+      "target_date": "2024-07-09",
+      "forecast_made_on": "2024-05-28",
+      "actual": 42.91999816894531,
+      "base_tsm_forecast": 44.79338836669922,
+      "llm_tsm_forecast": 44.457437953948975
+    },
+    {
+      "target_date": "2024-07-10",
+      "forecast_made_on": "2024-05-29",
+      "actual": 42.08000183105469,
+      "base_tsm_forecast": 43.34233093261719,
+      "llm_tsm_forecast": 43.01726345062256
+    },
+    {
+      "target_date": "2024-07-11",
+      "forecast_made_on": "2024-05-30",
+      "actual": 40.35000228881836,
+      "base_tsm_forecast": 44.268436431884766,
+      "llm_tsm_forecast": 43.93642315864563
+    },
+    {
+      "target_date": "2024-07-12",
+      "forecast_made_on": "2024-05-31",
+      "actual": 40.35000228881836,
+      "base_tsm_forecast": 44.3526496887207,
+      "llm_tsm_forecast": 44.0200048160553
+    },
+    {
+      "target_date": "2024-07-15",
+      "forecast_made_on": "2024-06-03",
+      "actual": 39.84000015258789,
+      "base_tsm_forecast": 46.091793060302734,
+      "llm_tsm_forecast": 45.86133409500122
+    },
+    {
+      "target_date": "2024-07-16",
+      "forecast_made_on": "2024-06-04",
+      "actual": 40.85000228881836,
+      "base_tsm_forecast": 48.16727828979492,
+      "llm_tsm_forecast": 47.80602370262146
+    },
+    {
+      "target_date": "2024-07-17",
+      "forecast_made_on": "2024-06-05",
+      "actual": 40.070003509521484,
+      "base_tsm_forecast": 45.335941314697266,
+      "llm_tsm_forecast": 44.99592175483704
+    },
+    {
+      "target_date": "2024-07-18",
+      "forecast_made_on": "2024-06-06",
+      "actual": 40.060001373291016,
+      "base_tsm_forecast": 45.54190444946289,
+      "llm_tsm_forecast": 45.54190444946289
+    },
+    {
+      "target_date": "2024-07-19",
+      "forecast_made_on": "2024-06-07",
+      "actual": 40.27000045776367,
+      "base_tsm_forecast": 45.880279541015625,
+      "llm_tsm_forecast": 45.880279541015625
+    },
+    {
+      "target_date": "2024-07-22",
+      "forecast_made_on": "2024-06-10",
+      "actual": 39.88999938964844,
+      "base_tsm_forecast": 48.2491455078125,
+      "llm_tsm_forecast": 47.88727691650391
+    },
+    {
+      "target_date": "2024-07-23",
+      "forecast_made_on": "2024-06-11",
+      "actual": 39.12000274658203,
+      "base_tsm_forecast": 49.973880767822266,
+      "llm_tsm_forecast": 49.5990766620636
+    },
+    {
+      "target_date": "2024-07-24",
+      "forecast_made_on": "2024-06-12",
+      "actual": 39.52000427246094,
+      "base_tsm_forecast": 46.63032913208008,
+      "llm_tsm_forecast": 46.28060166358948
+    },
+    {
+      "target_date": "2024-07-25",
+      "forecast_made_on": "2024-06-13",
+      "actual": 38.619998931884766,
+      "base_tsm_forecast": 46.36867904663086,
+      "llm_tsm_forecast": 46.02091395378113
+    },
+    {
+      "target_date": "2024-07-26",
+      "forecast_made_on": "2024-06-14",
+      "actual": 38.900001525878906,
+      "base_tsm_forecast": 49.122215270996094,
+      "llm_tsm_forecast": 48.75379865646362
+    },
+    {
+      "target_date": "2024-07-29",
+      "forecast_made_on": "2024-06-17",
+      "actual": 38.70000076293945,
+      "base_tsm_forecast": 51.94702911376953,
+      "llm_tsm_forecast": 51.557426395416265
+    },
+    {
+      "target_date": "2024-07-30",
+      "forecast_made_on": "2024-06-18",
+      "actual": 38.459999084472656,
+      "base_tsm_forecast": 52.15495681762695,
+      "llm_tsm_forecast": 51.763794641494755
+    },
+    {
+      "target_date": "2024-07-31",
+      "forecast_made_on": "2024-06-19",
+      "actual": 38.03999710083008,
+      "base_tsm_forecast": 48.70652389526367,
+      "llm_tsm_forecast": 48.3412249660492
+    },
+    {
+      "target_date": "2024-08-01",
+      "forecast_made_on": "2024-06-20",
+      "actual": 37.58000183105469,
+      "base_tsm_forecast": 49.30320739746094,
+      "llm_tsm_forecast": 48.933433341979985
+    },
+    {
+      "target_date": "2024-08-02",
+      "forecast_made_on": "2024-06-21",
+      "actual": 39.17000198364258,
+      "base_tsm_forecast": 51.72651672363281,
+      "llm_tsm_forecast": 51.33856784820557
+    },
+    {
+      "target_date": "2024-08-05",
+      "forecast_made_on": "2024-06-24",
+      "actual": 38.099998474121094,
+      "base_tsm_forecast": 52.27184295654297,
+      "llm_tsm_forecast": 51.8798041343689
+    },
+    {
+      "target_date": "2024-08-06",
+      "forecast_made_on": "2024-06-25",
+      "actual": 38.43000030517578,
+      "base_tsm_forecast": 50.14628219604492,
+      "llm_tsm_forecast": 49.77018507957459
+    },
+    {
+      "target_date": "2024-08-07",
+      "forecast_made_on": "2024-06-26",
+      "actual": 38.30999755859375,
+      "base_tsm_forecast": 49.279422760009766,
+      "llm_tsm_forecast": 48.909827089309694
+    },
+    {
+      "target_date": "2024-08-08",
+      "forecast_made_on": "2024-06-27",
+      "actual": 37.41999816894531,
+      "base_tsm_forecast": 50.86882019042969,
+      "llm_tsm_forecast": 50.487304039001465
+    },
+    {
+      "target_date": "2024-08-09",
+      "forecast_made_on": "2024-06-28",
+      "actual": 37.88999938964844,
+      "base_tsm_forecast": 52.80401611328125,
+      "llm_tsm_forecast": 52.40798599243164
+    },
+    {
+      "target_date": "2024-08-12",
+      "forecast_made_on": "2024-07-01",
+      "actual": 37.17000198364258,
+      "base_tsm_forecast": 51.03647232055664,
+      "llm_tsm_forecast": 50.65369877815247
+    },
+    {
+      "target_date": "2024-08-13",
+      "forecast_made_on": "2024-07-02",
+      "actual": 39.47999954223633,
+      "base_tsm_forecast": 50.61807632446289,
+      "llm_tsm_forecast": 50.23844075202942
+    },
+    {
+      "target_date": "2024-08-14",
+      "forecast_made_on": "2024-07-03",
+      "actual": 37.77000045776367,
+      "base_tsm_forecast": 52.10779571533203,
+      "llm_tsm_forecast": 51.716987247467046
+    },
+    {
+      "target_date": "2024-08-15",
+      "forecast_made_on": "2024-07-04",
+      "actual": 38.119998931884766,
+      "base_tsm_forecast": 52.02449035644531,
+      "llm_tsm_forecast": 51.63430667877198
+    },
+    {
+      "target_date": "2024-08-16",
+      "forecast_made_on": "2024-07-05",
+      "actual": 39.88999938964844,
+      "base_tsm_forecast": 49.56968307495117,
+      "llm_tsm_forecast": 49.197910451889044
+    },
+    {
+      "target_date": "2024-08-19",
+      "forecast_made_on": "2024-07-08",
+      "actual": 40.23999786376953,
+      "base_tsm_forecast": 48.946903228759766,
+      "llm_tsm_forecast": 48.57980145454407
+    },
+    {
+      "target_date": "2024-08-20",
+      "forecast_made_on": "2024-07-09",
+      "actual": 39.87999725341797,
+      "base_tsm_forecast": 50.2440299987793,
+      "llm_tsm_forecast": 49.86719977378846
+    },
+    {
+      "target_date": "2024-08-21",
+      "forecast_made_on": "2024-07-10",
+      "actual": 40.44000244140625,
+      "base_tsm_forecast": 51.573341369628906,
+      "llm_tsm_forecast": 51.18654130935669
+    },
+    {
+      "target_date": "2024-08-22",
+      "forecast_made_on": "2024-07-11",
+      "actual": 40.06999969482422,
+      "base_tsm_forecast": 48.229122161865234,
+      "llm_tsm_forecast": 47.867403745651245
+    },
+    {
+      "target_date": "2024-08-23",
+      "forecast_made_on": "2024-07-12",
+      "actual": 39.519996643066406,
+      "base_tsm_forecast": 47.07564163208008,
+      "llm_tsm_forecast": 46.72257431983948
+    },
+    {
+      "target_date": "2024-08-26",
+      "forecast_made_on": "2024-07-15",
+      "actual": 39.619998931884766,
+      "base_tsm_forecast": 48.35585403442383,
+      "llm_tsm_forecast": 47.99318512916565
+    },
+    {
+      "target_date": "2024-08-27",
+      "forecast_made_on": "2024-07-16",
+      "actual": 41.54999923706055,
+      "base_tsm_forecast": 51.451202392578125,
+      "llm_tsm_forecast": 51.06531837463379
+    },
+    {
+      "target_date": "2024-08-28",
+      "forecast_made_on": "2024-07-17",
+      "actual": 39.93000030517578,
+      "base_tsm_forecast": 50.44485092163086,
+      "llm_tsm_forecast": 50.06651453971863
+    },
+    {
+      "target_date": "2024-08-29",
+      "forecast_made_on": "2024-07-18",
+      "actual": 41.2599983215332,
+      "base_tsm_forecast": 47.888309478759766,
+      "llm_tsm_forecast": 47.52914715766907
+    },
+    {
+      "target_date": "2024-08-30",
+      "forecast_made_on": "2024-07-19",
+      "actual": 41.72999954223633,
+      "base_tsm_forecast": 46.692474365234375,
+      "llm_tsm_forecast": 46.34228080749512
+    },
+    {
+      "target_date": "2024-09-02",
+      "forecast_made_on": "2024-07-22",
+      "actual": 42.84000015258789,
+      "base_tsm_forecast": 46.84908676147461,
+      "llm_tsm_forecast": 46.49771861076355
+    },
+    {
+      "target_date": "2024-09-03",
+      "forecast_made_on": "2024-07-23",
+      "actual": 42.09999465942383,
+      "base_tsm_forecast": 47.34797286987305,
+      "llm_tsm_forecast": 46.992863073349
+    },
+    {
+      "target_date": "2024-09-04",
+      "forecast_made_on": "2024-07-24",
+      "actual": 41.849998474121094,
+      "base_tsm_forecast": 47.213645935058594,
+      "llm_tsm_forecast": 46.859543590545655
+    },
+    {
+      "target_date": "2024-09-05",
+      "forecast_made_on": "2024-07-25",
+      "actual": 41.29999923706055,
+      "base_tsm_forecast": 45.7928352355957,
+      "llm_tsm_forecast": 45.44938897132874
+    },
+    {
+      "target_date": "2024-09-06",
+      "forecast_made_on": "2024-07-26",
+      "actual": 41.52000045776367,
+      "base_tsm_forecast": 46.63718795776367,
+      "llm_tsm_forecast": 46.28740904808045
+    },
+    {
+      "target_date": "2024-09-09",
+      "forecast_made_on": "2024-07-29",
+      "actual": 41.28000259399414,
+      "base_tsm_forecast": 46.327816009521484,
+      "llm_tsm_forecast": 45.98035738945008
+    },
+    {
+      "target_date": "2024-09-10",
+      "forecast_made_on": "2024-07-30",
+      "actual": 42.560001373291016,
+      "base_tsm_forecast": 45.92050552368164,
+      "llm_tsm_forecast": 45.57610173225403
+    },
+    {
+      "target_date": "2024-09-11",
+      "forecast_made_on": "2024-07-31",
+      "actual": 41.86000061035156,
+      "base_tsm_forecast": 44.99451446533203,
+      "llm_tsm_forecast": 44.65705560684204
+    },
+    {
+      "target_date": "2024-09-12",
+      "forecast_made_on": "2024-08-01",
+      "actual": 41.970001220703125,
+      "base_tsm_forecast": 44.8426399230957,
+      "llm_tsm_forecast": 44.50632012367249
+    },
+    {
+      "target_date": "2024-09-13",
+      "forecast_made_on": "2024-08-02",
+      "actual": 42.06999588012695,
+      "base_tsm_forecast": 45.518470764160156,
+      "llm_tsm_forecast": 45.177082233428955
+    },
+    {
+      "target_date": "2024-09-16",
+      "forecast_made_on": "2024-08-05",
+      "actual": 42.41999816894531,
+      "base_tsm_forecast": 45.088226318359375,
+      "llm_tsm_forecast": 44.750064620971685
+    },
+    {
+      "target_date": "2024-09-17",
+      "forecast_made_on": "2024-08-06",
+      "actual": 40.06999969482422,
+      "base_tsm_forecast": 44.761451721191406,
+      "llm_tsm_forecast": 44.425740833282475
+    },
+    {
+      "target_date": "2024-09-18",
+      "forecast_made_on": "2024-08-07",
+      "actual": 40.119998931884766,
+      "base_tsm_forecast": 43.83539962768555,
+      "llm_tsm_forecast": 43.506634130477906
+    },
+    {
+      "target_date": "2024-09-19",
+      "forecast_made_on": "2024-08-08",
+      "actual": 39.20000076293945,
+      "base_tsm_forecast": 42.1452751159668,
+      "llm_tsm_forecast": 41.829185552597046
+    },
+    {
+      "target_date": "2024-09-20",
+      "forecast_made_on": "2024-08-09",
+      "actual": 38.540000915527344,
+      "base_tsm_forecast": 43.131561279296875,
+      "llm_tsm_forecast": 42.80807456970215
+    },
+    {
+      "target_date": "2024-09-23",
+      "forecast_made_on": "2024-08-12",
+      "actual": 38.93000030517578,
+      "base_tsm_forecast": 42.583580017089844,
+      "llm_tsm_forecast": 42.26420316696167
+    },
+    {
+      "target_date": "2024-09-24",
+      "forecast_made_on": "2024-08-13",
+      "actual": 38.349998474121094,
+      "base_tsm_forecast": 43.31341552734375,
+      "llm_tsm_forecast": 42.98856491088868
+    },
+    {
+      "target_date": "2024-09-25",
+      "forecast_made_on": "2024-08-14",
+      "actual": 38.09000015258789,
+      "base_tsm_forecast": 42.620140075683594,
+      "llm_tsm_forecast": 42.30048902511597
+    },
+    {
+      "target_date": "2024-09-26",
+      "forecast_made_on": "2024-08-15",
+      "actual": 37.939998626708984,
+      "base_tsm_forecast": 42.90034866333008,
+      "llm_tsm_forecast": 42.5785960483551
+    },
+    {
+      "target_date": "2024-09-27",
+      "forecast_made_on": "2024-08-16",
+      "actual": 36.64999771118164,
+      "base_tsm_forecast": 43.7830810546875,
+      "llm_tsm_forecast": 43.45470794677735
+    },
+    {
+      "target_date": "2024-09-30",
+      "forecast_made_on": "2024-08-19",
+      "actual": 36.51000213623047,
+      "base_tsm_forecast": 42.81304168701172,
+      "llm_tsm_forecast": 42.49194387435913
+    },
+    {
+      "target_date": "2024-10-01",
+      "forecast_made_on": "2024-08-20",
+      "actual": 36.0,
+      "base_tsm_forecast": 43.17591094970703,
+      "llm_tsm_forecast": 42.85209161758423
+    },
+    {
+      "target_date": "2024-10-02",
+      "forecast_made_on": "2024-08-21",
+      "actual": 35.73999786376953,
+      "base_tsm_forecast": 43.376708984375,
+      "llm_tsm_forecast": 43.05138366699219
+    },
+    {
+      "target_date": "2024-10-03",
+      "forecast_made_on": "2024-08-22",
+      "actual": 35.279998779296875,
+      "base_tsm_forecast": 42.52962112426758,
+      "llm_tsm_forecast": 42.210648965835574
+    },
+    {
+      "target_date": "2024-10-04",
+      "forecast_made_on": "2024-08-23",
+      "actual": 36.36000061035156,
+      "base_tsm_forecast": 42.911766052246094,
+      "llm_tsm_forecast": 42.58992780685425
+    },
+    {
+      "target_date": "2024-10-07",
+      "forecast_made_on": "2024-08-26",
+      "actual": 35.72999954223633,
+      "base_tsm_forecast": 43.14057540893555,
+      "llm_tsm_forecast": 42.81702109336853
+    },
+    {
+      "target_date": "2024-10-08",
+      "forecast_made_on": "2024-08-27",
+      "actual": 35.02000045776367,
+      "base_tsm_forecast": 44.05540084838867,
+      "llm_tsm_forecast": 43.72498534202576
+    },
+    {
+      "target_date": "2024-10-09",
+      "forecast_made_on": "2024-08-28",
+      "actual": 35.72999954223633,
+      "base_tsm_forecast": 42.148895263671875,
+      "llm_tsm_forecast": 41.83277854919434
+    },
+    {
+      "target_date": "2024-10-10",
+      "forecast_made_on": "2024-08-29",
+      "actual": 36.34000015258789,
+      "base_tsm_forecast": 43.43114471435547,
+      "llm_tsm_forecast": 43.10541112899781
+    },
+    {
+      "target_date": "2024-10-11",
+      "forecast_made_on": "2024-08-30",
+      "actual": 37.790000915527344,
+      "base_tsm_forecast": 44.325199127197266,
+      "llm_tsm_forecast": 43.99276013374329
+    },
+    {
+      "target_date": "2024-10-14",
+      "forecast_made_on": "2024-09-02",
+      "actual": 37.27000045776367,
+      "base_tsm_forecast": 44.39018249511719,
+      "llm_tsm_forecast": 44.057256126403814
+    },
+    {
+      "target_date": "2024-10-15",
+      "forecast_made_on": "2024-09-03",
+      "actual": 38.769996643066406,
+      "base_tsm_forecast": 44.75127410888672,
+      "llm_tsm_forecast": 44.41563955307007
+    },
+    {
+      "target_date": "2024-10-16",
+      "forecast_made_on": "2024-09-04",
+      "actual": 38.749996185302734,
+      "base_tsm_forecast": 44.06611251831055,
+      "llm_tsm_forecast": 43.73561667442322
+    },
+    {
+      "target_date": "2024-10-17",
+      "forecast_made_on": "2024-09-05",
+      "actual": 38.25,
+      "base_tsm_forecast": 43.226776123046875,
+      "llm_tsm_forecast": 42.90257530212403
+    },
+    {
+      "target_date": "2024-10-18",
+      "forecast_made_on": "2024-09-06",
+      "actual": 38.22999954223633,
+      "base_tsm_forecast": 44.54381561279297,
+      "llm_tsm_forecast": 44.20973699569702
+    },
+    {
+      "target_date": "2024-10-21",
+      "forecast_made_on": "2024-09-09",
+      "actual": 38.57999801635742,
+      "base_tsm_forecast": 44.69870376586914,
+      "llm_tsm_forecast": 44.363463487625125
+    },
+    {
+      "target_date": "2024-10-22",
+      "forecast_made_on": "2024-09-10",
+      "actual": 39.560001373291016,
+      "base_tsm_forecast": 45.6591796875,
+      "llm_tsm_forecast": 45.31673583984375
+    },
+    {
+      "target_date": "2024-10-23",
+      "forecast_made_on": "2024-09-11",
+      "actual": 40.0,
+      "base_tsm_forecast": 44.3095703125,
+      "llm_tsm_forecast": 43.97724853515625
+    },
+    {
+      "target_date": "2024-10-24",
+      "forecast_made_on": "2024-09-12",
+      "actual": 40.15999984741211,
+      "base_tsm_forecast": 44.965885162353516,
+      "llm_tsm_forecast": 44.628641023635865
+    },
+    {
+      "target_date": "2024-10-25",
+      "forecast_made_on": "2024-09-13",
+      "actual": 39.689998626708984,
+      "base_tsm_forecast": 45.1791877746582,
+      "llm_tsm_forecast": 44.84034386634827
+    },
+    {
+      "target_date": "2024-10-28",
+      "forecast_made_on": "2024-09-16",
+      "actual": 38.88999938964844,
+      "base_tsm_forecast": 46.428863525390625,
+      "llm_tsm_forecast": 46.0806470489502
+    },
+    {
+      "target_date": "2024-12-09",
+      "forecast_made_on": "2024-10-28",
+      "actual": 35.349998474121094,
+      "base_tsm_forecast": 38.262290954589844,
+      "llm_tsm_forecast": 38.07097949981689
+    },
+    {
+      "target_date": "2024-12-10",
+      "forecast_made_on": "2024-10-29",
+      "actual": 34.72999954223633,
+      "base_tsm_forecast": 37.431278228759766,
+      "llm_tsm_forecast": 37.431278228759766
+    },
+    {
+      "target_date": "2024-12-11",
+      "forecast_made_on": "2024-10-30",
+      "actual": 34.529998779296875,
+      "base_tsm_forecast": 38.66815948486328,
+      "llm_tsm_forecast": 38.861500282287594
+    },
+    {
+      "target_date": "2024-12-12",
+      "forecast_made_on": "2024-10-31",
+      "actual": 34.54999923706055,
+      "base_tsm_forecast": 37.83094787597656,
+      "llm_tsm_forecast": 37.83094787597656
+    },
+    {
+      "target_date": "2024-12-13",
+      "forecast_made_on": "2024-11-01",
+      "actual": 34.439998626708984,
+      "base_tsm_forecast": 37.814815521240234,
+      "llm_tsm_forecast": 37.814815521240234
+    },
+    {
+      "target_date": "2024-12-16",
+      "forecast_made_on": "2024-11-04",
+      "actual": 33.560001373291016,
+      "base_tsm_forecast": 38.138458251953125,
+      "llm_tsm_forecast": 38.42449668884277
+    },
+    {
+      "target_date": "2024-12-17",
+      "forecast_made_on": "2024-11-05",
+      "actual": 33.439998626708984,
+      "base_tsm_forecast": 38.25627136230469,
+      "llm_tsm_forecast": 38.25627136230469
+    },
+    {
+      "target_date": "2024-12-18",
+      "forecast_made_on": "2024-11-06",
+      "actual": 31.979999542236328,
+      "base_tsm_forecast": 38.85628890991211,
+      "llm_tsm_forecast": 38.85628890991211
+    },
+    {
+      "target_date": "2024-12-19",
+      "forecast_made_on": "2024-11-07",
+      "actual": 32.1099967956543,
+      "base_tsm_forecast": 38.07257843017578,
+      "llm_tsm_forecast": 38.07257843017578
+    },
+    {
+      "target_date": "2024-12-20",
+      "forecast_made_on": "2024-11-08",
+      "actual": 32.84000015258789,
+      "base_tsm_forecast": 38.63829040527344,
+      "llm_tsm_forecast": 38.63829040527344
+    },
+    {
+      "target_date": "2024-12-23",
+      "forecast_made_on": "2024-11-11",
+      "actual": 32.70000076293945,
+      "base_tsm_forecast": 39.18606185913086,
+      "llm_tsm_forecast": 39.18606185913086
+    },
+    {
+      "target_date": "2024-12-24",
+      "forecast_made_on": "2024-11-12",
+      "actual": 32.900001525878906,
+      "base_tsm_forecast": 39.11199951171875,
+      "llm_tsm_forecast": 39.40533950805664
+    },
+    {
+      "target_date": "2024-12-27",
+      "forecast_made_on": "2024-11-13",
+      "actual": 32.619998931884766,
+      "base_tsm_forecast": 39.314205169677734,
+      "llm_tsm_forecast": 39.51077619552612
+    },
+    {
+      "target_date": "2024-12-30",
+      "forecast_made_on": "2024-11-14",
+      "actual": 33.439998626708984,
+      "base_tsm_forecast": 38.627037048339844,
+      "llm_tsm_forecast": 38.82017223358154
+    },
+    {
+      "target_date": "2024-12-31",
+      "forecast_made_on": "2024-11-15",
+      "actual": 36.4900016784668,
+      "base_tsm_forecast": 38.491268157958984,
+      "llm_tsm_forecast": 38.491268157958984
+    },
+    {
+      "target_date": "2025-01-02",
+      "forecast_made_on": "2024-11-18",
+      "actual": 34.33000183105469,
+      "base_tsm_forecast": 39.16558074951172,
+      "llm_tsm_forecast": 39.361408653259275
+    },
+    {
+      "target_date": "2025-01-03",
+      "forecast_made_on": "2024-11-19",
+      "actual": 34.72999954223633,
+      "base_tsm_forecast": 38.94866180419922,
+      "llm_tsm_forecast": 38.94866180419922
+    },
+    {
+      "target_date": "2025-01-06",
+      "forecast_made_on": "2024-11-20",
+      "actual": 34.959999084472656,
+      "base_tsm_forecast": 38.92538070678711,
+      "llm_tsm_forecast": 38.92538070678711
+    },
+    {
+      "target_date": "2025-01-07",
+      "forecast_made_on": "2024-11-21",
+      "actual": 34.749996185302734,
+      "base_tsm_forecast": 38.17258071899414,
+      "llm_tsm_forecast": 38.36344362258911
+    },
+    {
+      "target_date": "2025-01-08",
+      "forecast_made_on": "2024-11-22",
+      "actual": 33.06999969482422,
+      "base_tsm_forecast": 38.53644943237305,
+      "llm_tsm_forecast": 38.72913167953491
+    },
+    {
+      "target_date": "2025-01-09",
+      "forecast_made_on": "2024-11-25",
+      "actual": 32.79999923706055,
+      "base_tsm_forecast": 38.800167083740234,
+      "llm_tsm_forecast": 38.99416791915893
+    },
+    {
+      "target_date": "2025-01-10",
+      "forecast_made_on": "2024-11-26",
+      "actual": 32.59000015258789,
+      "base_tsm_forecast": 38.06540298461914,
+      "llm_tsm_forecast": 38.25572999954223
+    },
+    {
+      "target_date": "2025-01-13",
+      "forecast_made_on": "2024-11-27",
+      "actual": 33.279998779296875,
+      "base_tsm_forecast": 38.28098678588867,
+      "llm_tsm_forecast": 38.56809418678284
+    },
+    {
+      "target_date": "2025-01-14",
+      "forecast_made_on": "2024-11-28",
+      "actual": 33.380001068115234,
+      "base_tsm_forecast": 37.63908004760742,
+      "llm_tsm_forecast": 37.92137314796448
+    },
+    {
+      "target_date": "2025-01-15",
+      "forecast_made_on": "2024-11-29",
+      "actual": 32.75,
+      "base_tsm_forecast": 38.36283493041992,
+      "llm_tsm_forecast": 38.65055619239807
+    },
+    {
+      "target_date": "2025-01-16",
+      "forecast_made_on": "2024-12-02",
+      "actual": 31.840002059936523,
+      "base_tsm_forecast": 39.35845947265625,
+      "llm_tsm_forecast": 39.35845947265625
+    },
+    {
+      "target_date": "2025-01-17",
+      "forecast_made_on": "2024-12-03",
+      "actual": 31.069997787475586,
+      "base_tsm_forecast": 38.60723114013672,
+      "llm_tsm_forecast": 38.89678537368775
+    },
+    {
+      "target_date": "2025-01-20",
+      "forecast_made_on": "2024-12-04",
+      "actual": 30.19999885559082,
+      "base_tsm_forecast": 38.721012115478516,
+      "llm_tsm_forecast": 39.011419706344604
+    },
+    {
+      "target_date": "2025-01-21",
+      "forecast_made_on": "2024-12-05",
+      "actual": 33.46000289916992,
+      "base_tsm_forecast": 38.57508850097656,
+      "llm_tsm_forecast": 38.76796394348144
+    },
+    {
+      "target_date": "2025-01-22",
+      "forecast_made_on": "2024-12-06",
+      "actual": 31.559999465942383,
+      "base_tsm_forecast": 38.88024139404297,
+      "llm_tsm_forecast": 39.07464260101318
+    },
+    {
+      "target_date": "2025-01-23",
+      "forecast_made_on": "2024-12-09",
+      "actual": 31.199996948242188,
+      "base_tsm_forecast": 38.66972732543945,
+      "llm_tsm_forecast": 38.95975028038025
+    },
+    {
+      "target_date": "2025-01-24",
+      "forecast_made_on": "2024-12-10",
+      "actual": 32.22999954223633,
+      "base_tsm_forecast": 37.76763916015625,
+      "llm_tsm_forecast": 38.050896453857426
+    },
+    {
+      "target_date": "2025-01-27",
+      "forecast_made_on": "2024-12-11",
+      "actual": 33.630001068115234,
+      "base_tsm_forecast": 37.98471450805664,
+      "llm_tsm_forecast": 38.26959986686707
+    },
+    {
+      "target_date": "2025-01-28",
+      "forecast_made_on": "2024-12-12",
+      "actual": 33.81999969482422,
+      "base_tsm_forecast": 37.95415496826172,
+      "llm_tsm_forecast": 38.238811130523686
+    },
+    {
+      "target_date": "2025-01-29",
+      "forecast_made_on": "2024-12-13",
+      "actual": 38.409996032714844,
+      "base_tsm_forecast": 38.126556396484375,
+      "llm_tsm_forecast": 38.126556396484375
+    },
+    {
+      "target_date": "2025-01-30",
+      "forecast_made_on": "2024-12-16",
+      "actual": 40.480003356933594,
+      "base_tsm_forecast": 37.80897521972656,
+      "llm_tsm_forecast": 37.80897521972656
+    },
+    {
+      "target_date": "2025-01-31",
+      "forecast_made_on": "2024-12-17",
+      "actual": 42.5,
+      "base_tsm_forecast": 37.2933235168457,
+      "llm_tsm_forecast": 37.2933235168457
+    },
+    {
+      "target_date": "2025-02-03",
+      "forecast_made_on": "2024-12-18",
+      "actual": 44.119998931884766,
+      "base_tsm_forecast": 36.27022171020508,
+      "llm_tsm_forecast": 36.08887060165405
+    },
+    {
+      "target_date": "2025-02-04",
+      "forecast_made_on": "2024-12-19",
+      "actual": 45.53000259399414,
+      "base_tsm_forecast": 36.11178207397461,
+      "llm_tsm_forecast": 36.38262043952942
+    },
+    {
+      "target_date": "2025-02-05",
+      "forecast_made_on": "2024-12-20",
+      "actual": 42.37999725341797,
+      "base_tsm_forecast": 36.833587646484375,
+      "llm_tsm_forecast": 36.557335739135745
+    },
+    {
+      "target_date": "2025-02-06",
+      "forecast_made_on": "2024-12-23",
+      "actual": 44.5,
+      "base_tsm_forecast": 36.75300598144531,
+      "llm_tsm_forecast": 36.75300598144531
+    },
+    {
+      "target_date": "2025-02-07",
+      "forecast_made_on": "2024-12-24",
+      "actual": 44.06999969482422,
+      "base_tsm_forecast": 36.13594436645508,
+      "llm_tsm_forecast": 35.86492478370667
+    },
+    {
+      "target_date": "2025-02-10",
+      "forecast_made_on": "2024-12-27",
+      "actual": 45.21999740600586,
+      "base_tsm_forecast": 35.93147277832031,
+      "llm_tsm_forecast": 35.93147277832031
+    },
+    {
+      "target_date": "2025-02-11",
+      "forecast_made_on": "2024-12-30",
+      "actual": 46.6099967956543,
+      "base_tsm_forecast": 36.07313919067383,
+      "llm_tsm_forecast": 36.07313919067383
+    },
+    {
+      "target_date": "2025-02-12",
+      "forecast_made_on": "2024-12-31",
+      "actual": 45.86000061035156,
+      "base_tsm_forecast": 37.78065872192383,
+      "llm_tsm_forecast": 37.78065872192383
+    },
+    {
+      "target_date": "2025-02-13",
+      "forecast_made_on": "2025-01-02",
+      "actual": 44.52000045776367,
+      "base_tsm_forecast": 36.18075180053711,
+      "llm_tsm_forecast": 36.18075180053711
+    },
+    {
+      "target_date": "2025-02-14",
+      "forecast_made_on": "2025-01-03",
+      "actual": 44.340003967285156,
+      "base_tsm_forecast": 36.00458526611328,
+      "llm_tsm_forecast": 36.00458526611328
+    },
+    {
+      "target_date": "2025-02-17",
+      "forecast_made_on": "2025-01-06",
+      "actual": 44.90999984741211,
+      "base_tsm_forecast": 36.42313003540039,
+      "llm_tsm_forecast": 36.42313003540039
+    },
+    {
+      "target_date": "2025-02-18",
+      "forecast_made_on": "2025-01-07",
+      "actual": 43.46000289916992,
+      "base_tsm_forecast": 35.76731491088867,
+      "llm_tsm_forecast": 36.035569772720336
+    },
+    {
+      "target_date": "2025-02-19",
+      "forecast_made_on": "2025-01-08",
+      "actual": 42.60000228881836,
+      "base_tsm_forecast": 35.054954528808594,
+      "llm_tsm_forecast": 35.31786668777466
+    },
+    {
+      "target_date": "2025-02-20",
+      "forecast_made_on": "2025-01-09",
+      "actual": 41.2599983215332,
+      "base_tsm_forecast": 34.9293212890625,
+      "llm_tsm_forecast": 35.19129119873047
+    },
+    {
+      "target_date": "2025-02-21",
+      "forecast_made_on": "2025-01-10",
+      "actual": 38.61000061035156,
+      "base_tsm_forecast": 34.37386703491211,
+      "llm_tsm_forecast": 34.631671037673954
+    },
+    {
+      "target_date": "2025-02-24",
+      "forecast_made_on": "2025-01-13",
+      "actual": 39.09000015258789,
+      "base_tsm_forecast": 34.28596496582031,
+      "llm_tsm_forecast": 34.54310970306397
+    },
+    {
+      "target_date": "2025-02-25",
+      "forecast_made_on": "2025-01-14",
+      "actual": 39.61000061035156,
+      "base_tsm_forecast": 34.373085021972656,
+      "llm_tsm_forecast": 34.630883159637456
+    },
+    {
+      "target_date": "2025-02-26",
+      "forecast_made_on": "2025-01-15",
+      "actual": 39.369998931884766,
+      "base_tsm_forecast": 34.61085891723633,
+      "llm_tsm_forecast": 34.870440359115605
+    },
+    {
+      "target_date": "2025-02-27",
+      "forecast_made_on": "2025-01-16",
+      "actual": 40.47999572753906,
+      "base_tsm_forecast": 33.4588623046875,
+      "llm_tsm_forecast": 33.70980377197266
+    },
+    {
+      "target_date": "2025-02-28",
+      "forecast_made_on": "2025-01-17",
+      "actual": 42.06999588012695,
+      "base_tsm_forecast": 31.954952239990234,
+      "llm_tsm_forecast": 32.19461438179016
+    },
+    {
+      "target_date": "2025-03-03",
+      "forecast_made_on": "2025-01-20",
+      "actual": 41.540000915527344,
+      "base_tsm_forecast": 31.770837783813477,
+      "llm_tsm_forecast": 32.00911906719208
+    },
+    {
+      "target_date": "2025-03-04",
+      "forecast_made_on": "2025-01-21",
+      "actual": 40.150001525878906,
+      "base_tsm_forecast": 34.20363998413086,
+      "llm_tsm_forecast": 34.460167284011845
+    },
+    {
+      "target_date": "2025-03-05",
+      "forecast_made_on": "2025-01-22",
+      "actual": 38.44999694824219,
+      "base_tsm_forecast": 33.41762924194336,
+      "llm_tsm_forecast": 33.668261461257934
+    },
+    {
+      "target_date": "2025-03-06",
+      "forecast_made_on": "2025-01-23",
+      "actual": 38.31999969482422,
+      "base_tsm_forecast": 32.059322357177734,
+      "llm_tsm_forecast": 32.29976727485657
+    },
+    {
+      "target_date": "2025-03-07",
+      "forecast_made_on": "2025-01-24",
+      "actual": 37.6099967956543,
+      "base_tsm_forecast": 32.9516716003418,
+      "llm_tsm_forecast": 32.786913242340084
+    },
+    {
+      "target_date": "2025-03-10",
+      "forecast_made_on": "2025-01-27",
+      "actual": 37.750003814697266,
+      "base_tsm_forecast": 34.257293701171875,
+      "llm_tsm_forecast": 34.514223403930664
+    },
+    {
+      "target_date": "2025-03-11",
+      "forecast_made_on": "2025-01-28",
+      "actual": 41.500003814697266,
+      "base_tsm_forecast": 34.377418518066406,
+      "llm_tsm_forecast": 34.63524915695191
+    },
+    {
+      "target_date": "2025-03-12",
+      "forecast_made_on": "2025-01-29",
+      "actual": 37.18000030517578,
+      "base_tsm_forecast": 36.72110366821289,
+      "llm_tsm_forecast": 36.99651194572449
+    },
+    {
+      "target_date": "2025-03-13",
+      "forecast_made_on": "2025-01-30",
+      "actual": 40.0099983215332,
+      "base_tsm_forecast": 37.75017547607422,
+      "llm_tsm_forecast": 38.033301792144776
+    },
+    {
+      "target_date": "2025-03-14",
+      "forecast_made_on": "2025-01-31",
+      "actual": 42.60000228881836,
+      "base_tsm_forecast": 38.29181671142578,
+      "llm_tsm_forecast": 38.579005336761476
+    },
+    {
+      "target_date": "2025-03-17",
+      "forecast_made_on": "2025-02-03",
+      "actual": 42.7599983215332,
+      "base_tsm_forecast": 39.34891891479492,
+      "llm_tsm_forecast": 39.644035806655886
+    },
+    {
+      "target_date": "2025-03-18",
+      "forecast_made_on": "2025-02-04",
+      "actual": 42.04999923706055,
+      "base_tsm_forecast": 40.21070098876953,
+      "llm_tsm_forecast": 40.411754493713374
+    },
+    {
+      "target_date": "2025-03-19",
+      "forecast_made_on": "2025-02-05",
+      "actual": 44.220001220703125,
+      "base_tsm_forecast": 38.5705451965332,
+      "llm_tsm_forecast": 38.763397922515864
+    },
+    {
+      "target_date": "2025-03-20",
+      "forecast_made_on": "2025-02-06",
+      "actual": 44.810001373291016,
+      "base_tsm_forecast": 38.325958251953125,
+      "llm_tsm_forecast": 38.325958251953125
+    },
+    {
+      "target_date": "2025-03-21",
+      "forecast_made_on": "2025-02-07",
+      "actual": 44.93000030517578,
+      "base_tsm_forecast": 39.32439041137695,
+      "llm_tsm_forecast": 39.32439041137695
+    },
+    {
+      "target_date": "2025-03-24",
+      "forecast_made_on": "2025-02-10",
+      "actual": 44.630001068115234,
+      "base_tsm_forecast": 40.539283752441406,
+      "llm_tsm_forecast": 40.539283752441406
+    },
+    {
+      "target_date": "2025-03-25",
+      "forecast_made_on": "2025-02-11",
+      "actual": 45.72999954223633,
+      "base_tsm_forecast": 41.84187316894531,
+      "llm_tsm_forecast": 41.84187316894531
+    },
+    {
+      "target_date": "2025-03-26",
+      "forecast_made_on": "2025-02-12",
+      "actual": 45.12000274658203,
+      "base_tsm_forecast": 40.67548751831055,
+      "llm_tsm_forecast": 40.67548751831055
+    },
+    {
+      "target_date": "2025-03-27",
+      "forecast_made_on": "2025-02-13",
+      "actual": 44.75,
+      "base_tsm_forecast": 39.83129119873047,
+      "llm_tsm_forecast": 39.83129119873047
+    },
+    {
+      "target_date": "2025-03-28",
+      "forecast_made_on": "2025-02-14",
+      "actual": 43.439998626708984,
+      "base_tsm_forecast": 40.01218032836914,
+      "llm_tsm_forecast": 40.01218032836914
+    },
+    {
+      "target_date": "2025-03-31",
+      "forecast_made_on": "2025-02-17",
+      "actual": 43.06999969482422,
+      "base_tsm_forecast": 40.55752182006836,
+      "llm_tsm_forecast": 40.55752182006836
+    },
+    {
+      "target_date": "2025-04-01",
+      "forecast_made_on": "2025-02-18",
+      "actual": 43.5099983215332,
+      "base_tsm_forecast": 40.79237747192383,
+      "llm_tsm_forecast": 40.79237747192383
+    },
+    {
+      "target_date": "2025-04-02",
+      "forecast_made_on": "2025-02-19",
+      "actual": 44.529998779296875,
+      "base_tsm_forecast": 40.14616775512695,
+      "llm_tsm_forecast": 40.14616775512695
+    },
+    {
+      "target_date": "2025-04-03",
+      "forecast_made_on": "2025-02-20",
+      "actual": 43.25,
+      "base_tsm_forecast": 39.77742385864258,
+      "llm_tsm_forecast": 39.77742385864258
+    },
+    {
+      "target_date": "2025-04-04",
+      "forecast_made_on": "2025-02-21",
+      "actual": 43.599998474121094,
+      "base_tsm_forecast": 38.606773376464844,
+      "llm_tsm_forecast": 38.31722257614136
+    },
+    {
+      "target_date": "2025-04-07",
+      "forecast_made_on": "2025-02-24",
+      "actual": 42.0099983215332,
+      "base_tsm_forecast": 39.62368392944336,
+      "llm_tsm_forecast": 39.92086155891419
+    },
+    {
+      "target_date": "2025-04-08",
+      "forecast_made_on": "2025-02-25",
+      "actual": 42.81999969482422,
+      "base_tsm_forecast": 40.52891159057617,
+      "llm_tsm_forecast": 40.32626703262329
+    },
+    {
+      "target_date": "2025-04-09",
+      "forecast_made_on": "2025-02-26",
+      "actual": 40.5099983215332,
+      "base_tsm_forecast": 40.92277526855469,
+      "llm_tsm_forecast": 40.61585445404053
+    },
+    {
+      "target_date": "2025-04-10",
+      "forecast_made_on": "2025-02-27",
+      "actual": 39.97999954223633,
+      "base_tsm_forecast": 41.828372955322266,
+      "llm_tsm_forecast": 41.51466015815735
+    },
+    {
+      "target_date": "2025-04-11",
+      "forecast_made_on": "2025-02-28",
+      "actual": 41.959999084472656,
+      "base_tsm_forecast": 43.542545318603516,
+      "llm_tsm_forecast": 43.21597622871399
+    },
+    {
+      "target_date": "2025-04-14",
+      "forecast_made_on": "2025-03-03",
+      "actual": 44.959999084472656,
+      "base_tsm_forecast": 43.3697395324707,
+      "llm_tsm_forecast": 43.152890834808346
+    },
+    {
+      "target_date": "2025-04-15",
+      "forecast_made_on": "2025-03-04",
+      "actual": 45.72000503540039,
+      "base_tsm_forecast": 42.69131851196289,
+      "llm_tsm_forecast": 42.69131851196289
+    },
+    {
+      "target_date": "2025-04-16",
+      "forecast_made_on": "2025-03-05",
+      "actual": 46.130001068115234,
+      "base_tsm_forecast": 40.6030158996582,
+      "llm_tsm_forecast": 40.6030158996582
+    },
+    {
+      "target_date": "2025-04-17",
+      "forecast_made_on": "2025-03-06",
+      "actual": 46.019996643066406,
+      "base_tsm_forecast": 40.819114685058594,
+      "llm_tsm_forecast": 40.512971324920656
+    },
+    {
+      "target_date": "2025-04-21",
+      "forecast_made_on": "2025-03-07",
+      "actual": 45.78000259399414,
+      "base_tsm_forecast": 40.5142822265625,
+      "llm_tsm_forecast": 40.5142822265625
+    },
+    {
+      "target_date": "2025-04-22",
+      "forecast_made_on": "2025-03-10",
+      "actual": 47.40999984741211,
+      "base_tsm_forecast": 41.018131256103516,
+      "llm_tsm_forecast": 41.018131256103516
+    },
+    {
+      "target_date": "2025-04-23",
+      "forecast_made_on": "2025-03-11",
+      "actual": 45.40999984741211,
+      "base_tsm_forecast": 43.680572509765625,
+      "llm_tsm_forecast": 43.4621696472168
+    },
+    {
+      "target_date": "2025-04-24",
+      "forecast_made_on": "2025-03-12",
+      "actual": 46.880001068115234,
+      "base_tsm_forecast": 40.22644805908203,
+      "llm_tsm_forecast": 40.22644805908203
+    },
+    {
+      "target_date": "2025-04-25",
+      "forecast_made_on": "2025-03-13",
+      "actual": 46.159996032714844,
+      "base_tsm_forecast": 40.6954231262207,
+      "llm_tsm_forecast": 40.39020745277405
+    },
+    {
+      "target_date": "2025-04-28",
+      "forecast_made_on": "2025-03-14",
+      "actual": 46.09000015258789,
+      "base_tsm_forecast": 43.00724792480469,
+      "llm_tsm_forecast": 43.00724792480469
+    },
+    {
+      "target_date": "2025-04-29",
+      "forecast_made_on": "2025-03-17",
+      "actual": 47.9900016784668,
+      "base_tsm_forecast": 42.792259216308594,
+      "llm_tsm_forecast": 42.57829792022705
+    },
+    {
+      "target_date": "2025-04-30",
+      "forecast_made_on": "2025-03-18",
+      "actual": 46.38999938964844,
+      "base_tsm_forecast": 42.19260025024414,
+      "llm_tsm_forecast": 41.87615574836731
+    },
+    {
+      "target_date": "2025-05-01",
+      "forecast_made_on": "2025-03-19",
+      "actual": 45.980003356933594,
+      "base_tsm_forecast": 42.3204345703125,
+      "llm_tsm_forecast": 42.63783782958985
+    },
+    {
+      "target_date": "2025-05-02",
+      "forecast_made_on": "2025-03-20",
+      "actual": 46.730003356933594,
+      "base_tsm_forecast": 43.238868713378906,
+      "llm_tsm_forecast": 43.56316022872925
+    },
+    {
+      "target_date": "2025-05-05",
+      "forecast_made_on": "2025-03-21",
+      "actual": 48.29999923706055,
+      "base_tsm_forecast": 42.66568374633789,
+      "llm_tsm_forecast": 42.98567637443543
+    },
+    {
+      "target_date": "2025-05-06",
+      "forecast_made_on": "2025-03-24",
+      "actual": 51.08000183105469,
+      "base_tsm_forecast": 42.75625228881836,
+      "llm_tsm_forecast": 43.0769241809845
+    },
+    {
+      "target_date": "2025-05-07",
+      "forecast_made_on": "2025-03-25",
+      "actual": 49.40999984741211,
+      "base_tsm_forecast": 43.75870895385742,
+      "llm_tsm_forecast": 43.75870895385742
+    },
+    {
+      "target_date": "2025-05-08",
+      "forecast_made_on": "2025-03-26",
+      "actual": 50.53999710083008,
+      "base_tsm_forecast": 43.132320404052734,
+      "llm_tsm_forecast": 43.132320404052734
+    },
+    {
+      "target_date": "2025-05-09",
+      "forecast_made_on": "2025-03-27",
+      "actual": 50.44000244140625,
+      "base_tsm_forecast": 42.26731491088867,
+      "llm_tsm_forecast": 42.26731491088867
+    },
+    {
+      "target_date": "2025-05-12",
+      "forecast_made_on": "2025-03-28",
+      "actual": 50.060001373291016,
+      "base_tsm_forecast": 43.62480545043945,
+      "llm_tsm_forecast": 43.29761940956116
+    },
+    {
+      "target_date": "2025-05-13",
+      "forecast_made_on": "2025-03-31",
+      "actual": 51.28000259399414,
+      "base_tsm_forecast": 43.03458786010742,
+      "llm_tsm_forecast": 43.03458786010742
+    },
+    {
+      "target_date": "2025-05-14",
+      "forecast_made_on": "2025-04-01",
+      "actual": 50.369998931884766,
+      "base_tsm_forecast": 42.623321533203125,
+      "llm_tsm_forecast": 42.623321533203125
+    },
+    {
+      "target_date": "2025-05-15",
+      "forecast_made_on": "2025-04-02",
+      "actual": 48.099998474121094,
+      "base_tsm_forecast": 42.2200813293457,
+      "llm_tsm_forecast": 42.2200813293457
+    },
+    {
+      "target_date": "2025-05-16",
+      "forecast_made_on": "2025-04-03",
+      "actual": 47.36000061035156,
+      "base_tsm_forecast": 42.55115509033203,
+      "llm_tsm_forecast": 42.33839931488037
+    },
+    {
+      "target_date": "2025-05-19",
+      "forecast_made_on": "2025-04-04",
+      "actual": 47.04999923706055,
+      "base_tsm_forecast": 43.29172134399414,
+      "llm_tsm_forecast": 42.96703343391419
+    },
+    {
+      "target_date": "2025-05-20",
+      "forecast_made_on": "2025-04-07",
+      "actual": 51.05999755859375,
+      "base_tsm_forecast": 41.45400619506836,
+      "llm_tsm_forecast": 41.143101148605346
+    },
+    {
+      "target_date": "2025-05-21",
+      "forecast_made_on": "2025-04-08",
+      "actual": 53.86000061035156,
+      "base_tsm_forecast": 42.39128494262695,
+      "llm_tsm_forecast": 42.17932851791382
+    },
+    {
+      "target_date": "2025-05-22",
+      "forecast_made_on": "2025-04-09",
+      "actual": 53.62999725341797,
+      "base_tsm_forecast": 41.549007415771484,
+      "llm_tsm_forecast": 41.2373898601532
+    },
+    {
+      "target_date": "2025-05-23",
+      "forecast_made_on": "2025-04-10",
+      "actual": 51.790000915527344,
+      "base_tsm_forecast": 41.422325134277344,
+      "llm_tsm_forecast": 41.11165769577027
+    },
+    {
+      "target_date": "2025-05-26",
+      "forecast_made_on": "2025-04-11",
+      "actual": 50.560001373291016,
+      "base_tsm_forecast": 42.83395767211914,
+      "llm_tsm_forecast": 42.51270298957825
+    },
+    {
+      "target_date": "2025-05-27",
+      "forecast_made_on": "2025-04-14",
+      "actual": 51.709999084472656,
+      "base_tsm_forecast": 44.44456100463867,
+      "llm_tsm_forecast": 44.11122679710388
+    },
+    {
+      "target_date": "2025-05-28",
+      "forecast_made_on": "2025-04-15",
+      "actual": 50.89999771118164,
+      "base_tsm_forecast": 45.265499114990234,
+      "llm_tsm_forecast": 44.92600787162781
+    },
+    {
+      "target_date": "2025-05-29",
+      "forecast_made_on": "2025-04-16",
+      "actual": 50.60000228881836,
+      "base_tsm_forecast": 45.664306640625,
+      "llm_tsm_forecast": 45.89262817382812
+    },
+    {
+      "target_date": "2025-05-30",
+      "forecast_made_on": "2025-04-17",
+      "actual": 50.71000289916992,
+      "base_tsm_forecast": 45.336795806884766,
+      "llm_tsm_forecast": 44.99676983833313
+    },
+    {
+      "target_date": "2025-06-02",
+      "forecast_made_on": "2025-04-21",
+      "actual": 50.07999801635742,
+      "base_tsm_forecast": 44.63545608520508,
+      "llm_tsm_forecast": 44.30069016456604
+    },
+    {
+      "target_date": "2025-06-03",
+      "forecast_made_on": "2025-04-22",
+      "actual": 48.97999954223633,
+      "base_tsm_forecast": 46.146217346191406,
+      "llm_tsm_forecast": 45.80012071609497
+    },
+    {
+      "target_date": "2025-06-04",
+      "forecast_made_on": "2025-04-23",
+      "actual": 49.540000915527344,
+      "base_tsm_forecast": 45.84067153930664,
+      "llm_tsm_forecast": 45.49686650276184
+    },
+    {
+      "target_date": "2025-06-05",
+      "forecast_made_on": "2025-04-24",
+      "actual": 49.17000198364258,
+      "base_tsm_forecast": 46.241485595703125,
+      "llm_tsm_forecast": 45.894674453735355
+    },
+    {
+      "target_date": "2025-06-06",
+      "forecast_made_on": "2025-04-25",
+      "actual": 49.369998931884766,
+      "base_tsm_forecast": 45.00691604614258,
+      "llm_tsm_forecast": 44.66936417579651
+    },
+    {
+      "target_date": "2025-06-09",
+      "forecast_made_on": "2025-04-28",
+      "actual": 49.27000045776367,
+      "base_tsm_forecast": 44.697479248046875,
+      "llm_tsm_forecast": 44.36224815368652
+    },
+    {
+      "target_date": "2025-06-10",
+      "forecast_made_on": "2025-04-29",
+      "actual": 50.30000305175781,
+      "base_tsm_forecast": 47.17660903930664,
+      "llm_tsm_forecast": 46.822784471511845
+    },
+    {
+      "target_date": "2025-06-11",
+      "forecast_made_on": "2025-04-30",
+      "actual": 50.659996032714844,
+      "base_tsm_forecast": 45.818912506103516,
+      "llm_tsm_forecast": 45.47527066230774
+    },
+    {
+      "target_date": "2025-06-12",
+      "forecast_made_on": "2025-05-01",
+      "actual": 51.62999725341797,
+      "base_tsm_forecast": 45.193870544433594,
+      "llm_tsm_forecast": 44.85491651535035
+    },
+    {
+      "target_date": "2025-06-13",
+      "forecast_made_on": "2025-05-02",
+      "actual": 52.7599983215332,
+      "base_tsm_forecast": 45.09571075439453,
+      "llm_tsm_forecast": 44.75749292373658
+    },
+    {
+      "target_date": "2025-06-16",
+      "forecast_made_on": "2025-05-05",
+      "actual": 53.38999938964844,
+      "base_tsm_forecast": 46.92292022705078,
+      "llm_tsm_forecast": 47.15753482818603
+    },
+    {
+      "target_date": "2025-06-17",
+      "forecast_made_on": "2025-05-06",
+      "actual": 52.69000244140625,
+      "base_tsm_forecast": 48.73350143432617,
+      "llm_tsm_forecast": 48.36800017356873
+    },
+    {
+      "target_date": "2025-06-18",
+      "forecast_made_on": "2025-05-07",
+      "actual": 52.12999725341797,
+      "base_tsm_forecast": 47.334678649902344,
+      "llm_tsm_forecast": 46.97966856002808
+    },
+    {
+      "target_date": "2025-06-19",
+      "forecast_made_on": "2025-05-08",
+      "actual": 52.46000289916992,
+      "base_tsm_forecast": 46.80257797241211,
+      "llm_tsm_forecast": 46.45155863761902
+    },
+    {
+      "target_date": "2025-06-20",
+      "forecast_made_on": "2025-05-09",
+      "actual": 50.52000045776367,
+      "base_tsm_forecast": 47.496707916259766,
+      "llm_tsm_forecast": 47.14048260688782
+    },
+    {
+      "target_date": "2025-06-23",
+      "forecast_made_on": "2025-05-12",
+      "actual": 49.8900032043457,
+      "base_tsm_forecast": 47.47879409790039,
+      "llm_tsm_forecast": 47.12270314216614
+    },
+    {
+      "target_date": "2025-06-24",
+      "forecast_made_on": "2025-05-13",
+      "actual": 49.48999786376953,
+      "base_tsm_forecast": 49.83405685424805,
+      "llm_tsm_forecast": 49.46030142784119
+    },
+    {
+      "target_date": "2025-06-25",
+      "forecast_made_on": "2025-05-14",
+      "actual": 50.189998626708984,
+      "base_tsm_forecast": 49.321781158447266,
+      "llm_tsm_forecast": 49.07517225265503
+    },
+    {
+      "target_date": "2025-06-26",
+      "forecast_made_on": "2025-05-15",
+      "actual": 48.58000183105469,
+      "base_tsm_forecast": 47.60300827026367,
+      "llm_tsm_forecast": 47.245985708236695
+    },
+    {
+      "target_date": "2025-06-27",
+      "forecast_made_on": "2025-05-16",
+      "actual": 46.60000228881836,
+      "base_tsm_forecast": 47.36398696899414,
+      "llm_tsm_forecast": 47.00875706672669
+    },
+    {
+      "target_date": "2025-06-30",
+      "forecast_made_on": "2025-05-19",
+      "actual": 47.08000183105469,
+      "base_tsm_forecast": 47.482303619384766,
+      "llm_tsm_forecast": 47.12618634223938
+    },
+    {
+      "target_date": "2025-07-01",
+      "forecast_made_on": "2025-05-20",
+      "actual": 45.150001525878906,
+      "base_tsm_forecast": 50.68281173706055,
+      "llm_tsm_forecast": 50.429397678375246
+    },
+    {
+      "target_date": "2025-08-12",
+      "forecast_made_on": "2025-07-01",
+      "actual": 51.220001220703125,
+      "base_tsm_forecast": 48.36256790161133,
+      "llm_tsm_forecast": 47.99984864234924
+    },
+    {
+      "target_date": "2025-08-13",
+      "forecast_made_on": "2025-07-02",
+      "actual": 50.959999084472656,
+      "base_tsm_forecast": 48.76177215576172,
+      "llm_tsm_forecast": 48.396058864593506
+    },
+    {
+      "target_date": "2025-08-14",
+      "forecast_made_on": "2025-07-03",
+      "actual": 50.769996643066406,
+      "base_tsm_forecast": 49.41463088989258,
+      "llm_tsm_forecast": 49.044021158218385
+    },
+    {
+      "target_date": "2025-08-15",
+      "forecast_made_on": "2025-07-04",
+      "actual": 50.38999938964844,
+      "base_tsm_forecast": 49.68678283691406,
+      "llm_tsm_forecast": 49.31413196563721
+    },
+    {
+      "target_date": "2025-08-18",
+      "forecast_made_on": "2025-07-07",
+      "actual": 50.040000915527344,
+      "base_tsm_forecast": 48.72632598876953,
+      "llm_tsm_forecast": 49.091773433685304
+    },
+    {
+      "target_date": "2025-08-19",
+      "forecast_made_on": "2025-07-08",
+      "actual": 50.29999542236328,
+      "base_tsm_forecast": 49.01561737060547,
+      "llm_tsm_forecast": 49.38323450088501
+    },
+    {
+      "target_date": "2025-08-20",
+      "forecast_made_on": "2025-07-09",
+      "actual": 50.06999969482422,
+      "base_tsm_forecast": 49.48422622680664,
+      "llm_tsm_forecast": 49.23680509567261
+    },
+    {
+      "target_date": "2025-08-21",
+      "forecast_made_on": "2025-07-10",
+      "actual": 49.94999694824219,
+      "base_tsm_forecast": 48.818328857421875,
+      "llm_tsm_forecast": 48.818328857421875
+    },
+    {
+      "target_date": "2025-08-22",
+      "forecast_made_on": "2025-07-11",
+      "actual": 51.540000915527344,
+      "base_tsm_forecast": 49.18002700805664,
+      "llm_tsm_forecast": 49.42592714309692
+    },
+    {
+      "target_date": "2025-08-26",
+      "forecast_made_on": "2025-07-14",
+      "actual": 51.66999816894531,
+      "base_tsm_forecast": 49.87422561645508,
+      "llm_tsm_forecast": 49.87422561645508
+    },
+    {
+      "target_date": "2025-08-27",
+      "forecast_made_on": "2025-07-15",
+      "actual": 51.67000198364258,
+      "base_tsm_forecast": 50.115692138671875,
+      "llm_tsm_forecast": 50.49155982971192
+    },
+    {
+      "target_date": "2025-08-28",
+      "forecast_made_on": "2025-07-16",
+      "actual": 51.34000015258789,
+      "base_tsm_forecast": 50.52372741699219,
+      "llm_tsm_forecast": 50.902655372619634
+    },
+    {
+      "target_date": "2025-08-29",
+      "forecast_made_on": "2025-07-17",
+      "actual": 51.160003662109375,
+      "base_tsm_forecast": 50.80770111083984,
+      "llm_tsm_forecast": 51.188758869171146
+    },
+    {
+      "target_date": "2025-09-01",
+      "forecast_made_on": "2025-07-18",
+      "actual": 52.660003662109375,
+      "base_tsm_forecast": 50.69098663330078,
+      "llm_tsm_forecast": 50.94444156646728
+    },
+    {
+      "target_date": "2025-09-02",
+      "forecast_made_on": "2025-07-21",
+      "actual": 53.77000045776367,
+      "base_tsm_forecast": 48.94243621826172,
+      "llm_tsm_forecast": 49.309504489898686
+    },
+    {
+      "target_date": "2025-09-03",
+      "forecast_made_on": "2025-07-22",
+      "actual": 53.470001220703125,
+      "base_tsm_forecast": 48.47554397583008,
+      "llm_tsm_forecast": 48.71792169570922
+    },
+    {
+      "target_date": "2025-09-04",
+      "forecast_made_on": "2025-07-23",
+      "actual": 54.16999816894531,
+      "base_tsm_forecast": 49.34829330444336,
+      "llm_tsm_forecast": 49.34829330444336
+    },
+    {
+      "target_date": "2025-09-05",
+      "forecast_made_on": "2025-07-24",
+      "actual": 55.220001220703125,
+      "base_tsm_forecast": 49.130836486816406,
+      "llm_tsm_forecast": 49.37649066925049
+    },
+    {
+      "target_date": "2025-09-08",
+      "forecast_made_on": "2025-07-25",
+      "actual": 55.59000015258789,
+      "base_tsm_forecast": 49.12569808959961,
+      "llm_tsm_forecast": 49.49414082527161
+    },
+    {
+      "target_date": "2025-09-09",
+      "forecast_made_on": "2025-07-28",
+      "actual": 56.55000305175781,
+      "base_tsm_forecast": 48.956581115722656,
+      "llm_tsm_forecast": 49.32375547409058
+    },
+    {
+      "target_date": "2025-09-10",
+      "forecast_made_on": "2025-07-29",
+      "actual": 56.7400016784668,
+      "base_tsm_forecast": 49.155235290527344,
+      "llm_tsm_forecast": 49.5238995552063
+    },
+    {
+      "target_date": "2025-09-11",
+      "forecast_made_on": "2025-07-30",
+      "actual": 56.78999710083008,
+      "base_tsm_forecast": 49.803279876708984,
+      "llm_tsm_forecast": 50.1768044757843
+    },
+    {
+      "target_date": "2025-09-12",
+      "forecast_made_on": "2025-07-31",
+      "actual": 55.470001220703125,
+      "base_tsm_forecast": 50.06468200683594,
+      "llm_tsm_forecast": 50.06468200683594
+    },
+    {
+      "target_date": "2025-09-15",
+      "forecast_made_on": "2025-08-01",
+      "actual": 55.57999801635742,
+      "base_tsm_forecast": 49.77151870727539,
+      "llm_tsm_forecast": 49.77151870727539
+    },
+    {
+      "target_date": "2025-09-16",
+      "forecast_made_on": "2025-08-04",
+      "actual": 56.25,
+      "base_tsm_forecast": 48.94472885131836,
+      "llm_tsm_forecast": 49.31181431770325
+    },
+    {
+      "target_date": "2025-09-17",
+      "forecast_made_on": "2025-08-05",
+      "actual": 56.900001525878906,
+      "base_tsm_forecast": 48.931453704833984,
+      "llm_tsm_forecast": 49.17611097335815
+    },
+    {
+      "target_date": "2025-09-18",
+      "forecast_made_on": "2025-08-06",
+      "actual": 56.80999755859375,
+      "base_tsm_forecast": 49.43427276611328,
+      "llm_tsm_forecast": 49.68144412994384
+    },
+    {
+      "target_date": "2025-09-19",
+      "forecast_made_on": "2025-08-07",
+      "actual": 57.619998931884766,
+      "base_tsm_forecast": 49.32646560668945,
+      "llm_tsm_forecast": 49.573097934722895
+    },
+    {
+      "target_date": "2025-09-22",
+      "forecast_made_on": "2025-08-08",
+      "actual": 57.019996643066406,
+      "base_tsm_forecast": 49.50767517089844,
+      "llm_tsm_forecast": 49.50767517089844
+    },
+    {
+      "target_date": "2025-09-23",
+      "forecast_made_on": "2025-08-11",
+      "actual": 55.989994049072266,
+      "base_tsm_forecast": 50.10652160644531,
+      "llm_tsm_forecast": 50.10652160644531
+    },
+    {
+      "target_date": "2025-09-24",
+      "forecast_made_on": "2025-08-12",
+      "actual": 56.480003356933594,
+      "base_tsm_forecast": 50.91991424560547,
+      "llm_tsm_forecast": 50.91991424560547
+    },
+    {
+      "target_date": "2025-09-25",
+      "forecast_made_on": "2025-08-13",
+      "actual": 56.30999755859375,
+      "base_tsm_forecast": 51.09422302246094,
+      "llm_tsm_forecast": 51.09422302246094
+    },
+    {
+      "target_date": "2025-09-26",
+      "forecast_made_on": "2025-08-14",
+      "actual": 55.54999923706055,
+      "base_tsm_forecast": 51.31616973876953,
+      "llm_tsm_forecast": 51.572750587463375
+    },
+    {
+      "target_date": "2025-09-29",
+      "forecast_made_on": "2025-08-15",
+      "actual": 53.810001373291016,
+      "base_tsm_forecast": 50.671142578125,
+      "llm_tsm_forecast": 50.92449829101562
+    },
+    {
+      "target_date": "2025-09-30",
+      "forecast_made_on": "2025-08-18",
+      "actual": 54.8599967956543,
+      "base_tsm_forecast": 49.98344039916992,
+      "llm_tsm_forecast": 50.23335760116576
+    },
+    {
+      "target_date": "2025-10-01",
+      "forecast_made_on": "2025-08-19",
+      "actual": 53.769996643066406,
+      "base_tsm_forecast": 50.66975784301758,
+      "llm_tsm_forecast": 50.92310663223266
+    },
+    {
+      "target_date": "2025-10-02",
+      "forecast_made_on": "2025-08-20",
+      "actual": 54.05999755859375,
+      "base_tsm_forecast": 50.73931884765625,
+      "llm_tsm_forecast": 51.119863739013674
+    },
+    {
+      "target_date": "2025-10-03",
+      "forecast_made_on": "2025-08-21",
+      "actual": 55.939998626708984,
+      "base_tsm_forecast": 50.55731201171875,
+      "llm_tsm_forecast": 50.81009857177734
+    },
+    {
+      "target_date": "2025-10-06",
+      "forecast_made_on": "2025-08-22",
+      "actual": 56.65999984741211,
+      "base_tsm_forecast": 51.20330810546875,
+      "llm_tsm_forecast": 51.58733291625977
+    },
+    {
+      "target_date": "2025-10-07",
+      "forecast_made_on": "2025-08-26",
+      "actual": 56.17999649047851,
+      "base_tsm_forecast": 52.0797004699707,
+      "llm_tsm_forecast": 52.340098972320554
+    },
+    {
+      "target_date": "2025-10-08",
+      "forecast_made_on": "2025-08-27",
+      "actual": 55.06999969482422,
+      "base_tsm_forecast": 52.65238571166992,
+      "llm_tsm_forecast": 52.915647640228265
+    },
+    {
+      "target_date": "2025-10-09",
+      "forecast_made_on": "2025-08-28",
+      "actual": 54.650001525878906,
+      "base_tsm_forecast": 51.952545166015625,
+      "llm_tsm_forecast": 52.2123078918457
+    },
+    {
+      "target_date": "2025-10-10",
+      "forecast_made_on": "2025-08-29",
+      "actual": 54.70000076293945,
+      "base_tsm_forecast": 51.54334259033203,
+      "llm_tsm_forecast": 51.929917659759525
+    },
+    {
+      "target_date": "2025-10-13",
+      "forecast_made_on": "2025-09-01",
+      "actual": 55.21000289916992,
+      "base_tsm_forecast": 52.486724853515625,
+      "llm_tsm_forecast": 52.7491584777832
+    },
+    {
+      "target_date": "2025-10-14",
+      "forecast_made_on": "2025-09-02",
+      "actual": 54.220001220703125,
+      "base_tsm_forecast": 52.978458404541016,
+      "llm_tsm_forecast": 53.24335069656371
+    },
+    {
+      "target_date": "2025-10-15",
+      "forecast_made_on": "2025-09-03",
+      "actual": 53.650001525878906,
+      "base_tsm_forecast": 53.29586410522461,
+      "llm_tsm_forecast": 53.6955830860138
+    },
+    {
+      "target_date": "2025-10-16",
+      "forecast_made_on": "2025-09-04",
+      "actual": 54.39999771118164,
+      "base_tsm_forecast": 53.980010986328125,
+      "llm_tsm_forecast": 54.38486106872559
+    },
+    {
+      "target_date": "2025-10-17",
+      "forecast_made_on": "2025-09-05",
+      "actual": 56.1400032043457,
+      "base_tsm_forecast": 54.00975036621094,
+      "llm_tsm_forecast": 54.41482349395752
+    },
+    {
+      "target_date": "2025-10-20",
+      "forecast_made_on": "2025-09-08",
+      "actual": 56.130001068115234,
+      "base_tsm_forecast": 54.62886047363281,
+      "llm_tsm_forecast": 55.03857692718506
+    },
+    {
+      "target_date": "2025-10-21",
+      "forecast_made_on": "2025-09-09",
+      "actual": 56.64999771118164,
+      "base_tsm_forecast": 55.2838020324707,
+      "llm_tsm_forecast": 55.69843054771424
+    },
+    {
+      "target_date": "2025-10-22",
+      "forecast_made_on": "2025-09-10",
+      "actual": 55.720001220703125,
+      "base_tsm_forecast": 55.58317184448242,
+      "llm_tsm_forecast": 56.00004563331604
+    },
+    {
+      "target_date": "2025-10-23",
+      "forecast_made_on": "2025-09-11",
+      "actual": 55.189998626708984,
+      "base_tsm_forecast": 54.99452209472656,
+      "llm_tsm_forecast": 55.406981010437015
+    },
+    {
+      "target_date": "2025-10-24",
+      "forecast_made_on": "2025-09-12",
+      "actual": 54.810001373291016,
+      "base_tsm_forecast": 53.325889587402344,
+      "llm_tsm_forecast": 53.59251903533935
+    },
+    {
+      "target_date": "2025-10-27",
+      "forecast_made_on": "2025-09-15",
+      "actual": 54.290000915527344,
+      "base_tsm_forecast": 54.222023010253906,
+      "llm_tsm_forecast": 54.628688182830814
+    },
+    {
+      "target_date": "2025-10-28",
+      "forecast_made_on": "2025-09-16",
+      "actual": 54.30999755859375,
+      "base_tsm_forecast": 54.79340744018555,
+      "llm_tsm_forecast": 54.79340744018555
+    },
+    {
+      "target_date": "2025-10-29",
+      "forecast_made_on": "2025-09-17",
+      "actual": 55.18000030517578,
+      "base_tsm_forecast": 54.96686172485352,
+      "llm_tsm_forecast": 54.96686172485352
+    },
+    {
+      "target_date": "2025-10-30",
+      "forecast_made_on": "2025-09-18",
+      "actual": 55.500003814697266,
+      "base_tsm_forecast": 55.32268524169922,
+      "llm_tsm_forecast": 55.59929866790771
+    },
+    {
+      "target_date": "2025-10-31",
+      "forecast_made_on": "2025-09-19",
+      "actual": 55.790000915527344,
+      "base_tsm_forecast": 55.86994171142578,
+      "llm_tsm_forecast": 55.86994171142578
+    },
+    {
+      "target_date": "2025-11-03",
+      "forecast_made_on": "2025-09-22",
+      "actual": 56.119998931884766,
+      "base_tsm_forecast": 56.55198287963867,
+      "llm_tsm_forecast": 56.55198287963867
+    },
+    {
+      "target_date": "2025-11-04",
+      "forecast_made_on": "2025-09-23",
+      "actual": 57.82000350952149,
+      "base_tsm_forecast": 55.70934295654297,
+      "llm_tsm_forecast": 56.12716302871704
+    },
+    {
+      "target_date": "2025-11-05",
+      "forecast_made_on": "2025-09-24",
+      "actual": 58.39999771118164,
+      "base_tsm_forecast": 55.497196197509766,
+      "llm_tsm_forecast": 55.497196197509766
+    },
+    {
+      "target_date": "2025-11-06",
+      "forecast_made_on": "2025-09-25",
+      "actual": 57.20000076293945,
+      "base_tsm_forecast": 55.742916107177734,
+      "llm_tsm_forecast": 55.742916107177734
+    },
+    {
+      "target_date": "2025-11-07",
+      "forecast_made_on": "2025-09-26",
+      "actual": 56.54999923706055,
+      "base_tsm_forecast": 55.728965759277344,
+      "llm_tsm_forecast": 56.007610588073725
+    },
+    {
+      "target_date": "2025-11-10",
+      "forecast_made_on": "2025-09-29",
+      "actual": 55.220001220703125,
+      "base_tsm_forecast": 54.938968658447266,
+      "llm_tsm_forecast": 55.2136635017395
+    },
+    {
+      "target_date": "2025-11-11",
+      "forecast_made_on": "2025-09-30",
+      "actual": 56.47999954223633,
+      "base_tsm_forecast": 55.55817413330078,
+      "llm_tsm_forecast": 55.97486043930054
+    },
+    {
+      "target_date": "2025-11-12",
+      "forecast_made_on": "2025-10-01",
+      "actual": 56.869998931884766,
+      "base_tsm_forecast": 54.93175506591797,
+      "llm_tsm_forecast": 55.20641384124755
+    },
+    {
+      "target_date": "2025-11-13",
+      "forecast_made_on": "2025-10-02",
+      "actual": 57.099998474121094,
+      "base_tsm_forecast": 55.489444732666016,
+      "llm_tsm_forecast": 55.76689195632934
+    },
+    {
+      "target_date": "2025-11-14",
+      "forecast_made_on": "2025-10-03",
+      "actual": 58.10000228881836,
+      "base_tsm_forecast": 56.578182220458984,
+      "llm_tsm_forecast": 56.578182220458984
+    },
+    {
+      "target_date": "2025-11-17",
+      "forecast_made_on": "2025-10-06",
+      "actual": 56.8599967956543,
+      "base_tsm_forecast": 57.055606842041016,
+      "llm_tsm_forecast": 57.48352389335633
+    },
+    {
+      "target_date": "2025-11-18",
+      "forecast_made_on": "2025-10-07",
+      "actual": 56.40999984741211,
+      "base_tsm_forecast": 57.1042366027832,
+      "llm_tsm_forecast": 57.38975778579712
+    },
+    {
+      "target_date": "2025-11-19",
+      "forecast_made_on": "2025-10-08",
+      "actual": 56.869998931884766,
+      "base_tsm_forecast": 56.283199310302734,
+      "llm_tsm_forecast": 56.283199310302734
+    },
+    {
+      "target_date": "2025-11-20",
+      "forecast_made_on": "2025-10-09",
+      "actual": 57.01000213623047,
+      "base_tsm_forecast": 56.26608657836914,
+      "llm_tsm_forecast": 56.54741701126098
+    },
+    {
+      "target_date": "2025-11-21",
+      "forecast_made_on": "2025-10-10",
+      "actual": 58.12000274658203,
+      "base_tsm_forecast": 56.530982971191406,
+      "llm_tsm_forecast": 56.81363788604736
+    },
+    {
+      "target_date": "2025-11-24",
+      "forecast_made_on": "2025-10-13",
+      "actual": 57.65999984741211,
+      "base_tsm_forecast": 56.066463470458984,
+      "llm_tsm_forecast": 56.48696194648743
+    },
+    {
+      "target_date": "2025-11-25",
+      "forecast_made_on": "2025-10-14",
+      "actual": 57.720001220703125,
+      "base_tsm_forecast": 56.01032638549805,
+      "llm_tsm_forecast": 56.29037801742553
+    },
+    {
+      "target_date": "2025-11-26",
+      "forecast_made_on": "2025-10-15",
+      "actual": 58.2599983215332,
+      "base_tsm_forecast": 55.546669006347656,
+      "llm_tsm_forecast": 55.963269023895265
+    },
+    {
+      "target_date": "2025-11-27",
+      "forecast_made_on": "2025-10-16",
+      "actual": 57.029998779296875,
+      "base_tsm_forecast": 55.84223556518555,
+      "llm_tsm_forecast": 56.26105233192444
+    },
+    {
+      "target_date": "2025-11-28",
+      "forecast_made_on": "2025-10-17",
+      "actual": 57.06999588012695,
+      "base_tsm_forecast": 56.30867385864258,
+      "llm_tsm_forecast": 56.59021722793579
+    },
+    {
+      "target_date": "2025-12-01",
+      "forecast_made_on": "2025-10-20",
+      "actual": 58.28000259399414,
+      "base_tsm_forecast": 56.65904998779297,
+      "llm_tsm_forecast": 56.65904998779297
+    },
+    {
+      "target_date": "2025-12-02",
+      "forecast_made_on": "2025-10-21",
+      "actual": 56.459999084472656,
+      "base_tsm_forecast": 56.41226577758789,
+      "llm_tsm_forecast": 56.835357770919806
+    },
+    {
+      "target_date": "2025-12-03",
+      "forecast_made_on": "2025-10-22",
+      "actual": 56.1400032043457,
+      "base_tsm_forecast": 55.48719024658203,
+      "llm_tsm_forecast": 55.764626197814934
+    },
+    {
+      "target_date": "2025-12-04",
+      "forecast_made_on": "2025-10-23",
+      "actual": 56.56999588012695,
+      "base_tsm_forecast": 55.34821319580078,
+      "llm_tsm_forecast": 55.62495426177978
+    },
+    {
+      "target_date": "2025-12-05",
+      "forecast_made_on": "2025-10-24",
+      "actual": 56.83000183105469,
+      "base_tsm_forecast": 55.77771759033203,
+      "llm_tsm_forecast": 56.19605047225952
+    },
+    {
+      "target_date": "2025-12-08",
+      "forecast_made_on": "2025-10-27",
+      "actual": 56.10000228881836,
+      "base_tsm_forecast": 55.04287338256836,
+      "llm_tsm_forecast": 55.318087749481194
+    },
+    {
+      "target_date": "2025-12-09",
+      "forecast_made_on": "2025-10-28",
+      "actual": 55.880001068115234,
+      "base_tsm_forecast": 54.968505859375,
+      "llm_tsm_forecast": 55.380769653320314
+    },
+    {
+      "target_date": "2025-12-10",
+      "forecast_made_on": "2025-10-29",
+      "actual": 56.20000076293945,
+      "base_tsm_forecast": 55.136199951171875,
+      "llm_tsm_forecast": 55.41188095092773
+    },
+    {
+      "target_date": "2025-12-11",
+      "forecast_made_on": "2025-10-30",
+      "actual": 55.65999603271485,
+      "base_tsm_forecast": 55.89338684082031,
+      "llm_tsm_forecast": 56.17285377502441
+    },
+    {
+      "target_date": "2025-12-12",
+      "forecast_made_on": "2025-10-31",
+      "actual": 56.08000564575195,
+      "base_tsm_forecast": 56.98504257202149,
+      "llm_tsm_forecast": 56.98504257202149
+    },
+    {
+      "target_date": "2025-12-15",
+      "forecast_made_on": "2025-11-03",
+      "actual": 55.89999771118164,
+      "base_tsm_forecast": 57.73909378051758,
+      "llm_tsm_forecast": 57.73909378051758
+    },
+    {
+      "target_date": "2025-12-16",
+      "forecast_made_on": "2025-11-04",
+      "actual": 56.97999954223633,
+      "base_tsm_forecast": 58.0814323425293,
+      "llm_tsm_forecast": 58.37183950424194
+    },
+    {
+      "target_date": "2025-12-17",
+      "forecast_made_on": "2025-11-05",
+      "actual": 57.28000259399414,
+      "base_tsm_forecast": 58.17210388183594,
+      "llm_tsm_forecast": 58.17210388183594
+    },
+    {
+      "target_date": "2025-12-18",
+      "forecast_made_on": "2025-11-06",
+      "actual": 58.52000045776367,
+      "base_tsm_forecast": 57.984352111816406,
+      "llm_tsm_forecast": 58.27427387237548
+    },
+    {
+      "target_date": "2025-12-19",
+      "forecast_made_on": "2025-11-07",
+      "actual": 62.3900032043457,
+      "base_tsm_forecast": 57.38111877441406,
+      "llm_tsm_forecast": 57.668024368286126
+    },
+    {
+      "target_date": "2025-12-22",
+      "forecast_made_on": "2025-11-10",
+      "actual": 63.25,
+      "base_tsm_forecast": 56.96628189086914,
+      "llm_tsm_forecast": 57.25111330032348
+    },
+    {
+      "target_date": "2025-12-23",
+      "forecast_made_on": "2025-11-11",
+      "actual": 64.10999298095703,
+      "base_tsm_forecast": 57.061058044433594,
+      "llm_tsm_forecast": 57.48901597976685
+    },
+    {
+      "target_date": "2025-12-24",
+      "forecast_made_on": "2025-11-12",
+      "actual": 65.55999755859375,
+      "base_tsm_forecast": 57.50925064086914,
+      "llm_tsm_forecast": 57.940570020675665
+    },
+    {
+      "target_date": "2025-12-29",
+      "forecast_made_on": "2025-11-13",
+      "actual": 64.7199935913086,
+      "base_tsm_forecast": 57.58597183227539,
+      "llm_tsm_forecast": 57.87390169143677
+    },
+    {
+      "target_date": "2025-12-30",
+      "forecast_made_on": "2025-11-14",
+      "actual": 64.73999786376953,
+      "base_tsm_forecast": 58.890281677246094,
+      "llm_tsm_forecast": 58.890281677246094
+    },
+    {
+      "target_date": "2025-12-31",
+      "forecast_made_on": "2025-11-17",
+      "actual": 64.4800033569336,
+      "base_tsm_forecast": 57.92583084106445,
+      "llm_tsm_forecast": 58.21545999526977
+    },
+    {
+      "target_date": "2026-01-02",
+      "forecast_made_on": "2025-11-18",
+      "actual": 64.45999908447266,
+      "base_tsm_forecast": 58.048641204833984,
+      "llm_tsm_forecast": 58.48400601387024
+    },
+    {
+      "target_date": "2026-01-05",
+      "forecast_made_on": "2025-11-19",
+      "actual": 66.11000061035156,
+      "base_tsm_forecast": 57.95926284790039,
+      "llm_tsm_forecast": 58.249059162139886
+    },
+    {
+      "target_date": "2026-01-06",
+      "forecast_made_on": "2025-11-20",
+      "actual": 64.6500015258789,
+      "base_tsm_forecast": 57.82585144042969,
+      "llm_tsm_forecast": 58.11498069763183
+    },
+    {
+      "target_date": "2026-01-07",
+      "forecast_made_on": "2025-11-21",
+      "actual": 65.93000030517578,
+      "base_tsm_forecast": 57.55051803588867,
+      "llm_tsm_forecast": 57.83827062606811
+    },
+    {
+      "target_date": "2026-01-08",
+      "forecast_made_on": "2025-11-24",
+      "actual": 66.3800048828125,
+      "base_tsm_forecast": 57.59538269042969,
+      "llm_tsm_forecast": 57.88335960388183
+    },
+    {
+      "target_date": "2026-01-09",
+      "forecast_made_on": "2025-11-25",
+      "actual": 65.68000030517578,
+      "base_tsm_forecast": 57.93825149536133,
+      "llm_tsm_forecast": 58.22794275283813
+    },
+    {
+      "target_date": "2026-01-12",
+      "forecast_made_on": "2025-11-26",
+      "actual": 66.52999877929688,
+      "base_tsm_forecast": 58.73711395263672,
+      "llm_tsm_forecast": 59.030799522399896
+    },
+    {
+      "target_date": "2026-01-13",
+      "forecast_made_on": "2025-11-27",
+      "actual": 67.55000305175781,
+      "base_tsm_forecast": 57.79068374633789,
+      "llm_tsm_forecast": 58.22411387443543
+    },
+    {
+      "target_date": "2026-01-14",
+      "forecast_made_on": "2025-11-28",
+      "actual": 68.41999816894531,
+      "base_tsm_forecast": 57.89755630493164,
+      "llm_tsm_forecast": 58.33178797721863
+    },
+    {
+      "target_date": "2026-01-15",
+      "forecast_made_on": "2025-12-01",
+      "actual": 70.16999816894531,
+      "base_tsm_forecast": 59.85897445678711,
+      "llm_tsm_forecast": 60.15826932907104
+    },
+    {
+      "target_date": "2026-01-16",
+      "forecast_made_on": "2025-12-02",
+      "actual": 70.25,
+      "base_tsm_forecast": 59.9875373840332,
+      "llm_tsm_forecast": 60.43744391441346
+    },
+    {
+      "target_date": "2026-01-19",
+      "forecast_made_on": "2025-12-03",
+      "actual": 68.81999206542969,
+      "base_tsm_forecast": 59.914852142333984,
+      "llm_tsm_forecast": 60.36421353340149
+    },
+    {
+      "target_date": "2026-01-20",
+      "forecast_made_on": "2025-12-04",
+      "actual": 65.95999908447266,
+      "base_tsm_forecast": 60.484989166259766,
+      "llm_tsm_forecast": 60.93862658500672
+    },
+    {
+      "target_date": "2026-01-21",
+      "forecast_made_on": "2025-12-05",
+      "actual": 62.06999969482422,
+      "base_tsm_forecast": 60.509368896484375,
+      "llm_tsm_forecast": 60.963189163208014
+    },
+    {
+      "target_date": "2026-01-22",
+      "forecast_made_on": "2025-12-08",
+      "actual": 65.13999938964844,
+      "base_tsm_forecast": 59.922271728515625,
+      "llm_tsm_forecast": 60.371688766479494
+    },
+    {
+      "target_date": "2026-01-23",
+      "forecast_made_on": "2025-12-09",
+      "actual": 66.3699951171875,
+      "base_tsm_forecast": 60.41508102416992,
+      "llm_tsm_forecast": 60.8681941318512
+    },
+    {
+      "target_date": "2026-01-26",
+      "forecast_made_on": "2025-12-10",
+      "actual": 65.90999603271484,
+      "base_tsm_forecast": 60.90485000610352,
+      "llm_tsm_forecast": 61.361636381149296
+    },
+    {
+      "target_date": "2026-01-27",
+      "forecast_made_on": "2025-12-11",
+      "actual": 64.22000122070312,
+      "base_tsm_forecast": 61.18622970581055,
+      "llm_tsm_forecast": 61.64512642860413
+    },
+    {
+      "target_date": "2026-01-28",
+      "forecast_made_on": "2025-12-12",
+      "actual": 65.67000579833984,
+      "base_tsm_forecast": 62.4500617980957,
+      "llm_tsm_forecast": 62.762312107086174
+    },
+    {
+      "target_date": "2026-01-29",
+      "forecast_made_on": "2025-12-15",
+      "actual": 64.56000518798828,
+      "base_tsm_forecast": 62.66032791137695,
+      "llm_tsm_forecast": 62.97362955093383
+    },
+    {
+      "target_date": "2026-01-30",
+      "forecast_made_on": "2025-12-16",
+      "actual": 62.9900016784668,
+      "base_tsm_forecast": 63.345436096191406,
+      "llm_tsm_forecast": 63.82052686691284
+    },
+    {
+      "target_date": "2026-02-02",
+      "forecast_made_on": "2025-12-17",
+      "actual": 59.88999557495117,
+      "base_tsm_forecast": 63.37376403808594,
+      "llm_tsm_forecast": 63.849067268371584
+    },
+    {
+      "target_date": "2026-02-03",
+      "forecast_made_on": "2025-12-18",
+      "actual": 61.02000045776367,
+      "base_tsm_forecast": 64.17561340332031,
+      "llm_tsm_forecast": 64.65693050384522
+    },
+    {
+      "target_date": "2026-02-04",
+      "forecast_made_on": "2025-12-19",
+      "actual": 60.82999801635742,
+      "base_tsm_forecast": 66.91820526123047,
+      "llm_tsm_forecast": 67.4200918006897
+    },
+    {
+      "target_date": "2026-02-05",
+      "forecast_made_on": "2025-12-22",
+      "actual": 60.220001220703125,
+      "base_tsm_forecast": 66.69192504882812,
+      "llm_tsm_forecast": 67.19211448669434
+    },
+    {
+      "target_date": "2026-02-06",
+      "forecast_made_on": "2025-12-23",
+      "actual": 55.52000045776367,
+      "base_tsm_forecast": 66.43407440185547,
+      "llm_tsm_forecast": 66.93232995986939
+    },
+    {
+      "target_date": "2026-02-09",
+      "forecast_made_on": "2025-12-24",
+      "actual": 54.94999694824219,
+      "base_tsm_forecast": 67.23796081542969,
+      "llm_tsm_forecast": 67.57415061950682
+    },
+    {
+      "target_date": "2026-02-10",
+      "forecast_made_on": "2025-12-29",
+      "actual": 56.040000915527344,
+      "base_tsm_forecast": 66.6225357055664,
+      "llm_tsm_forecast": 67.12220472335815
+    },
+    {
+      "target_date": "2026-02-11",
+      "forecast_made_on": "2025-12-30",
+      "actual": 50.22999572753906,
+      "base_tsm_forecast": 65.76885223388672,
+      "llm_tsm_forecast": 66.26211862564087
+    },
+    {
+      "target_date": "2026-02-12",
+      "forecast_made_on": "2025-12-31",
+      "actual": 47.730003356933594,
+      "base_tsm_forecast": 64.8112564086914,
+      "llm_tsm_forecast": 65.2973408317566
+    },
+    {
+      "target_date": "2026-02-13",
+      "forecast_made_on": "2026-01-02",
+      "actual": 44.70000076293945,
+      "base_tsm_forecast": 64.50381469726562,
+      "llm_tsm_forecast": 64.98759330749512
+    },
+    {
+      "target_date": "2026-02-16",
+      "forecast_made_on": "2026-01-05",
+      "actual": 44.04999923706055,
+      "base_tsm_forecast": 65.16108703613281,
+      "llm_tsm_forecast": 65.64979518890381
+    },
+    {
+      "target_date": "2026-02-17",
+      "forecast_made_on": "2026-01-06",
+      "actual": 45.0099983215332,
+      "base_tsm_forecast": 63.84349822998047,
+      "llm_tsm_forecast": 64.16271572113037
+    },
+    {
+      "target_date": "2026-02-18",
+      "forecast_made_on": "2026-01-07",
+      "actual": 45.72999954223633,
+      "base_tsm_forecast": 64.05915069580078,
+      "llm_tsm_forecast": 64.05915069580078
+    },
+    {
+      "target_date": "2026-02-19",
+      "forecast_made_on": "2026-01-08",
+      "actual": 46.04999542236328,
+      "base_tsm_forecast": 63.819610595703125,
+      "llm_tsm_forecast": 63.819610595703125
+    },
+    {
+      "target_date": "2026-02-20",
+      "forecast_made_on": "2026-01-09",
+      "actual": 44.65999984741211,
+      "base_tsm_forecast": 63.21834945678711,
+      "llm_tsm_forecast": 63.21834945678711
+    },
+    {
+      "target_date": "2026-02-23",
+      "forecast_made_on": "2026-01-12",
+      "actual": 46.26000213623047,
+      "base_tsm_forecast": 62.78840637207031,
+      "llm_tsm_forecast": 62.78840637207031
+    },
+    {
+      "target_date": "2026-02-24",
+      "forecast_made_on": "2026-01-13",
+      "actual": 45.07000350952149,
+      "base_tsm_forecast": 63.38449478149414,
+      "llm_tsm_forecast": 63.7014172554016
+    },
+    {
+      "target_date": "2026-02-25",
+      "forecast_made_on": "2026-01-14",
+      "actual": 44.38999938964844,
+      "base_tsm_forecast": 63.40127944946289,
+      "llm_tsm_forecast": 63.876789045333865
+    },
+    {
+      "target_date": "2026-02-26",
+      "forecast_made_on": "2026-01-15",
+      "actual": 44.56999969482422,
+      "base_tsm_forecast": 63.789031982421875,
+      "llm_tsm_forecast": 64.26744972229004
+    },
+    {
+      "target_date": "2026-02-27",
+      "forecast_made_on": "2026-01-16",
+      "actual": 43.900001525878906,
+      "base_tsm_forecast": 64.33645629882812,
+      "llm_tsm_forecast": 64.33645629882812
+    },
+    {
+      "target_date": "2026-03-02",
+      "forecast_made_on": "2026-01-19",
+      "actual": 44.81999969482422,
+      "base_tsm_forecast": 64.17706298828125,
+      "llm_tsm_forecast": 64.17706298828125
+    },
+    {
+      "target_date": "2026-03-03",
+      "forecast_made_on": "2026-01-20",
+      "actual": 43.90999984741211,
+      "base_tsm_forecast": 62.81963348388672,
+      "llm_tsm_forecast": 63.13373165130614
+    },
+    {
+      "target_date": "2026-03-04",
+      "forecast_made_on": "2026-01-21",
+      "actual": 44.7599983215332,
+      "base_tsm_forecast": 61.58119583129883,
+      "llm_tsm_forecast": 61.58119583129883
+    },
+    {
+      "target_date": "2026-03-05",
+      "forecast_made_on": "2026-01-22",
+      "actual": 42.60000228881836,
+      "base_tsm_forecast": 63.679141998291016,
+      "llm_tsm_forecast": 63.679141998291016
+    },
+    {
+      "target_date": "2026-03-06",
+      "forecast_made_on": "2026-01-23",
+      "actual": 38.95,
+      "base_tsm_forecast": 63.877628326416016,
+      "llm_tsm_forecast": 64.35671053886414
+    },
+    {
+      "target_date": "2026-03-09",
+      "forecast_made_on": "2026-01-26",
+      "actual": 37.72,
+      "base_tsm_forecast": 62.75822830200195,
+      "llm_tsm_forecast": 63.228915014266974
+    },
+    {
+      "target_date": "2026-03-10",
+      "forecast_made_on": "2026-01-27",
+      "actual": 38.2,
+      "base_tsm_forecast": 63.53343200683594,
+      "llm_tsm_forecast": 64.00993274688722
+    },
+    {
+      "target_date": "2026-03-11",
+      "forecast_made_on": "2026-01-28",
+      "actual": 38.9,
+      "base_tsm_forecast": 62.67961120605469,
+      "llm_tsm_forecast": 63.1497082901001
+    },
+    {
+      "target_date": "2026-03-12",
+      "forecast_made_on": "2026-01-29",
+      "actual": 38.58,
+      "base_tsm_forecast": 60.93330383300781,
+      "llm_tsm_forecast": 60.93330383300781
+    },
+    {
+      "target_date": "2026-03-13",
+      "forecast_made_on": "2026-01-30",
+      "actual": 38.35,
+      "base_tsm_forecast": 59.1820182800293,
+      "llm_tsm_forecast": 59.62588341712952
+    },
+    {
+      "target_date": "2026-03-16",
+      "forecast_made_on": "2026-02-02",
+      "actual": 37.14,
+      "base_tsm_forecast": 61.06892776489258,
+      "llm_tsm_forecast": 61.37427240371704
+    },
+    {
+      "target_date": "2026-03-17",
+      "forecast_made_on": "2026-02-03",
+      "actual": 35.96,
+      "base_tsm_forecast": 60.0050048828125,
+      "llm_tsm_forecast": 60.0050048828125
+    },
+    {
+      "target_date": "2026-03-18",
+      "forecast_made_on": "2026-02-04",
+      "actual": 35.65,
+      "base_tsm_forecast": 60.42863082885742,
+      "llm_tsm_forecast": 60.42863082885742
+    },
+    {
+      "target_date": "2026-03-19",
+      "forecast_made_on": "2026-02-05",
+      "actual": 33.51,
+      "base_tsm_forecast": 56.61285400390625,
+      "llm_tsm_forecast": 56.61285400390625
+    },
+    {
+      "target_date": "2026-03-20",
+      "forecast_made_on": "2026-02-06",
+      "actual": 35.89,
+      "base_tsm_forecast": 56.16381072998047,
+      "llm_tsm_forecast": 56.16381072998047
+    }
+  ]
+}

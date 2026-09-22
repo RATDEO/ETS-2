@@ -1,0 +1,176 @@
+[
+  {
+    "stage": "stage2b_similarity_error_hybrid",
+    "description": "Existing hybrid retrieval winner used as the comparison baseline.",
+    "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260326_005900_9b5019",
+    "base_model": "tsm",
+    "evaluated_model": "TSM+LLM-COT-RF-HDELTA",
+    "result_name": "TSM+LLM-COT-RF-HDELTA",
+    "blend_meta": {
+      "mode": "raw"
+    },
+    "path_mse": 40.73519826593952,
+    "base_path_mse": 40.85002517700195,
+    "delta_vs_base": -0.11482691106242982,
+    "delta_vs_prior_stage": null,
+    "mse_h5": 8.441840161070454,
+    "mse_h20": 50.55750343705503,
+    "mse_h30": 101.9760118449218,
+    "base_mse_h5": 8.441840171813965,
+    "base_mse_h20": 50.61847305297851,
+    "base_mse_h30": 102.41588592529295,
+    "sharpe_h20": 1.4317840170137326,
+    "sharpe_h30": 1.2213948429737795,
+    "base_sharpe_h20": 1.4327774754331073,
+    "base_sharpe_h30": 1.2213948429737795,
+    "mean_h20_adjustment": 0.06600057303599581,
+    "mean_h30_adjustment": 0.07820818025637663,
+    "h20_positive_frac": 0.48717948717948717,
+    "h20_negative_frac": 0.21153846153846154,
+    "h20_zero_frac": 0.30128205128205127,
+    "h30_positive_frac": 0.48717948717948717,
+    "h30_negative_frac": 0.20512820512820512,
+    "h30_zero_frac": 0.3076923076923077,
+    "top_harmful_dates": [
+      {
+        "date": "2026-02-06",
+        "path_harm": 7.9161304561014845,
+        "h20_adjustment": 0.4793204345703117,
+        "h30_adjustment": 0.11661263275146183
+      },
+      {
+        "date": "2026-02-09",
+        "path_harm": 6.5230964163890235,
+        "h20_adjustment": 0.29413173675536797,
+        "h30_adjustment": 0.28929737091063856
+      },
+      {
+        "date": "2026-01-15",
+        "path_harm": 5.517465977149158,
+        "h20_adjustment": 0.32122661590575774,
+        "h30_adjustment": 0.31894515991210426
+      },
+      {
+        "date": "2026-02-02",
+        "path_harm": 5.080810629144423,
+        "h20_adjustment": 0.3088779258727996,
+        "h30_adjustment": 0.06073718643187931
+      },
+      {
+        "date": "2026-01-14",
+        "path_harm": 3.9687612579827203,
+        "h20_adjustment": 0.3175334739684956,
+        "h30_adjustment": 0.19020383834838128
+      }
+    ],
+    "dominant_apply_pattern_share": 0.2692307692307692,
+    "dominant_apply_pattern": [
+      [
+        "h1",
+        0.0
+      ],
+      [
+        "h5",
+        0.0
+      ],
+      [
+        "h20",
+        0.0
+      ],
+      [
+        "h30",
+        0.0
+      ]
+    ],
+    "apply_skip_count": 0,
+    "keep": true,
+    "keep_reason": "beat_base_and_sharpe_ok"
+  },
+  {
+    "stage": "stage2d_regime_mmr",
+    "description": "Add regime filtering and regime-weighted MMR on top of the current tsm retrieval stack while keeping the rest of the Stage 2 setup fixed.",
+    "run_dir": "/Users/davidwilkinson/Desktop/ETS 2/runs/20260326_014156_3f34c2",
+    "base_model": "tsm",
+    "evaluated_model": "TSM+LLM-COT-RF-HDELTA",
+    "result_name": "TSM+LLM-COT-RF-HDELTA",
+    "blend_meta": {
+      "mode": "raw"
+    },
+    "path_mse": 41.08244795641766,
+    "base_path_mse": 40.85002517700195,
+    "delta_vs_base": 0.23242277941570677,
+    "delta_vs_prior_stage": 0.3472496904781366,
+    "mse_h5": 8.441840161070454,
+    "mse_h20": 51.090480164213915,
+    "mse_h30": 102.69053849737314,
+    "base_mse_h5": 8.441840171813965,
+    "base_mse_h20": 50.61847305297851,
+    "base_mse_h30": 102.41588592529295,
+    "sharpe_h20": 1.407438360214185,
+    "sharpe_h30": 1.2213948429737795,
+    "base_sharpe_h20": 1.4327774754331073,
+    "base_sharpe_h30": 1.2213948429737795,
+    "mean_h20_adjustment": 0.10400005966577461,
+    "mean_h30_adjustment": 0.102395002572961,
+    "h20_positive_frac": 0.5897435897435898,
+    "h20_negative_frac": 0.1794871794871795,
+    "h20_zero_frac": 0.23076923076923078,
+    "h30_positive_frac": 0.6025641025641025,
+    "h30_negative_frac": 0.17307692307692307,
+    "h30_zero_frac": 0.22435897435897437,
+    "top_harmful_dates": [
+      {
+        "date": "2026-01-27",
+        "path_harm": 7.2150997644802715,
+        "h20_adjustment": 0.31765672683714996,
+        "h30_adjustment": 0.3153514671325581
+      },
+      {
+        "date": "2026-02-05",
+        "path_harm": 6.533801041852428,
+        "h20_adjustment": 0.3088086509704553,
+        "h30_adjustment": 0.1834159011840768
+      },
+      {
+        "date": "2026-01-16",
+        "path_harm": 6.241838523612984,
+        "h20_adjustment": 0.32484828948973643,
+        "h30_adjustment": 0.3216822814941338
+      },
+      {
+        "date": "2026-01-20",
+        "path_harm": 6.12619307795876,
+        "h20_adjustment": 0.31733896255492766,
+        "h30_adjustment": 0.31409816741942365
+      },
+      {
+        "date": "2026-02-06",
+        "path_harm": 5.794397938848192,
+        "h20_adjustment": 0.29957527160643593,
+        "h30_adjustment": 0.1749189491271892
+      }
+    ],
+    "dominant_apply_pattern_share": 0.36538461538461536,
+    "dominant_apply_pattern": [
+      [
+        "h1",
+        0.0
+      ],
+      [
+        "h5",
+        0.0
+      ],
+      [
+        "h20",
+        0.5
+      ],
+      [
+        "h30",
+        0.5
+      ]
+    ],
+    "apply_skip_count": 0,
+    "keep": false,
+    "keep_reason": "failed_keep_criteria"
+  }
+]
